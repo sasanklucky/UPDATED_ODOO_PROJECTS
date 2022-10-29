@@ -1,0 +1,449 @@
+
+<odoo>
+
+<template id="ars_portal_order_page" name="Sales Order">
+      <t t-call="portal.portal_layout">
+        <t t-set="sales_order" t-value="order"/> <!-- rename to ensure breadcrumb compatibility (differentiate with purchase orders) -->
+        <t t-set="invoices" t-value="[i for i in order.invoice_ids if i.state not in ['draft', 'cancel']]"/>
+        <t t-set="invoices_amount" t-value="sum(i.amount_total for i in invoices)"/>
+        <div id="optional_placeholder"></div>
+        <div class="container">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+
+                  <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
+
+                    <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <a target="_blank" t-att-href="'/my/orders/pdf/%s?%s' % (order.id, keep_query())" class="ml8 pull-right mt4 mr8" title="Download">
+                                    <i class="fa fa-download fa-2x" aria-hidden="true"/>
+                                </a>
+                                <tr class="active">
+                                    <h3 style="margin-left:0px;">
+                                        <strong>Quotation # </strong>
+                                        <strong t-field="order.name"/>
+                                    </h3>
+                                    <td>
+                                        <span t-if="ord_lin.product_id.image_medium" t-field="ord_lin.product_id.image_medium"
+                                              t-options='{"widget": "image", "class": "tech_img", "alt-field": "name", "zoom": "image",
+                                              "style":"width: 350px;height: 200px;" }'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </div>
+
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <div style="margin-top: 50px;margin-left: 80px;">
+                                            <strong style="font-weight: bold; font-size: 20px;">Customer Details:</strong>
+                                            <span t-field="order.partner_id" t-options='{"widget": "contact", "fields": ["name"]}' />
+                                            <span t-field="order.partner_id" t-options='{"widget": "contact", "fields": ["mobile", "email"], "no_marker": True}' />
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 42px;margin-left: 80px;">
+                                        <div>
+                                            <span t-field="ord_lin.product_id" style="font-weight: bold; font-size: 20px;"/>
+                                        </div>
+                                        <div>
+                                            <span t-field="order.amount_total" style="font-weight: bold; font-size: 20px;"/>
+                                        </div>
+                                        <div>
+                                            <span>On Road Price (Inc GST)</span>
+                                        </div>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="border-bottom-style:solid !important; border-width:2px !important;margin-top:26px;">
+                    </div>
+
+                    <div class="col-xs-12" style="margin-top:0px;">
+                        <div class="col-xs-3">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div style="margin-top:10px;">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/fuel.png" title="Fuel" width="50px"/>
+                                            Fuel Type
+                                            <p t-field="ord_lin.product_id.fuel_type" style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"/>
+                                        </strong>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                        <div class="col-xs-3">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div style="margin-top:10px;">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/color.png" title="Fuel" width="50px"/>
+                                            Color
+                                            <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
+                                                <t t-if="at.attribute_id.name == 'color'">
+                                                    <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                                                </t>
+                                            </t>
+                                        </strong>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="margin-top:2px;">
+                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                            <img src="/ars_vehicle_sales/static/src/img/design_dimen.png" title="Fuel" width="27px"/>
+                            <strong>Design &amp; Dimensions</strong>
+                        </span>
+                    </div>
+                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>Car Type:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.car_type"/>
+                                    </div>
+                                    <div>
+                                        <strong>Seating Capacity:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.seating_capacity"/>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>No of Doors:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.no_of_doors"/>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="margin-top:17px;">
+                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                            <img src="/ars_vehicle_sales/static/src/img/speed_perf.png" title="Fuel" width="27px"/>
+                            <strong>Power &amp; Performance</strong>
+                        </span>
+                    </div>
+                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>Transmission:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.transmission_type_code"/>
+                                    </div>
+                                    <div>
+                                        <strong>City Mileage:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.city_mileage"/>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>Engine Capacity:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.engine_capacity"/>
+                                    </div>
+                                    <div>
+                                        <strong>Highway Mileage:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.highway_mileage"/>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="margin-top:17px;">
+                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                            <img src="/ars_vehicle_sales/static/src/img/comfort_con.png" title="Fuel" width="27px"/>
+                            <strong>Comfort &amp; Convenience</strong>
+                        </span>
+                    </div>
+                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 91px; padding:24px 10px;">
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>Power Steering:</strong>
+                                        <t t-if="ord_lin.product_id.power_steering == true">
+                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                        <t t-if="ord_lin.product_id.power_steering == false">
+                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                    </div>
+                                    <div>
+                                        <strong>A/C:</strong>
+                                        <t t-if="ord_lin.product_id.ac == true">
+                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                        <t t-if="ord_lin.product_id.ac == false">
+                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                    </div>
+                                    <div>
+                                        <strong>Steering Adjustment:</strong>
+                                        <t t-if="ord_lin.product_id.steering_adjustment == true">
+                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                        <t t-if="ord_lin.product_id.steering_adjustment == false">
+                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                        <div class="col-xs-6">
+                            <t t-foreach="order.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div>
+                                        <strong>Power Windows:</strong>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.power_window"/>
+                                    </div>
+                                    <div>
+                                        <strong>Central Locking:</strong>
+                                        <t t-if="ord_lin.product_id.centre_locking == true">
+                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                        <t t-if="ord_lin.product_id.centre_locking == false">
+                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                        </t>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12" style="margin-top:17px;">
+                        <strong style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">Description</strong>
+                    </div>
+                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: auto; padding:24px 10px;">
+                        <t t-foreach="order.order_line" t-as="ord_lin">
+                            <tr class="active">
+                                <div>
+                                    <span style="font-style: italic;" t-field="ord_lin.product_id.description_sale"/>
+                                </div>
+                            </tr>
+                        </t>
+                    </div>
+                  </t>
+
+              </div>
+            </div>
+          </div>
+        </div>
+          <div class="oe_structure mb32"/>
+      </t>
+</template>
+
+
+                <!--<div class="col-md-6 col-xs-9 col-sm-9">-->
+                    <!--<h4>-->
+                        <!--<t t-call='portal.record_pager'/>-->
+                        <!--<t t-if="order.state in ('sent', 'cancel')">Quot</t>-->
+                        <!--<t t-else="">Order</t>-->
+                        <!--<span t-esc="order.name"/>-->
+                        <!--<t t-if="order.state == 'cancel'">-->
+                            <!--<span class="label label-default"><i class="fa fa-fw fa-remove"/> Cancelled</span>-->
+                        <!--</t>-->
+                        <!--<t t-if="order.state == 'done'">-->
+                            <!--<span class="label label-default"><i class="fa fa-fw fa-remove"/> Done</span>-->
+                        <!--</t>-->
+                    <!--</h4>-->
+                <!--</div>-->
+                <!--<div class="col-md-6 col-sm-3 col-xs-3 hidden-print" id="o_portal_order_actions">-->
+                    <!--<t t-if="order.state == 'sent' and portal_confirmation == 'sign'" name="portal_confirmation_sign">-->
+                        <!--<a class="btn btn-primary ml8 pull-right" href="#portal_sign">-->
+                            <!--<i class="fa fa-arrow-circle-right"/> Accept &amp; Sign-->
+                        <!--</a>-->
+                    <!--</t>-->
+                    <!--<t t-if="order.state == 'sale' and portal_confirmation == 'sign'">-->
+                        <!--<a class="btn btn-success ml8 pull-right" disabled="disabled"-->
+                            <!--t-attf-title="Order signed on #{order.confirmation_date} by #{order.partner_id.name}">-->
+                            <!--<i class="fa fa-check-circle"/> Signed-->
+                        <!--</a>-->
+                    <!--</t>-->
+                    <!--<a target="_blank" t-att-href="'/my/orders/pdf/%s?%s' % (order.id, keep_query())" class="ml8 pull-right mt4 mr8" title="Download">-->
+                        <!--<i class="fa fa-download fa-2x" aria-hidden="true"/>-->
+                    <!--</a>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</div>-->
+            <!--<div class="panel-body">-->
+              <!--<t t-if="error or warning" t-call="sale.portal_order_error"/>-->
+              <!--<t t-if="success and (not error and not warning)" t-call="sale.portal_order_success"/>-->
+              <!--<div class="mb8">-->
+                  <!--<strong>Date:</strong> <span t-field="order.create_date" t-options='{"widget": "date"}'/>-->
+              <!--</div>-->
+              <!--<div class="mb8" t-if="order.validity_date">-->
+                  <!--<strong>Expiration Date:</strong> <span t-field="order.validity_date" t-options='{"widget": "date"}'/>-->
+              <!--</div>-->
+              <!--<div class='row'>-->
+                <!--<div class="col-md-6">-->
+                  <!--<div>-->
+                    <!--<strong>Invoice Address</strong>-->
+                  <!--</div>-->
+                  <!--<div>-->
+                    <!--<address t-field="order.partner_invoice_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>-->
+                  <!--</div>-->
+                  <!--<t t-if="invoices">-->
+                    <!--<div>-->
+                      <!--<strong>Invoices</strong>-->
+                    <!--</div>-->
+                    <!--<div>-->
+                      <!--<t t-foreach="invoices" t-as="i">-->
+                        <!--<t t-set="report_url" t-value="'/my/invoices/pdf/%s?%s' % (i.id, 'access_token=%s' % i.access_token if access_token else '')"/>-->
+                        <!--<div>-->
+                          <!--<a t-att-href="report_url"><span class="fa fa-download"/></a>-->
+                          <!--<a t-att-href="report_url"><span t-esc="i.number"/></a>-->
+                          <!--<span class="text-muted" t-field="i.date_invoice"/>-->
+                          <!--<t t-if="i.state == 'paid'">-->
+                            <!--<span class="label label-success orders_label_text_align"><i class="fa fa-fw fa-check"/> Paid</span>-->
+                          <!--</t>-->
+                          <!--<t t-if="i.state != 'paid'">-->
+                            <!--<span class="label label-info orders_label_text_align"><i class="fa fa-fw fa-clock-o"/> Waiting</span>-->
+                          <!--</t>-->
+                        <!--</div>-->
+                      <!--</t>-->
+                    <!--</div>-->
+                  <!--</t>-->
+                <!--</div>-->
+                <!--<div id="shipping_address" class="col-md-6" groups="sale.group_delivery_invoice_address">-->
+                  <!--<div>-->
+                    <!--<strong>Shipping Address</strong>-->
+                  <!--</div>-->
+                  <!--<div>-->
+                    <!--<address t-field="order.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
+
+              <!--<hr/>-->
+
+              <!--<div class="row">-->
+                <!--<div class="col-md-6">-->
+                  <!--<strong>Product</strong>-->
+                <!--</div>-->
+                <!--<div class="hidden-sm hidden-xs col-md-2 text-right">-->
+                  <!--<strong>Unit Price</strong>-->
+                <!--</div>-->
+                <!--<div class="hidden-sm hidden-xs col-md-2 text-right">-->
+                  <!--<strong>Quantity</strong>-->
+                <!--</div>-->
+                <!--<div class="hidden-sm hidden-xs col-md-2 text-right">-->
+                  <!--<strong>Subtotal</strong>-->
+                <!--</div>-->
+              <!--</div>-->
+              <!--<t t-foreach="order.order_line" t-as="ol">-->
+                <!--<div class="row orders_vertical_align">-->
+                    <!--<div class="visible-lg col-lg-1 text-center">-->
+                      <!--<span t-field="ol.product_image" t-options="{'widget': 'image', 'class': 'img-rounded', 'style':'width: 48px;height:48px'}" />-->
+                    <!--</div>-->
+                    <!--<div id='product_name' class="col-lg-4 col-sm-6 col-xs-3">-->
+                      <!--<span t-esc="ol.product_id.name"/>-->
+                    <!--</div>-->
+                  <!--<div class="col-xs-3 text-right">-->
+                    <!--<span t-field="ol.price_unit" t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/>-->
+                  <!--</div>-->
+                  <!--<div class="col-xs-2 text-right">-->
+                    <!--<t t-if="ol._name == 'sale.order.line'">-->
+                      <!--<span t-esc="ol.product_uom_qty"/>-->
+                    <!--</t>-->
+                    <!--<t t-if="ol._name == 'account.invoice.line'">-->
+                      <!--<span t-esc="ol.quantity"/>-->
+                    <!--</t>-->
+                  <!--</div>-->
+                  <!--<div class="col-sm-2 col-xs-4 text-right">-->
+                    <!--<span t-field="ol.price_subtotal" t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</t>-->
+
+              <!--<hr/>-->
+
+              <!--<div class="row">-->
+                <!--<div class="col-md-6">-->
+                  <!--<div>-->
+                    <!--<strong>Contact</strong>-->
+                  <!--</div>-->
+                  <!--<div t-field="order.user_id.partner_id" t-options='{"widget": "contact", "fields": ["email", "phone"]}'/>-->
+                  <!--<br/>-->
+                <!--</div>-->
+                <!--<div class="col-md-6">-->
+                  <!--<div class="row mb4">-->
+                      <!--<div class="col-md-9 col-xs-8 text-right">-->
+                        <!--<strong>Subtotal</strong>-->
+                      <!--</div>-->
+                      <!--<div class="col-md-3 col-xs-4 text-right">-->
+                        <!--<strong>-->
+                            <!--<span t-field="order.amount_untaxed" t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/>-->
+                        <!--</strong>-->
+                      <!--</div>-->
+                  <!--</div>-->
+                  <!--<div class="row mb4">-->
+                    <!--<t t-set="tax_groups" t-value="order._get_tax_amount_by_group()"/>-->
+                    <!--<t t-foreach="tax_groups" t-as="amount_by_group">-->
+                        <!--<t t-if="len(tax_groups) == 1 and order.amount_untaxed == amount_by_group[2]">-->
+                            <!--<div class="col-md-9 col-xs-8 text-right"><span t-esc="amount_by_group[0]"/></div>-->
+                            <!--<div class="col-md-3 col-xs-4 text-right">-->
+                                <!--<span t-esc="amount_by_group[1]"-->
+                                    <!--t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/>-->
+                            <!--</div>-->
+                        <!--</t>-->
+                        <!--<t t-else ="">-->
+                            <!--<div class="col-md-9 col-xs-8 text-right">-->
+                                <!--<span t-esc="amount_by_group[0]"/>-->
+                                <!--<span>&amp;nbsp;<span>on</span>&amp;nbsp;<t t-esc="amount_by_group[2]" t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/></span>-->
+                            <!--</div>-->
+                            <!--<div class="col-md-3 col-xs-4 text-right">-->
+                                <!--<span t-esc="amount_by_group[1]"-->
+                                    <!--t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/>-->
+                            <!--</div>-->
+                        <!--</t>-->
+                    <!--</t>-->
+                  <!--</div>-->
+                  <!--<div class="row">-->
+                    <!--<div class="col-md-9 col-xs-8 text-right">-->
+                      <!--<strong>Total</strong>-->
+                    <!--</div>-->
+                    <!--<div class="col-md-3 col-xs-4 text-right">-->
+                      <!--<strong><span t-field="order.amount_total" t-options='{"widget": "monetary", "display_currency": order.pricelist_id.currency_id}'/></strong>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--</div>-->
+            <!--</div>-->
+            <!--<div class="panel-body">-->
+                <!--<div class="row" t-if="order.state == 'sent' and portal_confirmation == 'sign'" id="portal_sign">-->
+                    <!--<div class="col-md-offset-3 col-md-6">-->
+                        <!--<h4>Accept &amp; Sign</h4>-->
+                        <!--<t t-call="portal.portal_signature">-->
+                            <!--<t t-set="object" t-value="order"/>-->
+                            <!--<t t-set="partner_name" t-value="order.partner_id.name"/>-->
+                            <!--<t t-set="callUrl" t-value="'/my/quotes/accept'"/>-->
+                            <!--<t t-set="signLabel" t-value="'Accept Order'"/>-->
+                            <!--<t t-set="accessToken" t-value="order.access_token"/>-->
+                        <!--</t>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
+        <!--<div class="oe_structure mb32"/>-->
+      <!--</t>-->
+    <!--</template>-->
+
+</odoo>

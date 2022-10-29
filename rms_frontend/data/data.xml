@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="default_vehicle" model="product.template">
+            <field name="name">Default Customer Vehicle</field>
+            <field name="categ_id">3</field>
+            <field name="standard_price">40</field>
+            <field name="list_price">90</field>
+            <field name="catalog_type">1</field>
+            <field name="tracking">serial</field>
+            <field name="type">product</field>
+            <field name="description">Default vehicle for auto assign</field>
+            <field name="default_code">veh_default</field>
+        </record>
+        <record id="default_task" model="project.task">
+            <field name="name">Default Task</field>
+            <field name="stage_id" ref="ac_rms.rms_stage1"></field>
+        </record>
+        <record id="ip_address_1" model="hr.employee.category">
+          <field name="name">192.168.1.41</field>
+        </record>
+        <record id="ip_address_2" model="hr.employee.category">
+          <field name="name">192.168.1.42</field>
+        </record>
+        <record id="ip_address_3" model="hr.employee.category">
+          <field name="name">192.168.1.43</field>
+        </record>
+        <record id="default_bay1" model="resource.resource">
+            <field name="name">BAY1</field>
+            <field name="resource_type">material</field>
+            <field name="ip_address" eval="[(6, 0, [ref('ip_address_1'),ref('ip_address_2'),ref('ip_address_3')])]"></field>
+        </record>
+    </data>
+</odoo>

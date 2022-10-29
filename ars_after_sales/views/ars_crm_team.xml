@@ -1,0 +1,33 @@
+<odoo>
+  <data>
+      <record id="crm_team_salesteams_view_form_inherit" model="ir.ui.view">
+            <field name="name">crm.team.form.inherit</field>
+            <field name="model">crm.team</field>
+            <field name="priority">9</field>
+            <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+            <field name="arch" type="xml">
+                <!--<xpath expr="//group[@name='invoicing']" position="attributes">-->
+                    <!--<attribute name="invisible">[('team_type', 'not in', ['sales', 'website','after_sales'])]</attribute>-->
+                <!--</xpath>-->
+                 <xpath expr="//div[@name='options_active']" position="replace">
+                    <div class="o_row" style="display:inherit">
+                        <field name="use_quotations"/><label for="use_quotations"/>
+                    </div>
+                 <div name="options_active" attrs="{'invisible': ['&amp;', ('team_type', '!=', 'sales'), ('team_type', '!=', 'website'),('team_type', '!=', 'after_sales')]}"/>
+
+                     <!--<div class="o_row">-->
+                            <!--<field name="use_opportunities"/>-->
+                            <!--<label for="use_opportunities"/>-->
+                            <!--<span groups="crm.group_use_lead" class="o_row" attrs="{'invisible': [('use_opportunities', '=', False)]}">-->
+                                <!--<field name="use_leads"/>-->
+                                <!--<label for="use_leads" string="Leads"/>-->
+                            <!--</span>-->
+                        <!--</div>-->
+                </xpath>
+            </field>
+        </record>
+
+
+
+  </data>
+</odoo>

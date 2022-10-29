@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data noupdate="1">
+		<record model="ir.module.category" id="module_category_ars_user_right">
+            <field name="name">ARS User Rights</field>
+            <field name="sequence">103</field>
+            
+        </record>
+		<record model="ir.module.category" id="module_category_ars_access_right">
+            <field name="name">ARS Rights</field>
+            <field name="sequence">104</field>
+            <field name="visible" eval="0" />
+        </record>
+
+        <record id="group_aftersale_estimation" model="res.groups">
+	        <field name="name">Aftersale Estimation</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale Estimation menus to Aftersale user</field>
+			<field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+		<record id="group_aftersale_parts_Pricelist" model="res.groups">
+	        <field name="name">Aftersale PartsPricelist</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale PartsPricelist sub menus to Aftersale PartsPricelist user</field>
+	    	<field name="category_id" ref="module_category_ars_access_right"/>
+		</record>
+
+		<record id="group_aftersale_labors_Pricelist" model="res.groups">
+	        <field name="name">Aftersale LaborsPricelist</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale LaborsPricelist sub menus to Aftersale LaborsPricelist user</field>
+	    	<field name="category_id" ref="module_category_ars_access_right"/>
+		</record>
+    
+	<!-- spare user -->
+		<record id="group_spare" model="res.groups">
+	        <field name="name">Spare User</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show spare menu to spare user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+	<!-- End Spare user -->
+	<!-- Warranty Groups -->
+	<record id="group_warranty_manager" model="res.groups">
+	        <field name="name">Warranty Manager</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide warranty action menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+	<record id="group_warranty_approval" model="res.groups">
+			<field name="name">Warranty Approval</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+			<field name="comment">To hide warranty action menu</field>
+			<field name="category_id" ref="module_category_ars_access_right"/>
+	</record>
+	<!-- End Warranty Groups -->
+
+	<!-- aftersale user -->
+		<record id="group_aftersale" model="res.groups">
+	        <field name="name">Aftersale User</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale menus to Aftersale user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+	<!-- aftersale user for parts-->
+		<record id="group_aftersale_parts_user" model="res.groups">
+	        <field name="name">Aftersale Parts</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale sub menus to Aftersale parts user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+
+	<!-- aftersale user for catalog-->
+		<record id="group_aftersale_catalog" model="res.groups">
+	        <field name="name">Aftersale Catalog</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale Catalog menus to Aftersale parts user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+
+		<!-- aftersale Invoice -->
+		<record id="group_aftersale_invoice" model="res.groups">
+	        <field name="name">Aftersale Invoice</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Aftersale Invoice menus to Aftersale user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+		<!-- Sales Invoice -->
+		<record id="group_sale_invoice" model="res.groups">
+	        <field name="name">Sale Invoice</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show sale Invoice menus to sale user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+	<!-- Inventory Menu For Sales -->
+		<record id="group_inventory_sales" model="res.groups">
+	        <field name="name">Inventory Sales</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Inventory menu to Sales user</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+	<!-- Inventory Catalog Menu -->
+		<record id="group_inventory_catalog" model="res.groups">
+	        <field name="name">Inventory Catalog</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Inventory Catalog menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+
+
+	<!-- sale Menu User  -->
+		<record id="group_show_sale_menu" model="res.groups">
+	        <field name="name">Show Sale</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show Sale Menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	    
+
+
+
+	<!-- End Menu user -->
+	<!-- purchase Menu User  -->
+		<record id="group_show_purchase_menu" model="res.groups">
+	        <field name="name">Show Purchase</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">Show purchase Menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	    
+
+	<!-- End Menu user -->
+
+	<!-- CRM Sales User  -->
+		<record id="group_crm_sale" model="res.groups">
+	        <field name="name">CRM Sales</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To show the menu crm sales</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	   
+
+	<!-- CRM AfterSales User  -->
+	<record id="group_crm_aftersale" model="res.groups">
+	        <field name="name">CRM AfterSales</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To show the menu crm aftersales</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	    
+
+	<!-- End CRM Sale user -->
+	<!-- CRM Top Menu  -->
+		<record id="group_crm" model="res.groups">
+	        <field name="name">CRM Top Menu</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To show the menu crm</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+		
+
+	<!-- End CRM Sale user -->
+	<!--  hide product menu -->
+		<record id="group_product" model="res.groups">
+	        <field name="name">Product</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide product menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+		
+	<!-- End product menu -->
+
+	<!-- hide invoice menu -->
+		<!--<record id="group_invoice" model="res.groups">-->
+	        <!--<field name="name">Invoice</field>-->
+	        <!--<field name="users" eval="[(4, ref('base.user_root'))]"/>-->
+	        <!--<field name="comment">To hide order to invoice menu</field>-->
+	    <!--</record>-->
+
+	<!-- End product menu -->
+	<!-- hide part menu -->
+		<record id="group_part" model="res.groups">
+	        <field name="name">Parts</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide part menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	   
+		
+	<!-- End part menu -->
+	 <!-- hide Labors menu -->
+		<record id="group_Labors" model="res.groups">
+	        <field name="name">Labors</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Labors menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+
+	<!-- End Labors menu -->
+	<!-- hide Accessories menu -->
+		<record id="group_accessories" model="res.groups">
+	        <field name="name">Accessories</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide accessories menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	    
+	<!-- End Accessories menu -->
+
+	<!-- hide vehicle menu -->
+		<record id="group_vehicle" model="res.groups">
+	        <field name="name">Vehicle</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Vehicle menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+	<!-- End Accessories menu -->
+
+
+	<!-- show vehicle menu for sales -->
+		<record id="group_vehicle_sales" model="res.groups">
+	        <field name="name">Vehicle Sales</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Vehicle Sales menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!-- show vehicle menu for invoice -->
+		<record id="group_sales_invoice" model="res.groups">
+	        <field name="name">Invoice Menu</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Invoice menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!-- show vehicle menu for sales -->
+		<record id="group_parts_aftersales" model="res.groups">
+	        <field name="name">Parts AfterSales</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Parts Aftersales menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!--Show Dashboard -->
+		<record id="group_ars_dashboard" model="res.groups">
+	        <field name="name">Dashboard Menu</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Dashboard menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!--Show Reporting -->
+		<record id="group_ars_reporting" model="res.groups">
+	        <field name="name">Reporting Menu</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Reporting menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!--Show Configuration -->
+		<record id="group_ars_configuration" model="res.groups">
+	        <field name="name">Configuration Menu</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Configuration menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!-- hide menus -->
+		<record id="group_ars_aftersales" model="res.groups">
+	        <field name="name">Hide/Show Menu</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Vehicle menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!-- hide Sale catalog menus -->
+		<record id="group_sales_catalog" model="res.groups">
+	        <field name="name">Sales Catalog</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide Sales Catalog menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+		
+
+	<!-- hideing purchase menu inside invoicing -->
+		<record id="group_invoicing_purchases" model="res.groups">
+	        <field name="name">Invoice Purchase</field>
+	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+	        <field name="comment">To hide order to invoicing purchase menu</field>
+	        <field name="category_id" ref="module_category_ars_access_right"/>
+	    </record>
+	    
+
+
+	    
+	<!-- Record Rules - Saleschannel - Aftersales filter in invoice list view -->
+
+	<!--<record id="aftersale_personal_rule" model="ir.rule">-->
+        <!--<field name="name">Personal Invoice Aftersale</field>-->
+        <!--<field ref="model_account_invoice" name="model_id"/>-->
+        <!--<field name="domain_force">[('team_id.team_type','=','after_sales')]</field>-->
+        <!--<field name="groups" eval="[(4, ref('group_aftersale_invoice'))]"/>-->
+    <!--</record>-->
+
+	<!-- Record Rules - Saleschannel - Sales filter in invoice list view -->
+
+	<!--<record id="sale_personal_rule" model="ir.rule">-->
+        <!--<field name="name">Personal Invoice Sale</field>-->
+        <!--<field ref="model_account_invoice" name="model_id"/>-->
+        <!--<field name="domain_force">[('team_id.team_type','=','sales')]</field>-->
+        <!--<field name="groups" eval="[(4, ref('group_show_sale_menu'))]"/>-->
+    <!--</record>-->
+
+
+	<!-- Record Rules for crm.team- Salesteam -Aftersales for saleschannel  -->
+	<record id="sales_team.crm_rule_all_salesteam" model="ir.rule">
+            <field name="name">All Salesteam</field>
+            <field ref="sales_team.model_crm_team" name="model_id"/>
+            <field name="domain_force">[('team_type','in', ['sales', 'website','after_sales'])]</field>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+	</record>
+
+		<!-- Record Rules for crm.team- Salesteam -Aftersales for saleschannel  -->
+	<record id="warranty_approval_rule" model="ir.rule">
+            <field name="name">Warranty Approval Filter</field>
+            <field ref="model_ars_sale_warranty" name="model_id"/>
+            <field name="domain_force">[('partner_id','=', user.partner_id.id)]</field>
+            <field name="groups" eval="[(4, ref('group_warranty_approval'))]"/>
+	</record>
+
+
+	<!-- Record Rules - Saleschannel - Aftersales filter in Activity list view -->
+
+	<record id="aftersale_activity_rule" model="ir.rule">
+        <field name="name">Personal Activity Aftersale</field>
+        <field ref="mail.model_mail_activity" name="model_id"/>
+        <field name="domain_force">[('user_id.sale_team_id.team_type','=','after_sales')]</field>
+        <field name="groups" eval="[(4, ref('group_aftersale'))]"/>
+    </record>
+
+	<!-- Record Rules - Saleschannel - Sales filter in Activity list view -->
+
+	<record id="sale_activity_rule" model="ir.rule">
+        <field name="name">Personal Activity Sale</field>
+        <field ref="mail.model_mail_activity" name="model_id"/>
+        <field name="domain_force">[('user_id.sale_team_id.team_type','=','sales')]</field>
+        <field name="groups" eval="[(4, ref('group_show_sale_menu'))]"/>
+    </record>
+
+    <!-- ARS Users -->
+    	<record id="group_crm_sales" model="res.groups">
+	        <field name="name">CRM Sales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_crm')),(4, ref('group_crm_sale')),(4, ref('group_vehicle')),(4, ref('group_vehicle_sales')),(4, ref('group_product')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_show_sale_menu'))]"/>
+	    </record>
+	    <record id="group_cre_sales" model="res.groups">
+	        <field name="name">CRE Sales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_crm')),(4, ref('group_crm_sale')),(4, ref('group_vehicle')),(4, ref('group_vehicle_sales')),(4, ref('group_product')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_show_sale_menu'))]"/>
+	    </record>
+	    <record id="group_cre_aftresales" model="res.groups">
+	        <field name="name">CRE Aftersales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_aftersale_estimation')),(4, ref('group_crm')),(4, ref('group_crm_aftersale')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_aftersale_parts_user')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_Labors')),(4, ref('group_product')),(4, ref('group_vehicle'))]"/>
+	    </record>
+	    <record id="group_crm_aftersales" model="res.groups">
+	        <field name="name">CRM Aftersales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_aftersale_estimation')),(4, ref('group_crm')),(4, ref('group_crm_aftersale')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_aftersale_parts_user')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_Labors')),(4, ref('group_product')),(4, ref('group_vehicle'))]"/>
+	    </record>
+	    <record id="group_cashier_sales" model="res.groups">
+	        <field name="name">Cashier Sales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_sales_invoice')),(4, ref('group_sale_invoice'))]"/>
+	    </record>
+	    <record id="group_cashier_aftersales" model="res.groups">
+	        <field name="name">Cashier AfterSales</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_sales_invoice')),(4, ref('group_sale_invoice'))]"/>
+	    </record>
+	    <record id="group_sales_consultant" model="res.groups">
+	        <field name="name">Sales Consultant</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_crm')),(4, ref('group_crm_sale')),(4, ref('group_vehicle')),(4, ref('group_vehicle_sales')),(4, ref('group_product')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_show_sale_menu'))]"/>
+	    </record>
+	    <record id="group_sales_accountant" model="res.groups">
+	        <field name="name">Sales Accountant</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_sales_invoice')),(4, ref('group_sale_invoice')),(4, ref('group_show_sale_menu')),(4, ref('group_vehicle_sales')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_show_purchase_menu')),(4, ref('group_ars_reporting'))]"/>
+	    </record>
+	    
+	    <record id="group_sales_manager" model="res.groups">
+	        <field name="name">Sales Manager</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_crm')),(4, ref('group_crm_sale')),(4, ref('group_ars_reporting')),(4, ref('group_ars_configuration')),(4, ref('group_show_sale_menu')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_vehicle_sales')),(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales'))]"/>
+	    </record>
+	    <record id="group_service_advisor" model="res.groups">
+	        <field name="name">Service Advisor</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_aftersale_estimation')),(4, ref('group_crm')),(4, ref('group_crm_aftersale')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_aftersale_parts_user')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_Labors')),(4, ref('group_product')),(4, ref('group_vehicle')),(4, ref('group_sale_invoice')),(4, ref('group_aftersale_invoice'))]"/>
+	    </record>
+	    <record id="group_service_manager" model="res.groups">
+	        <field name="name">Service Manager</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_aftersale_parts_Pricelist')),(4, ref('group_aftersale_labors_Pricelist')),(4, ref('group_aftersale_estimation')),(4, ref('group_crm')),(4, ref('group_crm_aftersale')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_aftersale_parts_user')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_Labors')),(4, ref('group_product')),(4, ref('group_vehicle')),(4, ref('group_sale_invoice')),(4, ref('group_aftersale_invoice'))]"/>
+	    </record>
+	    <record id="group_finance_manager" model="res.groups">
+	        <field name="name">Finance Manager</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_aftersale_estimation')),(4, ref('group_sales_invoice')),(4, ref('group_sale_invoice')),(4, ref('group_show_sale_menu')),(4, ref('group_vehicle_sales')),(4, ref('group_parts_aftersales')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_aftersale_parts_user')),(4, ref('group_Labors'))]"/>
+	    </record>
+	    <record id="group_part_manager" model="res.groups">
+	        <field name="name">Parts Manager</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_show_sale_menu')),(4, ref('group_parts_aftersales')),(4, ref('group_sales_catalog')),(4, ref('group_aftersale')),(4, ref('group_aftersale_catalog')),(4, ref('group_inventory_sales'))]"/>
+	    </record>
+	    <record id="group_parts_assistant" model="res.groups">
+	        <field name="name">Parts Assistant</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales')),(4, ref('group_accessories')),(4, ref('group_part')),(4, ref('group_show_sale_menu')),(4, ref('group_parts_aftersales')),(4, ref('group_aftersale')),(4, ref('group_aftersale_parts_user')),(4, ref('group_inventory_sales'))]"/>
+	    </record>
+	    <record id="group_vehicle_admin" model="res.groups">
+	        <field name="name">Vehicle Administrator</field>
+	        <field name="category_id" ref="module_category_ars_user_right"/>
+	        <field name="implied_ids" eval="[(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_show_sale_menu')),(4, ref('group_sales_catalog')),(4, ref('group_vehicle_sales')),(4, ref('group_inventory_sales'))]"/>
+	    </record>
+    <!-- end -->    
+</data>
+
+</odoo>

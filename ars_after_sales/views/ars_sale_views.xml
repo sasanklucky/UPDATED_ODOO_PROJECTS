@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+
+       <!--<record model="ir.actions.act_window" id="sale.action_quotations">-->
+          <!--<field name="view_ids"-->
+                   <!--eval="[(5, 0, 0),-->
+                          <!--(0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),-->
+                          <!--(0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')}),-->
+                          <!--(0, 0, {'view_mode': 'calendar'}),-->
+                          <!--(0, 0, {'view_mode': 'pivot'}),-->
+                          <!--(0, 0, {'view_mode': 'graph'})]"/>-->
+      <!--</record>-->
+
+  </data>
+</odoo>

@@ -1,0 +1,50 @@
+<odoo>
+    <record id="crm_ars_team_salesteams_search" model="ir.ui.view">
+        <field name="name">Case Teams - Search</field>
+        <field name="model">crm.team</field>
+        <field name="arch" type="xml">
+            <search string="Salesteams Search">
+                <filter name="my_favorites" string="My Favorites" domain="[('favorite_user_ids', 'in', uid)]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <field name="name"/>
+                <field name="user_id"/>
+                <group expand="0" string="Group By...">
+                    <filter string="Team Leader" domain="[]" context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="crm_team_ars_salesteams_act" model="ir.actions.act_window">
+        <field name="name">Dashboard</field>
+        <field name="res_model">crm.team</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">kanban,form</field>
+        <field name="context">{}</field>
+        <field name="domain">[('team_type','=', 'sales')]</field>
+        <field name="view_id" ref="ars_sales_dashbord_old.crm_ars_team_salesteams_view_kanban"/>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click here to define a new sales team.
+            </p>
+            <p>
+                Use sales team to organize your different salespersons or
+                departments into separate teams. Each team will work in
+                its own list of opportunities.
+            </p>
+        </field>
+    </record>
+    <!--<menuitem name="ars_dashbord" id="ars_sales_dashbord_old.menu_root"/>-->
+    <!--<menuitem id="ars_sales_dashbord_old.menu_ars_sales_team_act"-->
+              <!--action="crm_team_ars_salesteams_act"-->
+              <!--sequence="1"-->
+              <!--parent="ars_sales_dashbord_old.menu_root"-->
+              <!--name="Dashboard"/>-->
+     <menuitem
+                id="ars_sales_dashbord_menu_ars_sales_team_act"
+                name="CRM Dashboard"
+                parent="crm.crm_menu_root"
+                action="crm_team_ars_salesteams_act"
+                sequence="0"/>
+    0
+</odoo>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="warranty_assets_frontend" inherit_id="website.assets_frontend" name="Shop">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/ars_after_sales/static/src/js/ars_script.js"></script>
+        </xpath>
+    </template>
+
+</odoo>

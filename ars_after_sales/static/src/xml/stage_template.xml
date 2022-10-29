@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="warranty_stage_chart">
+        <table class="warranty">
+        <tbody>
+            <tr t-foreach="sale_line" t-as="line">
+               <td>
+                    <span class="badge" id="h-w" t-att-style=" 'background-color:' + line['colors']">.</span>
+                    <t t-if="approved_count"><t t-esc="line['approved_count']"/></t>
+                    <t t-if="reject_count"><t t-esc="line['reject_count']"/></t>
+                    <t t-if="hold_count"><t t-esc="line['hold_count']"/></t>
+                    <t t-if="re_submission_count"><t t-esc="line['re_submission_count']"/></t>-
+                    <t t-esc="line['stages']"/>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </t>
+
+</templates>

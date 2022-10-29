@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ars_cc_camera_ars_cc_camera,ars_cc_camera.ars_cc_camera,model_ars_cc_camera_ars_cc_camera,,1,0,0,0

@@ -1,0 +1,108 @@
+<odoo>
+    <data>
+        <!--<record id="split_lineitem_popup_tree" model="ir.ui.view">-->
+            <!--<field name="name">Split</field>-->
+            <!--<field name="model">split.lineitem</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<form>-->
+                    <!--&lt;!&ndash;<group>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<field name="product_name"/>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</group>&ndash;&gt;-->
+                    <!--<footer>-->
+                        <!--<button  string="Confirm" type="object" class="oe_highlight"/>-->
+
+                        <!--<button string="Cancel" class="oe_link" special="cancel" />-->
+                    <!--</footer>-->
+
+                <!--&lt;!&ndash;<tree string="Vehicle Regn">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<field name="product_name" string="Product Name"/>&ndash;&gt;-->
+                <!--&lt;!&ndash;</tree>&ndash;&gt;-->
+                <!--</form>-->
+            <!--</field>-->
+        <!--</record>-->
+<!--
+    <record id="split_lineitem_popup_tree" model="ir.ui.view">
+            <field name="name">Split</field>
+            <field name="model">split.lineitem</field>
+            <field name="arch" type="xml">
+                &lt;!&ndash;<form string="Account Move Reversal">
+                    <group col="4">
+                        <field name="product_name"/>
+
+                    </group>
+                    <footer>
+                        <button name="confirm" string="Confirm" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+               </form>&ndash;&gt;
+            <form>
+                <h1>
+                    <field name="product_name" class="oe_inline" placeholder="Product..."/>
+                </h1>
+            <group>
+                <group string="Products">
+                    <field name="product_name"/>
+                </group>
+            </group>
+            <footer>
+                <button name="confirm" string="Confirm" type="object" class="oe_highlight"/>
+                or
+                <button string="Cancel" class="btn-default" special="cancel"/>
+                &lt;!&ndash;<button name="create_move" string="Create and post move" type="object" default_focus="1" class="oe_highlight"/>
+                <button string="Cancel" class="btn btn-default" special="cancel" />&ndash;&gt;
+            </footer>
+        </form>
+            </field>
+        </record>
+
+    <record id="action_split_lineitem" model="ir.actions.act_window">
+         <field name="name">Split</field>
+         <field name="res_model">split.lineitem</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="view_type">form</field>
+         <field name='limit'>20</field>
+         <field name="view_mode">tree,form</field>
+         <field name="view_id" ref="split_lineitem_popup_tree"/>
+         <field name="target">new</field>
+    </record>
+
+
+        <act_window name="Split Invoice"
+            res_model="split.lineitem"
+            src_model="sale.order"
+            key2="client_action_multi"
+            view_mode="form" target="new"
+            view_type="form"
+            id="action_split_lineitem" />
+-->
+
+
+    <!--<template id="split_invoice">
+        <div><h1>Hello!</h1></div>
+    </template>-->
+
+<!--<record id="split_invoice_confirm_view" model="ir.ui.view">
+            <field name="name">split.invoice.confirm.form</field>
+            <field name="model">split.lineitem</field>
+            <field name="arch" type="xml">
+                <form string="Confirm Split Invoices">
+                    <t t-call="split_invoice"/>
+                    <footer>
+                        <button string="Confirm" name="invoice_confirm" type="object" default_focus="1" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>-->
+
+        <!--<act_window id="split_invoice"
+            multi="True"
+            key2="client_action_multi" name="Split Invoices"
+            res_model="split.lineitem" src_model="sale.order"
+            view_mode="form" target="new" view_type="form" />-->
+
+
+
+    </data>
+</odoo>

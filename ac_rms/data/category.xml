@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="resource_categories_bay" model="resource.category">
+            <field name="name">Bay</field>
+            <field name="code">BAY</field>
+        </record>
+        <record id="resource_categories_tech" model="resource.category">
+            <field name="name">Technician</field>
+            <field name="code">TECHNICIAN</field>
+        </record>
+    </data>
+</odoo>

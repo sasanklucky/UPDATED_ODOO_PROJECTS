@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_timesheet_line_tree_inherited1" model="ir.ui.view">
+        <field name="name">Project Task Inherit</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='timesheet_ids']" position="replace">
+
+                <field name="timesheet_ids" context="{'default_project_id': project_id}">
+                        <tree editable="bottom" string="Timesheet Activities" default_order="date">
+                            <field name="date"/>
+                            <field name="user_id" invisible="1"/>
+                            <field name="employee_id" required="1"/>
+                            <!--<field name="resource_ids" widget="many2many_tags"/>-->
+                            <field name="name"/>
+                            <field name="status"/>
+                            <field name="entry_type"/>
+                            <field name="resource_type"/>
+                            <field name="resource_name"/>
+                            <field name="start_datetime"/>
+                            <field name="end_datetime"/>
+                            <field name="break_reason"/>
+                            <field name="unit_amount" string="Duration" widget="float_time"/>
+                            <field name="project_id" invisible="1"/>
+                        </tree>
+                    </field>
+
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                    <page string="Efficiency">
+                        <field name="effect_ids">
+                            <tree editable="top" create="false">
+                                <field name="finish_date"/>
+                                <field name="resource_id"/>
+                                <field name="plan_stu" total="sum"/>
+                                <field name="actual_time" total="sum"/>
+<!--
+                                <field name="productivity"/>
+-->
+                                <field name="efficiency"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+        </field>
+    </record>
+    <record id="task_type_edit_inherit" model="ir.ui.view">
+        <field name="name">Project Task Type Inherit</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_edit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/group/group[1]/field[@name='mail_template_id']" position="after">
+                <field name="stage_display_name"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

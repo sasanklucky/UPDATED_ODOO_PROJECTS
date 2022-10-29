@@ -1,0 +1,139 @@
+@dashboard-bg-color: white;
+
+.o_kanban_view.o_kanban_dashboard.o_salesteam_kanban
+{
+    @sale-table-spacing: 10px;
+    }
+
+.o_kanban_view.o_kanban_dashboard.o_salesteam_kanban.o_kanban_record {
+    min-height: 250px;
+       }
+.o_kanban_view.o_kanban_dashboard.o_salesteam_kanban.o_kanban_record @media (min-width: @screen-sm-min) {
+    min-width: 420px;
+       }
+.o_kanban_view.o_kanban_dashboard.o_salesteam_kanban.o_kanban_nocontent .o_ars_sales_dashboard {
+       margin: 0;
+       }
+
+
+
+    .o_ars_sales_dashboard {
+        margin: -4px -12px 4px;
+        padding: 10px 6px;
+
+        background-color: white;
+        position: relative;
+        }
+
+        .o_ars_sales_dashboard.o_welcome_message {
+            width: 100%;
+            .o-position-absolute(@left: 0, @top: 0);
+            .o-flex-display();
+            .o-justify-content(center);
+
+            .o_welcome_image {
+                padding: 20px;
+            }
+            }
+            .o_ars_sales_dashboard.o_welcome_content > a {
+                color: white;
+                display: inline-block;
+            }
+
+
+        .o_kanban_view.o_kanban_dashboard.o_salesteam_kanban.o_ars_sales_dashboard > o_demo {
+            opacity: 0.07;
+        }
+
+        .o_ars_dashboard_action {
+
+            text-overflow: ellipsis !important;
+            display: block;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+            position: relative;
+
+        }
+
+        .o_ars_sales_dashboard > div {
+            display: inline-block;
+            vertical-align: top;
+            width: 49%;
+            @media (min-width: @screen-sm-min) {
+                width: 50%;
+            }
+            }
+
+            .o_ars_sales_dashboard > div > table {
+                margin-bottom: 0;
+                table-layout: fixed;
+                border-spacing: 10px 0px;
+                border-collapse: separate;
+                }
+
+                .o_ars_sales_dashboard > div > table > tbody > tr > td {
+                    vertical-align: middle;
+                    text-align: center;
+                    border-top: 1px solid white;
+                    width: 25%;
+
+                    height: 33px;
+                    }
+
+                    .o_ars_sales_dashboard > div > table > tbody > tr > td span {
+                        display: inline;
+                        text-overflow:ellipsis;
+                    }
+
+                    .o_ars_sales_dashboard > div > table > tbody > tr > td a:hover {
+                        text-decoration: none;
+                    }
+
+                     .o_main_dashboard {
+                        background-color: #8167AD;
+                        }
+                       .o_main_dashboard:hover {
+                            background-color: #3c3b90;
+                        }
+                        .o_main_dashboard a {
+                            color: white;
+                        }
+                     .o_text_dash {
+
+                        text-align: left !important;
+
+                    }
+                     .o_warning_dashbord{
+                        background-color: orange;
+                        }
+                        .o_warning_dashbord:hover {
+                            background-color: #c89a46;
+                        }
+                        .o_warning_dashbord a {
+                            color: white;
+                        }
+
+                    .o_secondary_dashboard {
+                        background-color: #e2e2e0;
+                        }
+                        .o_secondary_dashboard:hover {
+                            background-color: darken(#e2e2e0, 10%);
+                        }
+                        .o_ars_sales_dashboard > div > table > tbody > tr > td .o_secondary_dashboard a {
+                            color: black;
+                        }
+
+                    .o_ars_sales_dashboard > div > table > tbody > tr > td .o_highlight, .o_highlight {
+                        font-size: 20px;
+                    }
+                    .o_ars_sales_dashboard > div > table > tbody > tr > td .o_text {
+                        text-align: left;
+                    }
+
+
+
+
+

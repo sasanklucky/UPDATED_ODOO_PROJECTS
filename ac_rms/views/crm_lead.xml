@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="crm_case_form_view_leads_inherit_again" model="ir.ui.view">
+            <field name="name">CRM Lead Inherits</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="ars_after_sales.crm_case_form_view_oppor_inherit"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="main_process_id" invisble="1"/>
+                    <field name="cre_work_flow" invisible="1"/>
+                    <field name="sa_work_flow" invisible="1"/>
+                </field>
+                <xpath expr="//form/header/button[@name='action_set_won']" position="after">
+                    <button class="oe_highlight" name="action_start" groups="ac_rms.group_cre"
+                    string="Start" type="object" attrs="{'invisible': [('cre_work_flow', 'in', ('No Operation','Finish','Operation Done'))]}"
+                    />
+                    <button class="oe_highlight" name="action_finish"
+                        string="Finish" type="object" attrs="{'invisible': [('cre_work_flow', 'in', ('No Operation','Start','Operation Done'))]}"
+                        />
+
+                    <button class="oe_highlight" name="action_start"  groups="ac_rms.group_sa"
+                        string="Start" type="object" attrs="{'invisible': ['|',('sa_work_flow', 'in', ('No Operation','Finish','Operation Done','SA Delivery Process'))]}"
+                        />
+                    <button class="oe_highlight" name="action_finish"
+                        string="Finish" type="object" attrs="{'invisible': ['|',('sa_work_flow', 'in', ('No Operation','Start','Operation Done','Ready for Delivery'))]}"
+                        />
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

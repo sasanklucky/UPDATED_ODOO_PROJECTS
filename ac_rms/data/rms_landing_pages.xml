@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       <!--RMS After sales Landing Page-->
+       <record id="rms_after_sale_url1" model="landing.url">
+           <field name="name">CRM After.S - CRE Dashboard(RMS)</field>
+           <field name="url">web#action=ac_rms.some-report-client-action_exm</field>
+       </record>
+       <record id="rms_after_sale_url2" model="landing.url">
+            <field name="name">CRE After.S -  CRE Dashboard(RMS)</field>
+            <field name="url">web#action=ac_rms.some-report-client-action_exm</field>
+        </record>
+        <record id="rms_after_sale_url3" model="landing.url">
+            <field name="name">Sales Advisor - SA Dashboard(RMS)</field>
+            <field name="url">web#action=ac_rms.some-report-client-action_sa</field>
+        </record>
+        <!--<record id="rms_after_sale_url4" model="landing.url">
+            <field name="name">Service Manager - Dashboard(RMS)</field>
+            <field name="url"></field>
+        </record>-->
+        <record id="rms_after_sale_url5" model="landing.url">
+            <field name="name">Parts Manager  - Inventory (Dashboard)(RMS)</field>
+            <field name="url">web#action=stock.stock_picking_type_action</field>
+        </record>
+        <record id="rms_after_sale_url6" model="landing.url">
+            <field name="name">Parts Assistance - Inventory (Dashboard)(RMS)</field>
+            <field name="url">web#action=stock.stock_picking_type_action</field>
+        </record>
+        <record id="rms_after_sale_url7" model="landing.url">
+            <field name="name">Workshop Controller - Resource Calender(RMS)</field>
+            <field name="url">/resource_planner</field>
+        </record>
+       <record id="rms_after_sale_url8" model="landing.url">
+           <field name="name">Technician - Resource Calender(RMS)</field>
+           <field name="url">/resource_planner</field>
+       </record>
+       <!--<record id="rms_after_sale_url9" model="landing.url">
+           <field name="name">FI - Dashboard(RMS)</field>
+           <field name="url">web#action=ars_after_sales.crm_lead_all_leads_inherit</field>
+       </record>-->	
+       <record id="rms_after_sale_url10" model="landing.url">
+            <field name="name">Cashier - Invoicing (Customer Invoices)(RMS)</field>
+            <field name="url">web#action=account.action_invoice_tree1</field>
+       </record>
+       <record id="rms_after_sale_url11" model="landing.url">
+           <field name="name">Finance Manager - Invoicing (Customer Invoices)(RMS)</field>
+           <field name="url">web#action=account.action_invoice_tree1</field>
+       </record>
+    </data>
+</odoo>

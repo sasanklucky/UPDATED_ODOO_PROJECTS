@@ -1,0 +1,24 @@
+<odoo>
+  <data>
+    <record id="invoice_form_sales_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
+                    <field name="vin_no"/>
+               </xpath>
+            </field>
+    </record>
+
+    <!-- Sellable Products action form view change -->
+    <record model="ir.actions.act_window" id="account.product_product_action_sellable">
+        <field name="view_ids"
+               eval="[(5, 0, 0),
+                  (0, 0, {'view_mode': 'tree', 'view_id': ref('account.product_product_view_tree')}),
+                  (0, 0, {'view_mode': 'form', 'view_id': ref('ars_vehicle_sales.product_template_form_view_inherit1')})]"/>
+    </record>
+
+
+  </data>
+</odoo>

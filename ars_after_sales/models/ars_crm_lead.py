@@ -1,0 +1,710 @@
+from odoo import models, fields, api,_,SUPERUSER_ID
+from odoo.addons import decimal_precision as dp
+from openerp.exceptions import UserError, ValidationError
+from openerp.exceptions import except_orm, Warning, RedirectWarning
+from lxml import etree
+
+
+class ARS_crm_lead(models.Model):
+    _inherit = "crm.lead"
+
+    # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
+    #                           default=lambda self: self.env.user)
+
+    @api.model
+    def default_team_id(self):
+        # channel = self.env['res.users'].browse(self.env.uid).sale_team_id
+        return self.env['res.users'].browse(self.env.uid).sale_team_id
+
+
+    # @api.model
+    # def default_saleperson(self):
+    #     ids = []
+    #     res = self.env['res.users'].search([])
+    #     hr_category = self.env['hr.employee.category'].search([('id', '=', 1)])
+    #     hr_employee = self.env['hr.employee'].search([('category_ids', 'in', hr_category.ids)])
+    #     for record in hr_employee:
+    #         if hr_employee:
+    #             ids.append(record.user_id.id)
+    #     return [('id', 'in', ids)]
+
+    @api.multi
+    def changeservice(self):
+        userid = self.env.user
+        if userid.sale_team_id.team_type == 'after_sales':
+            return 'Service'
+
+
+    # @api.one
+    # def _get_filter(self):
+    #     ids = []
+    #     res = self.env['res.users'].search([])
+    #     hr_category = self.env['hr.employee.category'].search([('id', '=', 3)])
+    #     for record in res:
+    #         hr_employee = self.env['hr.employee'].search([('user_id', '=', record.id), ('category_ids', 'in', hr_category.ids)])
+    #         if hr_employee:
+    #             ids.append(record.id)
+    #     return [('id', 'in', ids)]
+    @api.depends('order_ids')
+    def _compute_sale_amount_total_estimate(self):
+        for lead in self:
+            total = 0
+            nbr = 0
+            for order in lead.order_ids:
+                if order.state in ('draft', 'sent'):
+                    nbr += 1
+                if order.state not in ('draft','so','sent', 'cancel'):
+                    total += 1
+            lead.sale_amount_total_estimation = total
+            lead.sale_number_estimation = nbr
+
+    @api.depends('order_ids')
+    def _compute_sale_amount_before_estimate(self):
+        for lead in self:
+            total = 0
+            for order in lead.order_ids:
+                if order.state not in ('draft','done','sale', 'cancel'):
+                    total += 1
+            lead.sale_number_before_estimation = total
+
+
+
+
+    name = fields.Char('Opportunity',required=True, index=True,default=changeservice)
+    team_id = fields.Many2one('crm.team', string='Sales Channel', oldname='section_id',
+                              default=default_team_id,index=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales channel.')
+    vehicle_line = fields.One2many('crm.lead.line','lead_order_id', string='Vehicle Lines')
+    regn_no = fields.Many2one('fleet.vehicle')
+    vin_no = fields.Char(help='vin no changes')
+    vehicle_model = fields.Many2one('product.product', string="Vehicle Model")
+    vehicle_model_char = fields.Char(string="Vehicle Model")
+    appo_date = fields.Datetime(string="Appointment Date")
+    delivery_time = fields.Datetime(string="Delivery Date")
+    kilometer_in = fields.Integer(string="Kilometer")
+    sec_at_gatetime = fields.Datetime(string="At Gate Time")
+    customer_voice = fields.One2many("customer.voice",'customer_voice_id')
+    count_vehicle = fields.Integer()
+    html = fields.Html()
+    type_lead = fields.Selection([
+        ('appointment', 'Appointment'),
+        ('walkin', 'Walk In'),
+    ], string='Type',default='appointment')
+    user_id = fields.Many2one('res.users',default=False)
+    hr_emp_cat = fields.Many2one('hr.employee.category')
+    resource_id_lead = fields.Many2one('resource.resource', string="Service Advisor")
+    sale_number_estimation = fields.Integer(compute='_compute_sale_amount_total_estimate', string="Number of Estimations")
+    sale_amount_total_estimation = fields.Integer(compute='_compute_sale_amount_total_estimate', string="Sum of Orders",help="Untaxed Total of Confirmed Orders")
+    # is_aftersale = fields.Boolean(default=False)
+    # instructions = fields.Many2one('instructions')
+    sale_number_before_estimation = fields.Integer(compute='_compute_sale_amount_before_estimate',
+                                            string="Number of Estimations")
+    delivery_service_advisor = fields.Many2one('res.users')
+    time_at_gate = fields.Date(string="Gate Time")
+    is_estimation = fields.Char(default='No Estimation')
+    crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        user_team_id = self.env.user.sale_team_id.id
+        team_id = user_team_id
+        # context = dict(self.env.context)
+        # context['default_team_id'] = team_id
+        if team_id:
+            search_domain = ['|', ('id', 'in', stages.ids), '|', ('team_id', '=', False), ('team_id', '=', team_id)]
+        else:
+            search_domain = ['|', ('id', 'in', stages.ids), ('team_id', '=', False)]
+
+        # perform search
+        stage_ids = stages._search(search_domain, order=order, access_rights_uid=SUPERUSER_ID)
+        return stages.browse(stage_ids)
+
+    # @api.onchange('user_id')
+    # def in_advisor_change_crmlead(self):
+    #     if self.user_id.id:
+    #         self.user_id = self.user_id.id
+    #     else:
+    #         self.user_id = False
+
+
+    @api.multi
+    @api.onchange('resource_id_lead')
+    def resource_map(self):
+        self.user_id = self.resource_id_lead.user_id.id
+
+    #Crm Menu - On Click Of New Qutation Button In Opportunity Form View
+    @api.multi
+    def get_prod_action(self):
+        if not self.partner_id:
+            raise UserError(_('Please Enter The Customer Name'))
+        orderid = self.env['sale.order']
+        orderline = self.env['sale.order.line']
+        action_rec = self.env.ref('sale_crm.sale_action_quotations_new')
+        for record in self:
+            if action_rec:
+                action = action_rec.read([])[0]
+                lines = []
+                for vehicle in record.vehicle_line:
+                    lines.append((0,0,{'product_id': vehicle.product_id.id,'name': vehicle.name}))
+                order_id = orderid.create({'opportunity_id':self.id,
+                                           'user_id': record.user_id.id,
+                                           'partner_id':record.partner_id.id,
+                                           'order_line':lines,'mobile':self.mobile,'email':self.email_from})
+                action['res_id'] = order_id.id
+                return action
+
+    #After Sales Menu - On Click Of New Estimation Button In Appointment Form View
+    @api.multi
+    def action_set_new_appointment(self):
+        if not self.partner_id:
+            raise UserError(_('Please Enter The Customer Name'))
+        orderid = self.env['sale.order']
+        action_rec = self.env.ref('ars_after_sales.sale_action_quotations_new1')
+        view = self.env.ref('ars_after_sales.view_order_form_inherit')
+        for record in self:
+            record.is_estimation = 'Estimation'
+            if action_rec:
+                action = action_rec.read([])[0]
+                voiceline = []
+                order_line = []
+                cal_obj = self.env['calendar.event'].search([('res_id','=',record.id)],limit=1)
+                for voice in record.customer_voice:
+                    voiceline.append((0,0,{'name': voice.name,'instructions': voice.instructions.id}))
+                    count = 0
+                    cust_voices = voice.instructions.order_line
+                    for cust_voice in cust_voices:
+                        data = self.env['sale.order']._prepare_so_line(cust_voice, self.env['sale.order'].order_line, count ,record.partner_id.id)
+                        order_line.append((0, 0, data))
+                        count += 1
+                order_id = orderid.create({'opportunity_id': self.id,
+                                           'partner_id': record.partner_id.id,
+                                            'customer_voice_sale':voiceline,
+                                            'appointment_date':record.appo_date,
+                                            'delivery_date':record.delivery_time,
+                                            'mileage_in':record.kilometer_in,
+                                            'doc_type':record.type_lead,
+                                            'vin_no':record.vin_no,
+                                            'regn_no':record.regn_no.id,
+                                            'user_id':record.user_id.id,
+                                            'model':record.vehicle_model.id,
+                                            'order_line':order_line,
+                                            'mobile':record.mobile,
+                                            'email':record.email_from,
+                                            # 'main_process_id':record.main_process_id.id,
+                                            #'cre_work-_flow':record.cre_work_flow,
+                                            #'sa_work_flow':record.sa_work_flow,
+                                           # 'gate_in_time':record.sec_at_gatetime
+                                           })
+                # di = {'record_id':record,'order_id':order_id}
+
+                sale_msg_id = self.env['mail.message'].search([('res_id', '=', order_id.id)],limit=1)
+                sale_msg_id.active = False
+                values = {}
+                msg = self.env['mail.message'].sudo().search([('res_id', '=', record.id)])
+                sort_msg = msg.sorted(key=lambda r: r.id)
+                for msg_id in sort_msg:
+                    track_msg = self.env['mail.tracking.value'].search([('mail_message_id', '=', msg_id.id),('new_value_char','not in',[record.main_process_id.name])])
+                    values['res_id'] = order_id
+                    values['model'] = 'sale.order'
+                    msg_log = msg_id.copy(default=values).id
+                    msg_values = {}
+                    msg_values['mail_message_id'] = msg_log
+                    for track_msg_id in track_msg:
+                        track_msg_log = track_msg_id.copy(default=msg_values).id
+                # action['view_id'] = view.id
+                action['res_id'] = order_id.id
+                return action
+
+    @api.model
+    def create(self, vals):
+        con = self.env.context
+        partner_id = vals.get('partner_id')
+        if partner_id:
+            partner = self.env['res.partner'].browse(partner_id)
+            partner_name = partner.parent_id.name
+            if not partner_name and partner.is_company:
+                partner_name = partner.name
+            vals.update({'partner_name': partner_name,
+                         'contact_name': partner.name if not partner.is_company else False,
+                         'title': partner.title.id,
+                         'street': partner.street,
+                         'street2': partner.street2,
+                         'city': partner.city,
+                         'state_id': partner.state_id.id,
+                         'country_id': partner.country_id.id,
+                         'email_from': partner.email,
+                         'phone': partner.phone,
+                         'mobile': partner.mobile,
+                         'zip': partner.zip,
+                         'function': partner.function,
+                         'website': partner.website,
+
+                        })
+            if vals.get('product_id'):
+                description = self.env['product.product'].browse(int(vals.get('product_id'))).name
+                vals.update({'vehicle_line': [(0, 0, {'product_id': vals.get('product_id'), 'name': description})]})
+            if vals.get('regn_no'):
+                customer_details = self.env['fleet.vehicle'].search(
+                    [('id', '=', vals.get('regn_no'))])
+                model_sn = customer_details.mvariant_id.id
+                vals.update({'vehicle_model':model_sn})
+
+
+        return super(ARS_crm_lead, self).create(vals)
+
+
+    #Appointment stage id default set in 'Service Due'
+    def _default_stage_id(self):
+        team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
+        userid = self.env.user
+        stage = self._stage_find(team_id=team.id, domain=[('fold', '=', False), ('name', '=', 'New')]).id
+        if userid.sale_team_id.team_type == 'after_sales':
+            companyid = self.env.user.company_id
+            if companyid.team_stage_id.id:
+                stage = companyid.team_stage_id.id
+        return stage
+
+
+    #service advisor field bydefault blank
+    # @api.onchange('user_id')
+    # def _onchange_user_id(self):
+    #     res = super(ARS_crm_lead, self)._onchange_user_id()
+    #     values = {
+    #         'user_id': ''
+    #     }
+    #     self.update(values)
+
+
+    @api.multi
+    @api.onchange('partner_id')
+    def appointment_change(self):
+        partner = False
+        if self.phone and not self.partner_id.id:
+            partner = self.env['res.partner'].search([('phone', '=', self.phone)])
+
+        if self.partner_id.id or partner:
+            if not partner:
+                partner = self.partner_id
+            if partner:
+                customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', partner.id)])
+                if len(customer_details) == 1:
+                    vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+                    self.count_vehicle = len(customer_details)
+                    self.partner_id = customer_details.driver_id.id
+                    self.phone = customer_details.driver_id.phone
+                    self.regn_no = customer_details.id
+                    self.vin_no = customer_details.vin_sn
+                    self.vehicle_model = customer_details.mvariant_id.id
+                    self.vehicle_model_char = customer_details.mvariant_id.name
+                    self.kilometer_in = customer_details.odometer
+                # if len(customer_details) != 1:
+                #     lot_pro_id = []
+                #     for cus in customer_details:
+                #         vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)])
+                #         lot_pro_id.append(vin_no_details.id)
+                #     self.partner_id = self.partner_id.id
+                #     self.phone = self.partner_id.phone or False
+                #     multiple_regno = {}
+                #     multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)],
+                #                                 'vin_no': [('id', '=', customer_details.ids)]}
+                #     return multiple_regno
+                else:
+                    lot_pro_id = []
+                    # self.regn_no = True
+                    # self.vin_no = False
+                    # self.vehicle_model = False
+                    for cus in customer_details:
+                        vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)])
+                        lot_pro_id.append(vin_no_details.id)
+                    self.partner_id = self.partner_id.id
+                    self.phone = self.partner_id.phone or False
+                    # if self.regn_no == False:
+                    self.regn_no = False
+                    self.vin_no = False
+                    self.vehicle_model = False
+                    self.vehicle_model_char = False
+                    multiple_regno = {}
+                    # multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)], 'vin_no': [('id', '=', customer_details.ids)]}
+                    multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)]}
+                    return multiple_regno
+        # if self.regn_no:
+        #     customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.regn_no.license_plate)])
+        #     vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+        #     self.count_vehicle = len(customer_details)
+        #     if len(customer_details) == 1:
+        #         self.partner_id = customer_details.driver_id.id
+        #         self.phone = customer_details.driver_id.phone
+        #         self.regn_no = customer_details.id
+        #         self.vin_no = vin_no_details.id
+        #         self.vehicle_model = customer_details.model_id.id
+        # if self.vin_no:
+        #     customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no.name)])
+        #     self.count_vehicle = len(customer_details)
+        #     if len(customer_details) == 1:
+        #         self.partner_id = customer_details.driver_id.id
+        #         self.phone = customer_details.driver_id.phone
+        #         self.regn_no = customer_details.id
+        #         self.vin_no = self.vin_no.id
+        #         self.vehicle_model = customer_details.model_id.id
+
+    @api.multi
+    @api.onchange('regn_no')
+    def regn_change(self):
+        if self.partner_id.id:
+            customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            if len(customer_details) > 1:
+                multiple_regno = {}
+                vehicle_obj = self.env['fleet.vehicle'].search([('id', '=', self.regn_no.id)])
+                self.vin_no = vehicle_obj.vin_sn
+                self.vehicle_model = vehicle_obj.mvariant_id.id
+                self.vehicle_model_char = vehicle_obj.mvariant_id.name
+                self.kilometer_in = vehicle_obj.odometer
+                multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)]}
+                return multiple_regno
+        if self.regn_no.license_plate != '/':
+            customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.regn_no.license_plate)])
+
+            if len(customer_details) == 1:
+                # vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+                self.count_vehicle = len(customer_details)
+                self.partner_id = customer_details.driver_id.id
+                self.phone = customer_details.driver_id.phone
+                self.regn_no = customer_details.id
+                self.vin_no = customer_details.vin_sn
+                #self.vin_no = customer_details.vin_sn
+                self.vehicle_model = customer_details.mvariant_id.id
+                self.vehicle_model_char = customer_details.mvariant_id.name
+                self.kilometer_in = customer_details.odometer
+
+
+
+    @api.multi
+    @api.onchange('vin_no')
+    def vinno_change(self):
+        if self.vin_no:
+            customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)])
+            self.count_vehicle = len(customer_details)
+            if len(customer_details) == 1:
+                self.partner_id = customer_details.driver_id.id
+                self.phone = customer_details.driver_id.phone
+                self.regn_no = customer_details.id
+                self.vin_no = self.vin_no
+                self.vehicle_model = customer_details.mvariant_id.id
+                self.vehicle_model_char = customer_details.mvariant_id.name
+
+
+
+    @api.multi
+    @api.onchange('mobile')
+    def mobile_change(self):
+        if self.mobile:
+            res_details = self.env['res.partner'].search([('mobile', '=', self.mobile)])
+            if len(res_details) == 1:
+                self.partner_id = res_details.id
+            else:
+                for res in res_details:
+                    self.partner_id = res.id
+                # customer_details = self.env['fleet.vehicle'].search([('driver_id', '=',res_details.id)])
+                # self.count_vehicle = len(customer_details)
+                # if len(customer_details) == 1:
+                #     self.partner_id = customer_details.driver_id.id
+
+
+
+    #onchange of regn no
+#     @api.multi
+#     @api.onchange('regn_no')
+#     def regn_change(self):
+#         customer_details = self.env['stock.production.lot'].search([('id', '=', self.regn_no.id)])
+#         self.vin_no = customer_details.name
+#         self.vehicle_model = customer_details.product_id.id
+
+    #onchange of regn no
+    # @api.multi
+    # @api.onchange('regn_no')
+    # def regn_change(self):
+    #     customer_details = self.env['stock.production.lot'].search([('id', '=', self.regn_no.id)])
+    #     self.vin_no = customer_details.name
+    #     self.vehicle_model = customer_details.product_id.id
+
+    #Check appointment customer having how much count of vehicle(Regn No) in Customer table
+    @api.multi
+    def check_regn(self):
+        self.ensure_one()
+        if self.partner_id.id:
+            customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            TransientModel = self.env["check.regn"]
+            list_view = self.env.ref('ars_after_sales.regn_popup_tree')
+            customer_regn = []
+            trans_id = []
+            for customer in customer_details:
+                customer_regn.append(customer.license_plate)
+                customer_regn.append(customer.vin_sn)
+                customer_regn.append(customer.model_id.name)
+                vals = {
+                        'regi_no':customer.license_plate,'vin':customer.vin_sn,'model':customer.model_id.name
+                       }
+                totalid = TransientModel.create(vals)
+                trans_id.append(totalid.id)
+            if len(trans_id) > 1:
+                return {
+                        'name': _('Vehicle'),
+                        'res_model': 'check.regn',
+                        'view_id': list_view.id,
+                        'views': [(list_view.id, 'tree'), ],
+                        'domain': [('id', 'in', trans_id)],
+                        'type': 'ir.actions.act_window',
+                        'target': 'new'
+                    }
+            else:
+                return False
+
+    @api.multi
+    def redirect_opportunity_view(self):
+        userid = self.env.user
+        form_view = False
+        if userid.sale_team_id.team_type == 'sales':
+            form_view = self.env.ref('crm.crm_case_form_view_oppor')
+        elif userid.sale_team_id.team_type == 'after_sales':
+            form_view = self.env.ref('ars_after_sales.crm_case_form_view_oppor_inherit')
+        # tree_view = self.env.ref('crm.crm_case_tree_view_oppor')
+        res = super(ARS_crm_lead, self).redirect_opportunity_view()
+        res.get('views')[0] = (form_view.id, 'form')
+        return res
+
+    #Appointment Create & Edit Inherited
+    @api.multi
+    def edit_dialog(self):
+        userid = self.env.user
+        if userid.sale_team_id.team_type == 'sales':
+            form_view = self.env.ref('crm.crm_case_form_view_oppor')
+        elif userid.sale_team_id.team_type == 'after_sales':
+            form_view = self.env.ref('ars_after_sales.crm_case_form_view_oppor_inherit')
+        return {
+            'name': _('Opportunity'),
+            'res_model': 'crm.lead',
+            'res_id': self.id,
+            'views': [(form_view.id, 'form'), ],
+            'type': 'ir.actions.act_window',
+            'target': 'inline'
+        }
+
+
+    # @api.multi
+    # def write(self, vals):
+    #     sale_order_obj = self.env['sale.order'].search([('opportunity_id','=',self.id)])
+    #     if sale_order_obj:
+    #         for sale_id in sale_order_obj:
+    #             if vals.get('main_process_id'):
+    #                 sale_id.main_process_id = vals.get('main_process_id')
+    #     return super(ARS_crm_lead, self).write(vals)
+
+class CRMLeadStage(models.Model):
+    _name = "crm.lead.stage"
+
+    name = fields.Char(string="Name")
+
+class ARS_crm_lead_line(models.Model):
+    _name = "crm.lead.line"
+
+    lead_order_id = fields.Many2one('crm.lead', string='Lead Order Lines')
+    name = fields.Text(string='Description', required=True)
+    product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
+                                 change_default=True, ondelete='restrict', required=True)
+    @api.multi
+    @api.onchange('product_id')
+    def lead_product_id_change(self):
+        self.name = self.product_id.name
+
+
+class ARS_customer_voice(models.Model):
+    _name = "customer.voice"
+
+    cust_sale = fields.Many2one('sale.order')
+    order_line = fields.Many2one('sale.order.line', 'Order', ondelete='cascade')
+    name = fields.Char(string="Customer Voice")
+    instructions = fields.Many2one('instructions', string="Instructions", ondelete='cascade')
+    customer_voice_id = fields.Many2one('crm.lead', string='Lead Customer Voice')
+
+    # @api.multi
+    # def unlink(self):
+    #     activities = self.search([('instructions', '=', self.instructions.id)])
+    #     if len(activities) == 1:
+    #         self.new_lines.unlink()
+    #     return super(ARS_customer_voice, self).unlink()
+
+class ARS_instructions(models.Model):
+    _name = "instructions"
+
+    order_id = fields.Many2one('sale.order', 'Order', ondelete='cascade')
+    name = fields.Char()
+    description = fields.Char()
+    order_line = fields.One2many('sale.order.line', 'instruction_id', ondelete='cascade')
+
+    # @api.multi
+    # def unlink(self):
+    #     activities = self.search([('order_line', '=', self.order_line.id)])
+    #     if len(activities) == 1:
+    #         self.new_lines.unlink()
+    #     return super(ARS_instructions, self).unlink()
+
+
+class ARSSaleOrderLine(models.Model):
+    _inherit = "sale.order.line"
+
+    instruction_id = fields.Many2one('instructions')
+    lead_order_id = fields.Many2one('crm.lead',string='Lead Order Lines')
+    order_id = fields.Many2one('sale.order', string='Order Reference', required=False, ondelete='cascade', index=True,
+                               copy=False)
+    # price_unit = fields.Float(related='product_id.list_price', string="Price")
+    category = fields.Many2one('order.line.category', string="Category")
+
+
+    @api.multi
+    @api.onchange('product_id')
+    def product_id_change(self):
+        res = super(ARSSaleOrderLine, self).product_id_change()
+        if self.env.context.get('counter_parts'):
+            return {'domain': {'product_id': [('catalog_type.name','=', 'Parts')]}}
+
+
+class SaleOrderCategory(models.Model):
+    _name = 'order.line.category'
+
+    name = fields.Char()
+    order_line = fields.Many2one('sale.order.line', readonly=1)
+
+class ARS_aftersale_lead2opportunity(models.TransientModel):
+
+    _inherit = 'crm.lead2opportunity.partner'
+    aftersale_opp = fields.Boolean(default = False)
+    resource_id_opportunity = fields.Many2one('resource.resource', string="Service Advisor")
+
+    @api.multi
+    @api.onchange('resource_id_opportunity')
+    def resource_map(self):
+        self.user_id = self.resource_id_opportunity.user_id.id
+
+    # @api.onchange('team_id')
+    # def change_saleperson(self):
+    #     print(self.team_id.name)
+    #     if self.team_id.team_type == "after_sales":
+    #         self.aftersale_opp = True
+    #     else :
+    #         self.aftersale_opp = False
+
+    # @api.onchange('resource_id_opportunity')
+    # def saname_change(self):
+    #     act = self.env["crm.lead"]
+    #     act_id = act.browse(self.env.context.get('active_id'))
+    #     self.resource_id_opportunity = act_id.resource_id_lead.id
+        # print(self.resource_id_opportunity)
+            
+            
+            
+class customer_regn(models.Model):
+    _name = 'customer.regn'
+    
+    name = fields.Char()
+
+class ARS_CalendarEvent(models.Model):
+    _inherit = 'calendar.event'
+
+    @api.model
+    def create(self, vals):
+        event = super(ARS_CalendarEvent, self).create(vals)
+        crm_id = False
+        if vals.get('activity_ids'):
+            crm_res_id = [crm_id for crm_id in vals.get('activity_ids') if vals.get('activity_ids')]
+            if crm_id:
+                lead_res_id = crm_id[2].get('res_id')
+                if self.env.context.get('active_model') == 'crm.lead':
+                    crm_obj = self.env['crm.lead'].search([('id', '=', lead_res_id)], limit=1)
+                    crm_obj.appo_date = vals.get('start')
+                elif self.env.context.get('active_model') == 'sale.order':
+                    sale_obj = self.env['sale.order'].search([('id', '=', lead_res_id)], limit=1)
+                    sale_obj.appointment_date = vals.get('start')
+        return event
+
+    @api.model
+    def default_get(self, fields):
+        defaults = super(ARS_CalendarEvent, self).default_get(fields)
+        if self.env.context.get('active_model') == 'sale.order':
+            model = self.env['ir.model'].search([('model', '=', 'sale.order')]).id
+            defaults['res_model_id'] = model
+            del defaults['opportunity_id']
+        return defaults
+
+
+class ARS_ResUsers(models.Model):
+    _inherit = 'res.users'
+
+    salesperson = fields.Boolean()
+    serviceadvisor = fields.Boolean()
+    # company = fields.Char()
+    # phone = fields.Char()
+
+class Lead2OpportunityPartner(models.TransientModel):
+    _inherit = 'crm.lead2opportunity.partner'
+    _description = 'Lead To Opportunity Partner'
+
+    @api.multi
+    def action_apply(self):
+        """ Convert lead to opportunity or merge lead and opportunity and open
+            the freshly created opportunity view.
+        """
+        present_partner = 0
+        multiple_regno = {}
+        self.ensure_one()
+        values = {
+            'team_id': self.team_id.id,
+        }
+
+        if self.partner_id:
+            values['partner_id'] = self.partner_id.id
+            customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            if len(customer_details)==1:
+                present_partner = 1
+            else :
+                present_partner = 10
+
+        if self.name == 'merge':
+            leads = self.with_context(active_test=False).opportunity_ids.merge_opportunity()
+            if not leads.active:
+                leads.write({'active': True, 'activity_type_id': False, 'lost_reason': False})
+            if leads.type == "lead":
+                values.update({'lead_ids': leads.ids, 'user_ids': [self.user_id.id]})
+                self.with_context(active_ids=leads.ids)._convert_opportunity(values)
+            elif not self._context.get('no_force_assignation') or not leads.user_id:
+                values['user_id'] = self.user_id.id
+                leads.write(values)
+        else:
+            leads = self.env['crm.lead'].browse(self._context.get('active_ids', []))
+            # customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            # print (customer_details+"---------------------------------------------------------")
+            values.update({'lead_ids': leads.ids, 'user_ids': [self.user_id.id]})
+            self._convert_opportunity(values)
+            if present_partner == 1:
+                vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+                leads.write({'regn_no':customer_details.id,
+                             'vin_no':customer_details.vin_sn,
+                             'vehicle_model':customer_details.mvariant_id.id,
+                             'kilometer_in':customer_details.odometer})
+            # elif present_partner == 10:
+            #     multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)],'vin_no': [('id', '=', customer_details.ids)]}
+
+
+        return leads[0].redirect_opportunity_view()
+
+
+
+
+        
+
+
+
+
+
+
+
+
+

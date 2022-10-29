@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="mail_activity_view_search1" model="ir.ui.view">
+        <field name="name">mail.activity.view.search</field>
+        <field name="model">mail.activity</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_search" />
+        <field name="arch" type="xml">
+          <xpath expr="//filter[@name='activities_upcoming_all']" position="replace">
+            <filter string="Future Activities" name="activities_upcoming_all"
+                        domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
+          </xpath>
+        </field>
+    </record>
+</odoo>

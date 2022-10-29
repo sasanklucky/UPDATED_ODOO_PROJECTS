@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="process_stage_chart">
+        <div>
+            <span
+                style="position: absolute; left: 61%;top: 24%;cursor: pointer; "
+                class="badge"
+                tabindex="0"
+                data-trigger="focus"
+                data-toggle="popover">
+                <t t-esc="count_process"/>
+            </span>
+        </div>
+        <div style="-webkit-transform: rotateX(-45deg) translateZ(6px); font-style: italic;" class="process_class">
+            <t t-if="previous_process">
+                <span class="badge" style="color: grey; background-color: gray;width: 1%;height: 14px;">*</span>
+                <span t-att-title="previous_process"><t t-esc="previous_process"/></span>
+            </t>
+        </div>
+        <div style="-webkit-transform: rotateX(-36deg) translateZ(6px);" class="process_class">
+            <t t-if="current_process">
+                <span class="badge" style="color: #36c036;background-color: #36c036;width: 1%;height: 14px;">*</span>
+                <span t-att-title="current_process"><t t-esc="current_process"/></span>
+            </t>
+        </div>
+        <div style="-webkit-transform: rotateX(-40deg) translateZ(6px); font-style: italic;" class="process_class">
+            <t t-if="after_process">
+                <span class="badge" style="color: orange; background-color: orange;width: 1%;height: 14px;">*</span>
+                <span t-att-title="after_process"><t t-esc="after_process"/></span>
+            </t>
+        </div>
+    </t>
+
+<t t-name="process_stage_popover" >
+    <div class="popover o_org_chart_popup" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>
+</t>
+
+<t t-name="process_stage_popover_content">
+    <table class="main">
+        <tbody>
+            <tr t-foreach="all_stage" t-as="stage" >
+                <td class="bullet">
+                 <!--<t t-esc="stage[0]" t-att-style="'background-color: orange;' if 'stage[2]' else '' "/>-->
+                  <!--<t t-if="stage[2]">-->
+                <!--<t t-if="stage[2]">-->
+                    <!--<span t-esc="stage[0]" style="color:green;"/>-->
+                <!--</t>-->
+                <!--<t t-if=" not stage[2]">-->
+                    <span t-esc="stage[0]"/>
+                <!--</t>-->
+                   <!--</t>-->
+                <table class="border_sub">
+                    <tr t-foreach="stage[1]" t-as="sub_stage">
+                        <td>-
+                            <t t-esc="sub_stage" />
+                        </td>
+                    </tr>
+                </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</t>
+
+    <!--Log DateTime Format Inherited-->
+  <t t-extend="mail.ChatThread.Message">
+    <t t-jquery=".o_mail_timestamp" t-operation="replace">
+        <t t-esc="message.date.format('ddd MMM DD YYYY HH:mm:ss')"/>
+    </t>
+  </t>
+
+  <t t-extend="mail.KanbanActivityDropdown">
+    <t t-jquery=".pull-right" t-operation="replace">
+        <t t-esc=""/>
+        <div class="pull-right">
+            <t t-if="! log.mark_as_done">
+                <t t-if="! log.activity_start">
+                    <span class="o_start_clk btn btn-primary" style="padding: 4px 6px;font-size: 11px;" string='Start' name="start_activity" t-att-data-activity-id="log.id">Start</span>
+                </t>
+                <t t-if="log.activity_start">
+                    <span class="o_finish_clk btn btn-primary" style="padding: 4px 6px;font-size: 11px;" string='Finish' name="finish_activity" t-att-data-activity-id="log.id">Finish</span>
+                </t>
+            </t>
+            <t t-if="log.mark_as_done">
+                <span class="o_mark_as_done o_activity_link o_activity_link_kanban fa fa-check-circle fa-2x mt4" t-att-data-activity-id="log.id" title="Mark as done" />
+            </t>
+        </div>
+    </t>
+  </t>
+
+
+</templates>

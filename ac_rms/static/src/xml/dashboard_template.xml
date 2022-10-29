@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-name="cre_dashboard">
+        <div class="col-xs-12" style="margin-top: 3%;">
+            <div class="col-xs-3" style="margin: 0;padding: 0;">
+                <img src="/ac_rms/static/src/img/PNG.png" style="width:90%"/>
+                <div style="position: absolute;margin-top: -50%;margin-left: 26%;color: white;font-weight:bold;">My Pending Tasks</div>
+                <div style="position: absolute;margin-top: -28%;margin-left: 1%;color: white;font-size: smaller;">Appointment<div class="w3-circle3">0</div></div>
+                <div style="position: absolute;margin-left: 40%;margin-top: -9%;color: white;font-size: smaller;">My Tasks<div class="w3-circle4">0</div></div>
+                <div style="position: absolute;margin-left: 69%;margin-top: -27%;color: white;font-size: smaller;">Walk In<div class="w3-circle2">0</div></div>
+            </div>
+            <div class="col-xs-5" style="margin-left: -3%;margin-top: 1%;">
+                <div style="position: absolute;top: -14%;left: 35%;font-weight: bold;">Status Today</div>
+                <a href="#" id="action_tree">
+                    <img src="/ac_rms/static/src/img/1a.png" href="#" id="action_tree" style="width: 28%;" ><div style="color: white;position: absolute;top: 36%;font-size: smaller;margin-left: 6%;">Appointment<div class="w3-circle5">0</div></div></img>
+                </a>
+                <img src="/ac_rms/static/src/img/1b.png" style="width: 28%;"><div style="color: white;position: absolute;top: 36%;font-size: smaller;margin-left: 34%;">Turnup Till<div class="w3-circle6">0</div></div></img>
+
+                <span>
+                    <img src="/ac_rms/static/src/img/1c.png" style="width: 28%;"><div style="color: white;position: absolute;top: 36%;font-size: smaller;margin-left: 63%;">Walk In<div class="w3-circle7">0</div></div></img>
+                </span>
+                <span>
+                    <img src="/ac_rms/static/src/img/1d.png" style="width: 28%;"><div style="color: white;position: absolute;top: 86%;font-size: smaller;margin-left: 4%;">Delivered Today<div class="w3-circle8">0</div></div></img>
+                </span>
+                <span>
+                    <img src="/ac_rms/static/src/img/1e.png" style="width: 28%;"><div style="color: white;position: absolute;top: 86%;font-size: smaller;margin-left: 31%;">Returned Vehicle<div class="w3-circle9">0</div></div></img>
+                </span>
+                <span>
+                    <img src="/ac_rms/static/src/img/1f.png" style="width: 28%;"><div style="color: white;position: absolute;top: 86%;font-size: smaller;margin-left: 62%;">No Show<div class="w3-circle10">0</div></div></img>
+                </span>
+            </div>
+            <div class="col-xs-3" style="margin-left: -7%;margin-top: 1%;">
+                <div style="margin-left: 32%;position: absolute;top: -14%;font-weight: bold;">Status Till</div>
+                <img src="/ac_rms/static/src/img/2a.png" style="width: 48%;"><div style="color: white;position: absolute;top: 36%;font-size: smaller;margin-left: 10%;">Appointment<div class="w3-circle11">0</div></div></img>
+                <img src="/ac_rms/static/src/img/2b.png"  style="width: 48%;"><div style="color: white;position: absolute;top: 38%;font-size: smaller;margin-left: 46%;">Waiting For Delivery<div class="w3-circle12">0</div></div></img>
+                <img src="/ac_rms/static/src/img/2c.png" style="width: 48%;"><div style="color: white;position: absolute;top: 87%;font-size: smaller;margin-left: 18%;">WIP<div class="w3-circle13">0</div></div></img>
+            </div>
+            <div class="col-xs-1" style="margin-left: -3%;margin-top: 1%;">
+                <img src="/ac_rms/static/src/img/3a.png" style="width: 191%;"><div style="color: white;position: absolute;top: 73%;font-size: smaller;margin-left: 28%;width: 100%;font-weight: bold;">Quick Link<div class="w3-circle14">0</div></div></img>
+            </div>
+            <div class="col-xs-1" style="margin-left: 2%;margin-top: 1%;">
+                <img src="/ac_rms/static/src/img/4a.png" style="width: 191%;"><div style="color: white;position: absolute;top: 77%;font-size: 67%;margin-left: 22%;width: 100%;font-weight: bold;">My Performance<div class="w3-circle15">0</div></div></img>
+            </div>
+        </div>
+    </t>
+
+
+
+
+
+
+
+
+
+
+
+
+</templates>

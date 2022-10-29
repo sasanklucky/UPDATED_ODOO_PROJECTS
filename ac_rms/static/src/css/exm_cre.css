@@ -1,0 +1,421 @@
+
+.w3-circleex{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 10%;
+    margin-top: -27%;
+    margin-left: 11%;
+    position: absolute;
+    height: 156%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 3px;}
+
+.w3-circle3e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 44%;
+    margin-top: -118%;
+    margin-left: 56%;
+    position: absolute;
+    height: 161%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 3px;}
+
+
+.w3-circle4e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 62%;
+    margin-top: -239%;
+    margin-left: 74%;
+    position: absolute;
+    height: 162%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 3px;}
+
+.w3-circlesa{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 10%;
+    margin-top: -15%;
+    margin-left: 10%;
+    position: absolute;
+    height: 158%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 2px;}
+
+.w3-circle5e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 42%;
+    position: absolute;
+    top: -338%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 119%;
+    height: 157%;
+    padding: 3px;}
+
+.w3-circle6e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 50%;
+    position: absolute;
+    top: -340%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 128%;
+    height: 155%;
+    padding: 3px;}
+
+
+.w3-circle7e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 72%;
+    position: absolute;
+    top: -352%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 156%;
+    height: 158%;
+    padding: 3px;}
+
+
+.w3-circle8e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 32%;
+    position: absolute;
+    top: -356%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 104%;
+    height: 157%;
+    padding: 3px;}
+
+.w3-circle9e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 32%;
+    position: absolute;
+    top: -356%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 99%;
+    height: 157%;
+    padding: 3px;}
+
+.w3-circle10e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 59%;
+    position: absolute;
+    top: -356%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 149%;
+    height: 154%;
+    padding: 3px;}
+
+
+.w3-circle11e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 44%;
+    position: absolute;
+    top: -348%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 114%;
+    height: 159%;
+    padding: 2px;}
+
+.w3-circle12e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 27%;
+    position: absolute;
+    top: -352%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 93%;
+    height: 154%;
+    padding: 2px;}
+
+.w3-circle13e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 128%;
+    position: absolute;
+    top: -343%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 228%;
+    height: 163%;
+    padding: 3px;}
+
+
+.w3-circle14e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 23%;
+    position: absolute;
+    top: -378%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 76%;
+    height: 131%;
+    padding: 3px;}
+
+.w3-circle15e{border-radius: 50%;
+    color: #1cc923;
+    background-color: white;
+    width: 22%;
+    position: absolute;
+    top: -401%;
+    text-align: center;
+    font-size: 153%;
+    font-weight: bold;
+    left: 102%;
+    height: 154%;
+    padding: 3px;}
+
+.table-search-sect{
+    position: relative;
+}
+
+.table-search-sect img{
+    height: 20px;
+    float: right;
+    position: relative;
+    right: 42px;
+    top: 27px;
+ }
+
+
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    .w3-circlesa{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 14%;
+    margin-top: -18%;
+    margin-left: 10%;
+    position: absolute;
+    height: 124%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 0px;}
+
+    .w3-circle3e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 45%;
+    margin-top: -100%;
+    margin-left: 37%;
+    position: absolute;
+    height: 134%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 1px;}
+
+    .w3-circle4e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 65%;
+    margin-top: -180%;
+    margin-left: 38%;
+    position: absolute;
+    height: 145%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 1px;}
+
+    .w3-circleex{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 14%;
+    margin-top: -33%;
+    margin-left: 8%;
+    position: absolute;
+    height: 136%;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
+    padding: 1px;}
+
+    .w3-circle5e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 48%;
+    position: absolute;
+    top: -239%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 80%;
+    height: 137%;
+    padding: 1px;}
+
+    .w3-circle8e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 37%;
+    position: absolute;
+    top: -241%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 76%;
+    height: 136%;
+    padding: 1px;}
+
+    .w3-circle9e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 37%;
+    position: absolute;
+    top: -241%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 73%;
+    height: 141%;
+    padding: 1px;}
+
+    .w3-circle6e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 58%;
+    position: absolute;
+    top: -239%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 88%;
+    height: 142%;
+    padding: 2px;}
+
+    .w3-circle7e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 86%;
+    position: absolute;
+    top: -241%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 101%;
+    height: 144%;
+    padding: 1px;}
+
+    .w3-circle10e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 68%;
+    position: absolute;
+    top: -250%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 91%;
+    height: 134%;
+    padding: 1px;}
+
+
+.w3-circle11e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 48%;
+    position: absolute;
+    top: -236%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 80%;
+    height: 138%;
+    padding: 1px;}
+
+.w3-circle12e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 36%;
+    position: absolute;
+    top: -296%;
+    text-align: center;
+    font-size: 134%;
+    font-weight: bold;
+    left: 68%;
+    height: 146%;
+    padding: 2px;}
+
+.w3-circle13e{border-radius: 50%;
+    color: #46713b;
+    background-color: white;
+    width: 149%;
+    position: absolute;
+    top: -247%;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    left: 109%;
+    height: 142%;
+    padding: 1px;}
+
+    .waiting{
+        top: 38% !important;
+        font-size: 69% !important;
+        margin-left: 35% !important;
+        font-weight: bold !important;
+    }
+    .appo_till{
+        top: 36% !important;
+        margin-left: -20% !important;
+    }
+    .walkin{
+        top: 37% !important;
+        margin-left: 64% !important;
+    }
+    .noshow{
+        top: 88% !important;
+        margin-left: 63% !important;
+    }
+    .return{
+        top: 87% !important;
+        margin-left: 30% !important;
+    }
+    .delivery{
+        top: 87% !important;
+        margin-left: 3% !important;
+    }
+    .turnup{
+       top: 36% !important;
+       margin-left: 34% !important;
+    }
+    .appo_today{
+       top: 36% !important;
+       margin-left: 6% !important;
+    }
+    }

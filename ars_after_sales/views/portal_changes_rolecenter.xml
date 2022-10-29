@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="portal.my_account_link" name="Link to frontend portal" inherit_id="portal.frontend_layout">
+        <xpath expr="//li[@id='o_logout']" position="before">
+            <li><a href="/my/home" role="menuitem">My Account</a></li>
+            <li><a href="/role_center" role="menuitem">Role Center</a></li>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+<div class="split_line_invoice" t-name="split_invoice_data">
+  <script>
+
+    function onpercent_change(value,record){
+      var total_percent_value = document.getElementsByClassName("percent")[0].value;
+      var total_percent_splited = total_percent_value.split('%');
+      var percentage_value = document.getElementsByClassName("percentage_value");
+      var percent = 0
+      for(var i=0;i &lt; percentage_value.length;i++){
+          if(i &gt; 0){
+            var splited_percent_value = (percentage_value[i].value).replace(/\%/g,'');
+            var trim_percent_value = splited_percent_value.trim();
+            var int_percent = parseInt(trim_percent_value);
+            percent += int_percent
+          }
+      }
+      var remaining_percent = parseInt(total_percent_splited) - percent
+      document.getElementsByClassName("percentage_value")[0].value = String(remaining_percent) +'%';
+
+      var total_subtotal_value = document.getElementsByClassName("subtotal")[0].value;
+      var splited_value = value.replace(/\%/g,'');
+      var int_value = parseInt(splited_value);
+      var total_parent_subtotal = parseInt(total_subtotal_value) * parseInt(int_value) / 100;
+      record.parentNode.nextSibling.nextSibling.childNodes[3].value = total_parent_subtotal;
+      var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value;
+      var parent_percent_splited = parent_percent_value.replace(/\%/g,'');
+      var subtotal_parent = parseInt(total_subtotal_value) * parseInt(parent_percent_splited) / 100;
+      document.getElementsByClassName("subtotal_value")[0].value = subtotal_parent;
+
+    };
+    function onsubtotal_change(value,record){
+      var total_percent_value = document.getElementsByClassName("percent")[0].value;
+      var total_percent_splited = total_percent_value.split('%');
+      var subtotal_value = document.getElementsByClassName("subtotal_value");
+      var total_subtotal_value = document.getElementsByClassName("subtotal")[0].value;
+      var subtotal = 0
+      for(var i=0;i &lt; subtotal_value.length;i++){
+          if(i &gt; 0){
+            var int_subtotal = parseInt(subtotal_value[i].value);
+            subtotal += int_subtotal
+          }
+      }
+      var remaining_subtotal = parseInt(total_subtotal_value) - subtotal;
+      document.getElementsByClassName("subtotal_value")[0].value = remaining_subtotal;
+
+      var percent_val = parseInt(value) * 100/ parseInt(total_subtotal_value);
+      var round_percent = parseFloat(percent_val).toFixed(2);
+      record.parentNode.nextSibling.parentElement.childNodes[3].childNodes[3].value =  String(round_percent) + '%' ;
+      var fst_subtotal = document.getElementsByClassName("subtotal_value")[0].value;
+      var fst_percent_val = parseInt(fst_subtotal) * 100/ parseInt(total_subtotal_value);
+      var fst_concat_percent = parseFloat(fst_percent_val).toFixed(2);
+      document.getElementsByClassName("percentage_value")[0].value = String(fst_concat_percent) + '%' ;
+    }
+  </script>
+  <div class="hidden" id="res_ids"><t t-raw="res_ids"/></div>
+  <div class="hidden" id="order_id"><t t-raw="order_id"/></div>
+  <div class="col-xs-12 d_clone">
+
+    <div class="col-xs-4 div1">
+      <t t-raw="customer_val"/>
+    </div>
+    <div class="col-xs-3 div2">
+      <input type="hidden" class="subtotal" t-att-value="subtotal_val"/>
+      <input class="percentage_value" type="text" t-att-value="percent_val" onkeyup="onpercent_change(this.value,this)"/>
+    </div>
+    <div class="col-xs-3 div3">
+      <input type="hidden" class="percent" t-att-value="percent_val"/>
+      <input class="subtotal_value" type="text" t-att-value="subtotal_val" onkeyup="onsubtotal_change(this.value,this)"/>
+    </div>
+    <div class="col-xs-2 plus-symbol">
+      <img class="plus" src="ars_invoice_aftersales/static/src/img/blue-plus-sign-hi.png" style="width: 14px;height: 12px;"/>
+    </div>
+  </div>
+  <div style="float: right;">
+  <t t-raw="button1"></t>
+  <t t-raw="button2"></t></div>
+  <div class="clearfix"/>
+</div>
+
+
+
+
+  <div t-name="split_invoice">
+    <div class="box-1">
+
+    </div>
+</div>
+  <button type="button" name="split_invoices" string="Create Invoice" class="btn-primary create_invoices"/>
+<footer>
+  <button type="button" name="split_invoices" string="Create Invoice" class="btn-primary create_invoices"/>
+</footer>
+
+</templates>
+

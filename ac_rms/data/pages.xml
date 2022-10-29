@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="menu_securitypage" model="website.menu">
+            <field name="name">Security</field>
+            <field name="url">/security</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">10</field>
+            <field name="website_id" ref="website.default_website"/>
+        </record>
+        <record id="security" model="ir.ui.view">
+                <field name="name">Security</field>
+                <field name="type">qweb</field>
+                <field name="key">ac_rms.security</field>
+                <field name="arch" type="xml">
+                    <t name="Security" t-name="security">
+                      <t t-call="website.layout">
+                        <form action="/security_action" id="security" method="post">
+                    <t t-if="warning_msg">
+                        <div style="color:red;text-align:center;font-size:20px; font-family: Roboto;">
+                            <t t-esc="warning_msg"/>
+                        </div>
+                    </t>
+                    <t t-if="confirmation_msg">
+                        <div id="confirmation" style="color:blue;text-align:center;font-size:20px;">
+                            <img src="/website_service_planner/static/src/img/thumb.png" class="wms_thumb_icon" style="width:93px; height:102px"/>
+
+                        </div>
+                    </t>
+                        <div class="col-xs-12">
+                            <div class=" col-xs-10 sec tab-view-reg" style="padding: 0px;font-family: Roboto; color: #666666;">
+
+                                <div>
+                                    <table width="100%">
+                                        <tr>
+                                            <td class="reg_no_td">Reg No:</td>
+                                            <td><input type="text" name="regno" id="regno_vehicle"/></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xs-2"></div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-10 tab-view">
+                                <table align="center">
+                                    <tr>
+                                    <td><button type="button" class="btn btn-success reg-ok">OK</button></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-xs-2"/>
+                        </div>
+                    </form>
+                      </t>
+                    </t>
+                </field>
+            </record>
+            <record id="security_page" model="website.page">
+                <field name="url">/security</field>
+                <field name="website_published">True</field>
+                <field name="view_id" ref="security" />
+            </record>
+    </data>
+
+    <!--<record id="ac_rms.security" model="ir.ui.view">
+            <field name="name">Security</field>
+            <field name="type"></field>
+            <field name="key">ac_rms.security</field>
+            <field name="arch" type="xml">
+                <t name="Security Login" t-name="ac_rms.security">
+                <t t-call="website.layout">
+                <form action="/security_action" id="security" method="post">
+                <t t-if="warning_msg">
+                    <div style="color:red;text-align:center;font-size:20px; font-family: Roboto;">
+                        <t t-esc="warning_msg"/>
+                    </div>
+                </t>
+                <t t-if="confirmation_msg">
+                    <div id="confirmation" style="color:blue;text-align:center;font-size:20px;">
+                        <img src="/website_service_planner/static/src/img/thumb.png" class="wms_thumb_icon" style="width:93px; height:102px"/>
+                        &lt;!&ndash;<t t-esc="confirmation_msg"/>&ndash;&gt;
+                    </div>
+                </t>
+                    <div class="col-xs-12">
+                        <div class=" col-xs-10 sec tab-view-reg" style="padding: 0px;font-family: Roboto; color: #666666;">
+                            &lt;!&ndash;<label for="view">Reg No: </label>&ndash;&gt;
+                            <div>
+                                <table width="100%">
+                                    <tr>
+                                        <td class="reg_no_td">Reg No:</td>
+                                        <td><input type="text" name="regno" id="regno_vehicle"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-xs-2"></div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="col-xs-10 tab-view">
+                            <table align="center">
+                                <tr>
+                                <td><button type="button" class="btn btn-success reg-ok">OK</button></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-xs-2"/>
+                    </div>
+                </form>
+                <div style="height:30px;"/>
+                <div class="col-xs-12">
+                    <div class="col-xs-2 widget-sect first bg-pink">
+                        <form method="post" class="sec_clk_count_app" name="app_form" id="app_form" action="/security_action_clk">
+                            <div></div>
+                            &lt;!&ndash;<div class="ico-sect"><img src="/wms_login/static/src/img/appointment1.png"  /></div>&ndash;&gt;
+                            <div class="apps_count cnt-txt" >&lt;!&ndash;<t t-esc="app_count"/>&ndash;&gt;</div>
+                            <input type="text"  style="display:none;" name="app_ids_nm" t-att-value="app_ids"/>
+                            <div class="cnt-txt padb-10">Appointment</div>
+                        </form>
+                    </div>
+                    <div class="col-xs-2 widget-sect bg-red">
+                        <form method="post" class="sec_clk_count_turnup" action="/security_action_clk">
+                            <div></div>
+                            <div class="apps_count cnt-txt">&lt;!&ndash;<t t-esc="turnup_count"/>&ndash;&gt;</div>
+                            <input type="text" style="display:none;" name="turnup_ids_nm" t-att-value="turnup_ids"/>
+                            <div class="cnt-txt padb-10">Turn-up</div>
+                        </form>
+                    </div>
+                    <div class="col-xs-2 widget-sect bg-green">
+                        <form method="post" class="sec_clk_count_walkin" action="/security_action_clk">
+                            <div></div>
+                            <div class="apps_count cnt-txt">&lt;!&ndash;<t t-esc="walk_in_count"/>&ndash;&gt;</div>
+                            <input type="text" style="display:none;" name="walk_in_nm" t-att-value="walk_in_ids"/>
+                            <input type="text" style="display:none;"  name="walk_app_in_nm" t-att-value="walk_app_ids"/>
+                            <div class="cnt-txt padb-10">Walk-in</div>
+                        </form>
+                    </div>
+                    <div class="col-xs-2 widget-sect bg-blue">
+                        <form method="post" class="sec_clk_count_testdrive" action="/security_action_clk">
+                            <div></div>
+                            <div class="apps_count cnt-txt">&lt;!&ndash;<t t-esc="testdrive_count"/>&ndash;&gt;</div>
+                            <input type="text" style="display:none;" name="testdrive_ids_nm" t-att-value="testdrive_ids"/>
+                            <div class="cnt-txt padb-10">Test-drive</div>
+                        </form>
+                    </div>
+                    <div class="col-xs-2 widget-sect last bg-yellow">
+                        <form method="post" class="sec_clk_count_delivered" action="/security_action_clk">
+                            <div></div>
+                            <div class="apps_count cnt-txt">&lt;!&ndash;<t t-esc="delivered_count"/>&ndash;&gt;</div>
+                            <input type="text" style="display:none;" name="delivered_ids_nm" t-att-value="delivered_ids"/>
+                            <div class="cnt-txt padb-10">Delivered</div>
+                        </form>
+                    </div>
+
+                </div>
+                <div style="height:40px;"></div>
+                &lt;!&ndash;<div>
+                    <t t-call="tree_view"/>
+                </div>&ndash;&gt;
+                </t>
+                </t>
+            </field>
+        </record>
+
+        <record id="security_page" model="website.page">
+            <field name="website_published">True</field>
+            <field name="url">/security_login</field>
+            <field name="view_id" ref="ac_rms.security" />
+        </record>-->
+    </odoo>

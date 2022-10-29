@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+       <!--RMS Stages-->
+       <record id="rms_stage1" model="project.task.type">
+           <field name="name">New</field>
+           <field name="stage_display_name">Waiting to Start</field>
+           <field name="case_default">True</field>
+           <field name="sequence">0</field>
+       </record>
+
+       <record id="rms_stage2" model="project.task.type">
+           <field name="name">In Progress</field>
+           <field name="stage_display_name">In Progress</field>
+           <field name="case_default">True</field>
+           <field name="sequence">1</field>
+       </record>
+
+       <record id="rms_stage3" model="project.task.type">
+           <field name="name">Break</field>
+           <field name="stage_display_name">Break</field>
+           <field name="case_default">True</field>
+           <field name="sequence">2</field>
+       </record>
+       <record id="rms_stage4" model="project.task.type">
+           <field name="name">Hold</field>
+           <field name="stage_display_name">Job Stoppage</field>
+           <field name="case_default">True</field>
+           <field name="sequence">3</field>
+       </record>
+
+       <record id="rms_stage5" model="project.task.type">
+           <field name="name">Reject</field>
+           <field name="stage_display_name">Rejected</field>
+           <field name="case_default">True</field>
+           <field name="sequence">4</field>
+       </record>
+
+       <record id="rms_stage6" model="project.task.type">
+           <field name="name">Approve</field>
+           <field name="stage_display_name">Approved</field>
+           <field name="case_default">True</field>
+           <field name="sequence">5</field>
+       </record>
+
+       <record id="rms_stage7" model="project.task.type">
+           <field name="name">Finish</field>
+           <field name="stage_display_name">Done</field>
+           <field name="case_default">True</field>
+           <field name="sequence">6</field>
+       </record>
+
+       <record id="rms_stage8" model="project.task.type">
+           <field name="name">Shiftend</field>
+           <field name="stage_display_name">Shiftend</field>
+           <field name="case_default">True</field>
+           <field name="sequence">7</field>
+       </record>
+
+       <record id="rms_stage9" model="project.task.type">
+           <field name="name">Allocated</field>
+           <field name="stage_display_name">Allocated</field>
+           <field name="case_default">True</field>
+           <field name="sequence">8</field>
+       </record>
+    </data>
+</odoo>

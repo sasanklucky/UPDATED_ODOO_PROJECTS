@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+
+    <record id="ars_resource_resource_form_inherit" model="ir.ui.view">
+        <field name="name">resource.resource.form.inherit</field>
+        <field name="model">resource.resource</field>
+        <field name="inherit_id" ref="resource.resource_resource_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/group/group[1]/field[@name='active']" position="after">
+                <field name="ip_address" attrs="{'invisible':[('resource_type','=', 'user')]}" widget="many2many_tags"/>
+            </xpath>
+        </field>
+    </record>
+
+  </data>
+</odoo>

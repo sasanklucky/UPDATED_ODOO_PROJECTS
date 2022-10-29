@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="multi_dashboard" name="Multi Dashborad">
+       <t t-call="website.layout">
+           <!--<div style="overflow-y:scroll; height: 540px;">-->
+           <div class="col-xs-6" style="width:100%;">
+               <div class="col-xs-3" style="border-radius:16px;margin-top:26px;padding-top:40px;text-align:center;height: 170px;border: 1px solid #eddede ;width: 30%;background: #E0FFFF ;">
+                   <span style="font-size:21px;">
+                       <b>
+                           <i>
+                                <a href="/dashboard1">Daily Service Throughput Analysis</a>
+
+                           </i>
+                        </b>
+                   </span>
+               </div>
+           <!--</div>-->
+               <div class="col-xs-3" style="border-radius:16px;margin-top:26px;margin-left:45px;padding-top:40px;text-align:center;height: 170px;border: 1px solid #eddede ;width: 30%;background: #E0FFFF ;">
+                   <span style="font-size:21px;"><b><i><a href="/dashboard2">WIP Report</a></i></b></span>
+               </div>
+               <div class="col-xs-3" style="border-radius:16px;margin-top:26px;margin-left:45px;padding-top:40px;text-align:center;height: 170px;border: 1px solid #eddede ;width: 30%;background: #E0FFFF ;">
+                   <span style="font-size:21px;"><b><i><a href="/dashboard3">Efficiency &amp; Productivity Report</a></i></b></span>
+               </div>
+           </div>
+           <div class="col-xs-12" style="width:100%;">
+               <div class="col-xs-3" style="border-radius:16px;margin-top:26px;padding-top:40px;text-align:center;height: 170px;border: 1px solid #eddede ;width: 30%;background: #E0FFFF ;">
+                   <span style="font-size:21px;"><b><i><a href="/dashboard8">Bay wise / Technician wise Throughput Analysis</a></i></b></span>
+               </div>
+               <!--<div class="col-xs-3" style="margin-right: 51px;border-radius:16px;margin-top:26px;padding-top:54px;text-align:center;height: 170px;border: 1px solid #eddede ;width: 30%;background: #E0FFFF ;">-->
+                   <!--<span style="font-size:21px;"><b><i><a href="/dashboard4">Utilization</a></i></b></span>-->
+               <!--</div>-->
+           </div>
+       </t>
+    </template>
+
+    <template id="dashboard1" name="Dashborad I">
+        <t t-call="website.layout">
+            <div><a href="/dashboards" class="go_back"><b><u>Back</u></b></a></div>
+
+            <div style="font-size:20px;">
+                <span style="font-weight:bold;">Daily Service Throughput Analysis</span>
+            </div>
+
+            <div id="confirmation" style="color:blue;text-align:center;font-size:20px;">
+                <img src="/ac_rms/static/src/img/daily_service_throughput_analysis.jpg" class="wms_thumb_icon" style="width:100%; height:100%"/>
+            </div>
+            <!--<div>-->
+                <!--<div style="font-size:20px;"><span style="font-weight:bold;">Daily Service Throughput Analysis</span>-->
+                    <!--<div class="hidden-div" style="text-align:center;"><b><span style="display:none;"><t t-esc="date"/></span></b></div>-->
+                    <!--<div style="margin-left:50px;">-->
+                    <!--<form method="post" action="/dashboard1" class="form-inline" style="padding: 0px 71px 5px 260px;">-->
+                        <!--<div class="form-group mx-sm-3">-->
+                            <!--<label for="date" class="sr-only">Date</label>-->
+                            <!--<input style="width:400px;" class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text" t-att-value="date"/>-->
+                            <!--<button type="submit" name="submit" class="btn btn-primary">Submit</button>-->
+                        <!--</div>-->
+                    <!--</form>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div style="border:1px solid black;"/>-->
+        <!--<t t-if="date">-->
+            <!--<div class="col-xs-12" style="padding:0px;margin:0px;overflow-y: scroll;height: 500px;">-->
+                <!--<div class="col-xs-3" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 216px;text-align:left;margin:15px 9px 16px 15px;">-->
+                    <!--<div>-->
+                        <!--<div style="background-color:grey;">-->
+                            <!--<span style="font-size:19px;margin-left: -17px;padding:5px 26px;text-align:center;color:white;font-weight:bold;">Appointments vs Turn Up</span>-->
+                        <!--</div>-->
+                        <!--<div style="border:1px solid black;"/>-->
+                        <!--<table width="100%">-->
+                            <!--<tr>-->
+                                <!--<td class="margin-td" style="width:59%;">Total Appointments</td>-->
+                                <!--<td style="width:33%;">-</td>-->
+                                <!--<td class="appointments" style="width:33%;"><div style="cursor: pointer;"  t-foreach="key" t-as="o"><t t-esc="o[0]"/></div></td>-->
+                                <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[9]"/></div></td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td class="margin-td" style="width:33%;">Total Appointment Turn Up</td>-->
+                                <!--<td style="width:33%;">-</td>-->
+                                <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[1]"/></div></td>-->
+                                <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[10]"/></div></td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td class="margin-td" style="width:33%;">Walk In</td>-->
+                                <!--<td style="width:33%;">-</td>-->
+                                <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[2]"/></div></td>-->
+                                <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[11]"/></div></td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td class="margin-td" style="width:33%;">Delivered</td>-->
+                                <!--<td style="width:33%;">-</td>-->
+                                <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[3]"/></div></td>-->
+                                <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[12]"/></div></td>-->
+                            <!--</tr>-->
+                            <!--<tr>-->
+                                <!--<td class="margin-td" style="width:33%;">Cancel Appointments</td>-->
+                                <!--<td style="width:33%;">-</td>-->
+                                <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[4]"/></div></td>-->
+                                <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[13]"/></div></td>-->
+                            <!--</tr>-->
+                        <!--</table>-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash;<div style="border: 1px solid black;margin: 45px -3px -5px -1px;width: 655px;">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div style="background-color:grey;">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<span style="font-size:19px;margin-left: -17px;padding:5px 26px;color:white;font-weight:bold;">Vehicle On Hold Report</span>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div style="border:1px solid black;"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<table width="100%">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<tr t-foreach="break_reason" t-as="reason">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<td class="margin-td" style="width:33%;"><t t-esc="reason.get('break_reason')"/></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<td style="width:33%;">-</td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<td class="appointments"  style="width:33%;"><div  style="cursor: pointer;"><t t-esc="reason.get('hold_count') if reason.get('hold_count') else 0"/></div></td>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<td id="tot_app" style="display:none;"><div><t t-esc="reason.get('so_id')"/></div></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</tr>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</table>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--</div>-->
+                    <!--<div class="clear-fix"/>-->
+                    <!--<div class="col-xs-3" style="border: 1px solid black;margin: 15px -35px 0px 0px;height:216px;padding: 0px;">-->
+                        <!--<div style="background-color:grey;">-->
+                            <!--<span style="font-size:19px;margin-left: -17px;padding:5px 26px;color:white;font-weight:bold;">Same Day Delivery Report</span>-->
+                        <!--</div>-->
+                        <!--<div style="border:1px solid black;"/>-->
+                        <!--<div>-->
+                            <!--<table width="100%">-->
+                                <!--<tr>-->
+                                    <!--<td class="margin-td" style="width:55%;">Total Security Inward</td>-->
+                                    <!--<td style="width:33%;">-</td>-->
+                                    <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[5]"/></div></td>-->
+                                    <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[14]"/></div></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td class="margin-td">Total Security Outward</td>-->
+                                    <!--<td style="width:33%;">-</td>-->
+                                    <!--<td class="appointments"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[6]"/></div></td>-->
+                                    <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[15]"/></div></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td class="margin-td">Same day In and Out</td>-->
+                                    <!--<td style="width:33%;">-</td>-->
+                                    <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[7]"/></div></td>-->
+                                    <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[16]"/></div></td>-->
+                                <!--</tr>-->
+                                <!--<tr>-->
+                                    <!--<td class="margin-td">Total RO for the day</td>-->
+                                    <!--<td style="width:33%;">-</td>-->
+                                    <!--<td class="appointments"  style="width:33%;"><div style="cursor: pointer;" t-foreach="key" t-as="o"><t t-esc="o[8]"/></div></td>-->
+                                    <!--<td id="tot_app"><div style="display:none"  t-foreach="key" t-as="o"><t t-esc="o[17]"/></div></td>-->
+                                <!--</tr>-->
+                            <!--</table>-->
+                        <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-xs-5" style="height: 405px;width: 43%;padding:0px;margin:0px;float:left;border:1px solid black;text-align:left;margin:16px 3px 30px 45px;">-->
+                    <!--<div>-->
+                        <!--<div style="background-color:grey;">-->
+                            <!--<span style="font-size:19px;margin-left: -17px;padding:5px 26px;color:white;font-weight:bold;">Inflow vs Outflow</span>-->
+                        <!--</div>-->
+                        <!--<div style="border:1px solid black;"/>-->
+
+                         <!--<table width="100%" class="table table-bordered inflow_outflow">-->
+                             <!--<tr>-->
+                                 <!--<td></td>-->
+                                 <!--<td colspan="2" style="padding-left: 103px;font-weight:bold;">IN</td>-->
+                                 <!--<td colspan="2" style="padding-left: 98px;font-weight:bold;">OUT</td>-->
+                             <!--</tr>-->
+                             <!--<tr>-->
+                                 <!--<td style="font-weight:bold;padding-left: 5px;">TIME SLOT</td>-->
+                                 <!--<td style="font-weight:bold;">APPOINTMENT</td>-->
+                                 <!--<td style="text-align:center;font-weight:bold;">WALKIN</td>-->
+                                 <!--<td style="font-weight:bold;">APPOINTMENT</td>-->
+                                 <!--<td style="text-align:center;font-weight:bold;">WALKIN</td>-->
+                             <!--</tr>-->
+                             <!--<tr t-foreach="slot_wise_order" t-as="order">-->
+                                <!--<td style="padding-left: 5px;" width="25%"><t t-esc="order[-1]"/></td>-->
+                                <!--<td class="app_walk" id="s1" style="padding-left: 41px;cursor: pointer;" width="20%"><t t-esc="order[1] and int(order[1]) or 0"/></td>-->
+                                <!--<td class="app_walk" id="s2"  style="padding-left: 47px;cursor: pointer;" width="19%"><t t-esc="order[2] and int(order[2]) or 0"/></td>-->
+                                <!--<td class="app_walk" id="s3"  style="padding-left: 44px;cursor: pointer;" width="18%"><t t-esc="order[3] and int(order[3]) or 0"/></td>-->
+                                <!--<td class="app_walk" id="s4"  style="padding-left: 46px;cursor: pointer;" width="18%"><t t-esc="order[4] and int(order[4]) or 0"/></td>-->
+                                <!--<td class="s1" style="display:none;"><t t-esc="order[5]"/></td>-->
+                                <!--<td class="s2" style="display:none;"><t t-esc="order[6]"/></td>-->
+                                <!--<td class="s3" style="display:none;"><t t-esc="order[7]"/></td>-->
+                                <!--<td class="s4" style="display:none;"><t t-esc="order[8]"/></td>-->
+                             <!--</tr>-->
+                         <!--</table>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</t>-->
+        </t>
+    </template>
+
+     <template id="dashboard2" name="Dashboard 2">
+        <t t-call="website.layout">
+                <div><a href="/dashboards" class="go_back"><b><u>Back</u></b></a></div>
+
+                <div style="margin:10px 10px 10px 10px;">
+                    <span style="font-weight:bold;">WIP Report</span>
+                </div>
+
+                <div id="wip" style="color:blue;text-align:center;font-size:20px;">
+                    <img src="/ac_rms/static/src/img/wip_report.jpg" class="wms_thumb_icon" style="width:100%; height:100%"/>
+                </div>
+                <!--<div style="margin:10px 10px 10px 10px;">-->
+                    <!--<h3 style="font-weight:bold;">WIP Report</h3>-->
+                <!--</div>-->
+                <!--<input type="hidden" name="type" value="ta"/>-->
+                <!--<ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="margin-top: -63px;overflow:hidden;height:29px;width:17%;float:right;font-size: 0.8em;margin-right:67px;display: none;" >-->
+                <!--</ul>-->
+                <!--<div style="display:none;" id="search-value">Time Stamp</div>-->
+                <!--<span class="sb-icon-search" style="float:left;margin-top: 99px;"></span>-->
+                <!--<div style="border:1px solid black;"/>-->
+                <!--<div id="parent-parent-div">-->
+                <!--<div class="parent-div" style="width:100%;height:455px;overflow-x:scroll;">-->
+                    <!--<div class="hedaer-div" style="height:110%;width:1880px;">-->
+                    <!--<table style = "width:3293px" class="table table-bordered table-fixed cls-table-search">-->
+                            <!--<thead style="background-color:#286090;color:white;">-->
+                                <!--<tr>-->
+                                    <!--<th style="width: 2%; padding-bottom:23px; text-align:center;">Sr.No</th>-->
+                                    <!--<th style="width: 4%; padding-bottom:23px; text-align:center;">Veh No</th>-->
+                                    <!--<th style="width: 8%; padding-bottom:23px; text-align:center;">Cust Name</th>-->
+                                    <!--<th style="width: 4%; padding-bottom:23px; text-align:center;">Contact No</th>-->
+                                    <!--<th style="width: 5%; padding-bottom:23px; text-align:center;">Type of Servcie</th>-->
+                                    <!--<th style="width: 6%; padding-bottom:23px; text-align:center;">Appt Date</th>-->
+                                    <!--<th style="width: 4%; padding-bottom:23px; text-align:center;">Type</th>-->
+                                    <!--<th style="width: 6%; padding-bottom:23px; text-align:center;">Security In Date</th>-->
+                                    <!--<th style="width: 6%; padding-bottom:23px; text-align:center;">Workshop Start Time</th>-->
+                                    <!--<th style="width: 5%; padding-bottom:23px; text-align:center;">SA</th>-->
+                                    <!--<th style="width: 6%; padding-bottom:23px; text-align:center;">PDT</th>-->
+                                    <!--<th style="width: 7%; padding-bottom:23px; text-align:center;">Stage</th>-->
+                                    <!--&lt;!&ndash;<th style="width: 317px; text-align: center;" colspan="2"><div width="100%" style ="padding-bottom:7px;">Waiting for Parts</div><div><table><tr><td style ="padding-left: 30px;">Start Time</td><td style ="padding-left: 93px;">End Time</td></tr></table></div></th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th style="width: 317px; text-align: center;" colspan="2"><div width="100%" style ="padding-bottom:7px;">Waiting for Diagnosis</div><div><table><tr><td style ="padding-left: 30px;">Start Time</td><td style ="padding-left: 93px;">End Time</td></tr></table></div></th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th style="width: 317px; text-align: center;" colspan="2"><div width="100%" style ="padding-bottom:7px;">Waiting for Decision</div><div><table><tr><td style ="padding-left: 30px;">Start Time</td><td style ="padding-left: 93px;">End Time</td></tr></table></div></th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th style="width: 317px; text-align: center;" colspan="2"><div width="100%" style ="padding-bottom:7px;">Waiting for Customer Approval</div><div><table><tr><td style ="padding-left: 30px;">Start Time</td><td style ="padding-left: 93px;">End Time</td></tr></table></div></th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<th style="width: 317px; text-align: center;" colspan="2"><div width="100%" style ="padding-bottom:7px;">Others</div><div><table><tr><td style ="padding-left: 30px;">Start Time</td><td style ="padding-left: 93px;">End Time</td></tr></table></div></th>&ndash;&gt;-->
+                                <!--</tr>-->
+                            <!--</thead>-->
+                        <!--<t t-set="i" t-value="0"/>-->
+                        <!--<tbody>-->
+                        <!--&lt;!&ndash;<t t-esc="key"/>&ndash;&gt;-->
+                        <!--<tr t-foreach="key" t-as="each_key" class="modal_rows">-->
+                            <!--<t t-if="each_key.main_process_id.name !='Vehicle Delivered'">-->
+                            <!--<t t-set="i" t-value="i+1"/>-->
+                            <!--<td style="text-align: center;" width="1%"><t t-esc='i'/></td>-->
+                            <!--<td width="5%"><t t-esc="each_key.regn_no.license_plate"/></td>-->
+                            <!--<td width="7%"><t t-esc="each_key.partner_id.name"/></td>-->
+                            <!--<td width="5%"><t t-esc="each_key.mobile"/></td>-->
+                            <!--<td width="5%"></td>-->
+                            <!--<t t-if="each_key.appointment_date">-->
+                                <!--<t t-set="appointment_date" t-value="datetime.datetime.strptime(each_key.appointment_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>-->
+                                <!--<td width="8%"><t t-esc="appointment_date.strftime('%d-%m-%Y %I:%M %p')"/></td>-->
+                            <!--</t>-->
+                            <!--<t t-if="not each_key.appointment_date">-->
+                                <!--<td></td>-->
+                            <!--</t>-->
+                            <!--<td width="4%"><t t-esc="each_key.doc_type"/></td>-->
+                            <!--<t t-if="each_key.gate_in_time">-->
+                                <!--<t t-set="time_gate" t-value="datetime.datetime.strptime(each_key.gate_in_time, '%Y-%m-%d %H:%M:%S')"/>-->
+                                <!--<td width="8%"><t t-esc="time_gate.strftime('%d-%m-%Y %I:%M %p')"/></td>-->
+                            <!--</t>-->
+                            <!--<t t-if="not each_key.gate_in_time">-->
+                                <!--<td></td>-->
+                            <!--</t>-->
+                            <!--&lt;!&ndash;&lt;!&ndash;<t t-if="each_key['time_at_gate']">&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;<t t-set="time_gate" t-value="each_key['time_at_gate']"/>&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;<t t-set="time_gate" t-value="datetime.datetime.strptime(time_gate, '%Y-%m-%d ')+datetime.timedelta(hours = 5, minutes = 30)"/>&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;<td width="8%"><t t-esc="time_gate.strftime('%d-%m-%Y %I:%M %p')"/></td>&ndash;&gt;&ndash;&gt;-->
+                            <!--&lt;!&ndash;&lt;!&ndash;</t>&ndash;&gt;&ndash;&gt;-->
+                            <!--&lt;!&ndash;&lt;!&ndash;<t t-if="not each_key['time_at_gate']">&ndash;&gt;&ndash;&gt;-->
+                                <!--&lt;!&ndash;&lt;!&ndash;<td></td>&ndash;&gt;&ndash;&gt;-->
+                            <!--&lt;!&ndash;&lt;!&ndash;</t>&ndash;&gt;&ndash;&gt;-->
+
+                            <!--<td width="8%"><t t-esc='each_key._technician_actual_starttime()'/></td>-->
+                            <!--<td width="8%"><t t-esc="each_key.user_id.name"/></td>-->
+                            <!--<t t-if="each_key.delivery_date">-->
+                                <!--<t t-set="delvry_date" t-value="datetime.datetime.strptime(each_key.delivery_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>-->
+                                <!--<td width="8%"><t t-esc="delvry_date.strftime('%d-%m-%Y %I:%M %p')"/></td>-->
+                            <!--</t>-->
+                            <!--<t t-if="not each_key.delivery_date">-->
+                                <!--<td></td>-->
+                            <!--</t>-->
+                            <!--<td width="10%"><t t-esc="each_key.main_process_id.name"/></td>-->
+
+                            <!--&lt;!&ndash;<t width="10%" t-set="time" t-value="app._jobstoppage_start()"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<t t-if="time[0]['break_reason'] == 'Waiting for Parts' ">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td width="10%"><t t-esc="time[0]['check_in']"/></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td ><t t-esc="time[0]['check_out']"/></td>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<t t-if="time[1]['break_reason'] == 'Waiting for Diagnosis' ">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td width="10%"><t t-esc="time[1]['check_in']"/></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[1]['check_out']"/></td>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<t t-if="time[2]['break_reason'] == 'Waiting for Decision' ">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[2]['check_in']"/></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[2]['check_out']"/></td>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<t t-if="time[3]['break_reason'] == 'Waiting for Customer Approval' ">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[3]['check_in']"/></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[3]['check_out']"/></td>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<t t-if="time[4]['break_reason'] == 'Others' ">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[4]['check_in']"/></td>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<td><t t-esc="time[4]['check_out']"/></td>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                            <!--</t>-->
+                        <!--</tr>-->
+                       <!--</tbody>-->
+                    <!--</table>-->
+               <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </t>
+    </template>
+
+    <template id="dashboard3" name="Dashboard 3">
+        <t t-call="website.layout">
+            <div><a href="/dashboards" class="go_back"><b><u>Back</u></b></a></div>
+
+            <div id="wip" style="color:blue;text-align:center;font-size:20px;">
+                <img src="/ac_rms/static/src/img/productivity_efficiency.jpg" class="wms_thumb_icon" style="width:100%; height:100%"/>
+            </div>
+
+            <!--<div class="hidden-div" style="text-align:center;margin-top:33px"><b><span style="display:none;"><t t-esc="date"/></span></b></div>-->
+            <!--<div style="margin-left:50px;">-->
+                <!--<form method="post" action="/dashboard3" class="form-inline" style="padding: 0px 71px 5px 260px;">-->
+                    <!--<div class="form-group mx-sm-3">-->
+                        <!--<span>-->
+                            <!--<input style="display:none;" id="fm_date" name="date1" type="text"/>-->
+                            <!--<input style="display:none;"  id="en_date" name="date2" type="text"/>-->
+                            <!--<input style="width:145px;" class="form-control" id="from_date" name="date" placeholder="DD/MM/YYY" type="text" t-att-value="date1"/>-->
+                            <!-- - <input style="width:145px;" class="form-control" id="to_date" name="date" placeholder="DD/MM/YYY" type="text" t-att-value="date2"/>-->
+                            <!--<button type="submit" name="submit" class="btn btn-primary sub_btn">Submit</button>-->
+                        <!--</span>-->
+                    <!--</div>-->
+                <!--</form>-->
+            <!--</div>-->
+            <!--<div style="border:1px solid black;"/>-->
+            <!--<div style="overflow-y: scroll;height: 520px;">-->
+                    <!--<table width="100%"  style="display:block;" class="table table-bordered cls-table-search" id="fix-tab-header">-->
+                        <!--<thead style="display:block;position: fixed;background-color: grey;">-->
+                        <!--<tr>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:39%">Resource Name</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:10%">STU(Min)</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:11%">Actual Time(Min)</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:10%">Atten. Days</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:10%">Atten. Mins</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:10%">Productivity</th>-->
+                            <!--<th style="text-align:center;border-color: grey;color:white;width:10%">Efficiency</th>-->
+                        <!--</tr>-->
+                    <!--</thead>-->
+                    <!--<tbody style="margin-top: 37px;">-->
+                        <!--<tr t-foreach="key" t-as="o">-->
+                            <!--<td style="text-align:left;width:40%"><t t-esc="o[0]"/></td>-->
+                            <!--<td style="text-align:right;width:10%"><t t-esc="o[1] and int(o[1]) or 0"/></td>-->
+                            <!--<td style="text-align:right;width:10%"><t t-esc="o[2] and int(o[2]) or 0"/></td>-->
+                            <!--<td style="text-align:center;width:10%"><t t-esc="o[3] and int(o[3]) or ''"/></td>-->
+                            <!--<td style="text-align:right;width:10%"><t t-esc="o[6] and int(o[6]) or 0 "/></td>-->
+                            <!--<td style="text-align:right;width:10%"><t t-esc="str(o[4] and int(o[4]) or 0 )+' %'"/></td>-->
+                            <!--<td style="text-align:right;width:10%"><t t-esc="str(o[5] and int(o[5]) or 0 )+' %'"/></td>-->
+                        <!--</tr>-->
+                    <!--</tbody>-->
+                <!--</table>-->
+            <!--</div>-->
+        </t>
+    </template>
+
+    <!--<template id="dashboard_four" name="Dashborad 4">-->
+        <!--<t t-call="website.layout">-->
+            <!--<div>-->
+                <!--<a href="#" class="go_back">-->
+                    <!--<b>-->
+                        <!--<u>Back</u>-->
+                    <!--</b>-->
+                <!--</a>-->
+            <!--</div>-->
+
+            <!--<div id="wip" style="color:blue;text-align:center;font-size:20px;">-->
+                <!--<img src="/ac_rms/static/src/img/bay_technician_wise_report.jpg" class="wms_thumb_icon" style="width:100%; height:100%"/>-->
+            <!--</div>-->
+
+            <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                <!--&lt;!&ndash;<div style="font-size:20px;">&ndash;&gt;-->
+
+                    <!--&lt;!&ndash;<div style="margin-left:50px;">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<form method="post" action="/dashboard4" class="form-inline"&ndash;&gt;-->
+                              <!--&lt;!&ndash;style="padding: 0px 71px 5px 260px;">&ndash;&gt;-->
+                            <!--&lt;!&ndash;&lt;!&ndash;<div> &lt;!&ndash; Date input &ndash;&gt;&ndash;&gt;-->
+                              <!--&lt;!&ndash;&lt;!&ndash;<label class="control-label" for="date">Date</label>&ndash;&gt;&ndash;&gt;-->
+
+                            <!--&lt;!&ndash;</div>&ndash;&gt;&ndash;&gt;-->
+
+
+                            <!--&lt;!&ndash;<div class="form-group mx-sm-3">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input style="display:none;" id="fm_date" name="date1" type="text" t-att-value="date1"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input style="display:none;"  id="en_date" name="date2" type="text" t-att-value="date2"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<input style="width:145px;" class="form-control" id="from_date" name="date" placeholder="DD/MM/YYY" type="text" t-att-value="date1"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash; - <input style="width:145px;" class="form-control" id="to_date" name="date" placeholder="DD/MM/YYY" type="text" t-att-value="date2"/>&ndash;&gt;-->
+                                <!--&lt;!&ndash;<button type="submit" name="submit" class="btn btn-primary">Submit</button>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                            <!--&lt;!&ndash;&lt;!&ndash; <div> &lt;!&ndash; Submit button &ndash;&gt;&ndash;&gt;-->
+                               <!--&lt;!&ndash;<input style="width:400px;" class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text" t-att-value="date"/>&ndash;&gt;-->
+                               <!--&lt;!&ndash;<button class="btn btn-primary " name="submit" type="submit">Submit</button>&ndash;&gt;-->
+                             <!--&lt;!&ndash;</div>&ndash;&gt;&ndash;&gt;-->
+                        <!--&lt;!&ndash;</form>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;<div style="border:1px solid black;"/>&ndash;&gt;-->
+            <!--&lt;!&ndash;<t t-if="date1">&ndash;&gt;-->
+                <!--&lt;!&ndash;<div style="overflow-y:scroll; height: 520px;">&ndash;&gt;-->
+
+                    <!--&lt;!&ndash;<div class="col-xs-12" style="padding:0px;margin:0px;">&ndash;&gt;-->
+
+                        <!--&lt;!&ndash;<div class="col-xs-12"&ndash;&gt;-->
+                             <!--&lt;!&ndash;style="width: 100%;padding:0px;margin:0px;float:left;text-align:left;margin: 4px -3px 30px 1px;">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div style="background-color: grey;text-align:center;">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<span style="font-size:19px;margin-left: 0px;padding:5px 26px;color:white;">Technician&ndash;&gt;-->
+                                    <!--&lt;!&ndash;Wise Time Utilization&ndash;&gt;-->
+                                <!--&lt;!&ndash;</span>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div style="border:1px solid black;"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div style="height:379px;overflow-y:scroll;">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<table width="100%" class="table table-bordered">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<tr>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<th style="text-align:center;border:1px solid black;">Technician</th>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<th style="text-align:center;border:1px solid black;">Total Number of Minutes</th>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<th style="text-align:center;border:1px solid black;">Total Number of Hours</th>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<th style="text-align:center;border:1px solid black;">Utilization</th>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</tr>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-set="o" t-value="''"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<tr t-foreach="key2" t-as="m">&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<td class="margin-td"&ndash;&gt;-->
+                                            <!--&lt;!&ndash;style="width:50%;text-align:center;border:1px solid black;">&lt;!&ndash;<t t-if="o != m[2]">&ndash;&gt;&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<t t-esc="m[0]"/>&lt;!&ndash;</t>&ndash;&gt;&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</td>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<td class="margin-td"&ndash;&gt;-->
+                                            <!--&lt;!&ndash;style="width:50%;text-align:center;border:1px solid black;">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<t t-esc="m[1] and int(m[1]) or 0"/>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</td>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<td class="margin-td"&ndash;&gt;-->
+                                            <!--&lt;!&ndash;style="width:50%;text-align:center;border:1px solid black;">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<t t-esc="m[4] or '00:00' "/>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</td>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<td class="margin-td"&ndash;&gt;-->
+                                            <!--&lt;!&ndash;style="width:50%;text-align:center;border:1px solid black;">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<t t-esc="m[2] and str(round(m[2],2)) + ' %' or 0 "/>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</td>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<t t-set="o" t-value="m[2]"/>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</tr>&ndash;&gt;-->
+
+                                <!--&lt;!&ndash;</table>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;</t>&ndash;&gt;-->
+        <!--</t>-->
+    <!--</template>-->
+
+    <template id="dashboard8" name="Dashborad 8">
+        <t t-call="website.layout">
+            <div><a href="#" class="go_back"><b><u>Back</u></b></a></div>
+            <div style="margin:10px 10px 10px 10px;">
+                <h3 style="font-weight:bold;">Bay wise / Technician wise Throughput Analysis</h3>
+                </div>
+
+            <div id="wip" style="color:blue;text-align:center;font-size:20px;">
+                <img src="/ac_rms/static/src/img/bay_technician_wise_report.jpg" class="wms_thumb_icon" style="width:100%; height:100%"/>
+            </div>
+            <!--<div class="hidden-div" style="text-align:center;"><b><span style="display:none;"><t t-esc="date"/></span></b></div>-->
+            <!--<div style="margin-left:50px;">-->
+            <!--<form method="post" action="/dashboard8" class="form-inline" style="padding: 0px 71px 5px 260px;">-->
+                  <!--&lt;!&ndash;<div> &lt;!&ndash; Date input &ndash;&gt;-->
+                    <!--&lt;!&ndash;<label class="control-label" for="date">Date</label>&ndash;&gt;-->
+
+                  <!--</div>&ndash;&gt;-->
+                <!--<div class="form-group mx-sm-3">-->
+                    <!--<label for="date" class="sr-only">Date</label>-->
+                    <!--<input style="width:400px;" class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text" t-att-value="date"/>-->
+                    <!--<button type="submit" name="submit" class="btn btn-primary">Submit</button>-->
+                <!--</div>-->
+
+                 <!--&lt;!&ndash; <div> &lt;!&ndash; Submit button &ndash;&gt;-->
+                    <!--<input style="width:400px;" class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text" t-att-value="date"/>-->
+                    <!--<button class="btn btn-primary " name="submit" type="submit">Submit</button>-->
+                  <!--</div>&ndash;&gt;-->
+                <!--</form>-->
+                <!--</div>-->
+                <!--<div style="border:1px solid black;"/>-->
+
+               <!--<t t-if="date">-->
+                <!--<div style="overflow-y:scroll; height: 450px;" id="parent-div">-->
+                <!--<div class="col-xs-12" >-->
+                    <!--<div class="col-xs-1"/>-->
+                    <!--<div class="col-xs-4" style="border:1px solid black; padding: 0px; margin-top: 24px;">-->
+                        <!--<span style="font-size:20px;padding:5px 123px;">Bay wise car / day</span><div style="border:1px solid black;"/>-->
+                        <!--<div>-->
+                            <!--<table width="100%">-->
+                                <!--<tr t-foreach="total_appointments_bays" t-as="bay">-->
+                                    <!--<td style="width:60%;border-right:1px solid black;  padding-left: 26px;"><t t-esc="bay[0]"/></td>-->
+                                    <!--<td style="width:30%; padding-left: 109px; cursor: pointer;" ><a t-att-href = "'/baylist?order_id='+ str(bay[3]) if bay[2]  == True  else '' "><t t-esc="bay[1]"/></a></td>-->
+                                <!--</tr>-->
+                            <!--</table>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="col-xs-1"/>-->
+                    <!--<div class="col-xs-4" style="border:1px solid black;  padding: 0px; margin-top: 24px;">-->
+                        <!--<span style="font-size:20px;margin-left: 133px;">Tech wise car / day</span><div style="border:1px solid black;"/>-->
+                        <!--<div style="height: auto;">-->
+                            <!--<table width="100%">-->
+                                <!--<tr t-foreach="total_appointments_techs" t-as="tech">-->
+                                    <!--<td style="width:60%;border-right:1px solid black; padding-left: 26px;"><t t-esc="tech[0]"/></td>-->
+                                    <!--<td style="width:30%; padding-left: 109px; cursor: pointer;" ><a t-att-href = "'/baylist?order_id='+ str(tech[3]) if tech[2]  == True  else '' "><t t-esc="tech[1]"/></a></td>-->
+                                <!--</tr>-->
+                            <!--</table>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+           <!--</t>-->
+        </t>
+    </template>
+
+</odoo>

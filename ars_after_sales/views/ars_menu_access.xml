@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.crm_aftersales_leads">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_estimation">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_estimation')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_service_order">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_parts_user')])]"/>
+
+		</record>
+
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_parts_pricelist_after">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_parts_Pricelist')])]"/>
+
+		</record>
+
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_labor_pricelist">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_labors_Pricelist')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_catalog">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_catalog')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_action_aftersales_invoice_tree1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_invoice')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_invoicing">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_invoice')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="account.menu_action_invoice_tree1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_sale_invoice')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="stock.menu_stock_root">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_sales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_stock_config_settings">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_sales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_warehouse_report">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_sales')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="stock.menu_product_variant_config_stock">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_catalog')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.product_product_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_catalog')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_reordering_rules_config">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_catalog')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_action_production_lot_form">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_inventory_catalog')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="sale.sale_menu_root">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_show_sale_menu')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="crm.crm_opportunity_report_menu_lead">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_show_sale_menu')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="purchase.menu_purchase_root">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_show_purchase_menu')])]"/>
+
+		</record>
+
+		 <record model="ir.ui.menu" id="crm.crm_menu_pipeline">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_crm_sale')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.crm_aftersales">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_crm_aftersale')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="crm.crm_menu_root">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_crm')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="sale.menu_product_template_action">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.menu_procurement_partner_contact_form">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.product_product_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="sale.menu_products">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_product_variant_config_stock">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.product_product_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="sale.menu_product_pricelist_main">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.menu_procurement_partner_contact_form">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.product_product_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_models1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_models_variants1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_product')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_parts1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record>
+
+		<!-- <record model="ir.ui.menu" id="ars_after_sales.menu_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record> -->
+		<!-- <record model="ir.ui.menu" id="ars_after_sales.menu_parts_pricelist">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record> -->
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_cata_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.stock_cata_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_valuation_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record>
+		<!-- <record model="ir.ui.menu" id="ars_after_sales.valuation_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record> -->
+		<record model="ir.ui.menu" id="stock.stock_move_line_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('ars_after_sales.group_part')])]"/>
+
+		</record>
+
+		 <record model="ir.ui.menu" id="ars_after_sales.menu_labor2">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_Labors')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_accessories1">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_accessories')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_accessories">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_accessories')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.crm_accessories">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_accessories')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_accessories">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_accessories')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.stock_accessories">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_accessories')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_vehicle">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_vehicle_sales.menu_vehicle_sales">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+	    <record model="ir.ui.menu" id="ars_after_sales.purchase_cata_vehicle">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.stock_cata_vehicle">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.menu_valuation">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock_account.menu_valuation">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="stock.stock_move_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="purchase.menu_procurement_management">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.menu_purchase_control">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_vehicle">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="sale.sale_order_menu">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="account.menu_finance">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_sales_invoice')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.parts_purchase_control">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_report_parts">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.aftersale_parts_operation">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.aftersale_invoicing">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.stock_parts_operation">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_parts_aftersales')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.crm_dashboard">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_dashboard')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.sales_dashboard">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_dashboard')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_dashboard">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_dashboard')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_reporting">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_reporting')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="sale.menu_sale_report">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_reporting')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.purchase_report">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_reporting')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="crm.crm_menu_report">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_reporting')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="sale.menu_sale_config">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_configuration')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="purchase.menu_purchase_config">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_configuration')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_config">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_configuration')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="crm.crm_menu_config">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_configuration')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.crm_catalog">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_aftersales')])]"/>
+
+		</record>
+		<record model="ir.ui.menu" id="ars_after_sales.purchase_catalog">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_ars_aftersales')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="sale.product_menu_catalog">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_sales_catalog')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="account.menu_finance_payables">
+
+			<field name="groups_id" eval="[(6, 0, [ref('group_invoicing_purchases')])]"/>
+
+		</record>
+
+		<record model="ir.ui.menu" id="ars_after_sales.menu_warranty_page">
+
+			<field name="groups_id" eval="[(4, ref('group_warranty_manager')),(4, ref('group_warranty_approval'))]"/>
+
+		</record>
+
+
+</odoo>

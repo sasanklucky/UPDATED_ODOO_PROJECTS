@@ -1,0 +1,748 @@
+<odoo>
+    <data>
+        <record id="role_center" model="ir.ui.view">
+            <field name="name">Roles</field>
+            <field name="type">qweb</field>
+            <field name="key">website.rolecenter</field>
+            <field name="arch" type="xml">
+                <t t-name="role_center">
+                    <t t-call="website.layout">
+                        <div id="wrap" class="oe_structure oe_empty" style="background-color: white;">
+                            <section class="parallax s_parallax_slider oe_custom_bg oe_img_bg mb0"
+                                     style="background-image: none;" data-scroll-background-ratio="0">
+                                <div id="myCarousel1520248435839" class="carousel quotecarousel slide mb0"
+                                     data-interval="10000">
+                                    <section class="s_title">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <h1 class="text-center">
+                                                        <font style="font-size: 18px;">Role Center</font>
+                                                        <hr/>
+                                                    </h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <img class="hidden" src="true"/>
+                                        <img class="hidden" src="true"/>
+                                    </section>
+                                </div>
+                                <div class="tree">
+                                    <ul>
+                                        <li style="top:0px;">
+                                            <a href="/web/customlogin1?login=generalmanagerautochip.in&amp;password=a"
+                                               class="tooltip" data-original-title="" title="">
+                                                <img src="ars_after_sales/static/src/img/gm.png"
+                                                     class="center-block img-circle img-responsive shadow"
+                                                     data-original-title="" title=""/>
+                                                <b>
+                                                    <font style="font-size: 8px;" data-original-title="" title="">
+                                                        General Manager
+                                                    </font>
+                                                </b>
+                                                <div class="tooltiptext">
+                                                    <span>General Manager</span>
+                                                </div>
+                                            </a>
+                                            <ul>
+                                                <li style="right: -80px;top:0px;">
+                                                    <a href="/web/customlogin1?login=salesmanagerautochip.in&amp;password=a"
+                                                       class="tooltip" data-original-title="" title="">
+                                                        <img src="ars_after_sales/static/src/img/sales_manager.png"
+                                                             class="center-block img-circle img-responsive shadow"
+                                                             data-original-title="" title=""/>
+                                                        <b>
+                                                            <font style="font-size: 8px;" data-original-title=""
+                                                                  title="">Sales Manager
+                                                            </font>
+                                                        </b>
+                                                        <div class="tooltiptext">
+                                                            <span>1.Access to all records of their team.</span>
+                                                            <br/>
+                                                            <span>2.Schedule Meetings with customer.</span>
+                                                            <br/>
+                                                            <span>3.Set auto remainders.</span>
+                                                            <br/>
+                                                            <span>4.Create quotation and Send mails within
+                                                                application.
+                                                            </span>
+                                                            <br/>
+                                                            <span>5.Confirm SO</span>
+                                                            <br/>
+                                                        </div>
+                                                    </a>
+                                                    <ul>
+                                                        <li style="top:0px;">
+                                                            <a href="/web/customlogin1?login=crmsalesautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/sales_consult.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;">CRM Sales</font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.Create Lead.</span>
+                                                                    <br/>
+                                                                    <span>2.Convert into an opportunity.</span>
+                                                                    <br/>
+                                                                    <span>3.Assign to Sales consultant.</span>
+                                                                    <br/>
+                                                                    <span>4.Access to all records of their team.</span>
+                                                                    <br/>
+                                                                    <span>5.Create quotation and send mail with
+                                                                        attachments from application.
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>6.Access Reports</span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=cresalesautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/cre_sales.png"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;">CRE Sales
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.Create Lead.</span>
+                                                                            <br/>
+                                                                            <span>2.Convert into an opportunity.</span>
+                                                                            <br/>
+                                                                            <span>3.Assign to Sales consultant.</span>
+                                                                            <br/>
+                                                                            <span>4.Schedule Meetings with customer.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>5.Set auto remainders.</span>
+                                                                            <br/>
+                                                                            <span>6.Access to his/her records only.
+                                                                            </span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li style="top: -102px;">
+                                                            <a href="/web/customlogin1?login=salesconsultantautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/crm_sales.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""
+                                                                     aria-describedby="tooltip9960"/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;">Sales Consultant
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.Access his/her own leads.</span>
+                                                                    <br/>
+                                                                    <span>2.Schedule Meetings with customer.</span>
+                                                                    <br/>
+                                                                    <span>3.Set auto remainders.</span>
+                                                                    <br/>
+                                                                    <span>4.Create quotation and Send mails within
+                                                                        application.
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>5.Confirm SO.</span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <li style="top:0px;">
+                                                            <a href="/web/customlogin1?login=salesaccountantautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/sales_accountant.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;">Sales Accountant
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.View all SO</span>
+                                                                    <br/>
+                                                                    <span>2.View all Customer Invoices</span>
+                                                                    <br/>
+                                                                    <span>3.Register Payment</span>
+                                                                    <br/>
+                                                                    <span>4.Validate Invoices</span>
+                                                                    <br/>
+                                                                    <span>5.Access to Reports</span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=salescashierautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/sales_cashier.jpg"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;"
+                                                                                  data-original-title="" title="">
+                                                                                Cashier Sales
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.View all Customer Invoices</span>
+                                                                            <br/>
+                                                                            <span>2.Register Payment</span>
+                                                                            <br/>
+                                                                            <span>3.Print Receipt</span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li style="top: -102px;">
+                                                            <a href="/web/customlogin1?login=vehicleadminautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/vehicle_admin.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">Vehicle Admin
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.Create Products</span>
+                                                                    <br/>
+                                                                    <span>2.Product Variants</span>
+                                                                    <br/>
+                                                                    <span>3.Create PO.</span>
+                                                                    <br/>
+                                                                    <span>4.Manage Inventory</span>
+                                                                    <br/>
+                                                                    <span>5.Validate Purchase receipts against PO</span>
+                                                                    <br/>
+                                                                    <span>6.Maintain Stock</span>
+                                                                    <br/>
+                                                                    <span>7.Manage internal transfer.</span>
+                                                                    <br/>
+                                                                    <span>8.Manage Delivery orders and issue.</span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                                <li style="top:-203px;left:56px">
+                                                    <a href="/web/customlogin1?login=hrmanagerautochip.in&amp;password=a"
+                                                       class="tooltip" data-original-title="" title="">
+                                                        <img src="ars_after_sales/static/src/img/hr.png"
+                                                             class="center-block img-circle img-responsive shadow"
+                                                             data-original-title="" title=""/>
+                                                        <b>
+                                                            <font style="font-size: 8px;" data-original-title=""
+                                                                  title="">HR
+                                                            </font>
+                                                        </b>
+                                                        <div class="tooltiptext">
+                                                            <span>HR</span>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                                <li style="left: 0px;top:0px;">
+                                                    <a href="/web/customlogin1?login=servicemanagerautochip.in&amp;password=a"
+                                                       class="tooltip" data-original-title="" title="">
+                                                        <img src="ars_after_sales/static/src/img/service_manager.png"
+                                                             class="center-block img-circle img-responsive shadow"
+                                                             data-original-title="" title=""/>
+                                                        <b>
+                                                            <font style="font-size: 8px;" data-original-title=""
+                                                                  title="">Service Manager
+                                                            </font>
+                                                        </b>
+                                                        <div class="tooltiptext">
+                                                            <span>1.View SA Dashboard</span>
+                                                            <br/>
+                                                            <span>2.Access to all records of their team.</span>
+                                                            <br/>
+                                                            <span>3.Create Estimation and Send mails within
+                                                                application.
+                                                            </span>
+                                                            <br/>
+                                                            <span>4.Log Customer concern</span>
+                                                            <br/>
+                                                            <span>5.Create SO or Convert Estimation into SO</span>
+                                                            <br/>
+                                                            <span>6.Set Delivery Date</span>
+                                                            <br/>
+                                                            <span>7.Clock Punch-in time to record time taken to attend a
+                                                                customer.
+                                                            </span>
+                                                        </div>
+                                                    </a>
+                                                    <ul>
+                                                        <li style="left: 0px;top:-2px;">
+                                                            <a href="/web/customlogin1?login=crmaftersalesautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/crm_aftersales.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">CRM Aftersales
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.Create appointments.</span>
+                                                                    <br/>
+                                                                    <span>2.Log Customer concern.</span>
+                                                                    <br/>
+                                                                    <span>3.Create Estimation.</span>
+                                                                    <br/>
+                                                                    <span>4.Confirm the appointment</span>
+                                                                    <br/>
+                                                                    <span>5.Create Walk-in</span>
+                                                                    <br/>
+                                                                    <span>6.View CRE Dashboard</span>
+                                                                    <br/>
+                                                                    <span>7.Clock Punch-in time to record time taken to
+                                                                        attend a customer.
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>8.Assign the Service advisor.</span>
+                                                                    <br/>
+                                                                    <span>9.Access Reports.</span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=creaftersalesautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/cre_aftersales.png"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;"
+                                                                                  data-original-title="" title="">CRE
+                                                                                Aftersales
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.Create appointments.</span>
+                                                                            <br/>
+                                                                            <span>2.Log Customer concern.</span>
+                                                                            <br/>
+                                                                            <span>3.Create Estimation.</span>
+                                                                            <br/>
+                                                                            <span>4.Confirm the appointment</span>
+                                                                            <br/>
+                                                                            <span>5.Create Walk-in</span>
+                                                                            <br/>
+                                                                            <span>6.View CRE Dashboard</span>
+                                                                            <br/>
+                                                                            <span>7.Clock Punch-in time to record time
+                                                                                taken to attend a customer.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>8.Assign the Service advisor.</span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li style="top: -104px;">
+                                                            <a href="/web/customlogin1?login=serviceadvisorautochip.in&amp;password=a"
+                                                               data-original-title="" title="" class="tooltip">
+                                                                <img src="ars_after_sales/static/src/img/service_adviser.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">Service Advisor
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.View SA Dashboard</span>
+                                                                    <br/>
+                                                                    <span>2.Views his own appointment.</span>
+                                                                    <br/>
+                                                                    <span>3.Create Estimation and Send mails within
+                                                                        application.
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>4.Log Customer concern</span>
+                                                                    <br/>
+                                                                    <span>5.Create SO or Convert Estimation into SO
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>6.Set Delivery Date</span>
+                                                                    <br/>
+                                                                    <span>7.Clock Punch-in time to record time taken to
+                                                                        attend a customer.
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <!--<li style="top: -1px;">-->
+                                                        <!--    <a href="/web/customlogin1?login=jobcontrollerautochip.in&amp;password=a" class="tooltip" data-original-title="" title="">-->
+                                                        <!--        <img src="/web/image/1515/11.jpeg" class="center-block img-circle img-responsive shadow" data-original-title="" title=""/>-->
+                                                        <!--        <b>-->
+                                                        <!--            <font style="font-size:8px;" data-original-title="" title="">Job Controller</font>-->
+                                                        <!--        </b>-->
+                                                        <!--        <div class="tooltiptext">-->
+                                                        <!--            <span>1.Access to workshop dashboard</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>2.View all Repair orders.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>3.Allocate repair orders to the workshop teams depending on skill and automotive speciality.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>4.Do pre-planning of all the Repair orders before the vehicle arrives</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>5.Monitor the progress of repairs and services by viewing the dashboard</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>6.Timely track on-hold vehicles and get fast approval from customer</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>7.Coordinate with Quality Testers to conduct final checks on vehicles before release to customers.</span>-->
+                                                        <!--            <span>8.Achieve customer satisfaction by on-time completion.</span>-->
+                                                        <!--        </div>-->
+                                                        <!--    </a>-->
+                                                        <!--    <ul>-->
+                                                        <!--        <li>-->
+                                                        <!--            <a href="/web/customlogin1?login=technicianautochip.in&amp;password=a" class="tooltip" data-original-title="" title="">-->
+                                                        <!--                <img src="/web/image/1519" class="center-block img-circle img-responsive shadow" data-original-title="" title=""/>-->
+                                                        <!--                <b>-->
+                                                        <!--                    <font style="font-size: 8px;" data-original-title="" title="">Technician</font>-->
+                                                        <!--                </b>-->
+                                                        <!--                <div class="tooltiptext">-->
+                                                        <!--                    <span>1.Access to technician dashboard</span>-->
+                                                        <!--                    <br/>-->
+                                                        <!--                    <span>2.View his own repair orders.</span>-->
+                                                        <!--                    <br/>-->
+                                                        <!--                    <span>3.Check allocated planning time.</span>-->
+                                                        <!--                    <br/>-->
+                                                        <!--                    <span>4.Punch start and end time of the job</span>-->
+                                                        <!--                    <br/>-->
+                                                        <!--                    <span>5.Apply vehicles on-hold and provide reasons to intimate JC</span>-->
+                                                        <!--                    <br/>-->
+                                                        <!--                    <span>6.Review his own efficiency and productivity.</span>-->
+                                                        <!--                </div>-->
+                                                        <!--            </a>-->
+                                                        <!--            <ul>-->
+                                                        <!--                <li>-->
+                                                        <!--                    <a href="/web/customlogin1?login=securityautochip.in&amp;password=a" class="tooltip" data-original-title="" title="">-->
+                                                        <!--                        <img src="/web/image/1546" class="center-block img-circle img-responsive shadow" data-original-title="" title=""/>-->
+                                                        <!--                        <b>-->
+                                                        <!--                            <font style="font-size: 8px;" data-original-title="" title="">Security</font>-->
+                                                        <!--                        </b>-->
+                                                        <!--                        <div class="tooltiptext">-->
+                                                        <!--                            <span>1.Access to security dashboard</span>-->
+                                                        <!--                            <br/>-->
+                                                        <!--                            <span>2.View all appointments for the day.</span>-->
+                                                        <!--                            <br/>-->
+                                                        <!--                            <span>3.Confirm vehicle inwards.</span>-->
+                                                        <!--                            <br/>-->
+                                                        <!--                            <span>4.Enter KM In amd Out</span>-->
+                                                        <!--                            <br/>-->
+                                                        <!--                            <span>5.Confirm Test drive In and out process</span>-->
+                                                        <!--                            <br/>-->
+                                                        <!--                        </div>-->
+                                                        <!--                    </a>-->
+                                                        <!--                </li>-->
+                                                        <!--            </ul>-->
+                                                        <!--        </li>-->
+                                                        <!--    </ul>-->
+                                                        <!--</li>-->
+                                                        <li style="top: -2px;">
+                                                            <a href="/web/customlogin1?login=partsmanagerautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/parts_manager.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">Parts Manager
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+
+                                                                    <span>1.Create Products</span>
+                                                                    <br/>
+                                                                    <span>2.Product Variants.</span>
+                                                                    <br/>
+                                                                    <span>3.Request Quotation from vendor.</span>
+                                                                    <br/>
+                                                                    <span>4.Create Purchase Order</span>
+                                                                    <br/>
+                                                                    <span>5.Manage Inventory</span>
+                                                                    <br/>
+                                                                    <span>6.Maintain Stock</span>
+                                                                    <br/>
+                                                                    <span>7.Manage internal transfer.</span>
+                                                                    <br/>
+                                                                    <span>8.Manage Delivery orders and issue .</span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=partsassistanceautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/parts_assisant.png"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;"
+                                                                                  data-original-title="" title="">Parts
+                                                                                Assistance
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.View Products.</span>
+                                                                            <br/>
+                                                                            <span>2.Maintain Min/Max stocks.</span>
+                                                                            <br/>
+                                                                            <span>3.Request Quotation from vendor.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>4.Validate Purchase receipts against
+                                                                                Purchase Order.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>5.Manage Inventory.</span>
+                                                                            <br/>
+                                                                            <span>6.Manage internal transfer.</span>
+                                                                            <br/>
+                                                                            <span>7.Manage Delivery orders and issue
+                                                                                items.
+                                                                            </span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <li style="top: -2px;">
+                                                            <a href="/web/customlogin1?login=warrantymanagerautochip.in&amp;password=a"
+                                                               data-original-title="" title="" class="tooltip">
+                                                                <img src="ars_after_sales/static/src/img/warrenty_manager.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">Warranty Manager
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.View SA Dashboard</span>
+                                                                    <br/>
+                                                                    <span>2.Views his own appointment.</span>
+                                                                    <br/>
+                                                                    <span>3.Create Estimation and Send mails within
+                                                                        application.
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>4.Log Customer concern</span>
+                                                                    <br/>
+                                                                    <span>5.Create SO or Convert Estimation into SO
+                                                                    </span>
+                                                                    <br/>
+                                                                    <span>6.Set Delivery Date</span>
+                                                                    <br/>
+                                                                    <span>7.Clock Punch-in time to record time taken to
+                                                                        attend a customer.
+                                                                    </span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=warranty_approverautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/warrenty_approver.png"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;"
+                                                                                  data-original-title="" title="">
+                                                                                Warranty Approver
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.View Products.</span>
+                                                                            <br/>
+                                                                            <span>2.Maintain Min/Max stocks.</span>
+                                                                            <br/>
+                                                                            <span>3.Request Quotation from vendor.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>4.Validate Purchase receipts against
+                                                                                Purchase Order.
+                                                                            </span>
+                                                                            <br/>
+                                                                            <span>5.Manage Inventory.</span>
+                                                                            <br/>
+                                                                            <span>6.Manage internal transfer.</span>
+                                                                            <br/>
+                                                                            <span>7.Manage Delivery orders and issue
+                                                                                items.
+                                                                            </span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                        <!--<li style="top: -204px;">-->
+                                                        <!--    <a href="/web/customlogin1?login=finialinspectorautochip.in&amp;password=a" class="tooltip" data-original-title="" title="">-->
+                                                        <!--        <img src="/web/image/1521" class="center-block img-circle img-responsive shadow" data-original-title="" title=""/>-->
+                                                        <!--        <b>-->
+                                                        <!--            <font style="font-size: 8px;" data-original-title="" title="">Final Inspector </font>-->
+                                                        <!--        </b>-->
+                                                        <!--        <div class="tooltiptext">-->
+                                                        <!--            <span>1.Access to final inspection dashboard.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>2.View all Customer Invoices.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>3.View all repair oders ready for quality check.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>4.Punch start and end time of the quality test.</span>-->
+                                                        <!--            <br/>-->
+                                                        <!--            <span>5.Intimate the JC by rejecting the labors to re-work on the same.</span>-->
+                                                        <!--        </div>-->
+                                                        <!--    </a>-->
+                                                        <!--</li>-->
+                                                        <li style="top: -2px;">
+                                                            <a href="/web/customlogin1?login=aftersalesaccountantautochip.in&amp;password=a"
+                                                               class="tooltip" data-original-title="" title="">
+                                                                <img src="ars_after_sales/static/src/img/after_accunt.png"
+                                                                     class="center-block img-circle img-responsive shadow"
+                                                                     data-original-title="" title=""/>
+                                                                <b>
+                                                                    <font style="font-size: 8px;" data-original-title=""
+                                                                          title="">AftersalesAccountant
+                                                                    </font>
+                                                                </b>
+                                                                <div class="tooltiptext">
+                                                                    <span>1.View all Sale Order</span>
+                                                                    <br/>
+                                                                    <span>2.View all Customer Invoices</span>
+                                                                    <br/>
+                                                                    <span>3.Register Payment</span>
+                                                                    <br/>
+                                                                    <span>4.Set Payment Due Date</span>
+                                                                    <br/>
+                                                                    <span>5.Validate Invoices</span>
+                                                                    <br/>
+                                                                    <span>6.Access to Reports</span>
+                                                                </div>
+                                                            </a>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="/web/customlogin1?login=aftersalescashierautochip.in&amp;password=a"
+                                                                       class="tooltip" data-original-title="" title="">
+                                                                        <img src="ars_after_sales/static/src/img/after_cashier.png"
+                                                                             class="center-block img-circle img-responsive shadow"
+                                                                             data-original-title="" title=""/>
+                                                                        <b>
+                                                                            <font style="font-size: 8px;"
+                                                                                  data-original-title="" title="">
+                                                                                AftersalesCashier
+                                                                            </font>
+                                                                        </b>
+                                                                        <div class="tooltiptext">
+                                                                            <span>1.View all Customer Invoices</span>
+                                                                            <br/>
+                                                                            <span>2.Register Payment</span>
+                                                                            <br/>
+                                                                            <span>3.Print Receipt</span>
+                                                                        </div>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </section>
+                        </div>
+                        <section class="s_big_picture mb0 bg-gray-lighter oe_img_bg oe_custom_bg"
+                                 style="background-position: 88% 10.92%; background-image: url(&quot;/web/image/1704&quot;);">
+                            <div class="container">
+                                <div class="o_image_floating o_margin_s pull-right s_image_floating">
+                                    <div class="o_container">
+                                        <img class="img img-responsive img-rounded" src="ars_after_sales/static/src/img/ars.png"
+                                             alt="Odoo CMS- Sample image floating" data-original-title="" title=""
+                                             style="width: 25%;" align="right"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <!--<section class="parallax s_parallax oe_img_bg" style="background-image: none;" data-scroll-background-ratio="0">-->
+                        <!--    <span class="s_parallax_bg oe_img_bg oe_custom_bg" style="background-image: url(&quot;/web/image/1556/2255524-white-blue-wallpaper.jpg&quot;); background-position: 43.44% 96.52%;"/>-->
+                        <!--    <div class="oe_structure"/>-->
+                        <!--    <div class="container">-->
+                        <!--        <div class="row">-->
+                        <!--            <div class="col-md-12">-->
+                        <!--                <div class="o_image_floating s_image_floating pull-left o_margin_l">-->
+                        <!--                    <div class="o_container"/>-->
+                        <!--                    <div class="o_footer">-->
+                        <!--                        <small class="text-muted">-->
+                        <!--                            <font style="font-size: 24px;">Powered By</font>-->
+                        <!--                        </small>-->
+                        <!--                        <p>-->
+                        <!--                            <b>-->
+                        <!--                                <font style="color: rgb(33, 16, 74);">Autochip india pvt limited</font>-->
+                        <!--                            </b>-->
+                        <!--                        </p>-->
+                        <!--                        <p/>-->
+                        <!--                        <p>-->
+                        <!--                            <b>-->
+                        <!--                                <font style="color: rgb(33, 16, 74);"/>-->
+                        <!--                                <font style="color: rgb(33, 16, 74); font-size: 12px;">Address: S-505, Manipal Centre, #47 Dickenson Road,</font>-->
+                        <!--                            </b>-->
+                        <!--                        </p>-->
+                        <!--                        <p>-->
+                        <!--                            <b>-->
+                        <!--                                <font style="color: rgb(33, 16, 74); font-size: 12px;"> Bangalore 560 042 &amp;nbsp;</font>-->
+                        <!--                            </b>-->
+                        <!--                        </p>-->
+                        <!--                        <p>-->
+                        <!--                            <b>-->
+                        <!--                                <font style="color: rgb(33, 16, 74); font-size: 12px;"> Phone: +91 80 42109381, +91 9880741553 &amp;nbsp;</font>-->
+                        <!--                            </b>-->
+                        <!--                        </p>-->
+                        <!--                    </div>-->
+                        <!--                </div>-->
+                        <!--                <div class="o_image_floating pull-right s_image_floating">-->
+                        <!--                    <div class="o_container">-->
+                        <!--                        <img class="img img-rounded img-responsive pull-right" src="/web/image/1557" alt="Odoo CMS- Sample image floating" data-original-title="" title="" style="width: 50%;"/>-->
+                        <!--                    </div>-->
+                        <!--                    <div class="o_footer">-->
+                        <!--                        <br/>-->
+                        <!--                    </div>-->
+                        <!--                </div>-->
+                        <!--                <h3 class="text-center text-muted">&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; -->
+                        <!--                <br/>-->
+                        <!--                </h3>-->
+                        <!--            </div>-->
+                        <!--        </div>-->
+                        <!--    </div>-->
+                        <!--</section>-->
+                    </t>
+                </t>
+            </field>
+        </record>
+
+        <record id="rolecenter_page" model="website.page">
+            <field name="url">/role_center</field>
+            <field name="website_published">True</field>
+            <field name="view_id" ref="role_center"/>
+        </record>
+        <!--<record id="role_center" model="website.menu">-->
+        <!--<field name="page_id" ref="rolecenter_page" />-->
+        <!--</record>-->
+        <!--<record id="website2_menu_role_center" model="website.menu">-->
+            <!--<field name="name">Role Center</field>-->
+            <!--<field name="url">/role_center</field>-->
+            <!--<field name="sequence" type="int">60</field>-->
+            <!--<field name="page_id" ref="rolecenter_page"/>-->
+        <!--</record>-->
+    </data>
+</odoo>

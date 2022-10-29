@@ -1,0 +1,41 @@
+<odoo>
+    <data>
+        <record id="ars_home" model="ir.ui.view">
+            <field name="name">Home</field>
+            <field name="type">qweb</field>
+            <field name="key">website.ars_home</field>
+            <field name="arch" type="xml">
+                <t name="ars_home" priority="29" t-name="website.homepage">
+                    <t t-call="website.layout">
+                        <t t-set="pageName" t-value="'homepage'"/>
+                        <div id="wrap" class="oe_structure oe_empty" style="background-color: white;">
+                            <section class="s_text_block_image_fw oe_img_bg oe_custom_bg o_bg_img_opt_contain"
+                                     style="background-image: url(&quot;ars_vehicle_sales/static/src/img/home_logo.png&quot;);">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-12 mt128 mb128">
+                                            <h2 style="font-size:62px">
+                                                <br/>
+                                            </h2>
+                                            <h2 style="font-size:62px">
+                                                <br/>
+                                            </h2>
+                                            <h4>&amp;nbsp;</h4>
+                                            <p>&amp;nbsp;</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </t>
+                </t>
+            </field>
+
+        </record>
+        <record id="ars_homepae" model="website.page">
+            <field name="url">ars_home</field>
+            <field name="website_published">True</field>
+            <field name="view_id" ref="ars_home"/>
+        </record>
+    </data>
+</odoo>

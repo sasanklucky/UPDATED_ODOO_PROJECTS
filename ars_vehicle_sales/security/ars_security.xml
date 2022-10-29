@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<odoo>
+    <record model="ir.module.category" id="module_category_ars">
+        <field name="name">ARS</field>
+        <field name="sequence">100</field>
+    </record>
+    <record id="group_ars_vehicle_admin" model="res.groups">
+        <field name="name">Vehicle Admin</field>
+        <field name="category_id" ref="module_category_ars"/>
+    </record>
+
+    <data noupdate="1">
+        <record id="website.website_page_rule_public" model="ir.rule">
+            <field name="groups" eval="[(4, ref('base.group_public'))]"/>
+        </record>
+    </data>
+</odoo>

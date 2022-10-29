@@ -1,0 +1,128 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_right_job_controller1,access_job_controller,project.model_project_project,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller2,access_job_controller,analytic.model_account_analytic_line,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller3,access_job_controller,model_task_efficiency,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller4,access_job_controller,model_planner_calender,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller5,access_job_controller,model_task_status,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller6,access_job_controller,model_project_task,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller7,access_job_controller,calendar.model_calendar_event,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller8,access_job_controller,ars_after_sales.model_resource_category,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller9,access_job_controller,model_main_process,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller10,access_job_controller,ars_after_sales.model_customer_voice,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller11,access_job_controller,mail.model_mail_tracking_value,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller12,access_job_controller,base.model_res_partner,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller13,access_job_controller,model_crm_lead,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller14,access_job_controller,stock.model_stock_production_lot,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller15,access_job_controller,model_sub_process,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller16,access_job_controller,model_sale_order,ac_rms.group_job_controller,1,1,1,0
+access_right_job_controller_rms_activity,access_job_controller_rms_activity,ac_rms.model_rms_activity_setup,ac_rms.group_job_controller,1,1,1,0
+
+access_right_technician1,access_technician,project.model_project_project,ac_rms.group_technician,1,1,1,0
+access_right_technician2,access_technician,analytic.model_account_analytic_line,ac_rms.group_technician,1,1,1,0
+access_right_technician3,access_technician,model_task_efficiency,ac_rms.group_technician,1,1,1,0
+access_right_technician4,access_technician,model_planner_calender,ac_rms.group_technician,1,1,1,0
+access_right_technician5,access_technician,model_task_status,ac_rms.group_technician,1,1,1,0
+access_right_technician6,access_technician,model_project_task,ac_rms.group_technician,1,1,1,0
+access_right_technician7,access_technician,calendar.model_calendar_event,ac_rms.group_technician,1,1,1,0
+access_right_technician_resource,access_technician,resource.model_resource_resource,group_technician,1,1,1,0
+access_right_technician8,access_technician,ars_after_sales.model_resource_category,group_technician,1,1,1,0
+access_right_technician_project_task_type,access_technician,project.model_project_task_type,group_technician,1,1,1,0
+access_right_technician_fleet_vehicle,access_technician,fleet.model_fleet_vehicle,group_technician,1,1,1,0
+access_right_technician_landing_setting,access_technician,ars_after_sales.model_landing_setting,group_technician,1,1,1,0
+access_right_technician_sale_order_line,access_technician,sale.model_sale_order_line,group_technician,1,1,1,0
+access_right_technician_hr_employee,access_technician,hr.model_hr_employee,group_technician,1,1,1,0
+access_right_technician_ir_model,access_technician,base.model_ir_model,group_technician,1,1,1,0
+access_right_technician9,access_technician,model_main_process,ac_rms.group_technician,1,1,1,0
+access_right_technician10,access_technician,ars_after_sales.model_customer_voice,ac_rms.group_technician,1,1,1,0
+access_right_technician11,access_technician,mail.model_mail_tracking_value,ac_rms.group_technician,1,1,1,0
+access_right_technician12,access_technician,base.model_res_partner,ac_rms.group_technician,1,1,1,0
+access_right_technician13,access_technician,model_crm_lead,ac_rms.group_technician,1,1,1,0
+access_right_technician14,access_technician,stock.model_stock_production_lot,ac_rms.group_technician,1,1,1,0
+access_right_technician15,access_technician,model_sub_process,ac_rms.group_technician,1,1,1,0
+access_right_technician16,access_technician,model_sale_order,ac_rms.group_technician,1,1,1,0
+access_right_technician17,access_technician,account.model_account_account,ac_rms.group_technician,1,1,1,0
+access_right_sales57,crm sale68,model_main_process,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_after_sales13,crm after sale6,ac_rms.model_main_process,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales15,crm after sale8,ac_rms.model_sub_process,ars_after_sales.group_aftersale,1,1,1,0
+access_right_technician_rms_activity,access_technician_rms_activity,ac_rms.model_rms_activity_setup,ac_rms.group_technician,1,1,1,0
+access_right_technician_mail_activity,access_technician_mail_activity,mail.model_mail_activity,ac_rms.group_technician,1,1,1,0
+access_right_technician_calendar_attendee,access_technician_calendar_attendee,calendar.model_calendar_attendee,ac_rms.group_technician,1,1,1,0
+access_right_technician_mail_template,access_technician_mail_template,mail.model_mail_template,ac_rms.group_technician,1,1,1,0
+access_right_technician_mail_mail,access_technician_mail_mail,mail.model_mail_mail,ac_rms.group_technician,1,1,1,0
+access_right_technician_mail_message,access_technician_mail_message,mail.model_mail_message,ac_rms.group_technician,1,1,1,0
+access_right_technician_rating_rating,access_technician_rating_rating,rating.model_rating_rating,ac_rms.group_technician,1,1,1,0
+access_right_technician_ir_attachment,access_technician_ir_attachment,base.model_ir_attachment,ac_rms.group_technician,1,1,1,0
+access_right_technician_resource_calendar,access_technician_resource_calendar,resource.model_resource_calendar,ac_rms.group_technician,1,1,1,0
+access_right_technician_resource_calendar_attendance,access_technician_resource_calendar_attendance,resource.model_resource_calendar_attendance,ac_rms.group_technician,1,1,1,0
+access_right_technician_resource_calendar_leaves,access_technician_resource_calendar_leaves,resource.model_resource_calendar_leaves,ac_rms.group_technician,1,1,1,0
+access_right_technician_order_line_category,access_technician_order_line_category,ars_after_sales.model_order_line_category,ac_rms.group_technician,1,1,1,0
+access_right_technician_ars_sale_warranty,access_technician_ars_sale_warranty,ars_after_sales.model_ars_sale_warranty,ac_rms.group_technician,1,1,1,0
+
+
+access_right_fi_planner_calendar,access_fi_planner_calendar,model_planner_calender,ac_rms.group_fi,1,1,1,0
+
+access_right_security_crm_lead,CRM Lead Security,model_crm_lead,ac_rms.group_security,1,1,1,0
+access_right_security_stock_production_lot,Stock Production Lot Security,stock.model_stock_production_lot,ac_rms.group_security,1,1,1,0
+access_right_security_crm_lead_line,CRM Lead Line Security,ars_after_sales.model_crm_lead_line,ac_rms.group_security,1,1,1,0
+access_right_security_res_partner,Res Partner Security,base.model_res_partner,ac_rms.group_security,1,1,1,0
+access_right_security_res_users,Res Users Security,mail.model_res_users,ac_rms.group_security,1,1,1,0
+access_right_security_sale_order,Sale Order Security,model_sale_order,ac_rms.group_security,1,1,1,0
+access_right_security_main_process,Main Process Security,model_main_process,ac_rms.group_security,1,1,1,0
+access_right_security_mail_message,Mail Message Security,mail.model_mail_message,ac_rms.group_security,1,1,1,0
+access_right_security_rating,Rating Security,rating.model_rating_rating,ac_rms.group_security,1,1,1,0
+
+
+access_right_security_landing,land_page_security,ars_after_sales.model_landing_setting,ac_rms.group_security,1,1,1,0
+access_right_security_mail_followers,mail_followers_security,mail.model_mail_followers,ac_rms.group_security,1,1,1,0
+access_right_security_fleet_vehicle,fleet_vehicle_security,fleet.model_fleet_vehicle,ac_rms.group_security,1,1,1,0
+access_right_security_rms_activity_setup,RMS Activity Setup Security,ac_rms.model_rms_activity_setup,ac_rms.group_security,1,1,1,0
+access_right_security_mail_activity,RMS Activity Setup Security,ac_rms.model_rms_activity_setup,ac_rms.group_security,1,1,1,0
+access_right_security_sale_order_line,access_security,sale.model_sale_order_line,ac_rms.group_security,1,1,1,0
+access_right_security_order_line_category,access_security_order_line_category,ars_after_sales.model_order_line_category,ac_rms.group_security,1,1,1,0
+access_right_security_ars_sale_warranty,access_security_ars_sale_warranty,ars_after_sales.model_ars_sale_warranty,ac_rms.group_security,1,1,1,0
+
+access_right_rms_activity_setup,RMS Activity Setup,ac_rms.model_rms_activity_setup,ars_after_sales.group_aftersale,1,1,1,0
+access_right_sales_mail_activ,crm sale2_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_crm_sale,1,1,1,0
+
+access_right_sales1_mail_activ,crm sale1_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_show_sale_menu,1,1,1,0
+
+access_right1_mail_activ,a1_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_aftersale,1,1,1,0
+access_right_task_efficiency,task_efficiency,ac_rms.model_task_efficiency,ars_after_sales.group_aftersale,1,1,1,0
+
+access_right_after_sales_spare_mail_activ,crm_spare1_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_show_purchase_menu,1,1,1,0
+
+access_right_fleet_mail_activ,ars_fleet_aftersales_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_parts_aftersales,1,1,1,0
+
+access_right_war_mail_activ,ars_warranty_mail_activ,ac_rms.model_mail_activity,ars_after_sales.group_warranty_manager,1,1,1,0
+
+access_right_account_inline_mail_activ,ars_account_analytic_line_mail_activ,ac_rms.model_mail_activity,sales_team.group_sale_salesman_all_leads,1,1,1,0
+
+access_right_salesman_mail_activ,access_salesman_mail_activ,ac_rms.model_mail_activity,sales_team.group_sale_salesman,1,1,1,0
+
+access_right_manager_mail_activ,access_manager_mail_activ,ac_rms.model_mail_activity,sales_team.group_sale_manager,1,1,1,0
+
+access_right_rms_activity_setup_sale,RMS Activity Setup Sale,ac_rms.model_rms_activity_setup,sales_team.group_sale_salesman,1,1,1,0
+access_right_rms_activity_setup_sale_after,RMS Activity Setup After Sale,ac_rms.model_rms_activity_setup,ars_after_sales.group_show_sale_menu,1,1,1,0
+
+
+access_task_efficiency_sec,task_efficiency,ac_rms.model_task_efficiency,ac_rms.group_security,1,1,1,1
+access_task_efficiency_cre,task_efficiency,ac_rms.model_task_efficiency,ac_rms.group_cre,1,1,1,1
+access_task_efficiency_sa,task_efficiency,ac_rms.model_task_efficiency,ac_rms.group_sa,1,1,1,1
+access_task_efficiency_job_controller,task_efficiency,ac_rms.model_task_efficiency,ac_rms.group_job_controller,1,1,1,1
+access_task_efficiency_technician,task_efficiency,ac_rms.model_task_efficiency,ac_rms.group_technician,1,1,1,1
+access_task_efficiency_fi,task_efficiency,ac_rms.model_task_efficiency,group_fi,1,1,1,1
+
+access_task_status_sec,task_status,ac_rms.model_task_status,ac_rms.group_security,1,1,1,1
+access_task_status_cre,task_status,ac_rms.model_task_status,ac_rms.group_cre,1,1,1,1
+access_task_status_sa,task_status,ac_rms.model_task_status,ac_rms.group_sa,1,1,1,1
+access_task_status_job_controller,task_status,ac_rms.model_task_status,ac_rms.group_job_controller,1,1,1,1
+access_task_status_technician,task_status,ac_rms.model_task_status,ac_rms.group_technician,1,1,1,1
+access_task_status_fi,task_status,ac_rms.model_task_status,group_fi,1,1,1,1
+
+
+
+
+
+
+
+

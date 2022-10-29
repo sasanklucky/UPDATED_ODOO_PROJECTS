@@ -1,0 +1,310 @@
+<odoo>
+  <data>
+      <record id="crm_case_form_view_leads_inherit1" model="ir.ui.view">
+       <field name="name">crm.lead.form.lead.inherit</field>
+       <field name="model">crm.lead</field>
+       <field name="inherit_id" ref="crm.crm_case_form_view_leads" />
+       <field name="arch" type="xml">
+           <field name="function" position="replace"/>
+           <field name="email_from" widget="email" position="replace"/>
+           <field name="phone" widget="phone" position="replace"/>
+           <field name = 'mobile' position="after">
+           <field name="email_from" widget="email"/>
+           <field name="phone" widget="phone"/>
+           <field name="function"/>
+           <field name="crm_lead_stage"/>
+
+       </field>
+       <xpath expr="//form/sheet/notebook/page[1]" position="before">
+           <page string="Model Intrested" >
+            <field name="vehicle_line">
+                    <tree name="CrmLeadLine" string="Crm Lead Lines"  editable="bottom">
+                        <field name="product_id" string="Model" domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
+                        context="{'form_view_ref':'product.product_normal_form_view'}"/>
+                        <field name="name"/>
+                    </tree>
+            </field>
+           </page>
+       </xpath>
+
+       <xpath expr="//notebook/page[@name='extra']/group/group[2]/field[@name='source_id']" position="replace">
+       </xpath>
+
+       <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
+           <field name="source_id"/>
+       </xpath>
+
+       <xpath expr="//form/sheet/group/group[3]/field[@name='user_id']" position="replace">
+            <field name="user_id"  domain="[('share', '=', False),('salesperson', '=', True)]"
+             options="{'no_create': True}"
+            context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
+       </xpath>
+
+       <xpath expr="//form/sheet/group/group[3]/field[@name='team_id']" position="replace">
+            <field name="team_id" readonly="1" invisible="1"/>
+       </xpath>
+       </field>
+      </record>
+
+      <!-- CRM Sales Lead tree view inherit -->
+      <record id="crm_case_tree_view_leads_inherit1" model="ir.ui.view">
+            <field name="name">crm.lead.tree.lead.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_leads" />
+            <field name="arch" type="xml">
+            <xpath expr="/tree/field[@name='country_id']" position="replace">
+                <field name="country_id" invisible="1"/>
+            </xpath>
+            </field>
+      </record>
+
+      <!-- Lead Menu -->
+        <!--<record model="ir.actions.act_window" id="crm_lead_all_leads">-->
+            <!--<field name="name">Leads</field>-->
+            <!--<field name="res_model">crm.lead</field>-->
+            <!--<field name="view_mode">tree,kanban,graph,pivot,calendar,form</field>-->
+            <!--<field name="domain">['|', ('type','=','lead'), ('type','=',False)]</field>-->
+            <!--<field name="search_view_id" ref="crm.view_crm_case_leads_filter"/>-->
+            <!--<field name="context">{-->
+                    <!--'default_type':'lead',-->
+                    <!--'search_default_type': 'lead',-->
+                    <!--'needaction_menu_ref': 'crm.menu_crm_opportunities',-->
+                    <!--'search_default_to_process':1,-->
+                    <!--'default_user_id':'',-->
+                <!--}-->
+            <!--</field>-->
+        <!--</record>-->
+
+        <!-- CRM Sales Pipeline form view inherit -->
+      <record id="crm_case_form_view_oppor_inherit1" model="ir.ui.view">
+       <field name="name">crm.lead.form.lead.inherit1</field>
+       <field name="model">crm.lead</field>
+       <field name="inherit_id" ref="crm.crm_case_form_view_oppor" />
+       <field name="arch" type="xml">
+
+       <!--<xpath expr="//form/sheet/group/group[3]/field[@name='user_id']" position="replace">-->
+            <!--<field name="user_id" string="Salesperson"-->
+            <!--domain="[('share', '=', False),('salesperson', '=', True)]"-->
+             <!--options="{'no_create': True}"-->
+            <!--context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>-->
+       <!--</xpath>-->
+       <xpath expr="//form/sheet/group/group[3]/field[@name='team_id']" position="replace">
+           <field name="phone" invisible="1"/>
+           <field name="team_id" readonly="1" invisible="1"/>
+       </xpath>
+       <!--<xpath expr="//form/sheet/group/group[1]/field[@name='phone']" position="replace">-->
+                    <!--<field name="mobile" />-->
+       <!--</xpath>-->
+
+       <xpath expr="//notebook/page[@name='lead']/group/group[2]/field[@name='function']" position="replace">
+       </xpath>
+
+       <xpath expr="//notebook/page[@name='lead']/group/group[2]/field[@name='mobile']" position="replace">
+       </xpath>
+
+       <xpath expr="//form/sheet/group/group[2]/field[@name='date_deadline']" position="after">
+           <field name="function"/>
+       </xpath>
+
+       <xpath expr="//form/sheet/notebook/page[1]" position="before">
+           <page string="Model Intrested">
+            <field name="vehicle_line">
+                <tree name="SaleOrderLine" string="Sales Order Lines"  editable="bottom">
+                    <field name="product_id" string="Model" domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
+                    context="{'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"/>
+                    <field name="name"/>
+               </tree>
+            </field>
+           </page>
+       </xpath>
+           <xpath expr="//button[@name='%(sale_crm.sale_action_quotations_new)d']" position="replace">
+            <button string="New Quotation" name="get_prod_action" type="object" class="oe_highlight"
+                context="{'search_default_partner_id': partner_id,
+                          'default_partner_id': partner_id,
+                          'default_team_id': team_id,
+                          'default_campaign_id': campaign_id,
+                          'default_medium_id': medium_id,
+                          'default_source_id': source_id,
+                          'default_opportunity_id': active_id}"/>
+           </xpath>
+       </field>
+      </record>
+
+      <record model="ir.actions.act_window" id="crm.crm_lead_all_leads">
+          <field name="domain">['|', ('type','=','lead'), ('type','=',False),('team_id.team_type','=','sales')]</field>
+      </record>
+
+      <record id="crm_case_form_view_lead2opportunity_inherit1" model="ir.ui.view">
+       <field name="name">crm.lead.form.lead2opportunity.inherit1</field>
+       <field name="model">crm.lead2opportunity.partner</field>
+       <field name="inherit_id" ref="crm.view_crm_lead2opportunity_partner"/>
+       <field name="arch" type="xml">
+           <xpath expr="//form/group/field[@name='user_id']" position="replace">
+               <!--<field name="aftersale_opp" invisible = "True"/>-->
+               <!--<field name="user_id"  string="Service Advisor" attrs="{'invisible': [('aftersale_opp', '!=', True)]}"  domain="[('share', '=', False)]"/>-->
+               <field name="user_id" domain="[('share', '=', False),('salesperson', '=', True)]" options="{'no_create': True, 'no_open': True}"/>
+           </xpath>
+           <xpath expr="//form/group/field[@name='team_id']" position="replace">
+               <field name="team_id" widget="selection" invisible = "1"/>
+           </xpath>
+       </field>
+      </record>
+
+      <record id="view_crm_lead2opportunity_partner_inherit" model="ir.ui.view">
+            <field name="name">crm.lead2opportunity.partner.form.inherit</field>
+            <field name="model">crm.lead2opportunity.partner</field>
+            <field name="arch" type="xml">
+                <form string="Convert to Opportunity">
+                    <group name="name">
+                        <field name="name" widget="radio"/>
+                    </group>
+                    <group string="Assign this opportunity to">
+                        <field name="aftersale_opp" invisible = "True"/>
+                       <!--<field name="user_id"  string="Service Advisor" attrs="{'invisible': [('aftersale_opp', '!=', True)]}"  domain="[('share', '=', False),('serviceadvisor', '=', True)]" options="{'no_create': True, 'no_open': True}"/>-->
+                       <!--<field name="user_id"  string="Sales Person" attrs="{'invisible': [('aftersale_opp', '!=', False)]}" domain="[('share', '=', False),('serviceadvisor', '=', True)]" options="{'no_create': True, 'no_open': True}"/>-->
+                        <field name="user_id"  string="Service Advisor" domain="[('share', '=', False),('serviceadvisor', '=', True)]" options="{'no_create': True, 'no_open': True}"/>
+                        <!--<field name="resource_id_opportunity" domain="[('resource_category.code','=','SA')]"/>-->
+                        <field name="team_id" widget="selection" readonly="True" invisible = "1"/>
+                    </group>
+                    <group string="Opportunities" attrs="{'invisible': [('name', '!=', 'merge')]}">
+                        <field name="opportunity_ids" nolabel="1">
+                            <tree>
+                                <field name="create_date"/>
+                                <field name="name"/>
+                                <field name="type"/>
+                                <field name="contact_name"/>
+                                <field name="country_id" invisible="context.get('invisible_country', True)"/>
+                                <field name="email_from"/>
+                                <field name="phone"/>
+                                <field name="stage_id"/>
+                                <field name="user_id"/>
+                                <field name="team_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="action" attrs="{'invisible': [('name', '!=', 'convert')]}" string="Customers" col="1">
+                        <field name="action" nolabel="1" widget="radio"/>
+                        <group col="2">
+                            <field name="partner_id" domain="[('customer', '=', True)]" context="{'search_default_customer': 1}" attrs="{'required': [('action', '=', 'exist')], 'invisible':[('action','!=','exist')]}"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="action_apply" string="Create Opportunity" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+      <record id="action_crm_lead2opportunity_partner_inherit" model="ir.actions.act_window">
+            <field name="name">Convert to opportunity</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">crm.lead2opportunity.partner</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_crm_lead2opportunity_partner_inherit"/>
+            <field name="target">new</field>
+        </record>
+
+
+    <record id="view_order_form_inherited_sales" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="replace">
+                <field name="product_id" domain="[('catalog_type.name','=', 'Vehicle')]"
+                    attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                    context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
+                   />
+              </xpath>
+              <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']" position="replace">
+              </xpath>
+              <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='team_id']" position="replace">
+                    <field name="team_id" options="{'no_create': True,'no_open': True}"/>
+                    <field name="counter_parts" invisible="1"/>
+              </xpath>
+            </field>
+    </record>
+
+
+
+    <record id="purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+              <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="replace">
+                    <field name="product_id" attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}"
+                           context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"/>
+               </xpath>
+            </field>
+    </record>
+
+    <record id="view_users_form_inherited" model="ir.ui.view">
+            <field name="name">res.users.form</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+               <xpath expr="//form/sheet/div[@class='oe_title']/group/field[@name='partner_id']" position="after">
+                  <!--  <field name="company"/>
+                   <field name="phone"/> -->
+                   <field name="salesperson"/>
+                   <field name="serviceadvisor"/>
+               </xpath>
+            </field>
+    </record>
+
+    <!-- Action Filter Of Inventory Dashboard for Sales-->
+    <record model="ir.actions.act_window" id="stock.action_picking_tree_ready">
+          <field name="domain">[('is_aftersale','=', False)]</field>
+    </record>
+
+    <!-- Action Filter Of Inventory Dashboard for Aftersales-->
+    <record id="action_picking_tree_ready_aftersale" model="ir.actions.act_window">
+            <field name="name">To Do</field>
+            <field name="res_model">stock.picking</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar</field>
+            <field name="domain">[('is_aftersale','=', True)]</field>
+            <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_available': 1,
+            }
+            </field>
+            <field name="search_view_id" ref="stock.view_picking_internal_search"/>
+             <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click here to create a new transfer.
+              </p><p>
+                You can either do it immediately or mark it as Todo for future processing. Use your scanner to validate the transferred quantity quicker.
+              </p>
+            </field>
+       </record>
+
+
+    <!-- Action Filter Of Leads Reporting for Sales in Default Search View-->
+    <record model="ir.actions.act_window" id="crm.crm_opportunity_report_action_lead">
+          <field name="context">{'search_default_current': True, 'active_test': True, 'search_default_lead': True, 'search_default_team_id': 1 }</field>
+    </record>
+
+      <!-- Action Filter Of Leads Reporting for Aftersales in Default Search View-->
+      <record id="crm_opportunity_report_action_lead_aftersale" model="ir.actions.act_window">
+            <field name="name">Leads Analysis</field>
+            <field name="res_model">crm.opportunity.report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">pivot,graph</field>
+            <field name="context">{'search_default_current': True, 'active_test': True, 'search_default_lead': True, 'search_default_team_id': 3 }</field>
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'graph', 'view_id': ref('crm.crm_opportunity_report_view_graph_lead')}),
+                          (0, 0, {'view_mode': 'pivot', 'view_id': ref('crm.crm_opportunity_report_view_pivot_lead')})]"/>
+            <field name="help">This report analyses the source of your leads.</field>
+      </record>
+
+
+
+  </data>
+</odoo>

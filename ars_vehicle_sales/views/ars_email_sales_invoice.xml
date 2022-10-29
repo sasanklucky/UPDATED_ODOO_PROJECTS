@@ -1,0 +1,497 @@
+<odoo>
+
+    <template id="ars_portal_invoice_page" name="Invoice Portal Template">
+        <t t-call="portal.portal_layout">
+            <div class="container">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>
+                                    <t t-call='portal.record_pager'/>
+                                    <span t-if="invoice.type == 'out_invoice' and (invoice.state == 'open' or invoice.state == 'paid')">Invoice</span>
+                                    <span t-if="invoice.type == 'out_invoice' and invoice.state == 'draft'">Draft Invoice</span>
+                                    <span t-if="invoice.type == 'out_invoice' and invoice.state == 'cancel'">Cancelled Invoice</span>
+                                    <span t-if="invoice.type == 'out_refund'">Credit Note</span>
+                                    <span t-if="invoice.type == 'in_refund'">Vendor Credit Note</span>
+                                    <span t-if="invoice.type == 'in_invoice'">Vendor Bill</span>
+                                    <span t-field="invoice.number"/>
+                                </h4>
+                            </div>
+                            <div class="col-md-6 col-sm-6 col-xs-12 hidden-print" id="o_portal_account_actions">
+                                <a target="_blank" t-att-href="'/my/invoices/pdf/%s?%s' % (invoice.id, keep_query())" class="pull-right" title="Download">
+                                    <i class="fa fa-download fa-2x" aria-hidden="true"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <t t-if="error or warning" t-call="account.portal_invoice_error"/>
+                        <t t-if="success and (not error and not warning)" t-call="account.portal_invoice_success"/>
+                        <t t-call="ars_vehicle_sales.ars_portal_invoice_report"/>
+                    </div>
+                </div>
+            </div>
+            <div class="oe_structure mb32"/>
+        </t>
+    </template>
+
+    <template id="ars_portal_invoice_report" name="Invoice Portal Report">
+        
+        
+        <div class="col-xs-12" style="margin-bottom: 32px;">
+
+            <div class="col-xs-6" style="margin-top: 80px;">
+                <h3>
+                    <strong>Tax Invoice</strong>
+                    <strong t-field="invoice.number"/>
+                </h3>
+                <span style="margin-left:122px;" t-field="invoice.create_date" t-options="{&quot;format&quot;: &quot;MM-dd-yyyy&quot;}"/>
+            </div>
+    
+            <div class="col-xs-6" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A">
+                <t t-if="invoice.partner_id == invoice.partner_shipping_id">
+                    <table class="table">
+                        <tr>
+                            <td colspan="2">
+                                <h4>
+                                    <span>Billing &amp; Delivery Address</span>
+                                </h4>
+                                <h4>
+                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="invoice.partner_id.name"></span>
+                                </h4>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-right:1px solid black !important;">
+                                <span t-field="invoice.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["address"]}' />
+                                <div>
+                                    <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
+                                    <span t-field="invoice.mobile" t-options='{"widget": "phone"}'/>
+                                </div>
+                                <div>
+                                    <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
+                                    <span t-field="invoice.email" t-options='{"widget": "email"}'/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div>
+                                        <strong>PAN No:</strong>
+                                        <span t-field="invoice.partner_id.pan_no"/>
+                                    </div>
+                                    <div>
+                                        <strong>GSTIN:</strong>
+                                        <span t-field="invoice.partner_id.vat"/>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+    
+                <t t-if="invoice.partner_id != invoice.partner_shipping_id">
+                    <table class="table">
+                        <tr>
+                            <td colspan="2">
+                                <h3>
+                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="invoice.partner_id.name"></span>
+                                </h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-right:1px solid black !important;">
+                                <h6>
+                                    <strong style="margin-left: 16px;" class="text-center">Billing Address</strong>
+                                </h6>
+                                <span t-field="invoice.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["address"]}' />
+                                <div>
+                                    <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
+                                    <span t-field="invoice.mobile" t-options='{"widget": "mobile"}'/>
+                                </div>
+                                <div>
+                                    <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
+                                    <span t-field="invoice.email" t-options='{"widget": "email"}'/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <h6>
+                                        <strong style="margin-left: 16px;" class="text-center">Delivery Address</strong>
+                                    </h6>
+                                    <span t-field="invoice.partner_shipping_id"
+                                    t-options='{"widget": "contact", "fields": ["address"]}' />
+                                    <h6>
+                                        <strong>PAN No:</strong>
+                                        <span t-field="invoice.partner_id.pan_no"/>
+                                    </h6>
+                                    <h6>
+                                        <strong>GSTIN:</strong>
+                                        <span t-field="invoice.partner_id.vat"/>
+                                    </h6>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </t>
+            </div>
+        </div>
+        
+        <div class="col-xs-12">
+            <t t-foreach="invoice.invoice_line_ids" t-as="ord_lin">
+                 <tr class="active">
+                    <div class="col-xs-12" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A; margin-bottom: 32px;">
+
+                        <div class="col-xs-4">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/model_no.png" title="Model No" width="42px"/>
+                                Model No
+                            </strong>
+                            <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.default_code"></p>
+                        </div>
+
+                        <div class="col-xs-4">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/enginr_capacity.png" title="Engine Capacity" width="42px"/>
+                                Engine Capacity
+                            </strong>
+                            <p style="font-weight: bold; margin-left:45px; margin-top:-8px; font-style: italic;" t-field="ord_lin.product_id.engine_capacity"></p>
+                        </div>
+
+                        <div class="col-xs-4">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/chassis_no.png" title="Chassis No" width="42px"/>
+                                Chassis No
+                            </strong>
+                            <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-esc="ord_lin.get_vinno(ord_lin.product_id,ord_lin.vin_no)"></p>
+                        </div>
+
+                        <div class="col-xs-4" style="margin-left:5px;">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/seat_capacity.png" title="Seating Capacity" width="42px"/>
+                                Seating Capacity
+                            </strong>
+                            <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.seating_capacity"></p>
+                        </div>
+
+                        <div class="col-xs-4">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/color.png" title="Color" width="42px"/>
+                                Color
+                                <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
+                                    <t t-if="at.attribute_id.name == 'color'">
+                                        <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                                    </t>
+                                </t>
+                            </strong>
+                            <!--<p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.attribute_line_ids.value_ids.name"></p>-->
+                        </div>
+
+                        <div class="col-xs-4" style="margin-right:-5px;">
+                            <strong>
+                                <img src="/ars_vehicle_sales/static/src/img/engine_no.png" title="Engine No" width="42px"/>
+                                Engine No
+                            </strong>
+                            <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-esc="ord_lin.get_engcode(ord_lin.product_id,ord_lin.vin_no)"></p>
+                        </div>
+                    </div>
+                 </tr>
+             </t>
+        </div>
+        
+        <t t-if="invoice.company_id.country_id.code == 'IN'">
+            <!-- Tag wise Tax Calculation -->
+            <t t-set="tag_cgst_id" t-value="env.ref('l10n_in.cgst_tag_tax').id"/>
+            <t t-set="tag_sgst_id" t-value="env.ref('l10n_in.sgst_tag_tax').id"/>
+            <t t-set="tag_igst_id" t-value="env.ref('l10n_in.igst_tag_tax').id"/>
+            <t t-set="tag_cess_id" t-value="env.ref('l10n_in.cess_tag_tax').id"/>
+            <t t-set="tax_map" t-value="invoice.tax_line_ids.mapped('tax_id.tag_ids.id')"/>
+            <t t-set="is_igst" t-value="tag_igst_id in tax_map"/>
+            <t t-set="is_cgst" t-value="tag_cgst_id in tax_map"/>
+            <t t-set="is_cess" t-value="tag_cess_id in tax_map"/>
+            <t t-set="tax_datas" t-value="invoice._invoice_line_tax_values()"/>
+        </t>
+        
+        <div class="col-xs-12">
+            <table class="table" style="background-color:#F5F5F5;">
+                <thead style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A;">
+                    <tr>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Taxes</th>
+                        <th>Amount</th>
+                        <t t-if="invoice.company_id.country_id.code == 'IN'">
+                            <th t-if="is_cgst">CGST</th>
+                            <th t-if="is_cgst">SGST</th>
+                            <th t-if="is_igst">IGST</th>
+                            <th t-if="is_cess">CESS</th>
+                        </t>
+                    </tr>
+                </thead>
+                <tbody class="invoice_tbody table-bordered">
+                    <t t-foreach="invoice.invoice_line_ids" t-as="ord_lin">
+                        <tr class="active">
+                            <td style="background-color:#FFF;">
+                                <span t-field="ord_lin.product_id.name"/>
+                            </td>
+                            <td style="background-color:#FFF;">
+                                <span t-field="ord_lin.quantity"/>
+                            </td>
+                            <td class="text-right" style="background-color:#FFF;">
+                                <span t-field="ord_lin.price_unit"/>
+                            </td>
+                            <td style="background-color:#FFF;">
+                                <!--<span t-field="ord_lin.invoice_line_tax_ids.name"/>-->
+                                <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.invoice_line_tax_ids))"/>
+                            </td>
+                            <td class="text-right" style="background-color:#FFF;">
+                                <span t-field="ord_lin.price_subtotal"/>
+                            </td>
+                            <t t-if="invoice.company_id.country_id.code == 'IN'">
+                                <td class="text-right" t-if="is_cgst" style="background-color:#FFF;">
+                                    <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                        <t t-if="tag_cgst_id in tax_data['tag_ids']">
+                                            <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td class="text-right" t-if="is_cgst" style="background-color:#FFF;">
+                                    <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                        <t t-if="tag_sgst_id in tax_data['tag_ids']">
+                                            <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <td class="text-right" t-if="is_igst" style="background-color:#FFF;">
+                                    <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                        <t t-if="tag_igst_id in tax_data['tag_ids']">
+                                            <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                                        </t>
+                                    </t>
+                                </td>
+                                <t t-set="total_cess" t-value="0.0"/>
+                                <td class="text-right" t-if="is_cess" style="background-color:#FFF;">
+                                    <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                        <t t-if="tag_cess_id in tax_data['tag_ids']">
+                                            <t t-set="total_cess" t-value="total_cess + tax_data['amount']"/>
+                                        </t>
+                                    </t>
+                                    <t t-esc="total_cess"/>
+                                </td>
+                            </t>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-xs-12" name="total">
+            <div class="row pull-right" style="margin-right:-7px;">
+                <table class="table-condensed" style="min-width: 200px;max-width: 350px;">
+                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                        <td><strong>Subtotal</strong></td>
+                        <td class="text-right">
+                            <span t-field="invoice.amount_untaxed"/>
+                        </td>
+                    </tr>
+                    <t t-if="is_cgst">
+                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                            <t t-set="amount_tax" t-value="invoice.amount_tax / 2"/>
+                            <td><strong>SGST</strong></td>
+                            <td class="text-right">
+                                <!--<span t-field="invoice.amount_tax"/>-->
+                                <span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="is_cgst">
+                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                            <t t-set="amount_tax" t-value="invoice.amount_tax / 2"/>
+                            <td><strong>CGST</strong></td>
+                            <td class="text-right">
+                                <!--<span t-field="invoice.amount_tax"/>-->
+                                <span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>
+                            </td>
+                        </tr>
+                    </t>
+                    <t t-if="is_igst">
+                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                            <!--<t t-set="amount_tax" t-value="invoice.amount_tax / 2"/>-->
+                            <td><strong>IGST</strong></td>
+                            <td class="text-right">
+                                <span t-field="invoice.amount_tax"/>
+                                <!--<span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                            </td>
+                        </tr>
+                    </t>
+                    <tr class="border-black">
+                        <td><strong>Grand Total</strong></td>
+                        <td class="text-right">
+                            <span t-field="invoice.amount_total"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <p id="total_in_words" class="mb16">
+                <strong>Total (In Words): </strong>
+                <span t-field="invoice.amount_total_words"/>
+            </p>
+        </div>
+        
+        
+        
+        <!-- =================== -->
+        <!--<div class="row">-->
+            <!--<div class="col-xs-5" name="customer_address">-->
+                <!--<strong>Cust Add</strong>-->
+                <!--<address t-field="invoice.partner_id"-->
+                    <!--t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}' />-->
+                <!--<div t-if="invoice.partner_id.vat" class="mt16">VAT: <span t-field="invoice.partner_id.vat"/></div>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--<div class="row mt32 mb32">-->
+            <!--<div class="col-xs-2" t-if="invoice.name">-->
+                <!--<strong>Description:</strong>-->
+                <!--<p t-field="invoice.name"/>-->
+            <!--</div>-->
+            <!--<div class="col-xs-2" t-if="invoice.date_invoice">-->
+                <!--<strong>Invoice Date:</strong>-->
+                <!--<p t-field="invoice.date_invoice"/>-->
+            <!--</div>-->
+            <!--<div class="col-xs-2" t-if="invoice.date_due and invoice.type == 'out_invoice' and (invoice.state == 'open' or invoice.state == 'paid')">-->
+                <!--<strong>Due Date:</strong>-->
+                <!--<p t-field="invoice.date_due"/>-->
+            <!--</div>-->
+            <!--<div class="col-xs-2" t-if="invoice.origin">-->
+                <!--<strong>Source:</strong>-->
+                <!--<p t-field="invoice.origin"/>-->
+            <!--</div>-->
+            <!--<div class="col-xs-2" t-if="invoice.partner_id.ref">-->
+                <!--<strong>Customer Code:</strong>-->
+                <!--<p t-field="invoice.partner_id.ref"/>-->
+            <!--</div>-->
+            <!--<div name="reference" class="col-xs-2" t-if="invoice.reference">-->
+                <!--<strong>Reference:</strong>-->
+                <!--<p t-field="invoice.reference"/>-->
+            <!--</div>-->
+        <!--</div>-->
+
+        <!--&lt;!&ndash; Is there a discount on at least one line? &ndash;&gt;-->
+        <!--<t t-set="display_discount" t-value="any([l.discount for l in invoice.invoice_line_ids])"/>-->
+
+        <!--<table class="table table-condensed">-->
+            <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th>Description</th>-->
+                    <!--<th class="hidden">Source invoiceument</th>-->
+                    <!--<th class="text-right">Quantity</th>-->
+                    <!--<th class="text-right">Unit Price</th>-->
+                    <!--<th t-if="display_discount" class="text-right">Disc.(%)</th>-->
+                    <!--<th class="text-right">Taxes</th>-->
+                    <!--<th class="text-right">Amount</th>-->
+                <!--</tr>-->
+            <!--</thead>-->
+            <!--<tbody class="o_portal_report_tbody">-->
+                <!--<tr t-foreach="invoice.invoice_line_ids" t-as="l">-->
+                    <!--<td><span t-field="l.name"/></td>-->
+                    <!--<td class="hidden"><span t-field="l.origin"/></td>-->
+                    <!--<td class="text-right">-->
+                        <!--<span t-field="l.quantity"/>-->
+                        <!--<span t-field="l.uom_id"  groups="product.group_uom"/>-->
+                    <!--</td>-->
+                    <!--<td class="text-right">-->
+                        <!--<span t-field="l.price_unit"/>-->
+                    <!--</td>-->
+                    <!--<td t-if="display_discount" class="text-right">-->
+                        <!--<span t-field="l.discount"/>-->
+                    <!--</td>-->
+                    <!--<td class="text-right">-->
+                        <!--<span t-esc="', '.join(map(lambda x: (x.description or x.name), l.invoice_line_tax_ids))"/>-->
+                    <!--</td>-->
+                    <!--<td class="text-right" id="subtotal">-->
+                        <!--<span t-field="l.price_subtotal"-->
+                            <!--t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                    <!--</td>-->
+                <!--</tr>-->
+                <!--<tr t-foreach="range(max(5-len(invoice.invoice_line_ids),0))" t-as="l">-->
+                    <!--<td>&amp;nbsp;</td>-->
+                    <!--<td class="hidden"></td>-->
+                    <!--<td></td>-->
+                    <!--<td></td>-->
+                    <!--<td t-if="display_discount"></td>-->
+                    <!--<td></td>-->
+                    <!--<td></td>-->
+                <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+
+        <!--<div id="total" class="row">-->
+            <!--<div class="col-xs-4 pull-right">-->
+                <!--<table class="table table-condensed">-->
+                    <!--<tr class="border-black">-->
+                        <!--<td><strong>Subtotal</strong></td>-->
+                        <!--<td class="text-right">-->
+                            <!--<span t-field="invoice.amount_untaxed" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<t t-foreach="invoice._get_tax_amount_by_group()" t-as="amount_by_group">-->
+                        <!--<tr>-->
+                            <!--<td><span t-esc="amount_by_group[0] if len(invoice.tax_line_ids) &gt; 1 else (invoice.tax_line_ids.tax_id.description or invoice.tax_line_ids.tax_id.name)"/></td>-->
+                            <!--<td class="text-right">-->
+                                <!--<span t-esc="amount_by_group[1]" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--</t>-->
+                    <!--<tr class="border-black">-->
+                        <!--<td><strong>Total</strong></td>-->
+                        <!--<td class="text-right">-->
+                             <!--<span t-field="invoice.amount_total" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--&lt;!&ndash; DO NOT REMOVE THIS TABLE. MANDATORY IN SOME COUNTRIES &ndash;&gt;-->
+        <!--<div class="row" t-if="len(invoice.tax_line_ids) &gt; 0">-->
+            <!--<div class="col-xs-6">-->
+                <!--<table class="table table-condensed">-->
+                    <!--<thead>-->
+                        <!--<tr>-->
+                            <!--<th>Tax</th>-->
+                            <!--<th class="text-right">Base</th>-->
+                            <!--<th class="text-right">Amount</th>-->
+                        <!--</tr>-->
+                    <!--</thead>-->
+                    <!--<tbody>-->
+                        <!--<tr t-foreach="invoice.tax_line_ids" t-as="t">-->
+                            <!--<td><span t-field="t.tax_id.description"/></td>-->
+                            <!--<td class="text-right">-->
+                                <!--<span t-field="t.base" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                            <!--</td>-->
+                            <!--<td class="text-right">-->
+                                <!--<span t-field="t.amount" t-options='{"widget": "monetary", "display_currency": invoice.currency_id}'/>-->
+                            <!--</td>-->
+                        <!--</tr>-->
+                    <!--</tbody>-->
+                <!--</table>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<p t-if="invoice.comment">-->
+            <!--<span t-field="invoice.comment"/>-->
+        <!--</p>-->
+        <!--<p t-if="invoice.payment_term_id">-->
+            <!--<span t-field="invoice.payment_term_id.note"/>-->
+        <!--</p>-->
+        <!--<p t-if="invoice.fiscal_position_id.note">-->
+            <!--<span t-field="invoice.fiscal_position_id.note"/>-->
+        <!--</p>-->
+    </template>
+
+</odoo>

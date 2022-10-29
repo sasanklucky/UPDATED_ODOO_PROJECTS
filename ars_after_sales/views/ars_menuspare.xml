@@ -1,0 +1,52 @@
+<odoo>
+    <data>
+        <menuitem id="ars_spares" name="Spares">
+        </menuitem>
+        <menuitem id="ars_spares_pipeline"
+                  name="Pipeline" parent="ars_spares"
+                    sequence="1">
+        </menuitem>
+         <menuitem id="ars_spares_invoicing"
+                  name="Invoicing" parent="ars_spares"
+                  sequence="2">
+        </menuitem>
+         <menuitem id="ars_spares_catalog"
+                  name="Catalog" parent="ars_spares"
+                  sequence="3">
+        </menuitem>
+         <menuitem id="ars_spares_reporting"
+                  name="Reporting" parent="ars_spares"
+                  sequence="4">
+        </menuitem>
+         <menuitem id="ars_spares_customer"
+                  name="Customer" parent="ars_spares_pipeline"
+                  action="base.action_partner_customer_form" sequence="7">
+        </menuitem>
+        <!--<menuitem id="ars_spares_quation"-->
+                  <!--name="Quotations" parent="ars_spares_pipeline"-->
+                  <!--action="ars_after_sales.action_quotations_inherit" sequence="5">-->
+        <!--</menuitem>-->
+        <menuitem id="ars_spares_orders"
+                  name="Orders" parent="ars_spares_pipeline"
+                  action="ars_after_sales.action_orders_inherit" sequence="6">
+        </menuitem>
+        <menuitem id="ars_spares_order_to_invoice"
+                  name="Order to Invoice" parent="ars_spares_invoicing"
+                  action="sale.action_orders_to_invoice">
+        </menuitem>
+        <menuitem id="ars_spares_parts"
+                  name="Parts" parent="ars_spares_catalog"
+                  action="ars_after_sales.action_parts">
+        </menuitem>
+        <menuitem id="ars_spares_accessories"
+                  name="Accessories" parent="ars_spares_catalog"
+                  action="ars_after_sales.action_accessories">
+        </menuitem>
+        <menuitem id="ars_spares_sales"
+                  name="Sale" parent="ars_spares_reporting"
+                  action ="ars_after_sales.action_parts">
+        </menuitem>
+
+
+    </data>
+</odoo>

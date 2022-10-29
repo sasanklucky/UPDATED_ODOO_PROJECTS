@@ -1,0 +1,64 @@
+<odoo>
+    <data>
+
+    <record id="view_groups_form" model="ir.ui.view">
+            <field name="name">main.process.form</field>
+            <field name="model">main.process</field>
+            <field name="arch" type="xml">
+                <form string="Process">
+                  <sheet>
+                    <group col="4">
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <!--<field name="sub_process_id"/>-->
+                    </group>
+                    <notebook>
+                        <page string="Sub Process">
+                            <field name="sub_process_id">
+                                <tree string="Access Rules" editable="top">
+                                    <field name="name"/>
+                                    <field name="sequence"/>
+                                    <field name="main_process_id"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Rules">
+
+                        </page>
+                        <page string="Notes">
+
+                        </page>
+                    </notebook>
+                  </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_process_tree" model="ir.ui.view">
+            <field name="name">main.process.tree</field>
+            <field name="model">main.process</field>
+            <field name="arch" type="xml">
+                <tree string="Process">
+                    <field name="name" />
+                    <field name="sequence"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_rms_process" model="ir.actions.act_window">
+            <field name="name">main_process</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">main.process</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_process_tree"/>
+        </record>
+
+        <menuitem
+			id="group_process"
+			name="Group Process"
+			parent="ars_after_sales.menu_aftersales_config"
+            action="action_rms_process"
+			sequence="1"/>
+
+    </data>
+</odoo>

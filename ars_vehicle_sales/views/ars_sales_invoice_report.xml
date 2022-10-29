@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="report_invoice_order">
+            <t t-call="web.external_layout">
+            	<t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
+		        <div class="page">
+                    <div class="col-xs-12" style="margin-bottom: 32px;">
+
+                        <div class="col-xs-6" style="margin-top: 80px;">
+                            <h3>
+                                <strong>Tax Invoice</strong>
+                                <strong t-field="doc.number"/>
+                            </h3>
+                            <span style="margin-left:122px;" t-field="doc.create_date" t-options="{&quot;format&quot;: &quot;MM-dd-yyyy&quot;}"/>
+                        </div>
+
+                        <div class="col-xs-6" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A">
+                            <t t-if="doc.partner_id == doc.partner_shipping_id">
+                                <table class="table">
+                                    <tr>
+                                        <td colspan="2">
+                                            <h4>
+                                                <span>Billing &amp; Delivery Address</span>
+                                            </h4>
+                                            <h4>
+                                                <t t-if="doc.partner_id.parent_id">
+                                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.parent_id.name"></span>
+                                                </t>
+                                                <t t-if="not doc.partner_id.parent_id">
+                                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.name"></span>
+                                                </t>
+                                            </h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:1px solid black !important;">
+                                            <span t-field="doc.partner_id"
+                                                t-options='{"widget": "contact", "fields": ["address"]}' />
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
+                                                <span t-field="doc.mobile" t-options='{"widget": "phone"}'/>
+                                            </div>
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
+                                                <span t-field="doc.email" t-options='{"widget": "email"}'/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div>
+                                                    <strong>PAN No:</strong>
+                                                    <span t-field="doc.partner_id.pan_no"/>
+                                                </div>
+                                                <div>
+                                                    <strong>GSTIN:</strong>
+                                                    <span t-field="doc.partner_id.vat"/>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </t>
+
+                            <t t-if="doc.partner_id != doc.partner_shipping_id">
+                                <table class="table">
+                                    <tr>
+                                        <td colspan="2">
+                                            <h3>
+                                                <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.name"></span>
+                                            </h3>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:1px solid black !important;">
+                                            <h6>
+                                                <strong style="margin-left: 16px;" class="text-center">Billing Address</strong>
+                                            </h6>
+                                            <span t-field="doc.partner_id"
+                                                t-options='{"widget": "contact", "fields": ["address"]}' />
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
+                                                <span t-field="doc.mobile" t-options='{"widget": "mobile"}'/>
+                                            </div>
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
+                                                <span t-field="doc.email" t-options='{"widget": "email"}'/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <h6>
+                                                    <strong style="margin-left: 16px;" class="text-center">Delivery Address</strong>
+                                                </h6>
+                                                <span t-field="doc.partner_shipping_id"
+                                                t-options='{"widget": "contact", "fields": ["address"]}' />
+                                                <h6>
+                                                    <strong>PAN No:</strong>
+                                                    <span t-field="doc.partner_id.pan_no"/>
+                                                </h6>
+                                                <h6>
+                                                    <strong>GSTIN:</strong>
+                                                    <span t-field="doc.partner_id.vat"/>
+                                                </h6>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </t>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <t t-foreach="doc.invoice_line_ids" t-as="ord_lin">
+                             <tr class="active">
+                                <div class="col-xs-12" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A; margin-bottom: 32px;">
+
+                                    <div class="col-xs-4">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/model_no.png" title="Model No" width="42px"/>
+                                            Model No
+                                        </strong>
+                                        <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.default_code"></p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/enginr_capacity.png" title="Engine Capacity" width="42px"/>
+                                            Engine Capacity
+                                        </strong>
+                                        <p style="font-weight: bold; margin-left:45px; margin-top:-8px; font-style: italic;" t-field="ord_lin.product_id.engine_capacity"></p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/chassis_no.png" title="Chassis No" width="42px"/>
+                                            Chassis No
+                                        </strong>
+                                        <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-esc="ord_lin.get_vinno(ord_lin.product_id,ord_lin.vin_no)"></p>
+                                    </div>
+
+                                    <div class="col-xs-4" style="margin-left:5px;">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/seat_capacity.png" title="Seating Capacity" width="42px"/>
+                                            Seating Capacity
+                                        </strong>
+                                        <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.seating_capacity"></p>
+                                    </div>
+
+                                    <div class="col-xs-4">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/color.png" title="Color" width="42px"/>
+                                            Color
+                                            <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
+                                                <t t-if="at.attribute_id.name == 'color'">
+                                                    <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                                                </t>
+                                            </t>
+                                        </strong>
+                                        <!--<p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.attribute_line_ids.value_ids.name"></p>-->
+                                    </div>
+
+                                    <div class="col-xs-4" style="margin-right:-3px;">
+                                        <strong>
+                                            <img src="/ars_vehicle_sales/static/src/img/engine_no.png" title="Engine No" width="42px"/>
+                                            Engine No
+                                        </strong>
+                                        <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-esc="ord_lin.get_engcode(ord_lin.product_id,ord_lin.vin_no)"></p>
+                                    </div>
+                                </div>
+                             </tr>
+                         </t>
+                    </div>
+
+                    <t t-if="doc.company_id.country_id.code == 'IN'">
+                        <!-- Tag wise Tax Calculation -->
+                        <t t-set="tag_cgst_id" t-value="env.ref('l10n_in.cgst_tag_tax').id"/>
+                        <t t-set="tag_sgst_id" t-value="env.ref('l10n_in.sgst_tag_tax').id"/>
+                        <t t-set="tag_igst_id" t-value="env.ref('l10n_in.igst_tag_tax').id"/>
+                        <t t-set="tag_cess_id" t-value="env.ref('l10n_in.cess_tag_tax').id"/>
+                        <t t-set="tax_map" t-value="doc.tax_line_ids.mapped('tax_id.tag_ids.id')"/>
+                        <t t-set="is_igst" t-value="tag_igst_id in tax_map"/>
+                        <t t-set="is_cgst" t-value="tag_cgst_id in tax_map"/>
+                        <t t-set="is_cess" t-value="tag_cess_id in tax_map"/>
+                        <t t-set="tax_datas" t-value="doc._invoice_line_tax_values()"/>
+                    </t>
+
+                    <div class="col-xs-12">
+                        <table class="table" style="background-color:#F5F5F5;">
+                            <thead style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A;">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Unit Price</th>
+                                    <th>Taxes</th>
+                                    <th>Amount</th>
+                                    <t t-if="doc.company_id.country_id.code == 'IN'">
+                                        <th t-if="is_cgst">CGST</th>
+                                        <th t-if="is_cgst">SGST</th>
+                                        <th t-if="is_igst">IGST</th>
+                                        <th t-if="is_cess">CESS</th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_tbody table-bordered">
+                                <t t-foreach="doc.invoice_line_ids" t-as="ord_lin">
+                                    <tr class="active">
+                                        <td style="background-color:#FFF;">
+                                            <span t-field="ord_lin.product_id.name"/>
+                                        </td>
+                                        <td style="background-color:#FFF;">
+                                            <span t-field="ord_lin.quantity"/>
+                                        </td>
+                                        <td class="text-right" style="background-color:#FFF;">
+                                            <span t-field="ord_lin.price_unit"/>
+                                        </td>
+                                        <td style="background-color:#FFF;">
+                                            <!--<span t-field="ord_lin.invoice_line_tax_ids.name"/>-->
+                                            <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.invoice_line_tax_ids))"/>
+                                        </td>
+                                        <td class="text-right" style="background-color:#FFF;">
+                                            <span t-field="ord_lin.price_subtotal"/>
+                                        </td>
+                                        <t t-if="doc.company_id.country_id.code == 'IN'">
+                                            <td class="text-right" t-if="is_cgst" style="background-color:#FFF;">
+                                                <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                                    <t t-if="tag_cgst_id in tax_data['tag_ids']">
+                                                        <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                            <td class="text-right" t-if="is_cgst" style="background-color:#FFF;">
+                                                <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                                    <t t-if="tag_sgst_id in tax_data['tag_ids']">
+                                                        <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                            <td class="text-right" t-if="is_igst" style="background-color:#FFF;">
+                                                <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                                    <t t-if="tag_igst_id in tax_data['tag_ids']">
+                                                        <t t-esc="tax_data['amount']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                    </t>
+                                                </t>
+                                            </td>
+                                            <t t-set="total_cess" t-value="0.0"/>
+                                            <td class="text-right" t-if="is_cess" style="background-color:#FFF;">
+                                                <t t-foreach="tax_datas[ord_lin.id]" t-as="tax_data">
+                                                    <t t-if="tag_cess_id in tax_data['tag_ids']">
+                                                        <t t-set="total_cess" t-value="total_cess + tax_data['amount']"/>
+                                                    </t>
+                                                </t>
+                                                <t t-esc="total_cess"/>
+                                            </td>
+									    </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-xs-12" name="total">
+                        <div class="row pull-right" style="margin-right:-7px;">
+                            <table class="table-condensed" style="min-width: 200px;max-width: 350px;">
+                                <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                    <td><strong>Subtotal</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount_untaxed"/>
+                                    </td>
+                                </tr>
+                                <t t-if="is_cgst">
+                                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                        <t t-set="amount_tax" t-value="doc.amount_tax / 2"/>
+                                        <td><strong>SGST</strong></td>
+                                        <td class="text-right">
+                                            <!--<span t-field="doc.amount_tax"/>-->
+                                            <span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="is_cgst">
+                                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                        <t t-set="amount_tax" t-value="doc.amount_tax / 2"/>
+                                        <td><strong>CGST</strong></td>
+                                        <td class="text-right">
+                                            <!--<span t-field="doc.amount_tax"/>-->
+                                            <span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                                <t t-if="is_igst">
+                                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                        <!--<t t-set="amount_tax" t-value="doc.amount_tax / 2"/>-->
+                                        <td><strong>IGST</strong></td>
+                                        <td class="text-right">
+                                            <span t-field="doc.amount_tax"/>
+                                            <!--<span t-esc="amount_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>-->
+                                        </td>
+                                    </tr>
+                                </t>
+                                <tr class="border-black">
+                                    <td><strong>Grand Total</strong></td>
+                                    <td class="text-right">
+                                        <span t-field="doc.amount_total"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <p id="total_in_words" class="mb16">
+                            <strong>Total (In Words): </strong>
+                            <span t-field="doc.amount_total_words"/>
+                        </p>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <label string="Terms &amp; Conditions"/><b>Terms &amp; Conditions : </b><br></br>
+                        <label string="* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part"/><b>* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part</b><br></br>
+                        <label string="* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed."/><b>* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed.</b><br></br>
+                        <label string="* Delivery against availablity of the parts."/><b>* Delivery against availablity of the parts.</b><br></br>
+                    </div>
+                    <div class="row text-center">
+                        <div class="pull-left">
+                            <h4 style="margin: 87px 0px 10px 36px; text-decoration: overline;">Authorized Signature</h4>
+                        </div>
+                        <div class="pull-right">
+                            <h4 style="margin: 87px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
+                        </div>
+                    </div>
+
+                </div>
+            </t>
+        </template>
+
+        <template id="report_sales_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="ars_vehicle_sales.report_invoice_order" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </template>
+
+
+        <report
+            id="before_sales_invoice"
+            model="account.invoice"
+            string="Sales Invoice"
+            report_type="qweb-pdf"
+            name="ars_vehicle_sales.report_sales_invoice"
+            file="ars_vehicle_sales.report_sales_invoice"
+        />
+        <!--groups="ars_after_sales.group_crm_sale"-->
+    </data>
+</odoo>
