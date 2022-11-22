@@ -13,7 +13,7 @@ class arsCompany(models.Model):
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
-                                 change_default=True, ondelete='restrict')
+                                 change_default=True, ondelete='restrict') 
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 
