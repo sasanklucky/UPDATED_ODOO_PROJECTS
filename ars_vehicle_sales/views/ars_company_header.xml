@@ -22,6 +22,16 @@
 
     </template>
 
+    <record id="res_company_inherited_form" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="dealer_code" />
+            </field>
+        </field>
+    </record>
     <!-- External layouts styles -->
 
     <!--<template id="ars_company_header">-->
