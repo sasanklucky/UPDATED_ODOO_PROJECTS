@@ -11,392 +11,841 @@
             <xpath expr="//h2" position="replace">
                 <!-- Quotation Code -->
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
-                    <div class="col-xs-12">
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <h3 style="margin-left:0px;">
-                                        <strong>Quotation # </strong>
-                                        <strong t-field="doc.name"/>
-                                    </h3>
-                                    <td>
-                                        <span t-if="ord_lin.product_id.image_medium" t-field="ord_lin.product_id.image_medium" t-options='{"widget": "image", "class": "tech_img", "alt-field": "name", "zoom": "image", "style":"width: 450px;height: 300px;" }'/>
+                    <t t-set="vehicle_type" t-value="doc._get_proforma_invoice_types()" />
+                    <t t-if="vehicle_type == 'vehicle'">
+                        <div class="col-xs-12" style="margin-bottom: 5px">
+                            <table class="table table-bordered" style="margin-bottom:0; ">
+                                <tr style="display:none">
+                                    <td style="width: 50%"></td>
+                                    <td style="width: 50%"></td>
+                                </tr>
+                                <tr>
+                                    <td scope="col" colspan="2" class="text-uppercase text-center " style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;">Contract/Booking <br/> Confirmation</td>
+                                </tr>
+                                <tr>
+                                    <td scope="col" colspan="2" class="text-uppercase text-center " style="font-weight:bold;width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <td scope="col" colspan="2" class="text-uppercase text-center " style="font-weight:bold;width:100%;padding:0px 2px;">Customer Info</td>
+                                </tr>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table class="table table-sm" style="margin-bottom:0">
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Name</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.partner_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">S/D/W of Address</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">
+                                                    : 
+                                                    <t t-if="doc.partner_id.street"> <span  t-field="doc.partner_id.street"/>, </t>
+                                                    <t t-if="doc.partner_id.street2"> <span  t-field="doc.partner_id.street2"/>,  </t>
+                                                    <t t-if="doc.partner_id.city"> <span  t-field="doc.partner_id.city"/>,  </t>
+                                                    <t t-if="doc.partner_id.state_id"> <span  t-field="doc.partner_id.state_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_id.country_id"> <span  t-field="doc.partner_id.country_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_id.zip"> <span  t-field="doc.partner_id.zip"/></t>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Place of Supply</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">:
+                                                    <t t-if="doc.partner_invoice_id.street"> <span  t-field="doc.partner_invoice_id.street"/>, </t>
+                                                    <t t-if="doc.partner_invoice_id.street2"> <span  t-field="doc.partner_invoice_id.street2"/>,  </t>
+                                                    <t t-if="doc.partner_invoice_id.city"> <span  t-field="doc.partner_invoice_id.city"/>,  </t>
+                                                    <t t-if="doc.partner_invoice_id.state_id"> <span  t-field="doc.partner_invoice_id.state_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_invoice_id.country_id"> <span  t-field="doc.partner_invoice_id.country_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_invoice_id.zip"> <span  t-field="doc.partner_invoice_id.zip"/></t>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">State Code</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_invoice_id.state_id.code" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">PAN</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_id.pan_no" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Email Id</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.email"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table class="table table-sm" style="margin-bottom:0">
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Phone No</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.mobile"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Ship To</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                    <t t-if="doc.partner_shipping_id.street"> <span  t-field="doc.partner_shipping_id.street"/>, </t>
+                                                    <t t-if="doc.partner_shipping_id.street2"> <span  t-field="doc.partner_shipping_id.street2"/>,  </t>
+                                                    <t t-if="doc.partner_shipping_id.city"> <span  t-field="doc.partner_shipping_id.city"/>,  </t>
+                                                    <t t-if="doc.partner_shipping_id.state_id"> <span  t-field="doc.partner_shipping_id.state_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_shipping_id.country_id"> <span  t-field="doc.partner_shipping_id.country_id.name"/>,  </t>
+                                                    <t t-if="doc.partner_shipping_id.zip"> <span  t-field="doc.partner_shipping_id.zip"/></t>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">State</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span  t-field="doc.partner_shipping_id.state_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">State Code</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span  t-field="doc.partner_shipping_id.state_id.code"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">GSTIN</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span  t-field="doc.partner_id.vat"/></td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
-                            </t>
-                        </div>
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-
-                                    <div>
-                                        <div style="margin-left: 80px;">
-                                            <strong style="font-weight: bold; font-size: 20px;">Customer Details:</strong>
-                                            <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["name"]}' />
-                                            <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["mobile", "email"], "no_marker": True}' />
-                                        </div>
-                                    </div>
-
-                                    <div style="margin-top: 35px;margin-left: 80px;">
-                                        <div>
-                                            <span t-field="ord_lin.product_id" style="font-weight: bold; font-size: 20px;"/>
-                                        </div>
-                                        <div>
-                                            <span t-field="doc.amount_total" style="font-weight: bold; font-size: 20px;"/>
-                                        </div>
-                                        <div>
-                                            <span>On Road Price (Inc GST)</span>
-                                        </div>
-                                    </div>
-
-
-                                    <!--<div style="margin-top: 35px;margin-left: 80px;">-->
-                                        <!--<img src="/ars_vehicle_sales/static/src/img/customer_name.png" title="Fuel" width="60px" style="margin-left:-63px;"/>-->
-                                    <!--</div>-->
-                                    <!--<div style="margin-top: -65px;margin-left: 80px;">-->
-                                        <!--<strong style="font-weight: bold; font-size: 20px;" t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["name"]}'></strong>-->
-                                        <!--<span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["phone", "email"], "no_marker": True}' />-->
-                                    <!--</div>-->
-
-                                    <!--<div style="margin-top: 35px;margin-left: 80px;">-->
-                                        <!--<div>-->
-                                            <!--<span t-field="ord_lin.name" style="font-weight: bold; font-size: 20px;"/>-->
-                                        <!--</div>-->
-                                        <!--<div>-->
-                                            <!--<span t-field="doc.amount_total" style="font-weight: bold; font-size: 20px;"/>-->
-                                        <!--</div>-->
-                                        <!--<div>-->
-                                            <!--<span>On Road Price (Inc GST)</span>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
+                                <tr>
+                                    <td colspan="2" class="text-center text-uppercase" style="font-weight:bold; padding:0px 2px;">
+                                        Contract/Booking Info
+                                    </td>
                                 </tr>
-                            </t>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12" style="border-bottom-style:solid !important; border-width:2px !important;margin-top:-38px;">
-                    </div>
-
-                    <div class="col-xs-12" style="margin-top:-25px;">
-                        <div class="col-xs-3">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div style="margin-top:10px;">
-                                        <strong>
-                                            <img src="/ars_vehicle_sales/static/src/img/fuel.png" title="Fuel" width="50px"/>
-                                            Fuel Type
-                                            <p t-field="ord_lin.product_id.fuel_type" style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"/>
-                                        </strong>
-                                    </div>
+                                <tr>
+                                    <td style="width:50%">
+                                        <table class="table table-sm" style="margin-bottom:0">
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Contract No</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.name" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Contract Date</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.confirmation_date" t-options='{"widget": "date","format": "dd/MM/yyyy"}'/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Exp. Purchase Date</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.commitment_date" t-options='{"widget": "date","format": "dd/MM/yyyy"}'/> </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    </td>
+                                    <td style="width:50%">
+                                        <table class="table table-sm" style="margin-bottom:0">
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Sales Cons. Name</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.user_id.name"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">Sales Cons. Mob.</td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.user_id.mobile"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
                                 </tr>
-                            </t>
+                                <tr>
+                                    <td colspan="2" class="text-center text-uppercase"  style="font-weight:bold; padding:0px 2px;">
+                                        Vehicle Info
+                                    </td>
+                                </tr>
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr>
+                                        <td style="width:50%">
+                                            <table class="table table-sm" style="margin-bottom:0">
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Manufacture</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="ord_lin.product_id.brand_id.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Registration No.</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                        <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
+                                                            <t t-esc="relation.license_plate"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td style="width:50%">
+                                            <table class="table table-sm" style="margin-bottom:0">
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">VIN Number</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="','.join(doc.picking_ids.move_line_ids.lot_id.mapped('name'))"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Engine Number</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                        <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
+                                                            <t t-esc="relation.engine_number"/>
+                                                        </t>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </t>   
+                            </table>
                         </div>
-                        <div class="col-xs-3">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div style="margin-top:10px;">
-                                        <strong>
-                                            <img src="/ars_vehicle_sales/static/src/img/color.png" title="Fuel" width="50px"/>
-                                            Color
-                                            <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
-                                                <t t-if="at.attribute_id.name == 'color'">
-                                                    <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                        <div class="col-xs-12" style="margin-bottom:5px;">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 48%;border-top:2px solid black; border-bottom:2px solid black;" class="text-left">Particulars</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 1% ;border-top:2px solid black; border-bottom:2px solid black;" class="text-left"></td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 49%; border-top:2px solid black; border-bottom:2px solid black;" class="text-right">Amount</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">On-Road  Price (Paisa Rounded-off)<br/>(Inclusive of all taxes and other charges)</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">:</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold;  border-top:2px solid black; border-bottom:2px solid black;" class="text-right">
+                                            <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"
+                                                t-options='{"widget": "float", "precision":0, "display_currency": doc.pricelist_id.currency_id}'/>
+                                            <span t-field="doc.pricelist_id.currency_id.symbol" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">Amount in Words</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">:</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold;  border-top:2px solid black; border-bottom:2px solid black;" class="text-right">
+                                            <span t-field="doc.amount_total_words"/> only
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">Recieved Booking Amount</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; border-top:2px solid black; border-bottom:2px solid black;" class="text-left">:</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold;  border-top:2px solid black; border-bottom:2px solid black;" class="text-right"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-xs-12">
+                            <table class="table">
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none; border-top: 2px solid black;">
+                                        <label string="Terms &amp; Conditions"/><b>Terms &amp; Conditions : </b><br />
+                                        <span t-field="doc.note"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-xs-12" style="margin-top: 20px;">
+                            <table class="table">
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none;" class="text-left">For <span t-field="doc.partner_id.name"/></td>
+                                    <td style="padding: 0px 2px;border:none;" class="text-right">For <span t-field="doc.company_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 20px 0px;border:none;"></td>
+                                    <td style="padding: 20px 0px;border:none;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none;" class="text-left">(Customer's Signature)</td>
+                                    <td style="padding: 0px 2px;border:none;" class="text-right">(Authorized Signatory)</td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </t>
+                    <t t-else="">
+                        <div class="col-xs-12">
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <h3 style="margin-left:0px;">
+                                            <strong>Quotation # </strong>
+                                            <strong t-field="doc.name"/>
+                                        </h3>
+                                        <td>
+                                            <span t-if="ord_lin.product_id.image_medium" t-field="ord_lin.product_id.image_medium" t-options='{"widget": "image", "class": "tech_img", "alt-field": "name", "zoom": "image", "style":"width: 450px;height: 300px;" }'/>
+                                        </td>
+                                    </tr>
+                                </t>
+                            </div>
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+
+                                        <div>
+                                            <div style="margin-left: 80px;">
+                                                <strong style="font-weight: bold; font-size: 20px;">Customer Details:</strong>
+                                                <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["name"]}' />
+                                                <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["mobile", "email"], "no_marker": True}' />
+                                            </div>
+                                        </div>
+
+                                        <div style="margin-top: 35px;margin-left: 80px;">
+                                            <div>
+                                                <span t-field="ord_lin.product_id" style="font-weight: bold; font-size: 20px;"/>
+                                            </div>
+                                            <div>
+                                                <span t-field="doc.amount_total" style="font-weight: bold; font-size: 20px;"/>
+                                            </div>
+                                            <div>
+                                                <span>On Road Price (Inc GST)</span>
+                                            </div>
+                                        </div>
+
+
+                                        <!--<div style="margin-top: 35px;margin-left: 80px;">-->
+                                            <!--<img src="/ars_vehicle_sales/static/src/img/customer_name.png" title="Fuel" width="60px" style="margin-left:-63px;"/>-->
+                                        <!--</div>-->
+                                        <!--<div style="margin-top: -65px;margin-left: 80px;">-->
+                                            <!--<strong style="font-weight: bold; font-size: 20px;" t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["name"]}'></strong>-->
+                                            <!--<span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["phone", "email"], "no_marker": True}' />-->
+                                        <!--</div>-->
+
+                                        <!--<div style="margin-top: 35px;margin-left: 80px;">-->
+                                            <!--<div>-->
+                                                <!--<span t-field="ord_lin.name" style="font-weight: bold; font-size: 20px;"/>-->
+                                            <!--</div>-->
+                                            <!--<div>-->
+                                                <!--<span t-field="doc.amount_total" style="font-weight: bold; font-size: 20px;"/>-->
+                                            <!--</div>-->
+                                            <!--<div>-->
+                                                <!--<span>On Road Price (Inc GST)</span>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    </tr>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" style="border-bottom-style:solid !important; border-width:2px !important;margin-top:-38px;">
+                        </div>
+
+                        <div class="col-xs-12" style="margin-top:-25px;">
+                            <div class="col-xs-3">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div style="margin-top:10px;">
+                                            <strong>
+                                                <img src="/ars_vehicle_sales/static/src/img/fuel.png" title="Fuel" width="50px"/>
+                                                Fuel Type
+                                                <p t-field="ord_lin.product_id.fuel_type" style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"/>
+                                            </strong>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                            <div class="col-xs-3">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div style="margin-top:10px;">
+                                            <strong>
+                                                <img src="/ars_vehicle_sales/static/src/img/color.png" title="Fuel" width="50px"/>
+                                                Color
+                                                <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
+                                                    <t t-if="at.attribute_id.name == 'color'">
+                                                        <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                                                    </t>
                                                 </t>
+                                                <!--<p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-field="ord_lin.product_id.attribute_line_ids.value_ids.name"></p>-->
+                                            </strong>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" style="margin-top:2px;">
+                            <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                                <img src="/ars_vehicle_sales/static/src/img/design_dimen.png" title="Fuel" width="27px"/>
+                                <strong>Design &amp; Dimensions</strong>
+                            </span>
+                        </div>
+                        <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>Car Type:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.car_type"/>
+                                        </div>
+                                        <div>
+                                            <strong>Seating Capacity:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.seating_capacity"/>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>No of Doors:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.no_of_doors"/>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" style="margin-top:17px;">
+                            <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                                <img src="/ars_vehicle_sales/static/src/img/speed_perf.png" title="Fuel" width="27px"/>
+                                <strong>Power &amp; Performance</strong>
+                            </span>
+                        </div>
+                        <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>Transmission:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.transmission_type_code"/>
+                                        </div>
+                                        <div>
+                                            <strong>City Mileage:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.city_mileage"/>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>Engine Capacity:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.engine_capacity"/>
+                                        </div>
+                                        <div>
+                                            <strong>Highway Mileage:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.highway_mileage"/>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12" style="margin-top:17px;">
+                            <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
+                                <img src="/ars_vehicle_sales/static/src/img/comfort_con.png" title="Fuel" width="27px"/>
+                                <strong>Comfort &amp; Convenience</strong>
+                            </span>
+                        </div>
+                        <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 91px; padding:24px 10px;">
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>Power Steering:</strong>
+                                            <t t-if="ord_lin.product_id.power_steering == true">
+                                                <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
                                             </t>
-                                            <!--<p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-field="ord_lin.product_id.attribute_line_ids.value_ids.name"></p>-->
-                                        </strong>
-                                    </div>
-                                </tr>
-                            </t>
+                                            <t t-if="ord_lin.product_id.power_steering == false">
+                                                <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                        </div>
+                                        <div>
+                                            <strong>A/C:</strong>
+                                            <t t-if="ord_lin.product_id.ac == true">
+                                                <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                            <t t-if="ord_lin.product_id.ac == false">
+                                                <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                        </div>
+                                        <div>
+                                            <strong>Steering Adjustment:</strong>
+                                            <t t-if="ord_lin.product_id.steering_adjustment == true">
+                                                <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                            <t t-if="ord_lin.product_id.steering_adjustment == false">
+                                                <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
+                            <div class="col-xs-6">
+                                <t t-foreach="doc.order_line" t-as="ord_lin">
+                                    <tr class="active">
+                                        <div>
+                                            <strong>Power Windows:</strong>
+                                            <span style="font-style: italic;" t-field="ord_lin.product_id.power_window"/>
+                                        </div>
+                                        <div>
+                                            <strong>Central Locking:</strong>
+                                            <t t-if="ord_lin.product_id.centre_locking == true">
+                                                <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                            <t t-if="ord_lin.product_id.centre_locking == false">
+                                                <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
+                                            </t>
+                                        </div>
+                                    </tr>
+                                </t>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="col-xs-12" style="margin-top:2px;">
-                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
-                            <img src="/ars_vehicle_sales/static/src/img/design_dimen.png" title="Fuel" width="27px"/>
-                            <strong>Design &amp; Dimensions</strong>
-                        </span>
-                    </div>
-                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
-                        <div class="col-xs-6">
+                        <div class="col-xs-12" style="margin-top:17px;">
+                            <strong style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">Description</strong>
+                        </div>
+                        <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: auto; padding:24px 10px;">
                             <t t-foreach="doc.order_line" t-as="ord_lin">
                                 <tr class="active">
                                     <div>
-                                        <strong>Car Type:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.car_type"/>
-                                    </div>
-                                    <div>
-                                        <strong>Seating Capacity:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.seating_capacity"/>
+                                        <span style="font-style: italic;" t-field="ord_lin.product_id.description_sale"/>
                                     </div>
                                 </tr>
                             </t>
                         </div>
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div>
-                                        <strong>No of Doors:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.no_of_doors"/>
-                                    </div>
-                                </tr>
-                            </t>
+                        <div class="row text-center">
+                            <div class="pull-left">
+                                <h4 style="margin: 72px 0px 10px 36px; text-decoration: overline;">Authorized Signature</h4>
+                            </div>
+                            <div class="pull-right">
+                                <h4 style="margin: 72px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="col-xs-12" style="margin-top:17px;">
-                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
-                            <img src="/ars_vehicle_sales/static/src/img/speed_perf.png" title="Fuel" width="27px"/>
-                            <strong>Power &amp; Performance</strong>
-                        </span>
-                    </div>
-                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 70px; padding:24px 10px;">
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div>
-                                        <strong>Transmission:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.transmission_type_code"/>
-                                    </div>
-                                    <div>
-                                        <strong>City Mileage:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.city_mileage"/>
-                                    </div>
-                                </tr>
-                            </t>
-                        </div>
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div>
-                                        <strong>Engine Capacity:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.engine_capacity"/>
-                                    </div>
-                                    <div>
-                                        <strong>Highway Mileage:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.highway_mileage"/>
-                                    </div>
-                                </tr>
-                            </t>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12" style="margin-top:17px;">
-                        <span style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">
-                            <img src="/ars_vehicle_sales/static/src/img/comfort_con.png" title="Fuel" width="27px"/>
-                            <strong>Comfort &amp; Convenience</strong>
-                        </span>
-                    </div>
-                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: 91px; padding:24px 10px;">
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div>
-                                        <strong>Power Steering:</strong>
-                                        <t t-if="ord_lin.product_id.power_steering == true">
-                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                        <t t-if="ord_lin.product_id.power_steering == false">
-                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                    </div>
-                                    <div>
-                                        <strong>A/C:</strong>
-                                        <t t-if="ord_lin.product_id.ac == true">
-                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                        <t t-if="ord_lin.product_id.ac == false">
-                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                    </div>
-                                    <div>
-                                        <strong>Steering Adjustment:</strong>
-                                        <t t-if="ord_lin.product_id.steering_adjustment == true">
-                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                        <t t-if="ord_lin.product_id.steering_adjustment == false">
-                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                    </div>
-                                </tr>
-                            </t>
-                        </div>
-                        <div class="col-xs-6">
-                            <t t-foreach="doc.order_line" t-as="ord_lin">
-                                <tr class="active">
-                                    <div>
-                                        <strong>Power Windows:</strong>
-                                        <span style="font-style: italic;" t-field="ord_lin.product_id.power_window"/>
-                                    </div>
-                                    <div>
-                                        <strong>Central Locking:</strong>
-                                        <t t-if="ord_lin.product_id.centre_locking == true">
-                                            <img src="/ars_vehicle_sales/static/src/img/true_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                        <t t-if="ord_lin.product_id.centre_locking == false">
-                                            <img src="/ars_vehicle_sales/static/src/img/false_arrow.png" title="Fuel" width="18px"/>
-                                        </t>
-                                    </div>
-                                </tr>
-                            </t>
-                        </div>
-                    </div>
-
-                    <div class="col-xs-12" style="margin-top:17px;">
-                        <strong style="background-color: white; position: relative; top: 15px; padding: 9px 10px; z-index:999;">Description</strong>
-                    </div>
-                    <div class="col-xs-12" style="border-style:solid !important; border-width:2px !important; border-radius: 5px; !important; height: auto; padding:24px 10px;">
-                        <t t-foreach="doc.order_line" t-as="ord_lin">
-                            <tr class="active">
-                                <div>
-                                    <span style="font-style: italic;" t-field="ord_lin.product_id.description_sale"/>
-                                </div>
-                            </tr>
-                        </t>
-                    </div>
-                    <div class="row text-center">
-                        <div class="pull-left">
-                            <h4 style="margin: 72px 0px 10px 36px; text-decoration: overline;">Authorized Signature</h4>
-                        </div>
-                        <div class="pull-right">
-                            <h4 style="margin: 72px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
-                        </div>
-                    </div>
+                    </t>
                 </t>
 
                 <!-- Pro-Forma Code -->
 
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <div class="col-xs-12" style="margin-bottom: 32px;">
-
-                        <div class="col-xs-6" style="margin-top: 80px;">
-                            <h3 style="margin-left:0px;">
-                                <strong>Pro-Forma Invoice # </strong>
-                                <strong t-field="doc.name"/>
-                            </h3>
-                            <span style="margin-left:122px;" t-field="doc.create_date" t-options="{&quot;format&quot;: &quot;MM-dd-yyyy&quot;}"/>
-                        </div>
-
-                        <div class="col-xs-6" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A">
-                            <table class="table">
-                                <tr>
-                                    <td colspan="2">
-                                        <h4>
-                                            <span>Billing &amp; Delivery Address</span>
-                                        </h4>
-                                        <h4>
-                                                <t t-if="doc.partner_id.parent_id">
-                                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.parent_id.name"></span>
-                                                </t>
-                                                <t t-if="not doc.partner_id.parent_id">
-                                                    <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.name"></span>
-                                                </t>
-                                            </h4>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="border-right:1px solid black !important;">
-                                        <span t-field="doc.partner_id"
-                                            t-options='{"widget": "contact", "fields": ["address"]}' />
-                                        <div>
-                                            <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
-                                            <span t-field="doc.mobile" t-options='{"widget": "phone"}'/>
-                                        </div>
-                                        <div>
-                                            <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
-                                            <span t-field="doc.email" t-options='{"widget": "email"}'/>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <div>
-                                                <strong>PAN No:</strong>
-                                                <span t-field="doc.partner_id.pan_no"/>
-                                            </div>
-                                            <div>
-                                                <strong>GSTIN:</strong>
-                                                <span t-field="doc.partner_id.vat"/>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                    <t t-set="proforma" t-value="doc._get_proforma_invoice_types()" ></t>
+                    <t t-if="proforma == 'vehicle'">
+                        <div class="col-xs-12" style="margin-bottom: 5px">
+                            <table class="table table-bordered" style="margin-bottom:0; ">
+                                <thead>
+                                    <tr>
+                                      <th scope="col" class="text-uppercase text-center" style="background-color:#e0e0e0; width:100%; padding:0;">Pro-forma Invoice</th>
+                                    </tr>
+                                  </thead>
                             </table>
                         </div>
-                    </div>
-
-                    <div class="col-xs-12">
-                         <t t-foreach="doc.order_line" t-as="ord_lin">
-                             <tr class="active">
-                                <div class="col-xs-12" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A; margin-bottom: 32px;">
-                                    <div class="col-xs-4">
-                                        <strong>
-                                            <img src="/ars_vehicle_sales/static/src/img/seat_capacity.png" title="Seating Capacity" width="42px"/>
-                                            Seating Capacity
-                                        </strong>
-                                        <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.seating_capacity"></p>
-                                    </div>
-
-                                    <div class="col-xs-4">
-                                        <strong>
-                                            <img src="/ars_vehicle_sales/static/src/img/enginr_capacity.png" title="Engine Capacity" width="42px"/>
-                                            Engine Capacity
-                                        </strong>
-                                        <p style="font-weight: bold; margin-left:45px; margin-top:-8px; font-style: italic;" t-field="ord_lin.product_id.engine_capacity"></p>
-                                    </div>
-
-                                    <div class="col-xs-4">
-                                        <strong>
-                                            <img src="/ars_vehicle_sales/static/src/img/color.png" title="Color" width="42px"/>
-                                            Color
-                                            <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
-                                                <t t-if="at.attribute_id.name == 'color'">
-                                                    <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
-                                                </t>
-                                            </t>
-                                        </strong>
-                                        <!--<p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="doc.product_id.attribute_line_ids.value_ids.name"></p>-->
-                                    </div>
-                                </div>
-                             </tr>
-                         </t>
-                    </div>
-
-                    <div class="col-xs-12">
-                        <table class="table" style="background-color:#F5F5F5;">
-                            <thead style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A;">
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Taxes</th>
-                                    <th groups="sale.group_show_price_subtotal">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <t t-foreach="doc.order_line" t-as="ord_lin">
-                                    <tr class="active">
-                                        <td style="background-color:#FFF;">
-                                            <span t-field="ord_lin.product_id.name"/>
+                        <div class="col-xs-12" style="margin-bottom:5px;">
+                            <table class="table table-bordered" style="margin-bottom:0">
+                                <thead>
+                                    <tr>
+                                      <th scope="col" class="text-uppercase text-center" style="width:50%; padding:0px 2px;">Customer Info</th>
+                                      <th scope="col" class="text-uppercase text-center" style="width:50%; padding:0px 2px;">Pro-forma Invoice Info</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                        <td>
+                                            <table class="table table-sm" style="margin-bottom:0">
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Name</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.partner_id.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Address</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">
+                                                        : 
+                                                        <t t-if="doc.partner_id.street"> <span  t-field="doc.partner_id.street"/>, </t>
+                                                        <t t-if="doc.partner_id.street2"> <span  t-field="doc.partner_id.street2"/>,  </t>
+                                                        <t t-if="doc.partner_id.city"> <span  t-field="doc.partner_id.city"/>,  </t>
+                                                        <t t-if="doc.partner_id.state_id"> <span  t-field="doc.partner_id.state_id.name"/>,  </t>
+                                                        <t t-if="doc.partner_id.country_id"> <span  t-field="doc.partner_id.country_id.name"/>,  </t>
+                                                        <t t-if="doc.partner_id.zip"> <span  t-field="doc.partner_id.zip"/></t>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Email Id</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.email"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Phone No</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.mobile"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Customer GSTIN</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_id.vat" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Customer PAN</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_id.pan_no" /></td>
+                                                </tr>
+                                            </table>
                                         </td>
-                                        <td style="background-color:#FFF;">
-                                            <span t-field="ord_lin.product_uom_qty"/>
-                                        </td>
-                                        <td class="text-right" style="background-color:#FFF;">
-                                            <span t-field="ord_lin.price_unit"/>
-                                        </td>
-                                        <td style="background-color:#FFF;">
-                                            <!--<span t-field="ord_lin.tax_id.name"/>-->
-                                            <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.tax_id))"/>
-                                        </td>
-                                        <td class="text-right" style="background-color:#FFF;">
-                                            <span t-field="ord_lin.price_subtotal"/>
+                                        <td>
+                                            <table class="table table-sm" style="margin-bottom:0">
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Pro-forma Invoice No.</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.name" /></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Effective To</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.effective_date" t-options='{"widget": "date","format": "dd/MM/yyyy"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Exp. Purchase Date</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.commitment_date" t-options='{"widget": "date","format": "dd/MM/yyyy"}'/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Sales Consultant</td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.user_id.name"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Sales Cons. Mob. No. </td>
+                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.user_id.mobile"/></td>
+                                                </tr>
+                                                <!-- <tr>
+                                                    <td>Customer PAN:</td>
+                                                    <td></td>
+                                                </tr> -->
+                                            </table>
                                         </td>
                                     </tr>
-                                </t>
-                            </tbody>
-                        </table>
-                    </div>
+                                    <tr>
+                                        <td colspan="2" class="text-uppercase text-center" style="font-weight: bold; padding:0px 2px;">Vehicle Info</td>
+                                    </tr>
+                                    <t t-foreach="doc.order_line" t-as="ord_lin">
+                                        <tr>
+                                            <td>
+                                                <table class="table table-sm" style="margin-bottom:0">
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td>
+                                                <table class="table table-sm" style="margin-bottom:0">
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </t>    
+                                  </tbody>
+                            </table>
+                        </div>
+                        <div class="col-xs-12" style="margin-bottom: 5px">
+                            <table class="table" style="margin-bottom:0; border: none; border-bottom:2px solid black;">
+                                <thead>
+                                    <tr>
+                                      <th scope="col" class="text-uppercase text-center" style="width:100%border:none; border-bottom: 2px solid black; padding: 0px 2px;">Price Details</th>
+                                    </tr>
+                                  </thead>
+                                  
+                            </table>
+                        </div>
+                        <div class="col-xs-12">
+                            <table class="table table-sm" style="margin-bottom: 0px">
+                                <thead>
+                                    <tr>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 49%" class="text-left">Particulars</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 1%" class="text-left">:</td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;font-weight: bold; width: 48%" class="text-right">Amount</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="ord_lin">
+                                        <tr class="active">
+                                            <td style="background-color:#FFF;padding: 0px 2px;">
+                                                <span t-field="ord_lin.product_id.name"/>
+                                            </td>
+                                            <td style="background-color:#FFF;padding: 0px 2px;">
+                                                :
+                                            </td>
+                                            
+                                            <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
+                                                <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="doc._get_tax_amount_by_group_wise()" t-as="amount_by_group">
+                                            <tr style="border-bottom:1px solid #dddddd;">
+                                                <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                    <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
+                                                    <td style="background-color:#FFF;padding: 0px 2px;">
+                                                        :
+                                                    </td>
+                                                    <td style="padding: 0px 2px;" class="text-right">
+                                                        <span t-esc="amount_by_group[1]"
+                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                    </td>
+                                                </t>
+                                                <t t-else ="">
+                                                    <td style="padding: 0px 2px;">
+                                                        <span t-esc="amount_by_group[0]"/>
+                                                    </td>
+                                                    <td style="background-color:#FFF;padding: 0px 2px;">
+                                                        :
+                                                    </td>
+                                                    <td style="padding: 0px 2px;" class="text-right">
+                                                        <span t-esc="amount_by_group[1]"
+                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                    </td>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td style="padding: 0px 2px;"><strong>Ex-Showroom Price of <span t-field="ord_lin.product_id.name"/></strong></td>
+                                            <td style="background-color:#FFF;padding: 0px 2px;">
+                                                :
+                                            </td>
+                                            <td style="padding: 0px 2px;" class="text-right">
+                                                <span t-field="doc.amount_total"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding: 0px 2px;"><strong>On-Road Price of <span t-field="ord_lin.product_id.name"/> (Paisa Rounded-Off)</strong></td>
+                                            <td style="background-color:#FFF;padding: 0px 2px;">
+                                                :
+                                            </td>
+                                            <td style="padding: 0px 2px;" class="text-right">
+                                                <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"
+                                                    t-options='{"widget": "float", "precision":0, "display_currency": doc.pricelist_id.currency_id}'/>
+                                                <span t-field="doc.pricelist_id.currency_id.symbol" />
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <tr>
+                                        <td style="padding: 0px 2px;"><span>Pro-forma Invoice amount in words</span></td>
+                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                            :
+                                        </td>
+                                        <td style="padding: 0px 2px;" class="text-right"><span t-field="doc.amount_total_words"/> only</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t> 
+                    <t t-else="">
+                        <div class="col-xs-12" style="margin-bottom: 32px;">
 
+                            <div class="col-xs-6" style="margin-top: 80px;">
+                                <h3 style="margin-left:0px;">
+                                    <strong>Pro-Forma Invoice # </strong>
+                                    <strong t-field="doc.name"/>
+                                </h3>
+                                <span style="margin-left:122px;" t-field="doc.create_date" t-options="{&quot;format&quot;: &quot;MM-dd-yyyy&quot;}"/>
+                            </div>
+
+                            <div class="col-xs-6" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A">
+                                <table class="table">
+                                    <tr>
+                                        <td colspan="2">
+                                            <h4>
+                                                <span>Billing &amp; Delivery Address</span>
+                                            </h4>
+                                            <h4>
+                                                    <t t-if="doc.partner_id.parent_id">
+                                                        <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.parent_id.name"></span>
+                                                    </t>
+                                                    <t t-if="not doc.partner_id.parent_id">
+                                                        <span style="color: #FE6936; margin-left: 36px; font-size: 26px; font-style: italic;" t-field="doc.partner_id.name"></span>
+                                                    </t>
+                                                </h4>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border-right:1px solid black !important;">
+                                            <span t-field="doc.partner_id"
+                                                t-options='{"widget": "contact", "fields": ["address"]}' />
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/mobile.png" title="Mobile" width="18px"/>
+                                                <span t-field="doc.mobile" t-options='{"widget": "phone"}'/>
+                                            </div>
+                                            <div>
+                                                <img src="/ars_vehicle_sales/static/src/img/email.png" title="Email" width="18px"/>
+                                                <span t-field="doc.email" t-options='{"widget": "email"}'/>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <div>
+                                                    <strong>PAN No:</strong>
+                                                    <span t-field="doc.partner_id.pan_no"/>
+                                                </div>
+                                                <div>
+                                                    <strong>GSTIN:</strong>
+                                                    <span t-field="doc.partner_id.vat"/>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <t t-foreach="doc.order_line" t-as="ord_lin">
+                                <tr class="active">
+                                    <div class="col-xs-12" style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A; margin-bottom: 32px;">
+                                        <div class="col-xs-4">
+                                            <strong>
+                                                <img src="/ars_vehicle_sales/static/src/img/seat_capacity.png" title="Seating Capacity" width="42px"/>
+                                                Seating Capacity
+                                            </strong>
+                                            <p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="ord_lin.product_id.seating_capacity"></p>
+                                        </div>
+
+                                        <div class="col-xs-4">
+                                            <strong>
+                                                <img src="/ars_vehicle_sales/static/src/img/enginr_capacity.png" title="Engine Capacity" width="42px"/>
+                                                Engine Capacity
+                                            </strong>
+                                            <p style="font-weight: bold; margin-left:45px; margin-top:-8px; font-style: italic;" t-field="ord_lin.product_id.engine_capacity"></p>
+                                        </div>
+
+                                        <div class="col-xs-4">
+                                            <strong>
+                                                <img src="/ars_vehicle_sales/static/src/img/color.png" title="Color" width="42px"/>
+                                                Color
+                                                <t t-foreach="ord_lin.product_id.attribute_value_ids" t-as="at">
+                                                    <t t-if="at.attribute_id.name == 'color'">
+                                                        <p style="font-weight: bold; margin-left:53px; margin-top:-16px; font-style: italic;"  t-esc="at.name"></p>
+                                                    </t>
+                                                </t>
+                                            </strong>
+                                            <!--<p style="font-weight: bold; margin-left:45px; margin-top:-12px; font-style: italic;" t-field="doc.product_id.attribute_line_ids.value_ids.name"></p>-->
+                                        </div>
+                                    </div>
+                                </tr>
+                            </t>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <table class="table" style="background-color:#F5F5F5;">
+                                <thead style="border-style:solid !important; border-width:3px !important; border-radius: 5px; !important; border-color: #385D8A;">
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Quantity</th>
+                                        <th>Unit Price</th>
+                                        <th>Taxes</th>
+                                        <th groups="sale.group_show_price_subtotal">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.order_line" t-as="ord_lin">
+                                        <tr class="active">
+                                            <td style="background-color:#FFF;">
+                                                <span t-field="ord_lin.product_id.name"/>
+                                            </td>
+                                            <td style="background-color:#FFF;">
+                                                <span t-field="ord_lin.product_uom_qty"/>
+                                            </td>
+                                            <td class="text-right" style="background-color:#FFF;">
+                                                <span t-field="ord_lin.price_unit"/>
+                                            </td>
+                                            <td style="background-color:#FFF;">
+                                                <!--<span t-field="ord_lin.tax_id.name"/>-->
+                                                <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.tax_id))"/>
+                                            </td>
+                                            <td class="text-right" style="background-color:#FFF;">
+                                                <span t-field="ord_lin.price_subtotal"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </t>
                 </t>
             </xpath>
 
@@ -468,71 +917,102 @@
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
                 </t>
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <div class="clearfix">
-                        <div class="col-xs-12"  name="total">
-                            <div class="row pull-right" style="margin-right:-7px;">
-                                <table class="table-condensed" style="min-width: 200px;max-width: 350px;">
-                                    <tr class="border-black" style="border-bottom:1px solid #dddddd;">
-                                        <td><strong>Subtotal</strong></td>
-                                        <td class="text-right">
-                                            <span t-field="doc.amount_untaxed"
-                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                    <t t-set="tax_groups_length" t-value="len(doc._get_tax_amount_by_group())"/>
-                                    <t t-foreach="doc._get_tax_amount_by_group()" t-as="amount_by_group">
-                                        <tr style="border-bottom:1px solid #dddddd;">
-                                            <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                <td><span t-esc="amount_by_group[0]"/>&amp;nbsp;<span>on</span>&amp;nbsp;<span t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
-                                                <td class="text-right">
-                                                    <span t-esc="amount_by_group[1]"
-                                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                </td>
-                                            </t>
-                                            <t t-else ="">
-                                                <td>
-                                                    <span t-esc="amount_by_group[0]"/><span>&amp;nbsp;<span>on</span>&amp;nbsp;<span t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></span>
-                                                </td>
-                                                <td class="text-right">
-                                                    <span t-esc="amount_by_group[1]"
-                                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                </td>
-                                            </t>
+                    <t t-set="proforma" t-value="doc._get_proforma_invoice_types()" ></t>
+                    <t t-if="proforma != 'vehicle'">
+                        <div class="clearfix">
+                            <div class="col-xs-12"  name="total">
+                                <div class="row pull-right" style="margin-right:-7px;">
+                                    <table class="table-condensed" style="min-width: 200px;max-width: 350px;">
+                                        <tr class="border-black" style="border-bottom:1px solid #dddddd;">
+                                            <td><strong>Subtotal</strong></td>
+                                            <td class="text-right">
+                                                <span t-field="doc.amount_untaxed"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
                                         </tr>
-                                    </t>
-                                    <tr class="border-black">
-                                        <td><strong>Total</strong></td>
-                                        <td class="text-right">
-                                            <span t-field="doc.amount_total"
-                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                        </td>
-                                    </tr>
-                                </table>
+                                        <t t-set="tax_groups_length" t-value="len(doc._get_tax_amount_by_group_wise())"/>
+                                        <t t-foreach="doc._get_tax_amount_by_group_wise()" t-as="amount_by_group">
+                                            <tr style="border-bottom:1px solid #dddddd;">
+                                                <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                    <td><span t-esc="amount_by_group[0]"/>&amp;nbsp;<span>on</span>&amp;nbsp;<span t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></td>
+                                                    <td class="text-right">
+                                                        <span t-esc="amount_by_group[1]"
+                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                    </td>
+                                                </t>
+                                                <t t-else ="">
+                                                    <td>
+                                                        <span t-esc="amount_by_group[0]"/><span>&amp;nbsp;<span>on</span>&amp;nbsp;<span t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/></span>
+                                                    </td>
+                                                    <td class="text-right">
+                                                        <span t-esc="amount_by_group[1]"
+                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                    </td>
+                                                </t>
+                                            </tr>
+                                        </t>
+                                        <tr class="border-black">
+                                            <td><strong>Total</strong></td>
+                                            <td class="text-right">
+                                                <span t-field="doc.amount_total"
+                                                    t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="row pull-left">
-                            <p id="total_in_words" class="mb16">
-                                <strong>Total (In Words): </strong>
-                                <span t-field="doc.amount_total_words"/>
-                            </p>
-                        </div>
+                            <div class="row pull-left">
+                                <p id="total_in_words" class="mb16">
+                                    <strong>Total (In Words): </strong>
+                                    <span t-field="doc.amount_total_words"/>
+                                </p>
+                            </div>
 
-                        <div class="row pull-left" style="margin-top:94px; margin-right:4px;">
-                            <label string="Terms &amp; Conditions"/><b>Terms &amp; Conditions : </b><br></br>
-                            <label string="* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part"/><b>* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part</b><br></br>
-                            <label string="* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed."/><b>* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed.</b><br></br>
-                            <label string="* Delivery against availablity of the parts."/><b>* Delivery against availablity of the parts.</b><br></br>
-                        </div>
-                        <div class="row text-center">
-                            <div class="pull-left">
-                                <h4 style="margin: 87px 0px 10px 153px; text-decoration: overline;">Authorized Signature</h4>
+                            <div class="row pull-left" style="margin-top:94px; margin-right:4px;">
+                                <label string="Terms &amp; Conditions"/><b>Terms &amp; Conditions : </b><br></br>
+                                <label string="* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part"/><b>* Supplimentry Estimate will be provided on further  dismanting/diagnosis of the Part</b><br></br>
+                                <label string="* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed."/><b>* Diagnosis &amp; Estimate charges will be applicable if vehicle is taken without  repairs performed.</b><br></br>
+                                <label string="* Delivery against availablity of the parts."/><b>* Delivery against availablity of the parts.</b><br></br>
                             </div>
-                            <div class="pull-right">
-                                <h4 style="margin: 87px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
+                            <div class="row text-center">
+                                <div class="pull-left">
+                                    <h4 style="margin: 87px 0px 10px 153px; text-decoration: overline;">Authorized Signature</h4>
+                                </div>
+                                <div class="pull-right">
+                                    <h4 style="margin: 87px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </t>
+                    <t t-else="">
+                        <div class="col-xs-12" style="margin-top:10px">
+                            <table class="table">
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none; border-top: 2px solid black;">
+                                        <label string="Terms &amp; Conditions"/><b>Terms &amp; Conditions : </b><br />
+                                        <span t-field="doc.note"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-xs-12" style="margin-top: 20px;">
+                            <table class="table">
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none;" class="text-left">For <span t-field="doc.partner_id.name"/></td>
+                                    <td style="padding: 0px 2px;border:none;" class="text-right">For <span t-field="doc.company_id.name"/></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 20px 0px;border:none;"></td>
+                                    <td style="padding: 20px 0px;border:none;"></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0px 2px;border:none;" class="text-left">(Customer's Signature)</td>
+                                    <td style="padding: 0px 2px;border:none;" class="text-right">(Authorized Signatory)</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
                 </t>
             </xpath>
 
