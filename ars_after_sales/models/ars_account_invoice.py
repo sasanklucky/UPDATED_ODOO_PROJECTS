@@ -6,6 +6,8 @@ from datetime import date
 class ARS_account_invoice(models.Model):
     _inherit = "account.invoice"
 
+    gate_pass_date = fields.Date(string='Gate Pass Date')
+
     @api.multi
     def invoice_print(self):
         res = super(ARS_account_invoice, self).invoice_print()
