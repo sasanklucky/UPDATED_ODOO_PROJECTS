@@ -1523,6 +1523,22 @@
         <!--</tree>-->
         <!--</field>-->
         <!--</div>-->
+        <!--</xpath>--> <!--<record id="view_order_form_inherit" model="ir.ui.view">-->
+        <!--<field name="name">sale.order.form.inherit</field>-->
+        <!--<field name="model">sale.order</field>-->
+        <!--<field name="inherit_id" ref="sale.view_order_form" />-->
+        <!--<field name="arch" type="xml">-->
+        <!--<xpath expr="//button[@name='action_view_delivery']" position="after">-->
+        <!--<button class="oe_stat_button o_res_partner_tip_opp" type="object" name="vehicle_info"-->
+        <!--icon="fa-car" >-->
+        <!--<field string="Vehicle" name="vehicle_count" widget="statinfo"/>-->
+        <!--</button>-->
+        <!--<button class="oe_stat_button" type="object"-->
+        <!--context="{'partner_id': partner_id}"-->
+        <!--string="Meeting"-->
+        <!--name="action_schedule_meeting1"-->
+        <!--icon="fa-calendar">-->
+        <!--</button>-->
         <!--</xpath>-->
 
         <!--</field>-->

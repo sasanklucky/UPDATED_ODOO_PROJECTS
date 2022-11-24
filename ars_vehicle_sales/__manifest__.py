@@ -19,6 +19,7 @@
         'data/ars_mail_template_data.xml',
          'security/ars_security.xml',
          'security/ir.model.access.csv',
+        'views/ars_gatepass_template.xml',
         'views/ars_model_views.xml',
         'views/ars_menus.xml',
         'views/ars_model_views.xml',
