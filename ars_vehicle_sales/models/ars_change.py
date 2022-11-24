@@ -20,7 +20,7 @@ class ars_sale_crm_sale(models.Model):
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
-            rounded_value = round(self.amount_total,0)
+            rounded_value = round(sale.amount_total,0)
             sale.amount_total_words = sale.currency_id.amount_to_text(rounded_value)
 
     @api.multi
