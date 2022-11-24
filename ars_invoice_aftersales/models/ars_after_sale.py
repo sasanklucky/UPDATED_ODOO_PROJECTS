@@ -189,7 +189,7 @@ class ARS_After_sale_order(models.Model):
                             'model':order.model,'kilometer':order.mileage_in,
                             'doc_type':order.doc_type,'appointment_date':order.appointment_date,
                             'delivery_date':order.delivery_date,
-                            'product_varient_ids':[(6,0,self.order_line_ids.product_varient_ids.ids)],
+                            'product_varient_ids':[(6,0,self.order_line.product_varient_ids.ids)],
                             })
                 return res
 
