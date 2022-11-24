@@ -9,6 +9,16 @@ class ARSAccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     vin_no = fields.Many2one('stock.production.lot', string="VIN")
+    """ Product line varient """
+    product_varient_ids = fields.Many2many('product.attribute.value','account_line_attribute_rel','account_id','attribute_id',string='Attribute')
+
+    @api.multi
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        if self.product_id:
+            # self.product_varient_ids = [(6,0,self.product_id.attribute_value_ids.ids)]
+            # self.product_varient_ids = self.product_id.attribute_value_ids.ids
+            return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
 
     @api.multi
@@ -25,5 +35,13 @@ class ARS_Product_Product(models.Model):
     _inherit = "product.product"
 
     lot_id = fields.Many2one('stock.production.lot')
+
+    @api.multi
+    def name_get(self):
+        result = []
+        for record in self:
+            vehicle_name = record.name if record.name else ''
+            result.append((record.id, vehicle_name))
+        return result
 
 

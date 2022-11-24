@@ -78,6 +78,7 @@ class ARS_sale_order(models.Model):
         required=True, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         default=_ars_default_warehouse_id)
 
+
     @api.multi
     @api.onchange('resource_id_sale')
     def resource_map(self):
@@ -695,6 +696,7 @@ class ars_sale_advance_payment_inv(models.TransientModel):
 
     @api.multi
     def create_invoices(self):
+        # print("create_invoices----create_invoices===================",self)
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
         print ('sale_orders',sale_orders)
         for sl in sale_orders:

@@ -74,6 +74,9 @@ class ARS_After_sale_order(models.Model):
 
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
+        # print("-------invoice create---------------")
+        # import pdb
+        # pdb.set_trace()
         """
         Create the invoice associated to the SO.
         :param grouped: if True, invoices are grouped by SO id. If False, invoices are grouped by
@@ -96,6 +99,7 @@ class ARS_After_sale_order(models.Model):
             # for data in all_data:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
             if order.sale_aftersales == 'after_sales':
+                # print("--------after sales-----------")
                 # for data in all_data:
                 count = 0
                 for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
@@ -125,6 +129,7 @@ class ARS_After_sale_order(models.Model):
                                                    subtype_id=self.env.ref('mail.mt_note').id)
                         invoices[invoice.id] = invoice
                     else:
+                        print("invoice created----")
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
 #                         references[invoice] = order
@@ -176,13 +181,16 @@ class ARS_After_sale_order(models.Model):
                 return [inv.id for inv in invoices.values()]
 
             if order.sale_aftersales != 'after_sales':
+                # print("--------not after sales-----------")
                 res = super(ARS_After_sale_order,self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)
                 rest.write({'mobile':order.mobile,'email':order.email,
                             'reg_no':order.regn_no.license_plate,'vin':order.vin_no,
                             'model':order.model,'kilometer':order.mileage_in,
                             'doc_type':order.doc_type,'appointment_date':order.appointment_date,
-                            'delivery_date':order.delivery_date})
+                            'delivery_date':order.delivery_date,
+                            'product_varient_ids':[(6,0,self.order_line_ids.product_varient_ids.ids)],
+                            })
                 return res
 
             # if order.sale_aftersales != 'after_sales':
@@ -217,7 +225,7 @@ class ARS_After_sale_order(models.Model):
         res = super(ARS_After_sale_order,self)._prepare_invoice()
         if context.get('customer_split'):
             res['partner_id'] = context.get('customer_split')
-            res['partner_shipping_id'] = context.get('customer_split')
+            res['partner_shipping_id'] = context.get('customer_split')        
         return res
 
     # @api.multi
@@ -238,6 +246,19 @@ class ARS_sale_order_line(models.Model):
     # def _default_customer_split(self):
     #     for customer in self:
     #         customer.customer_split = customer.order_id.partner_id.id
+
+    """ Product line varient """
+    product_varient_ids = fields.Many2many('product.attribute.value','order_line_attribute_rel','order_id','attribute_id',string='Attribute')
+
+    @api.multi
+    @api.onchange('product_id')
+    def onchange_product_id(self):
+        if self.product_id:
+            # self.product_varient_ids = [(6,0,self.product_id.attribute_value_ids.ids)]
+            # self.product_varient_ids = self.product_id.attribute_value_ids.ids
+            return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
+
+    
 
     @api.multi
     @api.onchange('product_id')
@@ -383,6 +404,8 @@ class ARS_split_invoice(models.Model):
     
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
+
+    gate_pass_date = fields.Date(string='Gate Pass Date')
 
     @api.multi
     def action_invoice_open(self):
