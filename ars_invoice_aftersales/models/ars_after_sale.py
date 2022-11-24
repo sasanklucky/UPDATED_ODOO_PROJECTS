@@ -181,7 +181,6 @@ class ARS_After_sale_order(models.Model):
                 return [inv.id for inv in invoices.values()]
 
             if order.sale_aftersales != 'after_sales':
-                # print("--------not after sales-----------")
                 res = super(ARS_After_sale_order,self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)
                 rest.write({'mobile':order.mobile,'email':order.email,
@@ -189,8 +188,11 @@ class ARS_After_sale_order(models.Model):
                             'model':order.model,'kilometer':order.mileage_in,
                             'doc_type':order.doc_type,'appointment_date':order.appointment_date,
                             'delivery_date':order.delivery_date,
-                            'product_varient_ids':[(6,0,self.order_line.product_varient_ids.ids)],
                             })
+                
+                """ Update Product attribute from sale order lie to account invoice lines """
+                query = f"""INSERT INTO account_line_attribute_rel (account_id, attribute_id) VALUES ({str(rest.invoice_line_ids.ids)[1:-1]},{str(order.order_line.product_varient_ids.ids)[1:-1]});"""
+                self._cr.execute(query)
                 return res
 
             # if order.sale_aftersales != 'after_sales':
@@ -225,7 +227,7 @@ class ARS_After_sale_order(models.Model):
         res = super(ARS_After_sale_order,self)._prepare_invoice()
         if context.get('customer_split'):
             res['partner_id'] = context.get('customer_split')
-            res['partner_shipping_id'] = context.get('customer_split')        
+            res['partner_shipping_id'] = context.get('customer_split')
         return res
 
     # @api.multi
