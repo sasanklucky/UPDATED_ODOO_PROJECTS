@@ -20,7 +20,8 @@ class ars_sale_crm_sale(models.Model):
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
-            sale.amount_total_words = sale.currency_id.amount_to_text(sale.amount_total)
+            rounded_value = round(self.amount_total,0)
+            sale.amount_total_words = sale.currency_id.amount_to_text(rounded_value)
 
     @api.multi
     def _get_proforma_invoice_types(self):
