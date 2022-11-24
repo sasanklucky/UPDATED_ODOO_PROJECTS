@@ -2664,6 +2664,17 @@
                 </form>
             </field>
         </record>
+         <record id="invoice_form_gate_pass_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="after">
+                    <field name="gate_pass_date"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="invoice_form_inherit1" model="ir.ui.view">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
@@ -2683,6 +2694,7 @@
 
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="before">
                     <field name="origin" groups="base.group_user" string="Order No"/>
+                    <field name="gate_pass_date"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='user_id']" position="replace">
                     <field name="user_id" groups="base.group_user" invisible="1"/>

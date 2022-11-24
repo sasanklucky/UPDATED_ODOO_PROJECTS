@@ -255,9 +255,8 @@ class ARS_sale_order_line(models.Model):
     @api.multi
     @api.onchange('product_id')
     def onchange_product_id(self):
+        self.product_varient_ids=False
         if self.product_id:
-            # self.product_varient_ids = [(6,0,self.product_id.attribute_value_ids.ids)]
-            # self.product_varient_ids = self.product_id.attribute_value_ids.ids
             return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
     
@@ -407,7 +406,6 @@ class ARS_split_invoice(models.Model):
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
 
-    gate_pass_date = fields.Date(string='Gate Pass Date')
 
     @api.multi
     def action_invoice_open(self):

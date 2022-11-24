@@ -16,8 +16,6 @@ class ARSAccountInvoiceLine(models.Model):
     @api.onchange('product_id')
     def onchange_product_id(self):
         if self.product_id:
-            # self.product_varient_ids = [(6,0,self.product_id.attribute_value_ids.ids)]
-            # self.product_varient_ids = self.product_id.attribute_value_ids.ids
             return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
 
