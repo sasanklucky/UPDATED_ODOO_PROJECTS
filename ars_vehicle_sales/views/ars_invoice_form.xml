@@ -5,11 +5,17 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="attributes">
+                    <attribute name="options">{'no_open': True,'no_create':True,'no_edit':True}</attribute>
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
                     <field name="vin_no"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="after">
-                    <field name="product_varient_ids" widget="many2many_tags" readonly="0" required='1' options="{'no_create': True, 'no_open': True}"/>
+                    <field name="product_varient_ids" widget="many2many_tags" invisible="1" required='0' options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
+                    <field name="product_template_id"  options="{'no_create': True, 'no_open': True}" required='1'/>
                 </xpath>
                 <!-- <xpath expr="//field[@name='date_invoice']" position="after">
                   <field name="gate_pass_date" />
@@ -18,8 +24,8 @@
                   <field name="gate_pass_date"/>
               </field> -->
                 <xpath expr="//form//header" position="inside">
-                      <!-- <button class="btn-primary" icon="fa-arrows-v" type="object" name="action_print_gate_pass" string="Print Gate Pass"/> -->
-                      <button name="%(gatepass_report)d" class="btn-primary" string="Print Gate Pass" type="action" />
+                      <button class="btn-primary" type="object" name="action_print_gate_pass" string="Print Gate Pass"/>
+                      <!-- <button name="%(gatepass_report)d" class="btn-primary" string="Print Gate Pass" type="action" /> -->
                       <button name="send_whatsapp" class="btn-primary" string="Send In Whatsapp" type="object" />
                 </xpath>
             </field>

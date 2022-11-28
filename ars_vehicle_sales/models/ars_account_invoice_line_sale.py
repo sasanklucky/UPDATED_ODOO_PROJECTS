@@ -11,12 +11,25 @@ class ARSAccountInvoiceLine(models.Model):
     vin_no = fields.Many2one('stock.production.lot', string="VIN")
     """ Product line varient """
     product_varient_ids = fields.Many2many('product.attribute.value','account_line_attribute_rel','account_id','attribute_id',string='Attribute')
+    product_template_id = fields.Many2one('product.template',string='Model')
 
     @api.multi
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        if self.product_id:
-            return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
+    @api.onchange('product_template_id')
+    def onchange_product_template_id(self):
+        self.product_id=False
+        if self.product_template_id:
+            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
+
+
+    
+    # @api.multi
+    # @api.onchange('product_id')
+    # def onchange_product_id(self):
+    #     if self.product_id:
+    #         return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
 
     @api.multi
@@ -34,12 +47,12 @@ class ARS_Product_Product(models.Model):
 
     lot_id = fields.Many2one('stock.production.lot')
 
-    @api.multi
-    def name_get(self):
-        result = []
-        for record in self:
-            vehicle_name = record.name if record.name else ''
-            result.append((record.id, vehicle_name))
-        return result
+    # @api.multi
+    # def name_get(self):
+    #     result = []
+    #     for record in self:
+    #         vehicle_name = record.name if record.name else ''
+    #         result.append((record.id, vehicle_name))
+    #     return result
 
 

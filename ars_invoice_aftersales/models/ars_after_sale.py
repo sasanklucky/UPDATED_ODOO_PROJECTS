@@ -190,10 +190,17 @@ class ARS_After_sale_order(models.Model):
                             'delivery_date':order.delivery_date,
                             })
                 
-                """ Update Product attribute from sale order lie to account invoice lines """
-                query = f"""INSERT INTO account_line_attribute_rel (account_id, attribute_id) VALUES ({str(rest.invoice_line_ids.ids)[1:-1]},{str(order.order_line.product_varient_ids.ids)[1:-1]});"""
-                self._cr.execute(query)
-                return res
+                for order_line in order.order_line:
+                    invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
+                    invoice.product_template_id = order_line.product_template_id.id
+
+                    
+                # 'product_template_id':order.order_line.product_template_id.id
+                
+                # """ Update Product attribute from sale order lie to account invoice lines """
+                # query = f"""INSERT INTO account_line_attribute_rel (account_id, attribute_id) VALUES ({str(rest.invoice_line_ids.ids)[1:-1]},{str(order.order_line.product_varient_ids.ids)[1:-1]});"""
+                # self._cr.execute(query)
+                # return res
 
             # if order.sale_aftersales != 'after_sales':
             #     for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
@@ -251,13 +258,24 @@ class ARS_sale_order_line(models.Model):
 
     """ Product line varient """
     product_varient_ids = fields.Many2many('product.attribute.value','order_line_attribute_rel','order_id','attribute_id',string='Attribute')
+    product_template_id = fields.Many2one('product.template',string='Model')
 
     @api.multi
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        self.product_varient_ids=False
-        if self.product_id:
-            return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
+    @api.onchange('product_template_id')
+    def onchange_product_template_id(self):
+        self.product_id=False
+        if self.product_template_id:
+            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
+    
+    # @api.multi
+    # @api.onchange('product_id')
+    # def onchange_product_id(self):
+    #     self.product_varient_ids=False
+    #     if self.product_id:
+    #         return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
     
 
