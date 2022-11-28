@@ -12,6 +12,14 @@
         <field name="binding_type">report</field>
     </record>
 
+    <!-- <report
+        id="gatepass_report"
+        model="account.invoice"
+        string="Gate pass report"
+        report_type="qweb-pdf"
+        name="ars_vehicle_sales.report_gatepass"
+        file="ars_vehicle_sales.report_gatepass"
+    /> -->
     
 
     <template id="gate_pass_report_template">
@@ -34,47 +42,104 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="','.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="2">Address</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="2">
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
                                 <t t-esc="doc.partner_id.name"/>,<br></br>
                                 <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,<br></br>
                                 <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,<br></br>
                                 <t t-esc="doc.partner_id.state_id.name"/>,<t t-esc="doc.partner_id.country_id.name"/>
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">color
-                                <t t-foreach="request.env['account.invoice.line'].sudo().search([('product_id','in',doc.invoice_line_ids.mapped('product_id.id')),('invoice_id','=',doc.id)])" t-as="relation">
-                                    <t t-esc="','.join(relation.product_varient_ids.mapped('name'))"/>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['product.product'].sudo().search([('product_tmpl_id','in',doc.invoice_line_ids.mapped('product_template_id.id')),('id','=',doc.invoice_line_ids.mapped('product_id.id'))])" t-as="relation">
+                                    <t t-esc="'/'.join(relation.attribute_value_ids.mapped('name'))"/>
                                 </t>
                                 
                             </td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="','.join(doc.invoice_line_ids.mapped('vin_no.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.vin_sn) > 1">
+                                        <t t-esc="'/'.join(relation.vin_sn)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.vin_sn) == 1"> -->
+                                        <t t-if="relation.vin_sn">
+                                            <t t-if="len(relation.vin_sn) == 1">
+                                                <t t-esc="relation.vin_sn"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'/'.join(relation.mapped('vin_sn'))"/>
+                                            </t>
+                                        </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Liscence Plate No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <t t-if="relation.license_plate">
+                                        <t t-esc="relation.license_plate"/>
+                                        <!-- <t t-if="len(relation.license_plate) == 1">
+                                            <t t-esc="relation.license_plate"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('license_plate'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Engine No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.name)])" t-as="relation">
-                                    <t t-esc="relation.engine_number"/>
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.engine_number) > 1">
+                                        <t t-esc="'/'.join(relation.engine_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.engine_number) == 1"> -->
+                                    <t t-if="relation.engine_number">
+                                        <t t-esc="relation.engine_number"/>
+                                        <!-- <t t-if="len(relation.engine_number) == 1">
+                                            <t t-esc="relation.engine_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('engine_number'))"/>
+                                        </t> -->
+                                    </t>
                                 </t>
                             </td>
                         </tr>
                         <tr>
                             <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.name)])" t-as="relation">
-                                    <t t-esc="relation.key_serial_number"/>
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.key_serial_number) > 1">
+                                        <t t-esc="'/'.join(relation.key_serial_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
+                                    <t t-if="relation.key_serial_number">
+                                        <t t-if="len(relation.key_serial_number) == 1">
+                                            <t t-esc="relation.key_serial_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <!-- <t t-esc=""/> -->
+                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
+                                    </t>
+                                    </t>
                                 </t>
                             </td>
                         </tr>
@@ -192,7 +257,7 @@
                             <td scope="col" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass</td>
                         </tr>
                     </table>
-                    <table class="table table-sm" style="border:1px solid #e0e0e0;border-collapse: collapse; margin-bottom:`1px">
+                    <table class="table table-sm" style="border:1px solid #e0e0e0;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
                        
                         <tr>
                             <th colspan="2" class="text-uppercase text-center" style="padding: 0px 2px;">Customer Info</th>
@@ -202,46 +267,104 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="','.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="2">Address</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="2">
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
                                 <t t-esc="doc.partner_id.name"/>,<br></br>
                                 <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,<br></br>
                                 <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,<br></br>
                                 <t t-esc="doc.partner_id.state_id.name"/>,<t t-esc="doc.partner_id.country_id.name"/>
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color
-                                <t t-foreach="request.env['account.invoice.line'].sudo().search([('product_id','in',doc.invoice_line_ids.mapped('product_id.id')),('invoice_id','=',doc.id)])" t-as="relation">
-                                    <t t-esc="','.join(relation.product_varient_ids.mapped('name'))"/>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['product.product'].sudo().search([('product_tmpl_id','in',doc.invoice_line_ids.mapped('product_template_id.id')),('id','=',doc.invoice_line_ids.mapped('product_id.id'))])" t-as="relation">
+                                    <t t-esc="'/'.join(relation.attribute_value_ids.mapped('name'))"/>
                                 </t>
+                                
                             </td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="','.join(doc.invoice_line_ids.mapped('vin_no.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.vin_sn) > 1">
+                                        <t t-esc="'/'.join(relation.vin_sn)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.vin_sn) == 1"> -->
+                                        <t t-if="relation.vin_sn">
+                                            <t t-if="len(relation.vin_sn) == 1">
+                                                <t t-esc="relation.vin_sn"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'/'.join(relation.mapped('vin_sn'))"/>
+                                            </t>
+                                        </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Liscence Plate No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <t t-if="relation.license_plate">
+                                        <t t-esc="relation.license_plate"/>
+                                        <!-- <t t-if="len(relation.license_plate) == 1">
+                                            <t t-esc="relation.license_plate"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('license_plate'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Engine No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.name)])" t-as="relation">
-                                    <t t-esc="relation.engine_number"/>
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.engine_number) > 1">
+                                        <t t-esc="'/'.join(relation.engine_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.engine_number) == 1"> -->
+                                    <t t-if="relation.engine_number">
+                                        <t t-esc="relation.engine_number"/>
+                                        <!-- <t t-if="len(relation.engine_number) == 1">
+                                            <t t-esc="relation.engine_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('engine_number'))"/>
+                                        </t> -->
+                                    </t>
                                 </t>
                             </td>
                         </tr>
                         <tr>
                             <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.name)])" t-as="relation">
-                                    <t t-esc="relation.key_serial_number"/>
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.key_serial_number) > 1">
+                                        <t t-esc="'/'.join(relation.key_serial_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
+                                    <t t-if="relation.key_serial_number">
+                                        <t t-if="len(relation.key_serial_number) == 1">
+                                            <t t-esc="relation.key_serial_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <!-- <t t-esc=""/> -->
+                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
+                                    </t>
+                                    </t>
                                 </t>
                             </td>
                         </tr>

@@ -4,6 +4,8 @@ from datetime import timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
+from openerp.exceptions import UserError, ValidationError
+
 
 class arsCompany(models.Model):
     _inherit = 'res.company'
@@ -173,6 +175,18 @@ class ars_sale_invoice(models.Model):
                 self.filtered(lambda s: s.state == 'draft').write({'state': 'sent'})
                 return self.env.ref('ars_vehicle_sales.before_sales_invoice').report_action(self)
         return res
+
+    @api.multi
+    def action_print_gate_pass(self):
+        self.ensure_one()
+        vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id)])
+        if vehcile_obj:
+            if not vehcile_obj.initial_reg_no:
+                raise ValidationError(_('Vehicle Registration No does not Exists.'))
+            else:
+                return self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(self)
+        else:
+            raise ValidationError(_('Vehicle not found against Customer.'))
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
