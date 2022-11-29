@@ -1,4 +1,4 @@
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from datetime import date
 from lxml import etree
@@ -10,31 +10,42 @@ class ARSAccountInvoiceLine(models.Model):
 
     vin_no = fields.Many2one('stock.production.lot', string="VIN")
     """ Product line varient """
-    product_varient_ids = fields.Many2many('product.attribute.value','account_line_attribute_rel','account_id','attribute_id',string='Attribute')
-    product_template_id = fields.Many2one('product.template',string='Model')
+    product_varient_ids = fields.Many2many('product.attribute.value', 'account_line_attribute_rel', 'account_id',
+                                           'attribute_id', string='Attribute')
+    product_template_id = fields.Many2one('product.template', string='Model')
+
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
 
     @api.multi
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
-        self.product_id=False
+        self.product_id = False
         if self.product_template_id:
-            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
+    @api.multi
+    @api.onchange('product_catalog_id')
+    def onchange_product_based_on_catalog(self):
+        if self.product_catalog_id:
+            product = self.env['product.template'].sudo().search([('catalog_type', '=', self.product_catalog_id.id)])
+            return {'domain': {'product_template_id': [('id', 'in', product.ids)]}}
+        else:
+            return {'domain': {'product_template_id': [('id', 'in', False)]}}
 
-    
+
     # @api.multi
     # @api.onchange('product_id')
     # def onchange_product_id(self):
     #     if self.product_id:
     #         return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
-
     @api.multi
-    def get_engcode(self,pro_id,vin_no):
-        prot_id = self.env['fleet.vehicle'].search([('mvariant_id', '=',pro_id.id),('vin_sn', '=',vin_no.name)])
+    def get_engcode(self, pro_id, vin_no):
+        prot_id = self.env['fleet.vehicle'].search([('mvariant_id', '=', pro_id.id), ('vin_sn', '=', vin_no.name)])
         return prot_id.engine_number
 
     @api.multi
@@ -42,10 +53,12 @@ class ARSAccountInvoiceLine(models.Model):
         prot_id = self.env['fleet.vehicle'].search([('mvariant_id', '=', pro_id.id), ('vin_sn', '=', vin_no.name)])
         return prot_id.vin_sn
 
+
 class ARS_Product_Product(models.Model):
     _inherit = "product.product"
 
     lot_id = fields.Many2one('stock.production.lot')
+    catalog_type = fields.Many2one('product.catalog', related="product_tmpl_id.catalog_type")
 
     # @api.multi
     # def name_get(self):
@@ -54,5 +67,3 @@ class ARS_Product_Product(models.Model):
     #         vehicle_name = record.name if record.name else ''
     #         result.append((record.id, vehicle_name))
     #     return result
-
-

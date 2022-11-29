@@ -1,5 +1,5 @@
-from odoo import models, fields, api,_
-from datetime import datetime,timedelta
+from odoo import models, fields, api, _
+from datetime import datetime, timedelta
 from datetime import date
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import time
@@ -25,12 +25,13 @@ class ARS_sale_order(models.Model):
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
             return warehouse_ids
 
-
     @api.multi
     def _compute_vehicle_count(self):
         for partner in self:
             # operator = 'child_of' if partner.is_company else '='  # the opportunity count should counts the opportunities of this company and all its contacts
-            partner.vehicle_count = self.env['fleet.vehicle'].search_count([('driver_id', '=', partner.partner_id.id),('license_plate', '=', partner.regn_no.license_plate),('vin_sn', '=', partner.vin_no)])
+            partner.vehicle_count = self.env['fleet.vehicle'].search_count(
+                [('driver_id', '=', partner.partner_id.id), ('license_plate', '=', partner.regn_no.license_plate),
+                 ('vin_sn', '=', partner.vin_no)])
 
     @api.multi
     def print_quotation(self):
@@ -45,31 +46,32 @@ class ARS_sale_order(models.Model):
     @api.multi
     def get_warranty_claims(self):
         for order in self:
-            order.warranty_ids = self.env['ars.sale.warranty'].search([('order_id','=',order.id)])
+            order.warranty_ids = self.env['ars.sale.warranty'].search([('order_id', '=', order.id)])
             order.warranty_cnt = len(order.warranty_ids)
-
 
     instructions = fields.Many2one('instructions', ondelete='cascade')
     vehicle_count = fields.Integer("Vehicle", compute='_compute_vehicle_count')
     customer_voice_sale = fields.One2many("customer.voice", 'cust_sale', ondelete='cascade')
     regn_no = fields.Many2one('fleet.vehicle', string="Regn No")
     # doc_no = fields.Char(string='Doc.No')
-    doc_type = fields.Selection([('appointment', 'Appointment'), ('walkin', 'Walkin'),], string='Type',default='appointment')
+    doc_type = fields.Selection([('appointment', 'Appointment'), ('walkin', 'Walkin'), ], string='Type',
+                                default='appointment')
     vin_no = fields.Char(string="VIN")
     model = fields.Many2one('product.product')
-    service_advisor = fields.Many2one('res.users',string="Service Advisor")
+    service_advisor = fields.Many2one('res.users', string="Service Advisor")
     delivery_service_advisor = fields.Many2one('res.users')
     appointment_date = fields.Datetime(string="Appointment Date")
     delivery_date = fields.Datetime(string="Delivery Date & Time")
     mileage_in = fields.Integer(string="Kilometer In")
     mileage_out = fields.Integer(string="Kilometer Out")
-    show_cal = fields.Boolean(default= False)
+    show_cal = fields.Boolean(default=False)
     sale_aftersales = fields.Char()
     resource_id_sale = fields.Many2one('resource.resource', string="Service Advisor")
-    user_id = fields.Many2one('res.users', string='Salesperson', index=True, track_visibility='onchange',default='')
+    user_id = fields.Many2one('res.users', string='Salesperson', index=True, track_visibility='onchange', default='')
     mobile = fields.Char(related='partner_id.mobile')
     email = fields.Char(related='partner_id.email')
-    warranty_ids = fields.One2many('ars.sale.warranty','order_id', 'Warranty Claims', compute='get_warranty_claims', copy=False)
+    warranty_ids = fields.One2many('ars.sale.warranty', 'order_id', 'Warranty Claims', compute='get_warranty_claims',
+                                   copy=False)
     warranty_cnt = fields.Integer('Warranty Count', compute='get_warranty_claims')
     warranty_stage_widget = fields.Char(default='widget')
     counter_parts = fields.Boolean(default=False)
@@ -78,6 +80,26 @@ class ARS_sale_order(models.Model):
         required=True, readonly=True, states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         default=_ars_default_warehouse_id)
 
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog',
+                                         compute="_get_product_sale_catalog")
+    sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
+                                  ('accessories', 'Accessories'), ('others', 'Others')])
+
+    @api.multi
+    @api.depends('sale_type')
+    def _get_product_sale_catalog(self):
+        if self.sale_type == 'vehicle':
+            domain = [('name', '=', 'Vehicle')]
+        elif self.sale_type == 'parts':
+            domain = [('name', '=', 'Parts')]
+        elif self.sale_type == 'accessories':
+            domain = [('name', '=', 'Accessories')]
+        elif self.sale_type == 'others':
+            domain = [('name', '=', 'Others')]
+        else:
+            domain = []
+        if domain:
+            self.product_catalog_id = self.env['product.catalog'].search(domain, limit=1).id
 
     @api.multi
     @api.onchange('resource_id_sale')
@@ -162,7 +184,7 @@ class ARS_sale_order(models.Model):
                 self.phone = customer_details.driver_id.phone
                 self.regn_no = customer_details.id
                 self.vin_no = customer_details.vin_sn
-                #self.vin_no = customer_details.vin_sn
+                # self.vin_no = customer_details.vin_sn
                 # self.vehicle_model = customer_details.mvariant_id.id
                 self.model = customer_details.mvariant_id.id
                 self.mileage_in = customer_details.odometer
@@ -200,7 +222,7 @@ class ARS_sale_order(models.Model):
             'category': line.category.id,
             # 'analytic_tag_ids': line.analytic_tag_ids.id,
             'price_unit': line.product_id.list_price,
-            'tax_id': [(6,0, line.tax_id.ids)],
+            'tax_id': [(6, 0, line.tax_id.ids)],
             # 'discount': line.discount,
             'price_subtotal': line.price_subtotal,
             'customer_split': partner,
@@ -211,7 +233,7 @@ class ARS_sale_order(models.Model):
         if count == 0 and not sale_line:
             rse_data = data
         else:
-            if not sale_line.filtered(lambda y:y.product_id == line.product_id) and line.product_id:
+            if not sale_line.filtered(lambda y: y.product_id == line.product_id) and line.product_id:
                 rse_data = data
         return rse_data
 
@@ -223,11 +245,11 @@ class ARS_sale_order(models.Model):
         for x in self.customer_voice_sale:
             cust_voices = x.instructions.order_line
             for cust_voice in cust_voices:
-                data = self._prepare_so_line(cust_voice,self.order_line,count,self.partner_id)
+                data = self._prepare_so_line(cust_voice, self.order_line, count, self.partner_id)
                 if data:
                     new_line = new_lines.new(data)
                     new_lines += new_line
-                    count +=1
+                    count += 1
         if new_lines:
             # self.order_line = False
             self.order_line += new_lines
@@ -246,7 +268,9 @@ class ARS_sale_order(models.Model):
 
     @api.multi
     def vehicle_info(self):
-        vehicle_details = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id),('license_plate', '=', self.regn_no.license_plate),('vin_sn', '=', self.vin_no)])
+        vehicle_details = self.env['fleet.vehicle'].search(
+            [('driver_id', '=', self.partner_id.id), ('license_plate', '=', self.regn_no.license_plate),
+             ('vin_sn', '=', self.vin_no)])
         form_view = self.env.ref('ars_vehicle_sales.ars_vehicle_view_form_inherit')
         return {
             'name': _('Vehicle Info'),
@@ -263,13 +287,13 @@ class ARS_sale_order(models.Model):
         for od in self:
             for ol in od.order_line:
                 if ol.category and ol.category.name.lower() == 'warranty' and ol.ars_warranty_price != ol.price_unit:
-                   ol.price_unit = ol.ars_warranty_price
+                    ol.price_unit = ol.ars_warranty_price
         return True
 
     @api.model
     def create(self, vals):
         res = super(ARS_sale_order, self).create(vals)
-        sale_team = self.env['crm.team'].search([('member_ids','in',self.env.user.ids)])
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if sale_team:
             if sale_team.team_type == 'after_sales':
                 s_name = self.env['ir.sequence'].next_by_code('sale_estimate')
@@ -281,7 +305,6 @@ class ARS_sale_order(models.Model):
             elif sale_team.team_type == 'sales':
                 res.sale_aftersales = 'sales'
         return res
-
 
     @api.multi
     def action_confirm(self):
@@ -330,8 +353,8 @@ class ARS_sale_order(models.Model):
     @api.multi
     def write(self, vals):
         res = super(ARS_sale_order, self).write(vals)
-        if self.state in ('so','sent','sale', 'done'):
-           self.create_warranty_order()
+        if self.state in ('so', 'sent', 'sale', 'done'):
+            self.create_warranty_order()
         return res
 
     def action_schedule_meeting1(self):
@@ -351,7 +374,6 @@ class ARS_sale_order(models.Model):
             'default_name': self.name,
         }
         return action
-
 
     # def time_line_wizard(self):
     #     """ Open meeting's calendar view to schedule meeting on current opportunity.
@@ -429,7 +451,7 @@ class ARS_sale_order(models.Model):
     #                         mt.new_value_char as main_process
     #                         ,mt.create_date as start_date
     #                         ,(select t1.create_date from mail_tracking_value t inner join  mail_message t1
-		#                         on t1.id =  t.mail_message_id where t.old_value_integer = mt.new_value_integer and res_id = %s and t.field = 'main_process_id' and t1.model = 'sale.order' limit 1) as end_date
+    #                         on t1.id =  t.mail_message_id where t.old_value_integer = mt.new_value_integer and res_id = %s and t.field = 'main_process_id' and t1.model = 'sale.order' limit 1) as end_date
     #                         ,mt.create_uid as resource
     #                         from mail_tracking_value mt
     #                         --inner join resource_resource rc on rc.user_id = mt.create_uid
@@ -460,7 +482,6 @@ class ARS_sale_order(models.Model):
     #
     #         return action
 
-
     # @api.onchange('appointment_date')
     # def appoint_calenderI(self):
     #     self.show_cal = True
@@ -484,37 +505,41 @@ class ARS_sale_order(models.Model):
     @api.multi
     def _prepare_invoice(self):
         res = super(ARS_sale_order, self)._prepare_invoice()
-        res.update({'order_id':self.id})
-        #create service history if service order created
-        vehicle = self.env['fleet.vehicle'].search([('driver_id','=',self.partner_id.id),('license_plate','=',self.regn_no.license_plate),('vin_sn','=',self.vin_no)])
-        nxt_due  = self.env.user.company_id.next_service_due
-        remainder  = self.env.user.company_id.next_service_remainder
+        res.update({'order_id': self.id})
+        # create service history if service order created
+        vehicle = self.env['fleet.vehicle'].search(
+            [('driver_id', '=', self.partner_id.id), ('license_plate', '=', self.regn_no.license_plate),
+             ('vin_sn', '=', self.vin_no)])
+        nxt_due = self.env.user.company_id.next_service_due
+        remainder = self.env.user.company_id.next_service_remainder
         if vehicle and self.sale_aftersales == 'after_sales':
-#             date_1 = datetime.strptime(date.today(), "%m/%d/%y")
-#             fields.Datetime.from_string(date.today()) + timedelta(days=int(nxt_due))
+            #             date_1 = datetime.strptime(date.today(), "%m/%d/%y")
+            #             fields.Datetime.from_string(date.today()) + timedelta(days=int(nxt_due))
             if not vehicle.service_due:
                 next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
                 set_reminder = datetime.now().date() + timedelta(days=int(remainder))
             else:
                 ser_history = vehicle.service_due
                 last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
-                next_service_due = datetime.strptime(last_service_history.next_service_due,'%Y-%m-%d') + timedelta(days=int(nxt_due))
-                set_reminder = datetime.strptime(last_service_history.set_reminder,'%Y-%m-%d') + timedelta(days=int(remainder))
+                next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
+                    days=int(nxt_due))
+                set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
+                    days=int(remainder))
             if self.env.context.get('count_line') == 0:
                 self.env['service.history'].create({
-                                  'order':self.id,
-                                  'servicetype':'First Free Service',
-                                  'date':date.today(),
-                                  'next_service_due': next_service_due,
-                                  'set_reminder':set_reminder,
-                                  'vehicle_id':vehicle.id,
-                                })
+                    'order': self.id,
+                    'servicetype': 'First Free Service',
+                    'date': date.today(),
+                    'next_service_due': next_service_due,
+                    'set_reminder': set_reminder,
+                    'vehicle_id': vehicle.id,
+                })
         return res
+
 
 class ARSPurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'Purchase Order Line'
-    
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -523,10 +548,10 @@ class ARSPurchaseOrderLine(models.Model):
         if self.env.user.has_group('base.group_system'):
             pass
         elif self.env.user.has_group('ars_after_sales.group_vehicle'):
-            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle','Accessories'))]}
+            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle', 'Accessories'))]}
         elif self.env.user.has_group('ars_after_sales.group_part'):
-            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor','Parts','Accessories'))]}
-        
+            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
+
         return result
 
 
@@ -560,24 +585,28 @@ class ARS_PickingType(models.Model):
         else:
             return self._get_action('stock.action_picking_tree_ready')
 
-
-    #Inventory Dashboard Count for Aftersales or sales In kanban view.
+    # Inventory Dashboard Count for Aftersales or sales In kanban view.
     def _compute_picking_count(self):
         # TDE TODO count picking can be done using previous two
         userid = self.env.user
         if userid.sale_team_id.team_type == 'after_sales':
             domains = {
-                'count_picking_draft': [('state', '=', 'draft'), ('is_aftersale','=', True)],
-                'count_picking_waiting': [('state', 'in', ('confirmed', 'waiting')), ('is_aftersale','=', True)],
-                'count_picking_ready': [('state', '=', 'assigned'), ('is_aftersale','=', True)],
-                'count_picking': [('state', 'in', ('assigned', 'waiting', 'confirmed')), ('is_aftersale','=', True)],
-                'count_picking_late': [('scheduled_date', '<', time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)), ('state', 'in', ('assigned', 'waiting', 'confirmed')), ('is_aftersale','=', True)],
-                'count_picking_backorders': [('backorder_id', '!=', False), ('state', 'in', ('confirmed', 'assigned', 'waiting')), ('is_aftersale','=', True)],
+                'count_picking_draft': [('state', '=', 'draft'), ('is_aftersale', '=', True)],
+                'count_picking_waiting': [('state', 'in', ('confirmed', 'waiting')), ('is_aftersale', '=', True)],
+                'count_picking_ready': [('state', '=', 'assigned'), ('is_aftersale', '=', True)],
+                'count_picking': [('state', 'in', ('assigned', 'waiting', 'confirmed')), ('is_aftersale', '=', True)],
+                'count_picking_late': [('scheduled_date', '<', time.strftime(DEFAULT_SERVER_DATETIME_FORMAT)),
+                                       ('state', 'in', ('assigned', 'waiting', 'confirmed')),
+                                       ('is_aftersale', '=', True)],
+                'count_picking_backorders': [('backorder_id', '!=', False),
+                                             ('state', 'in', ('confirmed', 'assigned', 'waiting')),
+                                             ('is_aftersale', '=', True)],
             }
             for field in domains:
                 data = self.env['stock.picking'].read_group(domains[field] +
-                    [('state', 'not in', ('done', 'cancel')), ('picking_type_id', 'in', self.ids)],
-                    ['picking_type_id'], ['picking_type_id'])
+                                                            [('state', 'not in', ('done', 'cancel')),
+                                                             ('picking_type_id', 'in', self.ids)],
+                                                            ['picking_type_id'], ['picking_type_id'])
                 count = {
                     x['picking_type_id'][0]: x['picking_type_id_count']
                     for x in data if x['picking_type_id']
@@ -615,17 +644,19 @@ class ARS_PickingType(models.Model):
                 record.rate_picking_late = record.count_picking and record.count_picking_late * 100 / record.count_picking or 0
                 record.rate_picking_backorders = record.count_picking and record.count_picking_backorders * 100 / record.count_picking or 0
 
+
 class ARS_Picking_aftersale(models.Model):
     _inherit = "stock.picking"
 
     is_aftersale = fields.Boolean(default=False)
+
 
 class ARS_StockMove(models.Model):
     _inherit = "stock.move"
 
     is_aftersale = fields.Boolean(default=False)
 
-    #update is_aftersale field(custom) in Base function overwrite.
+    # update is_aftersale field(custom) in Base function overwrite.
     def _assign_picking(self):
         """ Try to assign the moves to an existing picking that has not been
         reserved yet and has the same procurement group, locations and picking
@@ -658,9 +689,9 @@ class ARS_StockMove(models.Model):
                 move.recompute()
         return True
 
+
 class ARS_PurchaseOrder(models.Model):
     _inherit = "purchase.order"
-
 
     @api.multi
     def _create_picking(self):
@@ -672,7 +703,7 @@ class ARS_PurchaseOrder(models.Model):
                     res = order._prepare_picking()
                     userid = self.env.user
                     if userid.sale_team_id.team_type == 'after_sales':
-                        res.update({'is_aftersale' : True})
+                        res.update({'is_aftersale': True})
                     picking = StockPicking.create(res)
                 else:
                     picking = pickings[0]
@@ -698,13 +729,15 @@ class ars_sale_advance_payment_inv(models.TransientModel):
     def create_invoices(self):
         # print("create_invoices----create_invoices===================",self)
         sale_orders = self.env['sale.order'].browse(self._context.get('active_ids', []))
-        print ('sale_orders',sale_orders)
+        print('sale_orders', sale_orders)
         for sl in sale_orders:
-            warranty_ids = self.env['ars.sale.warranty'].search([('order_id','=',sl.id),('state','in',('draft','inprocess'))])
+            warranty_ids = self.env['ars.sale.warranty'].search(
+                [('order_id', '=', sl.id), ('state', 'in', ('draft', 'inprocess'))])
             if warranty_ids:
-               raise UserError(_('One of the Warranty Claims is in Draft/In-Progress state.'))
+                raise UserError(_('One of the Warranty Claims is in Draft/In-Progress state.'))
             for ln in sl.order_line:
                 if not ln.customer_split and sl.sale_aftersales == 'after_sales':
-                   raise UserError(_('For one of the lines customer is not selected. Please add customer before proceeding.'))
-        super(ars_sale_advance_payment_inv,self).create_invoices()
+                    raise UserError(
+                        _('For one of the lines customer is not selected. Please add customer before proceeding.'))
+        super(ars_sale_advance_payment_inv, self).create_invoices()
         return {'type': 'ir.actions.act_window_close'}
