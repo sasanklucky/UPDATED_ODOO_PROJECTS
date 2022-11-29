@@ -6,7 +6,7 @@
             	<t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
                 <t t-if="doc.order_id.sale_aftersales == 'sales'">
                     <div class="page">
-                        <div class="col-xs-12" style="margin-bottom: 5px">
+                        <div class="col-xs-12" style="margin-bottom: 5px; margin-top:20px;">
                             <table class="table table-bordered" style="margin-bottom:0; ">
                                 <tr style="display:none">
                                     <td style="width: 50%"></td>
@@ -228,33 +228,8 @@
                                                     <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
                                                 </td>
                                             </tr>
-                                            <t t-foreach="doc.order_id._get_vehicle_tax_amount_by_group_wise()" t-as="amount_by_group">
-                                                <tr style="border-bottom:1px solid #dddddd;">
-                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                        <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
-                                                    <t t-else ="">
-                                                        <td style="padding: 0px 2px;">
-                                                            <span t-esc="amount_by_group[0]"/>
-                                                        </td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
-                                                </tr>
-                                            </t>
                                         </t>
+
                                         <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
                                             <tr>
                                                 <td style="background-color:#FFF;padding: 0px 2px;">
@@ -268,33 +243,27 @@
                                                     <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
                                                 </td>
                                             </tr>
-                                            <t t-foreach="doc.order_id._get_other_tax_amount_by_group_wise()" t-as="amount_by_group">
+                                        </t>
+                                    </t>
+                                    <t t-foreach="doc.order_id.order_line" t-as="ord_lin">
+                                        <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
+                                            <t t-foreach="doc.tax_line_ids" t-as="amount_by_group">
                                                 <tr style="border-bottom:1px solid #dddddd;">
-                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                        <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
-                                                    <t t-else ="">
-                                                        <td style="padding: 0px 2px;">
-                                                            <span t-esc="amount_by_group[0]"/>
-                                                        </td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
+                                                    <td style="padding: 0px 2px;">
+                                                        <span t-esc="amount_by_group.name"/>
+                                                    </td>
+                                                    <td style="background-color:#FFF;padding: 0px 2px;">
+                                                        :
+                                                    </td>
+                                                    <td style="padding: 0px 2px;" class="text-right">
+                                                        <span t-esc="amount_by_group.amount_total"
+                                                            t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
+                                                    </td>
                                                 </tr>
                                             </t>
                                         </t>
+                                        
+                                        
                                     </t>
                                     <t t-foreach="doc.order_id.order_line" t-as="ord_line">
                                         <t t-if="ord_line.product_id.catalog_type.name == 'Vehicle'">
