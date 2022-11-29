@@ -64,7 +64,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <!-- <t t-if="len(relation.vin_sn) > 1">
                                         <t t-esc="'/'.join(relation.vin_sn)"/>
                                     </t> -->
@@ -84,7 +84,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
 
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <t t-if="relation.license_plate">
                                         <t t-esc="relation.license_plate"/>
                                         <!-- <t t-if="len(relation.license_plate) == 1">
@@ -102,7 +102,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <!-- <t t-if="len(relation.engine_number) > 1">
                                         <t t-esc="'/'.join(relation.engine_number)"/>
                                     </t> -->
@@ -126,7 +126,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <!-- <t t-if="len(relation.key_serial_number) > 1">
                                         <t t-esc="'/'.join(relation.key_serial_number)"/>
                                     </t> -->
@@ -292,7 +292,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <!-- <t t-if="len(relation.vin_sn) > 1">
                                         <t t-esc="'/'.join(relation.vin_sn)"/>
                                     </t> -->
@@ -312,7 +312,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
 
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <t t-if="relation.license_plate">
                                         <t t-esc="relation.license_plate"/>
                                         <!-- <t t-if="len(relation.license_plate) == 1">
@@ -354,7 +354,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
                                     <!-- <t t-if="len(relation.key_serial_number) > 1">
                                         <t t-esc="'/'.join(relation.key_serial_number)"/>
                                     </t> -->

@@ -5,7 +5,7 @@ from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
-
+from datetime import date
 
 class arsCompany(models.Model):
     _inherit = 'res.company'
@@ -207,11 +207,13 @@ class ars_sale_invoice(models.Model):
     @api.multi
     def action_print_gate_pass(self):
         self.ensure_one()
-        vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id)])
+        vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id),('vin_sn','in',self.invoice_line_ids.mapped('vin_no.name'))])
         if vehcile_obj:
             if not vehcile_obj.license_plate:
-                raise ValidationError(_('Kindly Enter the registration Number before printing the Gate pass.'))
+                raise ValidationError(_('Please enter Registration Number of Vehicle to print Gate Pass.'))
             else:
+                if not self.gate_pass_date:
+                    self.gate_pass_date = date.today()
                 return self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(self)
         else:
             raise ValidationError(_('Vehicle not found against Customer.'))
