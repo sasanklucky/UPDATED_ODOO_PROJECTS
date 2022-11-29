@@ -26,7 +26,7 @@
         <t t-call="web.external_layout">
             <t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
             <div class="page">
-                <div class="col-xs-12">
+                <div class="col-xs-12" style="margin-top: 20px;">
                     <table class="table table-sm" style="width:100%;border:1px solid #e0e0e0;border-collapse: collapse; margin-bottom: 1px;">
                         <tr>
                             <td scope="col" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass</td>
@@ -81,7 +81,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Liscence Plate No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
 
                                 <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
@@ -222,10 +222,10 @@
                     
                     <div class="row">
                         <div class="col-xs-4">
-                            <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="max-height: 65px;" />
+                            <img t-if="doc.company_id.make_id" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.make_id.image_medium)" style="max-height: 65px;" />
                         </div>
                         <div class="col-xs-8 text-right">
-                            <img t-if="doc.company_id.make_id" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.make_id.image_medium)" style="max-height: 65px;" />
+                            <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="max-height: 65px;" />
                         </div>
                     </div>
                     <div class="row">
@@ -309,7 +309,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Liscence Plate No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
 
                                 <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">

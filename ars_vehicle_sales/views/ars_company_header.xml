@@ -4,10 +4,10 @@
             <div class="header">
                 <div class="row">
                     <div class="col-xs-4">
-                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 65px;" />
+                        <img t-if="company.make_id" t-att-src="'data:image/png;base64,%s' % to_text(company.make_id.image_medium)" style="max-height: 65px;" />
                     </div>
                     <div class="col-xs-8 text-right">
-                        <img t-if="company.make_id" t-att-src="'data:image/png;base64,%s' % to_text(company.make_id.image_medium)" style="max-height: 65px;" />
+                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 65px;" />
                     </div>
                 </div>
                 <div t-if="company.logo or company.report_header" class="row zero_min_height">
