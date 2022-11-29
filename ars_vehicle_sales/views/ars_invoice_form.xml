@@ -15,6 +15,7 @@
                     <field name="product_varient_ids" widget="many2many_tags" invisible="1" required='0' options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
+                    <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
                     <field name="product_template_id"  options="{'no_create': True, 'no_open': True}" required='1'/>
                 </xpath>
                 <!-- <xpath expr="//field[@name='date_invoice']" position="after">

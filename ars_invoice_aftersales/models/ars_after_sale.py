@@ -261,6 +261,15 @@ class ARS_sale_order_line(models.Model):
     product_template_id = fields.Many2one('product.template',string='Model')
 
     @api.multi
+    @api.onchange('product_catalog_id')
+    def onchange_product_based_on_catalog(self):
+        if self.product_catalog_id:
+            product = self.env['product.template'].sudo().search([('catalog_type', '=', self.product_catalog_id.id)])
+            return {'domain': {'product_template_id': [('id', 'in', product.ids)]}}
+        else:
+            return {'domain': {'product_template_id': [('id', 'in', False)]}}
+
+    @api.multi
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id=False
