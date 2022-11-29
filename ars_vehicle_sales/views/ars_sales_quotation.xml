@@ -659,6 +659,25 @@
                                                     <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
                                                 </td>
                                             </tr>
+                                        </t>
+
+                                        <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
+                                            <tr>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    <b><span t-field="ord_lin.product_id.name"/></b>
+                                                </td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                
+                                                <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
+                                                    <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-foreach="doc.order_line" t-as="ord_lin">
+                                        <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
                                             <t t-foreach="doc._get_vehicle_tax_amount_by_group_wise()" t-as="amount_by_group">
                                                 <tr style="border-bottom:1px solid #dddddd;">
                                                     <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
@@ -686,46 +705,8 @@
                                                 </tr>
                                             </t>
                                         </t>
-                                        <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
-                                            <tr>
-                                                <td style="background-color:#FFF;padding: 0px 2px;">
-                                                    <b><span t-field="ord_lin.product_id.name"/></b>
-                                                </td>
-                                                <td style="background-color:#FFF;padding: 0px 2px;">
-                                                    :
-                                                </td>
-                                                
-                                                <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
-                                                    <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                </td>
-                                            </tr>
-                                            <t t-foreach="doc._get_other_tax_amount_by_group_wise()" t-as="amount_by_group">
-                                                <tr style="border-bottom:1px solid #dddddd;">
-                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                        <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
-                                                    <t t-else ="">
-                                                        <td style="padding: 0px 2px;">
-                                                            <span t-esc="amount_by_group[0]"/>
-                                                        </td>
-                                                        <td style="background-color:#FFF;padding: 0px 2px;">
-                                                            :
-                                                        </td>
-                                                        <td style="padding: 0px 2px;" class="text-right">
-                                                            <span t-esc="amount_by_group[1]"
-                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                        </td>
-                                                    </t>
-                                                </tr>
-                                            </t>
-                                        </t>
+                                        
+                                        
                                     </t>
                                     <t t-foreach="doc.order_line" t-as="ord_line">
                                         <t t-if="ord_line.product_id.catalog_type.name == 'Vehicle'">
