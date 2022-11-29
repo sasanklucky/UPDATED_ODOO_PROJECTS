@@ -209,8 +209,8 @@ class ars_sale_invoice(models.Model):
         self.ensure_one()
         vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id)])
         if vehcile_obj:
-            if not vehcile_obj.initial_reg_no:
-                raise ValidationError(_('Vehicle Registration No does not Exists.'))
+            if not vehcile_obj.license_plate:
+                raise ValidationError(_('Kindly Enter the registration Number before printing the Gate pass.'))
             else:
                 return self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(self)
         else:
