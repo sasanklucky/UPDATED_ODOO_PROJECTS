@@ -42,7 +42,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.filtered(lambda x: x.product_id.catalog_type.name == 'Vehicle').mapped('product_id.name'))"/></td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
@@ -100,7 +100,7 @@
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Engine No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
                                     <!-- <t t-if="len(relation.engine_number) > 1">
@@ -221,8 +221,11 @@
                 <div class="col-xs-12">
                     
                     <div class="row">
-                        <div class="col-xs-3">
-                            <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="max-height: 65px;"/>
+                        <div class="col-xs-4">
+                            <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="max-height: 65px;" />
+                        </div>
+                        <div class="col-xs-8 text-right">
+                            <img t-if="doc.company_id.make_id" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.make_id.image_medium)" style="max-height: 65px;" />
                         </div>
                     </div>
                     <div class="row">
@@ -267,7 +270,7 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.mapped('product_id.name'))"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.filtered(lambda x: x.product_id.catalog_type.name == 'Vehicle').mapped('product_id.name'))"/></td>
                         </tr>
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
@@ -325,7 +328,7 @@
                         <tr>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Engine No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
                                     <!-- <t t-if="len(relation.engine_number) > 1">
