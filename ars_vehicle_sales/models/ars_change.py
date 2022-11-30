@@ -44,17 +44,17 @@ class ars_sale_crm_sale(models.Model):
         self.ensure_one()
         res = {}
         for line in self.order_line:
-            # if line.product_id.catalog_type.name == 'Vehicle':
-            price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
-            taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
-            for tax in line.tax_id:
-                group = tax.tax_group_id
-                res.setdefault(group, {'amount': 0.0, 'base': 0.0})
-                for t in taxes:
-                    if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
-                        res[group]['name'] = tax.name
-                        res[group]['amount'] += t['amount']
-                        res[group]['base'] += t['base']
+            if line.product_id.catalog_type.name == 'Vehicle':
+                price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
+                for tax in line.tax_id:
+                    group = tax.tax_group_id
+                    res.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                    for t in taxes:
+                        if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                            res[group]['name'] = tax.name
+                            res[group]['amount'] += t['amount']
+                            res[group]['base'] += t['base']
             else:
                 pass
         res = sorted(res.items(), key=lambda l: l[0].sequence)
