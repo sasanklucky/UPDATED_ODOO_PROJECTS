@@ -67,6 +67,7 @@
             </field>
         </record>
 
+       
         <record id="view_split_line_tree" model="ir.ui.view">
             <field name="name">sale.order.line.tree</field>
             <field name="model">sale.order.line</field>
@@ -77,6 +78,8 @@
                                         context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
                                        />
                     <field name="layout_category_id" groups="sale.group_sale_layout"/>
+                    <field name="product_template_id"/>
+                    <field name="product_varient_ids" widget="many2many_tags" invisible="1" required="0" options="{'no_create': True, 'no_open': True}"/>
                     <field name="name"/>
                     <field name="product_uom_qty"
                         string="Ordered Qty"
@@ -177,6 +180,25 @@
 
             <field name="target">new</field>
         </record>
+
+        <record id="view_order_form_inherit_product_attribute" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.attribute</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
+                    <attribute name="options">{'no_open': True,'no_create':True,'no_edit':True}</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                    <field name="product_varient_ids" widget="many2many_tags" invisible="1" required='0' options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="before">
+                    <field name="product_template_id"  options="{'no_create': True, 'no_open': True}" required='1'/>
+                </xpath>
+
+            </field>
+        </record>
+
 
        <!--  <act_window
             id="action_split"

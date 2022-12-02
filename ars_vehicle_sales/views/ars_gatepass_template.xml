@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="gatepass_report" model="ir.actions.report">
+        <field name="name">Gate pass report</field>
+        <field name="model">account.invoice</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ars_vehicle_sales.report_gatepass</field>
+        <field name="report_file">ars_vehicle_sales.report_gatepass</field>
+        <field name="print_report_name">'Gate Pass - %s' % (object.number)</field>
+        <field name="binding_model_id" ref="model_account_invoice"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- <report
+        id="gatepass_report"
+        model="account.invoice"
+        string="Gate pass report"
+        report_type="qweb-pdf"
+        name="ars_vehicle_sales.report_gatepass"
+        file="ars_vehicle_sales.report_gatepass"
+    /> -->
+    
+
+    <template id="gate_pass_report_template">
+        <t t-call="web.external_layout">
+            <t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
+            <div class="page">
+                <div class="col-xs-12" style="margin-top: 20px;">
+                    <table class="table table-sm" style="width:100%;border:1px solid #e0e0e0;border-collapse: collapse; margin-bottom: 1px;">
+                        <tr>
+                            <td scope="col" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass</td>
+                        </tr>
+                    </table>
+                    <table class="table table-sm" style="border:1px solid #e0e0e0;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
+                       
+                        <tr>
+                            <th colspan="2" class="text-uppercase text-center" style="padding: 0px 2px;">Customer Info</th>
+                            <th colspan="2" class="text-uppercase text-center" style="padding: 0px 2px;">Vehicle Info</th>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.filtered(lambda x: x.product_id.catalog_type.name == 'Vehicle').mapped('product_id.name'))"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
+                                <t t-esc="doc.partner_id.name"/>,<br></br>
+                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,<br></br>
+                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,<br></br>
+                                <t t-esc="doc.partner_id.state_id.name"/>,<t t-esc="doc.partner_id.country_id.name"/>
+                            </td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['product.product'].sudo().search([('product_tmpl_id','in',doc.invoice_line_ids.mapped('product_template_id.id')),('id','=',doc.invoice_line_ids.mapped('product_id.id'))])" t-as="relation">
+                                    <t t-esc="'/'.join(relation.attribute_value_ids.mapped('name'))"/>
+                                </t>
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <!-- <t t-if="len(relation.vin_sn) > 1">
+                                        <t t-esc="'/'.join(relation.vin_sn)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.vin_sn) == 1"> -->
+                                        <t t-if="relation.vin_sn">
+                                            <t t-if="len(relation.vin_sn) == 1">
+                                                <t t-esc="relation.vin_sn"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'/'.join(relation.mapped('vin_sn'))"/>
+                                            </t>
+                                        </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <t t-if="relation.license_plate">
+                                        <t t-esc="relation.license_plate"/>
+                                        <!-- <t t-if="len(relation.license_plate) == 1">
+                                            <t t-esc="relation.license_plate"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('license_plate'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <!-- <t t-if="len(relation.engine_number) > 1">
+                                        <t t-esc="'/'.join(relation.engine_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.engine_number) == 1"> -->
+                                    <t t-if="relation.engine_number">
+                                        <t t-esc="relation.engine_number"/>
+                                        <!-- <t t-if="len(relation.engine_number) == 1">
+                                            <t t-esc="relation.engine_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('engine_number'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <!-- <t t-if="len(relation.key_serial_number) > 1">
+                                        <t t-esc="'/'.join(relation.key_serial_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
+                                    <t t-if="relation.key_serial_number">
+                                        <t t-if="len(relation.key_serial_number) == 1">
+                                            <t t-esc="relation.key_serial_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <!-- <t t-esc=""/> -->
+                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
+                                    </t>
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td scope="col" colspan="4" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass Info </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Gate Pass Date</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-if="doc.gate_pass_date">
+                                    <t t-esc="doc.gate_pass_date" t-options="{'widget':'date'}"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d')" t-options="{'widget':'date'}"/>
+                                </t>
+                            </td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Consultant</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="doc.user_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Invoice No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.number"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Cons. Mob</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="doc.user_id.mobile"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Invoice Date</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.date_invoice"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                        </tr>
+                    </table>
+                        
+                </div>
+                <div class="col-xs-12" style="margin-top: 0px;">
+                    <table class="table" style="margin-bottom: 1px;">
+                        <tr>
+                            <td style="padding: 0px 2px;border:none;" class="text-left">For <span t-field="doc.partner_id.name"/></td>
+                            <td style="padding: 0px 2px;border:none;" class="text-right">For <span t-field="doc.company_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 0px;border:none;"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 2px;border:none;" class="text-left">(Customer's Signature)</td>
+                            <td style="padding: 0px 2px;border:none;" class="text-right">(Authorized Signatory)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-12">
+                    <table class="table table-sm" style="border-collapse: collapse; margin-bottom: 0px;">
+                        <tr style="height:5px;width:100%">
+                            <td colspan="4" style='padding-bottom:1px;border-top:1px solid black;border-bottom:2px solid black;' class="text-Center row">Security Copy</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-12" style="margin-top:1px;">
+                    <div t-if="doc.company_id.name" class="col-xs-12 text-left">
+                        <b><i>Registered Name: </i></b><span t-field="doc.company_id.name"/>
+                    </div>
+                    <div class="col-xs-12 text-left">
+                        <b><i>Registered Office Add: </i></b>
+                        <t t-if="doc.company_id.street"><span t-field="doc.company_id.street" />,</t>
+                        <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2" />,</t>
+                        <t t-if="doc.company_id.city"><span t-field="doc.company_id.city" />,</t>
+                        <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name" />,</t>
+                        <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name" />,</t>
+                        <t t-if="doc.company_id.zip"><span t-field="doc.company_id.zip" /></t>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <table class="table table-sm" tyle="border: none;border-collapse: collapse;margin-top:2px; margin-bottom:0px;">
+                        <tr>
+                            <td colspan="4" class="text-center" style="border:none; padding: 0px 2px;" > --------------------------------------------------------Cut here --------------------------------------------------------</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-12">
+                    
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <img t-if="doc.company_id.make_id" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.make_id.image_medium)" style="max-height: 65px;" />
+                        </div>
+                        <div class="col-xs-8 text-right">
+                            <img t-if="doc.company_id.logo" t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)" style="max-height: 65px;" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div t-if="doc.company_id.name" class="col-xs-12 text-center"><span style="font-weight: bold; font-size:18px;" t-field="doc.company_id.name"/></div>
+                        <div class="col-xs-12 text-center">
+                            <t t-if="doc.company_id.partner_id.pan_no">
+                                <b>PAN: </b><span t-field="doc.company_id.partner_id.pan_no"/>
+                            </t>
+                            <t t-if="doc.company_id.partner_id.vat">
+                                <b>GSTIN: </b> <span t-field="doc.company_id.vat"/>
+                            </t>
+                        </div>
+                        <div class="col-xs-12 text-center">
+                            <b>Add: </b>
+                            <t t-if="doc.company_id.street"><span t-field="doc.company_id.street" />,</t>
+                            <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2" />,</t>
+                            <t t-if="doc.company_id.city"><span t-field="doc.company_id.city" />,</t>
+                            <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name" />,</t>
+                            <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name" />,</t>
+                            <t t-if="doc.company_id.zip"><span t-field="doc.company_id.zip" /></t>
+                        </div>
+                        <div class="col-xs-12 text-center">
+                            <t t-if="doc.company_id.email"><b>Email ID:</b> <span t-field="doc.company_id.email"/></t>
+                            <t t-if="doc.company_id.website"><b>URL: </b><span t-field="doc.company_id.website"/></t>
+                            <t t-if="doc.company_id.phone"><b>Phone: </b><span t-field="doc.company_id.phone"/></t>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <table class="table table-sm" style="width:100%;border:1px solid #e0e0e0;border-collapse: collapse;margin-bottom:1px;">
+                        <tr>
+                            <td scope="col" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass</td>
+                        </tr>
+                    </table>
+                    <table class="table table-sm" style="border:1px solid #e0e0e0;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
+                       
+                        <tr>
+                            <th colspan="2" class="text-uppercase text-center" style="padding: 0px 2px;">Customer Info</th>
+                            <th colspan="2" class="text-uppercase text-center" style="padding: 0px 2px;">Vehicle Info</th>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Name</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.name"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Model Type</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="'/'.join(doc.invoice_line_ids.filtered(lambda x: x.product_id.catalog_type.name == 'Vehicle').mapped('product_id.name'))"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
+                                <t t-esc="doc.partner_id.name"/>,<br></br>
+                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,<br></br>
+                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,<br></br>
+                                <t t-esc="doc.partner_id.state_id.name"/>,<t t-esc="doc.partner_id.country_id.name"/>
+                            </td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['product.product'].sudo().search([('product_tmpl_id','in',doc.invoice_line_ids.mapped('product_template_id.id')),('id','=',doc.invoice_line_ids.mapped('product_id.id'))])" t-as="relation">
+                                    <t t-esc="'/'.join(relation.attribute_value_ids.mapped('name'))"/>
+                                </t>
+                                
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">VIN</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <!-- <t t-esc="'/'.join(doc.invoice_line_ids.mapped('vin_no.name'))"/> -->
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <!-- <t t-if="len(relation.vin_sn) > 1">
+                                        <t t-esc="'/'.join(relation.vin_sn)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.vin_sn) == 1"> -->
+                                        <t t-if="relation.vin_sn">
+                                            <t t-if="len(relation.vin_sn) == 1">
+                                                <t t-esc="relation.vin_sn"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-esc="'/'.join(relation.mapped('vin_sn'))"/>
+                                            </t>
+                                        </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Registration No.</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <t t-if="relation.license_plate">
+                                        <t t-esc="relation.license_plate"/>
+                                        <!-- <t t-if="len(relation.license_plate) == 1">
+                                            <t t-esc="relation.license_plate"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('license_plate'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.mobile"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id)])" t-as="relation">
+                                    <!-- <t t-if="len(relation.engine_number) > 1">
+                                        <t t-esc="'/'.join(relation.engine_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.engine_number) == 1"> -->
+                                    <t t-if="relation.engine_number">
+                                        <t t-esc="relation.engine_number"/>
+                                        <!-- <t t-if="len(relation.engine_number) == 1">
+                                            <t t-esc="relation.engine_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="'/'.join(relation.mapped('engine_number'))"/>
+                                        </t> -->
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.partner_id.email"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])" t-as="relation">
+                                    <!-- <t t-if="len(relation.key_serial_number) > 1">
+                                        <t t-esc="'/'.join(relation.key_serial_number)"/>
+                                    </t> -->
+                                    <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
+                                    <t t-if="relation.key_serial_number">
+                                        <t t-if="len(relation.key_serial_number) == 1">
+                                            <t t-esc="relation.key_serial_number"/>
+                                        </t>
+                                        <t t-else="">
+                                            <!-- <t t-esc=""/> -->
+                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
+                                    </t>
+                                    </t>
+                                </t>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td scope="col" colspan="4" class="text-uppercase text-center" style="font-weight: bold; width: 100%; background-color: #e0e0e0; padding: 0px 2px"> Gate Pass Info </td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Gate Pass Date</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">
+                                <t t-if="doc.gate_pass_date">
+                                    <t t-esc="doc.gate_pass_date" t-options="{'widget':'date'}"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-esc="datetime.datetime.now().strftime('%Y-%m-%d')" t-options="{'widget':'date'}"/>
+                                </t>
+                            </td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Consultant</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="doc.user_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Invoice No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.number"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Cons. Mob</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><t t-esc="doc.user_id.mobile"/></td>
+                        </tr>
+                        <tr>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Invoice Date</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"><span t-field="doc.date_invoice"/></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+                        </tr>
+                    </table>
+                        
+                </div>
+                <div class="col-xs-12" style="margin-top: 0px;">
+                    <table class="table" style="margin-bottom:1px;">
+                        <tr>
+                            <td style="padding: 0px 2px;border:none;" class="text-left">For <span t-field="doc.partner_id.name"/></td>
+                            <td style="padding: 0px 2px;border:none;" class="text-right">For <span t-field="doc.company_id.name"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 0px;border:none;"></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0px 2px;border:none;" class="text-left">(Customer's Signature)</td>
+                            <td style="padding: 0px 2px;border:none;" class="text-right">(Authorized Signatory)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-xs-12">
+                    <table class="table table-sm" style="border-collapse: collapse; margin-top:1px;margin-bottom:0px;">
+                        <tr style="height:5px;width:100%">
+                            <td colspan="4" style='padding-top:1px;padding-bottom:1px;border-top:2px solid black;border-bottom:2px solid black;' class="text-Center row">Customer Copy</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_gatepass">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="ars_vehicle_sales.gate_pass_report_template" t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

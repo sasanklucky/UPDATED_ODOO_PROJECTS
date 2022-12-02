@@ -11,9 +11,8 @@
             <xpath expr="//h2" position="replace">
                 <!-- Quotation Code -->
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
-                    <t t-set="vehicle_type" t-value="doc._get_proforma_invoice_types()" />
-                    <t t-if="vehicle_type == 'vehicle'">
-                        <div class="col-xs-12" style="margin-bottom: 5px">
+                    <t t-if="doc.sale_aftersales == 'sales'">
+                        <div class="col-xs-12" style="margin-bottom: 5px; margin-top:20px;">
                             <table class="table table-bordered" style="margin-bottom:0; ">
                                 <tr style="display:none">
                                     <td style="width: 50%"></td>
@@ -146,48 +145,50 @@
                                     </td>
                                 </tr>
                                 <t t-foreach="doc.order_line" t-as="ord_lin">
-                                    <tr>
-                                        <td style="width:50%">
-                                            <table class="table table-sm" style="margin-bottom:0">
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Manufacture</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="ord_lin.product_id.brand_id.name"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Registration No.</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: 
-                                                        <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
-                                                            <t t-esc="relation.license_plate"/>
-                                                        </t>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                        <td style="width:50%">
-                                            <table class="table table-sm" style="margin-bottom:0">
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">VIN Number</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="','.join(doc.picking_ids.move_line_ids.lot_id.mapped('name'))"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">Engine Number</td>
-                                                    <td class="py-1" style="border: none; padding: 0px 2px;">: 
-                                                        <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
-                                                            <t t-esc="relation.engine_number"/>
-                                                        </t>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
+                                    <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
+                                        <tr>
+                                            <td style="width:50%">
+                                                <table class="table table-sm" style="margin-bottom:0">
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">Manufacture</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="ord_lin.product_id.brand_id.name"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">Registration No.</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
+                                                                <t t-esc="relation.license_plate"/>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td style="width:50%">
+                                                <table class="table table-sm" style="margin-bottom:0">
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">VIN Number</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="','.join(doc.picking_ids.move_line_ids.lot_id.mapped('name'))"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">Engine Number</td>
+                                                        <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
+                                                                <t t-esc="relation.engine_number"/>
+                                                            </t>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </t>
                                 </t>   
                             </table>
                         </div>
@@ -511,10 +512,9 @@
                 <!-- Pro-Forma Code -->
 
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <t t-set="proforma" t-value="doc._get_proforma_invoice_types()" ></t>
-                    <t t-if="proforma == 'vehicle'">
-                        <div class="col-xs-12" style="margin-bottom: 5px">
-                            <table class="table table-bordered" style="margin-bottom:0; ">
+                    <t t-if="doc.sale_aftersales == 'sales'">
+                        <div class="col-xs-12" style="margin-bottom: 5px; margin-top:20px;">
+                            <table class="table table-bordered" style="margin-bottom:0;">
                                 <thead>
                                     <tr>
                                       <th scope="col" class="text-uppercase text-center" style="background-color:#e0e0e0; width:100%; padding:0;">Pro-forma Invoice</th>
@@ -601,24 +601,26 @@
                                         <td colspan="2" class="text-uppercase text-center" style="font-weight: bold; padding:0px 2px;">Vehicle Info</td>
                                     </tr>
                                     <t t-foreach="doc.order_line" t-as="ord_lin">
-                                        <tr>
-                                            <td>
-                                                <table class="table table-sm" style="margin-bottom:0">
-                                                    <tr>
-                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
-                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                            <td>
-                                                <table class="table table-sm" style="margin-bottom:0">
-                                                    <tr>
-                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
-                                                        <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr>
+                                        <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
+                                            <tr>
+                                                <td>
+                                                    <table class="table table-sm" style="margin-bottom:0">
+                                                        <tr>
+                                                            <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Model Type</td>
+                                                            <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <t t-esc="ord_lin.product_id.name"/></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <table class="table table-sm" style="margin-bottom:0">
+                                                        <tr>
+                                                            <td class="py-1" style="border: none; padding: 0px 2px; width: 40%">Color</td>
+                                                            <td class="py-1" style="border: none; padding: 0px 2px; width: 60%">: <span t-esc="', '.join(map(lambda x: (x.name), ord_lin.product_id.attribute_value_ids))"/></td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </t>
                                     </t>    
                                   </tbody>
                             </table>
@@ -644,65 +646,120 @@
                                 </thead>
                                 <tbody>
                                     <t t-foreach="doc.order_line" t-as="ord_lin">
-                                        <tr class="active">
-                                            <td style="background-color:#FFF;padding: 0px 2px;">
-                                                <span t-field="ord_lin.product_id.name"/>
-                                            </td>
-                                            <td style="background-color:#FFF;padding: 0px 2px;">
-                                                :
-                                            </td>
-                                            
-                                            <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
-                                                <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                            </td>
-                                        </tr>
-                                        <t t-foreach="doc._get_tax_amount_by_group_wise()" t-as="amount_by_group">
-                                            <tr style="border-bottom:1px solid #dddddd;">
-                                                <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
-                                                    <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
-                                                    <td style="background-color:#FFF;padding: 0px 2px;">
-                                                        :
-                                                    </td>
-                                                    <td style="padding: 0px 2px;" class="text-right">
-                                                        <span t-esc="amount_by_group[1]"
-                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                    </td>
-                                                </t>
-                                                <t t-else ="">
-                                                    <td style="padding: 0px 2px;">
-                                                        <span t-esc="amount_by_group[0]"/>
-                                                    </td>
-                                                    <td style="background-color:#FFF;padding: 0px 2px;">
-                                                        :
-                                                    </td>
-                                                    <td style="padding: 0px 2px;" class="text-right">
-                                                        <span t-esc="amount_by_group[1]"
-                                                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                                    </td>
-                                                </t>
+                                        <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
+                                            <tr class="active">
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    <b><span t-field="ord_lin.product_id.name"/></b>
+                                                </td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                
+                                                <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
+                                                    <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                </td>
                                             </tr>
                                         </t>
-                                        <tr>
-                                            <td style="padding: 0px 2px;"><strong>Ex-Showroom Price of <span t-field="ord_lin.product_id.name"/></strong></td>
-                                            <td style="background-color:#FFF;padding: 0px 2px;">
-                                                :
-                                            </td>
-                                            <td style="padding: 0px 2px;" class="text-right">
-                                                <span t-field="doc.amount_total"
-                                                    t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding: 0px 2px;"><strong>On-Road Price of <span t-field="ord_lin.product_id.name"/> (Paisa Rounded-Off)</strong></td>
-                                            <td style="background-color:#FFF;padding: 0px 2px;">
-                                                :
-                                            </td>
-                                            <td style="padding: 0px 2px;" class="text-right">
-                                                <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"
-                                                    t-options='{"widget": "float", "precision":0, "display_currency": doc.pricelist_id.currency_id}'/>
-                                                <span t-field="doc.pricelist_id.currency_id.symbol" />
-                                            </td>
-                                        </tr>
+
+                                        <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
+                                            <tr>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    <b><span t-field="ord_lin.product_id.name"/></b>
+                                                </td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                
+                                                <td class="text-right" style="background-color:#FFF;padding: 0px 2px;">
+                                                    <span t-field="ord_lin.price_unit"  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                    </t>
+                                    <t t-foreach="doc.order_line" t-as="ord_lin">
+                                        <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
+                                            <t t-foreach="doc._get_vehicle_tax_amount_by_group_wise()" t-as="amount_by_group">
+                                                <tr style="border-bottom:1px solid #dddddd;">
+                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                        <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group[1]"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </t>
+                                                    <t t-else ="">
+                                                        <td style="padding: 0px 2px;">
+                                                            <span t-esc="amount_by_group[0]"/>
+                                                        </td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group[1]"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
+                                            <t t-foreach="doc._get_other_tax_amount_by_group_wise()" t-as="amount_by_group">
+                                                <tr style="border-bottom:1px solid #dddddd;">
+                                                    <t t-if="amount_by_group[3] == 1 and doc.amount_untaxed == amount_by_group[2]">
+                                                        <td style="padding: 0px 2px;"><span t-esc="amount_by_group[0]"/></td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group[1]"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </t>
+                                                    <t t-else ="">
+                                                        <td style="padding: 0px 2px;">
+                                                            <span t-esc="amount_by_group[0]"/>
+                                                        </td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group[1]"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </t>
+                                                </tr>
+                                            </t>
+                                        </t>
+                                        
+                                        
+                                    </t>
+                                    <t t-foreach="doc.order_line" t-as="ord_line">
+                                        <t t-if="ord_line.product_id.catalog_type.name == 'Vehicle'">
+                                            <tr>
+                                                <td style="padding: 0px 2px;"><strong>Ex-Showroom Price of <span t-field="ord_line.product_id.name"/></strong></td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                <td style="padding: 0px 2px;" class="text-right">
+                                                    <span t-field="doc.amount_total"
+                                                        t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 0px 2px;"><strong>On-Road Price of <span t-field="ord_line.product_id.name"/> (Paisa Rounded-Off)</strong></td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                <td style="padding: 0px 2px;" class="text-right">
+                                                    <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"
+                                                        t-options='{"widget": "float", "precision":0, "display_currency": doc.pricelist_id.currency_id}'/>
+                                                    <span t-field="doc.pricelist_id.currency_id.symbol" />
+                                                </td>
+                                            </tr>
+                                        </t>
                                     </t>
                                     <tr>
                                         <td style="padding: 0px 2px;"><span>Pro-forma Invoice amount in words</span></td>
@@ -917,8 +974,7 @@
                 <t t-if="not (env.context.get('proforma', False) or is_pro_forma)">
                 </t>
                 <t t-if="env.context.get('proforma', False) or is_pro_forma">
-                    <t t-set="proforma" t-value="doc._get_proforma_invoice_types()" ></t>
-                    <t t-if="proforma != 'vehicle'">
+                    <t t-if="doc.sale_aftersales != 'sales'">
                         <div class="clearfix">
                             <div class="col-xs-12"  name="total">
                                 <div class="row pull-right" style="margin-right:-7px;">

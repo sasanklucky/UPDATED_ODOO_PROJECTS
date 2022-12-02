@@ -1423,45 +1423,45 @@
 
 
         <!--<record id="customer_voice_instruction" model="ir.ui.view">-->
-            <!--<field name="name">customer.voice.instruction</field>-->
-            <!--<field name="model">instructions</field>-->
-            <!--<field name="arch" type="xml">-->
-                <!--<form string="Instructions">-->
-                    <!--<group>-->
-                        <!--<group>-->
-                            <!--<field name="name"/>-->
-                            <!--<field name="description"/>-->
-                        <!--</group>-->
-                        <!--<group>-->
-                        <!--</group>-->
-                    <!--</group>-->
-                    <!--<notebook>-->
-                        <!--<page string="Order Line">-->
-                            <!--<field name="order_line">-->
-                                <!--<tree name="SaleOrderLine" string="Sales Order Lines" editable="bottom">-->
-                                    <!--<field name="product_id"-->
-                                           <!--domain="['|',('catalog_type','=', 'Parts'),('catalog_type','=', 'Labor')]"/>-->
-                                    <!--&lt;!&ndash;<field name="layout_category_id"/>&ndash;&gt;-->
-                                    <!--<field name="name"/>-->
-                                    <!--<field name="product_uom_qty"/>-->
-                                    <!--<field name="qty_delivered"/>-->
-                                    <!--<field name="qty_invoiced" invisible="1"/>-->
-                                    <!--<field name="product_uom"/>-->
-                                    <!--<field name="category" required="1"/>-->
-                                    <!--&lt;!&ndash;<field name="analytic_tag_ids"/>&ndash;&gt;-->
-                                    <!--<field name="price_unit" context="{'list_price':price_unit}"/>-->
-                                    <!--<field name="tax_id" widget="many2many_tags" options="{'no_create': True}"-->
-                                           <!--domain="[('type_tax_use','=','sale')]"-->
-                                           <!--attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>-->
-                                    <!--&lt;!&ndash;<field name="discount"/>&ndash;&gt;-->
-                                    <!--<field name="price_subtotal"/>-->
-                                    <!--&lt;!&ndash;<field name="price_total"/>&ndash;&gt;-->
-                                <!--</tree>-->
-                            <!--</field>-->
-                        <!--</page>-->
-                    <!--</notebook>-->
-                <!--</form>-->
-            <!--</field>-->
+        <!--<field name="name">customer.voice.instruction</field>-->
+        <!--<field name="model">instructions</field>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<form string="Instructions">-->
+        <!--<group>-->
+        <!--<group>-->
+        <!--<field name="name"/>-->
+        <!--<field name="description"/>-->
+        <!--</group>-->
+        <!--<group>-->
+        <!--</group>-->
+        <!--</group>-->
+        <!--<notebook>-->
+        <!--<page string="Order Line">-->
+        <!--<field name="order_line">-->
+        <!--<tree name="SaleOrderLine" string="Sales Order Lines" editable="bottom">-->
+        <!--<field name="product_id"-->
+        <!--domain="['|',('catalog_type','=', 'Parts'),('catalog_type','=', 'Labor')]"/>-->
+        <!--&lt;!&ndash;<field name="layout_category_id"/>&ndash;&gt;-->
+        <!--<field name="name"/>-->
+        <!--<field name="product_uom_qty"/>-->
+        <!--<field name="qty_delivered"/>-->
+        <!--<field name="qty_invoiced" invisible="1"/>-->
+        <!--<field name="product_uom"/>-->
+        <!--<field name="category" required="1"/>-->
+        <!--&lt;!&ndash;<field name="analytic_tag_ids"/>&ndash;&gt;-->
+        <!--<field name="price_unit" context="{'list_price':price_unit}"/>-->
+        <!--<field name="tax_id" widget="many2many_tags" options="{'no_create': True}"-->
+        <!--domain="[('type_tax_use','=','sale')]"-->
+        <!--attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>-->
+        <!--&lt;!&ndash;<field name="discount"/>&ndash;&gt;-->
+        <!--<field name="price_subtotal"/>-->
+        <!--&lt;!&ndash;<field name="price_total"/>&ndash;&gt;-->
+        <!--</tree>-->
+        <!--</field>-->
+        <!--</page>-->
+        <!--</notebook>-->
+        <!--</form>-->
+        <!--</field>-->
         <!--</record>-->
 
 
@@ -1523,6 +1523,22 @@
         <!--</tree>-->
         <!--</field>-->
         <!--</div>-->
+        <!--</xpath>--> <!--<record id="view_order_form_inherit" model="ir.ui.view">-->
+        <!--<field name="name">sale.order.form.inherit</field>-->
+        <!--<field name="model">sale.order</field>-->
+        <!--<field name="inherit_id" ref="sale.view_order_form" />-->
+        <!--<field name="arch" type="xml">-->
+        <!--<xpath expr="//button[@name='action_view_delivery']" position="after">-->
+        <!--<button class="oe_stat_button o_res_partner_tip_opp" type="object" name="vehicle_info"-->
+        <!--icon="fa-car" >-->
+        <!--<field string="Vehicle" name="vehicle_count" widget="statinfo"/>-->
+        <!--</button>-->
+        <!--<button class="oe_stat_button" type="object"-->
+        <!--context="{'partner_id': partner_id}"-->
+        <!--string="Meeting"-->
+        <!--name="action_schedule_meeting1"-->
+        <!--icon="fa-calendar">-->
+        <!--</button>-->
         <!--</xpath>-->
 
         <!--</field>-->
@@ -1586,6 +1602,9 @@
 
         <record model="ir.actions.act_window" id="sale.action_quotations">
             <field name="domain">[('sale_aftersales','=', 'sales')]</field>
+            <field name="context">{ 'default_sale_type': 'vehicle'}
+            </field>
+
         </record>
 
         <!-- counter sale action-->
@@ -2023,6 +2042,7 @@
         <!--Base sale order action inherit for domain -->
         <record model="ir.actions.act_window" id="sale.action_orders">
             <field name="domain">[('sale_aftersales','=', 'sales')]</field>
+            <field name="context">{ 'default_sale_type': 'vehicle'}</field>
         </record>
 
         <!-- Customers inherited action -->
@@ -2648,6 +2668,17 @@
                 </form>
             </field>
         </record>
+        <record id="invoice_form_gate_pass_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="after">
+                    <field name="gate_pass_date"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="invoice_form_inherit1" model="ir.ui.view">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
@@ -2667,6 +2698,7 @@
 
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="before">
                     <field name="origin" groups="base.group_user" string="Order No"/>
+                    <field name="gate_pass_date"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='user_id']" position="replace">
                     <field name="user_id" groups="base.group_user" invisible="1"/>
@@ -2769,11 +2801,11 @@
                                         <field name="qty_invoiced" invisible="1"/>
                                         <field name="company_id"/>
                                         <!--<field name="tax_id" widget="many2many_tags" options="{'no_create': True}"-->
-                                               <!--domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"-->
-                                               <!--attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>-->
+                                        <!--domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"-->
+                                        <!--attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>-->
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
-                                           domain="[('type_tax_use','=','sale')]"
-                                           attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                               domain="[('type_tax_use','=','sale')]"
+                                               attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
                                         <field name="price_subtotal"/>
                                     </tree>
                                 </field>
@@ -2784,15 +2816,16 @@
             </field>
         </record>
         <record id="ars_stock_quant_form" model="ir.ui.view">
-        <field name="name">stock.quant.form</field>
-        <field name="model">stock.quant</field>
-        <field name="inherit_id" ref="stock.view_stock_quant_form"/>
+            <field name="name">stock.quant.form</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group/group[1]/field[@name='lot_id']" position="after">
                     <field name="category_id" groups="base.group_user"/>
                 </xpath>
                 <xpath expr="//form/sheet/div" position="inside">
-                    <button class="oe_stat_button" icon="fa-arrows-v" type="object" name="action_update" string="Update" groups="base.group_system"/>
+                    <button class="oe_stat_button" icon="fa-arrows-v" type="object" name="action_update" string="Update"
+                            groups="base.group_system"/>
                 </xpath>
             </field>
         </record>

@@ -4,11 +4,14 @@ from datetime import timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
+from openerp.exceptions import UserError, ValidationError
+from datetime import date
 
 class arsCompany(models.Model):
     _inherit = 'res.company'
 
     dealer_code = fields.Char(string="Dealer Code")
+    make_id = fields.Many2one('fleet.vehicle.model.brand',string="Make")
     
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
@@ -20,36 +23,63 @@ class ars_sale_crm_sale(models.Model):
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
-            sale.amount_total_words = sale.currency_id.amount_to_text(sale.amount_total)
+            rounded_value = round(sale.amount_total,0)
+            sale.amount_total_words = sale.currency_id.amount_to_text(rounded_value)
 
-    @api.multi
-    def _get_proforma_invoice_types(self):
-        self.ensure_one()
-        proforma_type = ''
-        if len(self.order_line) == 1:
-            for line in self.order_line:
-                # print("catalog",line.product_id.catalog_type.name)
-                if line.product_id.catalog_type.name == 'Vehicle':
-                    proforma_type = 'vehicle'
-        # print("proforma",proforma_type)
-        return proforma_type
+    # @api.multi
+    # def _get_proforma_invoice_types(self):
+    #     self.ensure_one()
+    #     proforma_type = ''
+    #     if len(self.order_line) == 1:
+    #         for line in self.order_line:
+    #             # print("catalog",line.product_id.catalog_type.name)
+    #             if line.product_id.catalog_type.name == 'Vehicle':
+    #                 proforma_type = 'vehicle'
+    #     # print("proforma",proforma_type)
+    #     return proforma_type
 
             
     @api.multi
-    def _get_tax_amount_by_group_wise(self):
+    def _get_vehicle_tax_amount_by_group_wise(self):
         self.ensure_one()
         res = {}
         for line in self.order_line:
-            price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
-            taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
-            for tax in line.tax_id:
-                group = tax.tax_group_id
-                res.setdefault(group, {'amount': 0.0, 'base': 0.0})
-                for t in taxes:
-                    if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
-                        res[group]['name'] = tax.name
-                        res[group]['amount'] += t['amount']
-                        res[group]['base'] += t['base']
+            if line.product_id.catalog_type.name == 'Vehicle':
+                price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
+                for tax in line.tax_id:
+                    group = tax.tax_group_id
+                    res.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                    for t in taxes:
+                        if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                            res[group]['name'] = tax.name
+                            res[group]['amount'] += t['amount']
+                            res[group]['base'] += t['base']
+            else:
+                pass
+        res = sorted(res.items(), key=lambda l: l[0].sequence)
+        res = [(l[1]['name'], l[1]['amount'], l[1]['base'], len(res)) for l in res]
+        # print(res)
+        return res
+
+    @api.multi
+    def _get_other_tax_amount_by_group_wise(self):
+        self.ensure_one()
+        res = {}
+        for line in self.order_line:
+            if line.product_id.catalog_type.name != 'Vehicle':
+                price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
+                for tax in line.tax_id:
+                    group = tax.tax_group_id
+                    res.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                    for t in taxes:
+                        if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                            res[group]['name'] = tax.name
+                            res[group]['amount'] += t['amount']
+                            res[group]['base'] += t['base']
+            else:
+                pass
         res = sorted(res.items(), key=lambda l: l[0].sequence)
         res = [(l[1]['name'], l[1]['amount'], l[1]['base'], len(res)) for l in res]
         # print(res)
@@ -173,6 +203,20 @@ class ars_sale_invoice(models.Model):
                 self.filtered(lambda s: s.state == 'draft').write({'state': 'sent'})
                 return self.env.ref('ars_vehicle_sales.before_sales_invoice').report_action(self)
         return res
+
+    @api.multi
+    def action_print_gate_pass(self):
+        self.ensure_one()
+        vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id),('vin_sn','in',self.invoice_line_ids.mapped('vin_no.name'))])
+        if vehcile_obj:
+            if not vehcile_obj.license_plate:
+                raise ValidationError(_('Please enter Registration Number of Vehicle to print Gate Pass.'))
+            else:
+                if not self.gate_pass_date:
+                    self.gate_pass_date = date.today()
+                return self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(self)
+        else:
+            raise ValidationError(_('Vehicle not found against Customer.'))
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):

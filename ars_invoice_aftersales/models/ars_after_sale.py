@@ -74,6 +74,9 @@ class ARS_After_sale_order(models.Model):
 
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
+        # print("-------invoice create---------------")
+        # import pdb
+        # pdb.set_trace()
         """
         Create the invoice associated to the SO.
         :param grouped: if True, invoices are grouped by SO id. If False, invoices are grouped by
@@ -96,6 +99,7 @@ class ARS_After_sale_order(models.Model):
             # for data in all_data:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
             if order.sale_aftersales == 'after_sales':
+                # print("--------after sales-----------")
                 # for data in all_data:
                 count = 0
                 for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
@@ -125,6 +129,7 @@ class ARS_After_sale_order(models.Model):
                                                    subtype_id=self.env.ref('mail.mt_note').id)
                         invoices[invoice.id] = invoice
                     else:
+                        print("invoice created----")
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
 #                         references[invoice] = order
@@ -182,8 +187,20 @@ class ARS_After_sale_order(models.Model):
                             'reg_no':order.regn_no.license_plate,'vin':order.vin_no,
                             'model':order.model,'kilometer':order.mileage_in,
                             'doc_type':order.doc_type,'appointment_date':order.appointment_date,
-                            'delivery_date':order.delivery_date})
-                return res
+                            'delivery_date':order.delivery_date,
+                            })
+                
+                for order_line in order.order_line:
+                    invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
+                    invoice.product_template_id = order_line.product_template_id.id
+
+                    
+                # 'product_template_id':order.order_line.product_template_id.id
+                
+                # """ Update Product attribute from sale order lie to account invoice lines """
+                # query = f"""INSERT INTO account_line_attribute_rel (account_id, attribute_id) VALUES ({str(rest.invoice_line_ids.ids)[1:-1]},{str(order.order_line.product_varient_ids.ids)[1:-1]});"""
+                # self._cr.execute(query)
+                # return res
 
             # if order.sale_aftersales != 'after_sales':
             #     for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
@@ -238,6 +255,38 @@ class ARS_sale_order_line(models.Model):
     # def _default_customer_split(self):
     #     for customer in self:
     #         customer.customer_split = customer.order_id.partner_id.id
+
+    """ Product line varient """
+    product_varient_ids = fields.Many2many('product.attribute.value','order_line_attribute_rel','order_id','attribute_id',string='Attribute')
+    product_template_id = fields.Many2one('product.template',string='Model')
+
+    @api.multi
+    @api.onchange('product_catalog_id')
+    def onchange_product_based_on_catalog(self):
+        if self.product_catalog_id:
+            product = self.env['product.template'].sudo().search([('catalog_type', '=', self.product_catalog_id.id)])
+            return {'domain': {'product_template_id': [('id', 'in', product.ids)]}}
+        else:
+            return {'domain': {'product_template_id': [('id', 'in', False)]}}
+
+    @api.multi
+    @api.onchange('product_template_id')
+    def onchange_product_template_id(self):
+        self.product_id=False
+        if self.product_template_id:
+            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
+    
+    # @api.multi
+    # @api.onchange('product_id')
+    # def onchange_product_id(self):
+    #     self.product_varient_ids=False
+    #     if self.product_id:
+    #         return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
+
+    
 
     @api.multi
     @api.onchange('product_id')
@@ -383,6 +432,7 @@ class ARS_split_invoice(models.Model):
     
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
+
 
     @api.multi
     def action_invoice_open(self):

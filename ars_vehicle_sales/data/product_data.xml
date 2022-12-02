@@ -17,5 +17,8 @@
         <record id="product_catalog_accessories" model="product.catalog">
             <field name="name">Accessories</field>
         </record>
+        <record id="product_catalog_other_products" model="product.catalog">
+            <field name="name">Other Products</field>
+        </record>
     </data>
 </odoo>
