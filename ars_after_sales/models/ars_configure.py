@@ -1,4 +1,7 @@
 from odoo import models, fields, api
+import re
+from openerp.exceptions import UserError, ValidationError
+
 
 class ars_company(models.Model):
     _inherit = 'res.company'
@@ -113,9 +116,40 @@ class labour_group(models.Model):
         return super(labour_group, self).write(vals)
 
 class Employee(models.Model):
-      _inherit = 'hr.employee'
+    _inherit = 'hr.employee'
 
-      labour_group_ids = fields.Many2many('labour.group', 'employee_labour_rel', 'employee_id', 'lgroup_id')
+    labour_group_ids = fields.Many2many('labour.group', 'employee_labour_rel', 'employee_id', 'lgroup_id')
+    blood_group = fields.Char(string="Blood Group")
+    emp_code = fields.Char(string="Employee Code")
+    education_details = fields.Char(string="Education Details")
+    aadhar_id = fields.Char(string="Aadhar No")
+    voter_id = fields.Char(string="Voter ID")
+    employement_type = fields.Selection([('probationer', 'Probationer'),('permanent', 'Permanent'),('contract', 'Contract')])
+    date_of_joining = fields.Date(string="Joining Date")
+    date_of_exit = fields.Date(string="Exit Date")
+
+    # @api.constrains('blood_group')
+    # def validate_blood_group(self):
+    #     regex = re.compile(r"([AaBbOo]|[Aa][Bb])[\+-]")
+    #     for rec in self:
+    #         if regex.search(rec.blood_group) != None:
+    #             raise ValidationError("Please Add correct Blood Group.")
+    
+    @api.constrains('aadhar_id')
+    def validate_aadhar_id(self):
+        # regex = re.compile(r"^\d{4}\s\d{4}\s\d{4}$") # if spaces between the numbers
+        regex = re.compile(r"^([0-9]){12}$") #if no spaces between the numbers
+        for rec in self:
+            if regex.search(rec.aadhar_id) != None:
+                raise ValidationError("Please Add correct Aadhar No.")
+    
+    @api.constrains('voter_id')
+    def validate_voter_id(self):
+        regex = re.compile(r"^[A-Z]{3}\d{7}$") # for voter formate = ABC1234567
+        for rec in self:
+            if regex.search(rec.voter_id) != None:
+                raise ValidationError("Please Add correct Voter ID.")
+
 
 class ars_sale_warranty(models.Model):
     _name = 'ars.sale.warranty'

@@ -409,9 +409,9 @@
                 parent="aftersale_mis_reprots"
                 sequence="0"/>
 
-            <menuitem id="menu_aftersales_dealership_employee_master"
-                name="Dealership Employee Master MIS"
-                action="sale.action_quotations"
+            <menuitem id="menu_aftersales_employee_mis_report"
+                name="Employee MIS Report"
+                action="action_employee_mis_report"
                 parent="aftersale_mis_reprots"
                 sequence="1"/>
             <menuitem id="menu_aftersales_quotation"

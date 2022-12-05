@@ -90,4 +90,4 @@ access_war_mng_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_s
 access_war_app_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_sales.group_warranty_approval,1,0,0,0
 access_customer_dump_mis_report,customer_dump_mis_report,model_customer_dump_mis_report,,1,1,1,1
 
-
+access_employee_mis_report_report,employee_mis_report,model_employee_mis_report,,1,1,1,0

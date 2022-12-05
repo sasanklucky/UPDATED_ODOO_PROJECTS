@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+      <record id="employee_mis_report_tree" model="ir.ui.view">
+              <field name="name">Employee MIS Report Tree</field>
+              <field name="model">employee_mis_report</field>
+              <field name="arch" type="xml">
+                  <tree string="Vehicle Regn" create="0" edit="0" delete="0" import="0">
+                    <field name="dealer_name"/>
+                    <field name="dealer_code"/>
+                    <field name="emp_code"/>
+                    <field name="employee"/>
+                    <field name="job_title"/>
+                    <field name="department"/>
+                    <field name="birthday"/>
+                    <field name="gender"/>
+                    <field name="marital"/>
+                    <field name="blood_group"/>
+                    <field name="education_details"/>
+                    <field name="date_of_joining"/>
+                    <field name="date_of_exit"/>
+                    <field name="employement_type"/>
+                    <field name="status"/>
+                    <field name="aadhar_id"/>
+                    <field name="passport" />
+                    <field name="voter_id"/>
+                    <field name="pan_no"/>
+                    <field name="account_holder" invisible="1 "/>
+                    <field name="bank_name"/>
+                    <field name="ifsc" string="IFSC"/>
+                    <field name="acc_number"/>
+                  </tree>
+              </field>
+          </record>
+      <record id="action_employee_mis_report" model="ir.actions.act_window">
+           <field name="name">Employee MIS Report</field>
+           <field name="res_model">employee_mis_report</field>
+           <field name="type">ir.actions.act_window</field>
+           <field name="view_type">form</field>
+           <field name="view_mode">tree</field>
+           <field name="view_id" ref="employee_mis_report_tree"/>
+      </record>
+    </data>
+  </odoo>
+  

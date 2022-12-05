@@ -27,15 +27,20 @@ class customer_dump_mis_report(models.Model):
     
     def get_invoice(self):
         for record in self:
-            sales_order = self.env['sale.order'].sudo().search([('opportunity_id','=',record.record_id)]).ids
+            sales_order = self.env['sale.order'].sudo().search([('opportunity_id','=',record.record_id),('state','=','draft')])
             if sales_order:
-                invoice = self.env['account.invoice'].sudo().search([('order_id','in',sales_order)])
-                if invoice:
-                    record.invoice = 'YES'
-                else:
-                    record.invoice = 'NO'
+                record.invoice = 'YES'
             else:
                 record.invoice = 'NO'
+
+            # if sales_order:
+            #     invoice = self.env['account.invoice'].sudo().search([('order_id','in',sales_order)])
+            #     if invoice:
+            #         record.invoice = 'YES'
+            #     else:
+            #         record.invoice = 'NO'
+            # else:
+            #     record.invoice = 'NO'
 
     def get_existing_customer(self):
         for record in self:
@@ -95,10 +100,7 @@ class customer_dump_mis_report(models.Model):
             else ''
             end as enquiry_category,a.user_id,a.partner_id,a.title,a.contact_name,
             a.phone,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
-            case
-                when a.referred is not null then 'YES'
-                else 'NO'
-            end as referred
+            a.referred as referred
             from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
             where a.type = 'opportunity'
            
