@@ -88,3 +88,6 @@ access_ars_sale_warranty,ars_sale_warranty,model_ars_sale_warranty,base.group_us
 access_ars_order_line,ars_line_category,ars_after_sales.model_order_line_category,ars_after_sales.group_show_sale_menu,1,1,1,0
 access_war_mng_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_sales.group_warranty_manager,1,0,0,0
 access_war_app_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_sales.group_warranty_approval,1,0,0,0
+access_customer_dump_mis_report,customer_dump_mis_report,model_customer_dump_mis_report,,1,1,1,1
+
+
