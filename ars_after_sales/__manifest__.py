@@ -47,6 +47,7 @@
                 'data/product_data.xml',
                 'data/landing_page.xml',
                 'views/templates.xml',
+                'reports/cust_booking_contract_mis_report.xml',
                 'views/ars_menus.xml',
                 'views/ars_config.xml',
                 'views/ars_menu_access.xml',
