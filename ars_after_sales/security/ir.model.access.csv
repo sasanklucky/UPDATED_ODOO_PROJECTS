@@ -92,4 +92,4 @@ access_war_app_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_s
 access_cust_booking_contract_mis_report,cust_booking_contract_mis_report user,model_cust_booking_contract_mis_report,base.group_user,1,0,0,0
 access_customer_dump_mis_report,customer_dump_mis_report,model_customer_dump_mis_report,,1,1,1,1
 
-
+access_employee_mis_report_report,employee_mis_report,model_employee_mis_report,,1,1,1,0
