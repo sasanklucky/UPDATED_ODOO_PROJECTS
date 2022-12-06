@@ -12,6 +12,12 @@ class arsCompany(models.Model):
 
     dealer_code = fields.Char(string="Dealer Code")
     make_id = fields.Many2one('fleet.vehicle.model.brand',string="Make")
+    dealer_zone = fields.Selection([
+        ('east', 'EAST'),
+        ('west', 'WEST'),
+        ('north', 'NORTH'),
+        ('south', 'SOUTH')
+        ], 'Dealer Zone')
     
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'

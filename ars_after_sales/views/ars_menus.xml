@@ -402,11 +402,13 @@
             name="MIS"
             parent="sale.sale_menu_root"
             sequence="5"/>
+            
             <menuitem id="menu_aftersales_cust_enq_dump_mis"
                 name="Customer Enquiry Dumps MIS"
-                action="sale.action_quotations"
+                action="customer_dump_mis_action"
                 parent="aftersale_mis_reprots"
                 sequence="0"/>
+
             <menuitem id="menu_aftersales_dealership_employee_master"
                 name="Dealership Employee Master MIS"
                 action="sale.action_quotations"

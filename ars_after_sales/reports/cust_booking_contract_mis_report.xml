@@ -11,16 +11,31 @@
             <field name="active" eval="True" />
             <field name="arch" type="xml">
                 <tree string="cust_booking_contract_mis_report_tree" create="false" delete="false" edit="false">
+                    <field name="dealer_zone" />
                     <field name="dealer_code" />
                     <field name="company_id" />
+                    <field name="contract_id" />
+                    <field name="order_date" />
+                    <field name="salutation_id" />
                     <field name="partner_id" />
                     <field name="phone" />
                     <field name="address" />
                     <field name="expected_delivery_date" />
-                    <field name="proforma_invoice_id" />
-                    <field name="sales_executive_id" />
-                    <field name="crm_lead_id" />
                     <field name="enquiry_creation_date" />
+                    <field name="expected_purchase_date" />
+                    <field name="sales_executive_id" />
+                    <field name="commitments_offers_to_customer" />
+                    <field name="booking_amount" />
+                    <field name="cancel_date" />
+                    <field name="no_of_cars_purchased" />
+                    <field name="referred_by" />
+                    <field name="source_id" />
+                    <field name="vehicle_make" />
+                    <field name="vehicle_model" />
+                    <field name="product_name" />
+                    <field name="vehicle_colour" />
+                    <field name="medium_id" />
+                    <field name="created_by" />
                 </tree>
             </field>
         </record>

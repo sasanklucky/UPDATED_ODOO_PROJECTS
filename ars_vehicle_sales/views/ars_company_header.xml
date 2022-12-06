@@ -154,6 +154,7 @@
         <field name="inherit_id" ref="base.view_company_form" />
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
+                <field name="dealer_zone"/>
                 <field name="dealer_code" />
                 <field name="make_id" />
             </field>

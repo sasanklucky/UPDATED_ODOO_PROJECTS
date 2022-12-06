@@ -1,32 +1,32 @@
 # -*- coding: utf-8 -*-
-from odoo.exceptions import ValidationError,UserError, RedirectWarning, except_orm
-from odoo import models, fields, api,_
+from odoo.exceptions import ValidationError, UserError, RedirectWarning, except_orm
+from odoo import models, fields, api, _
 from lxml import etree
 from openerp.osv.orm import setup_modifiers
 
-class ARS_product_vehicle(models.Model):
 
+class ARS_product_vehicle(models.Model):
     _inherit = 'product.template'
-   
+
     def _get_default_category_id(self):
         if self._context.get('params'):
             action_id = self._context.get('params').get('action')
-            act_browse  = self.env['ir.actions.act_window'].browse(int(action_id))
+            act_browse = self.env['ir.actions.act_window'].browse(int(action_id))
             category = False
             if act_browse.name == 'Models':
-                category = self.env['product.category'].search([('name','=','Vehicle')], limit=1)
+                category = self.env['product.category'].search([('name', '=', 'Vehicle')], limit=1)
 
             if act_browse.name == 'Model Variants':
-                category = self.env['product.category'].search([('name','=','Vehicle')], limit=1)
+                category = self.env['product.category'].search([('name', '=', 'Vehicle')], limit=1)
 
             if act_browse.name == 'Parts':
-                category = self.env['product.category'].search([('name','=','Parts')], limit=1)
+                category = self.env['product.category'].search([('name', '=', 'Parts')], limit=1)
 
             if act_browse.name == 'Accessories':
-                category = self.env['product.category'].search([('name','=','Accessories')], limit=1)
+                category = self.env['product.category'].search([('name', '=', 'Accessories')], limit=1)
 
             if act_browse.name == 'Labors':
-                category = self.env['product.category'].search([('name','=','Labor')], limit=1)
+                category = self.env['product.category'].search([('name', '=', 'Labor')], limit=1)
 
             if category:
                 return category.id
@@ -34,22 +34,26 @@ class ARS_product_vehicle(models.Model):
     def _get_default_catalog_id(self):
         if self._context.get('params'):
             action_id = self._context.get('params').get('action')
-            act_browse  = self.env['ir.actions.act_window'].browse(int(action_id))
+            act_browse = self.env['ir.actions.act_window'].browse(int(action_id))
             category = False
             if act_browse.name == 'Models':
-                category = self.env['product.catalog'].search([('name','=','Vehicle')], limit=1)
+                category = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
 
             if act_browse.name == 'Model Variants':
-                category = self.env['product.catalog'].search([('name','=','Vehicle')], limit=1)
+                category = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
 
             if act_browse.name == 'Parts':
-                category = self.env['product.catalog'].search([('name','=','Parts')], limit=1)
+                category = self.env['product.catalog'].search([('name', '=', 'Parts')], limit=1)
 
             if act_browse.name == 'Accessories':
-                category = self.env['product.catalog'].search([('name','=','Accessories')], limit=1)
+                category = self.env['product.catalog'].search([('name', '=', 'Accessories')], limit=1)
 
             if act_browse.name == 'Labors':
-                category = self.env['product.catalog'].search([('name','=','Labor')], limit=1)
+                category = self.env['product.catalog'].search([('name', '=', 'Labor')], limit=1)
+
+            if act_browse.name == 'Other Products':
+                # category = self.env.ref('ars_vehicle_sales.product_catalog_other_products')
+                category = self.env['product.catalog'].search([('name', '=', 'Other Products')], limit=1)
 
             if category:
                 return category.id
@@ -75,7 +79,8 @@ class ARS_product_vehicle(models.Model):
         required=True, help="Select category for the current product")
     sales_count = fields.Integer(compute='_sales_count', string='# Sales')
     purchase_count = fields.Integer(compute='_purchase_count', string='# Purchases')
-    catalog_type = fields.Many2one('product.catalog', default=_get_default_catalog_id,required=True, string="Catalog Type")
+    catalog_type = fields.Many2one('product.catalog', default=_get_default_catalog_id, required=True,
+                                   string="Catalog Type")
     brand_name = fields.Many2one('brand.name')
     engine_type_code = fields.Char(string='Engine Type Code')
     no_of_cylinder = fields.Char(string='No of Cylinder')
@@ -107,12 +112,11 @@ class ARS_product_vehicle(models.Model):
     power_steering = fields.Boolean(string="Power Steering")
     ac = fields.Boolean(string="A/C")
     steering_adjustment = fields.Boolean(string="Steering Adjustment")
-    power_window = fields.Many2one('power.window', 'Power Window',index=True)
+    power_window = fields.Many2one('power.window', 'Power Window', index=True)
     centre_locking = fields.Boolean(string="Centre Locking")
     description = fields.Text()
     brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Make', help='Make of the vehicle')
     brand_logo = fields.Binary('Brand Logo', related="brand_id.image_medium", store=False)
-
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
@@ -146,7 +150,6 @@ class ARS_product_vehicle(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-
     # @api.multi
     # @api.onchange('tracking')
     # def tracking_set(self):
@@ -175,7 +178,7 @@ class ARS_product_vehicle(models.Model):
     @api.multi
     def write(self, vals):
         res = {}
-        val= super(ARS_product_vehicle, self).write(vals)
+        val = super(ARS_product_vehicle, self).write(vals)
         if self.catalog_type.name == 'Vehicle':
             if vals.get('tracking') == 'lot' or vals.get('tracking') == 'none':
                 raise UserError(_('U can not select by lots & no tracking'))
@@ -215,13 +218,13 @@ class ARS_product_Catalog(models.Model):
     name = fields.Char()
 
 
-class PowerWindow (models.Model):
+class PowerWindow(models.Model):
     _name = 'power.window'
     _description = 'Model Power Window'
 
-
     name = fields.Char()
     product_id = fields.Many2one('product.template', string="Product", readonly=True)
+
 
 class ARS_Sale_ResUsers(models.Model):
     _inherit = 'res.users'
@@ -229,13 +232,11 @@ class ARS_Sale_ResUsers(models.Model):
     salesperson = fields.Boolean()
 
 
-
 class ARS_ProductChangeQuantity(models.TransientModel):
     _inherit = "stock.change.product.qty"
     _description = "Change Product Quantity"
 
-
-    #Update quantity on hand - should take 1 quantity
+    # Update quantity on hand - should take 1 quantity
     @api.multi
     @api.onchange('new_quantity')
     def quantity_change(self):
@@ -253,7 +254,6 @@ class ARS_ProductChangeQuantity(models.TransientModel):
         else:
             self.location_id = self.env.ref('stock.stock_location_stock').id
 
-
     # def change_product_qty(self):
     #     res = super(ARS_ProductChangeQuantity, self).change_product_qty()
     #     fleet_veh_obj = self.env['fleet.vehicle']
@@ -267,28 +267,3 @@ class ARS_ProductChangeQuantity(models.TransientModel):
     #         'lot_id': self.lot_id and self.lot_id.id,
 
     #     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

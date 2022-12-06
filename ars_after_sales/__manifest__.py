@@ -39,6 +39,7 @@
                 'views/ars_csstemplates.xml',
                 'wizard/ars_check_regn.xml',
                 # 'wizard/ars_time_line.xml',
+                'views/customer_dump_mis.xml',
                 'views/client_files.xml',
                 'views/planner_view.xml',
                 'views/ars_email_aftersales_invoice.xml',
