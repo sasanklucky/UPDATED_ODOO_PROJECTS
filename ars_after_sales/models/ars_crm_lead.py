@@ -6,8 +6,9 @@ from lxml import etree
 
 
 class ARS_crm_lead(models.Model):
+    _name = "crm.lead"
     _inherit = "crm.lead"
-
+    # _rec_name = "company_type"
     # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
     #                           default=lambda self: self.env.user)
 
@@ -27,7 +28,15 @@ class ARS_crm_lead(models.Model):
     #         if hr_employee:
     #             ids.append(record.user_id.id)
     #     return [('id', 'in', ids)]
-
+    @api.multi
+    @api.depends('contact_name')
+    def name_get(self):
+        result = []
+        for rec in self:
+            name = rec.contact_name
+            result.append((rec.id, name))
+        return result
+        
     @api.multi
     def changeservice(self):
         userid = self.env.user
@@ -69,8 +78,8 @@ class ARS_crm_lead(models.Model):
 
 
 
-
-    name = fields.Char('Opportunity',required=True, index=True,default=changeservice)
+    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Company Type")
+    name = fields.Char('Opportunity',required=False, index=True,default=changeservice)
     team_id = fields.Many2one('crm.team', string='Sales Channel', oldname='section_id',
                               default=default_team_id,index=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales channel.')
     vehicle_line = fields.One2many('crm.lead.line','lead_order_id', string='Vehicle Lines')
@@ -144,7 +153,9 @@ class ARS_crm_lead(models.Model):
                 action = action_rec.read([])[0]
                 lines = []
                 for vehicle in record.vehicle_line:
-                    lines.append((0,0,{'product_id': vehicle.product_id.id,'name': vehicle.name}))
+                    lines.append((0,0,{'product_catalog_id':  vehicle.product_catalog_id.id,
+                        'product_template_id': vehicle.product_template_id.id,
+                        'product_id': vehicle.product_id.id,'name': vehicle.name}))
                 order_id = orderid.create({'opportunity_id':self.id,
                                            'user_id': record.user_id.id,
                                            'partner_id':record.partner_id.id,
@@ -508,8 +519,30 @@ class ARS_crm_lead_line(models.Model):
 
     lead_order_id = fields.Many2one('crm.lead', string='Lead Order Lines')
     name = fields.Text(string='Description', required=True)
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_template_id = fields.Many2one('product.template',string='Model')
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict', required=True)
+    
+    @api.multi
+    @api.onchange('product_catalog_id')
+    def onchange_product_based_on_catalog(self):
+        if self.product_catalog_id:
+            product = self.env['product.template'].sudo().search([('catalog_type', '=', self.product_catalog_id.id)])
+            return {'domain': {'product_template_id': [('id', 'in', product.ids)]}}
+        else:
+            return {'domain': {'product_template_id': [('id', 'in', False)]}}
+
+    @api.multi
+    @api.onchange('product_template_id')
+    def onchange_product_template_id(self):
+        self.product_id=False
+        if self.product_template_id:
+            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
+
     @api.multi
     @api.onchange('product_id')
     def lead_product_id_change(self):
