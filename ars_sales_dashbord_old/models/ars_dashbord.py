@@ -25,7 +25,7 @@ class ars_dashbord(models.Model):
             1) Fetched dublicate records from Lead and Opportunities in crm_dublicate_records and validate
             2) Fetched dublicate records Customer in partner_duplicate_records and validate
         """
-        crm_dublicate_records = (self.env['crm.lead'].sudo().search([('mobile', '=', mob_no)],limit=1, order='id desc'))
+        crm_dublicate_records = (self.env['crm.lead'].sudo().search([('mobile', '=', mob_no)], limit=1, order='id desc')) if mob_no else False
         if crm_dublicate_records:
             raise ValidationError(f"""Mobile Number ({mob_no}) already against the reference Lead/Opportuity :- {crm_dublicate_records.name}""")
 
@@ -38,8 +38,8 @@ class ars_dashbord(models.Model):
     
     @api.multi
     def write(self, vals):
-        # if 'mobile' in vals:
-        #     self.check_mob(vals['mobile'])
+        if 'mobile' in vals:
+            self.check_mob(vals['mobile'])
         res = super(ars_dashbord, self).write(vals)
         return res
 
@@ -56,7 +56,7 @@ class ars_res_partner(models.Model):
         """ Function:
             1) Fetched dublicate records from Lead and Opportunities in crm_dublicate_records and validate
         """
-        crm_dublicate_records = (self.env['res.partner'].sudo().search([('mobile', '=', mob_no)],limit=1, order='id desc'))
+        crm_dublicate_records = (self.env['res.partner'].sudo().search([('mobile', '=', mob_no)],limit=1, order='id desc')) if mob_no else False
         if crm_dublicate_records:
             raise ValidationError(f"""Mobile Number ({mob_no}) already against the Partner :- {crm_dublicate_records.name}""")
 
@@ -69,8 +69,8 @@ class ars_res_partner(models.Model):
     
     @api.multi
     def write(self, vals):
-        # if 'mobile' in vals:
-        #     self.check_mob(vals['mobile'])
+        if 'mobile' in vals:
+            self.check_mob(vals['mobile'])
         res = super(ars_res_partner, self).write(vals)
         return res
 
