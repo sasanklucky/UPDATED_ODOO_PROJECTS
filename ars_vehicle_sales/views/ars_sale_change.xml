@@ -9,22 +9,27 @@
        <!--<xpath expr="//form/sheet/group/group[1]/field[@name=''email_from]" position="replace">-->
            <!--<field name="email_from"/>-->
        <!--</xpath>-->
-
-       <field name = 'phone' position="before">
-           <field name="mobile" string="Mobile"/>
-       </field>
-       <field name="email_from" position="replace">
-            <field name="email_from"/>
-       </field>
-       <field name = 'phone' position="after">
-            <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
-       </field>
-       <field name = 'planned_revenue' position="replace">
-            <field name="planned_revenue" invisible="1"/>
-       </field>
-       <label for="planned_revenue" position='attributes'>
-         <attribute name='invisible'>1</attribute>
-       </label>
+        <field name="partner_id" position="before">
+            <field name="company_type" required="True"/>
+        </field>
+        <field name = 'phone' position="before">
+            <field name="mobile" string="Mobile"/>
+        </field>
+        <field name="email_from" position="replace">
+                <field name="email_from"/>
+        </field>
+        <field name = 'phone' position="after">
+                <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
+        </field>
+        <field name = 'planned_revenue' position="replace">
+                <field name="planned_revenue" invisible="1"/>
+        </field>
+        <label for="planned_revenue" position='attributes'>
+            <attribute name='invisible'>1</attribute>
+        </label>
+        <field name="name" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </field>
        </field>
       </record>
 

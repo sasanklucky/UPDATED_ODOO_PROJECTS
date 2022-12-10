@@ -416,7 +416,7 @@
                 sequence="1"/>
             <menuitem id="menu_aftersales_quotation"
                 name="Customer Booking Contract MIS"
-                action="sale.action_quotations"
+                action="ars_after_sales.action_cust_booking_contract_mis_report_act_window"
                 parent="aftersale_mis_reprots"
                 sequence="2"/>
         <menuitem id="sale.res_partner_menu"
