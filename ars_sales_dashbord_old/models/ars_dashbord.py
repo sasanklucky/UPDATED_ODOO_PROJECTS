@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from datetime import datetime
 from datetime import timedelta
 from openerp.exceptions import UserError, ValidationError
+from odoo.http import request
 
 
 class ars_dashbord(models.Model):
@@ -18,8 +19,7 @@ class ars_dashbord(models.Model):
     @api.constrains('mobile')
     def check_dublicate_mob_no(self):
         if self.mobile:
-            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', self.mobile)], limit=2, order='id desc') - self
-            print("crm_dublicate_records===",crm_dublicate_records)
+            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile'))], limit=2, order='id desc') - self
             if crm_dublicate_records:
                 raise ValidationError(f"""Mobile Number ({self.mobile}) already against the reference Lead/Opportunity :- {crm_dublicate_records.contact_name}""")
 
@@ -35,8 +35,6 @@ class ars_dashbord(models.Model):
 
     @api.model
     def create(self, vals):
-        # if 'mobile' in vals:
-        #     self.check_mob(vals['mobile'])
         res = super(ars_dashbord, self).create(vals)
         return res
     

@@ -30,6 +30,12 @@
                     <field name="crm_lead_stage"/>
 
                 </field>
+                <!-- <field name='mobile' position="attributes">
+                    <attribute name="force_save">1</attribute>
+                </field> -->
+                <xpath expr="//form/sheet/group/group[2]/field[@name='mobile']" position="replace">
+                    <field name="mobile" force_save='1'/>
+                </xpath>
                 <xpath expr="//form/sheet/notebook/page[1]" position="before">
                     <page string="Model Intrested">
                         <field name="vehicle_line">

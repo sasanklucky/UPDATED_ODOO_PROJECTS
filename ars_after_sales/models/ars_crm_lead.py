@@ -3,6 +3,7 @@ from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
 from openerp.exceptions import except_orm, Warning, RedirectWarning
 from lxml import etree
+from odoo.http import request
 
 
 class ARS_crm_lead(models.Model):
@@ -290,7 +291,7 @@ class ARS_crm_lead(models.Model):
     def appointment_change(self):
         partner = False
         if self.phone and not self.partner_id.id:
-            partner = self.env['res.partner'].search([('phone', '=', self.phone)])
+            partner = self.env['res.partner'].search([('phone', '=', self.phone)],order="id desc",limit=1)
 
         if self.partner_id.id or partner:
             if not partner:
@@ -407,17 +408,19 @@ class ARS_crm_lead(models.Model):
     @api.multi
     @api.onchange('mobile')
     def mobile_change(self):
+        request.session['mobile'] = self.mobile
         if self.mobile:
-            res_details = self.env['res.partner'].search([('mobile', '=', self.mobile)])
-            if len(res_details) == 1:
+            res_details = self.env['res.partner'].search([('mobile', '=', self.mobile)],order="id desc",limit=1)
+            if res_details:
                 self.partner_id = res_details.id
             else:
-                for res in res_details:
-                    self.partner_id = res.id
-                # customer_details = self.env['fleet.vehicle'].search([('driver_id', '=',res_details.id)])
-                # self.count_vehicle = len(customer_details)
-                # if len(customer_details) == 1:
-                #     self.partner_id = customer_details.driver_id.id
+                self.partner_id = False
+            # if len(res_details) == 1:
+            #     self.partner_id = res_details.id
+            # else:
+            #     for res in res_details:
+            #         self.partner_id = res.id
+       
 
 
 
