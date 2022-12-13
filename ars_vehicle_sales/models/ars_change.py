@@ -22,7 +22,7 @@ class arsCompany(models.Model):
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
 
-    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Company Type")
+    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Customer Type")
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict') 
 class ars_sale_crm_sale(models.Model):

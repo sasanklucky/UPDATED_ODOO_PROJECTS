@@ -78,7 +78,7 @@ class ARS_crm_lead(models.Model):
 
 
 
-    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Company Type")
+    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Customer Type")
     name = fields.Char('Opportunity',required=False, index=True,default=changeservice)
     team_id = fields.Many2one('crm.team', string='Sales Channel', oldname='section_id',
                               default=default_team_id,index=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales channel.')
