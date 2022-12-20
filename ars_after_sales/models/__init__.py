@@ -13,3 +13,4 @@ from . import ars_account_invoice
 from . import ars_mail_activity_type
 from . import ars_resource_resource
 from . import ars_product
+from . import customer_dump_mis

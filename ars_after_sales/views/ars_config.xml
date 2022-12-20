@@ -163,6 +163,24 @@
             <field name="resource_calendar_id" position="after">
                 <field name="labour_group_ids" widget="many2many_tags"/>
             </field>
+            <field name="name" position="after">
+                <h3>
+                    <field name="emp_code" placeholder="Employee's Code" required="0"/>
+                </h3>
+            </field>
+            <field name="passport_id" position="after">
+                <field name="aadhar_id"/>
+                <field name="voter_id"/>
+            </field>
+            <field name="coach_id" position="after">
+                <field name="employement_type"/>
+                <field name="date_of_joining"/>
+                <field name="date_of_exit"/>
+            </field>
+            <field name="bank_account_id" position="after">
+                <field name="blood_group"/>
+                <field name="education_details"/>
+            </field>
         </field>
     </record>
 

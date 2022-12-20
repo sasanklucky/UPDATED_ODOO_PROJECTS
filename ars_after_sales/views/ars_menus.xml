@@ -398,11 +398,31 @@
                 action="sale.action_orders_upselling"
                 parent="aftersale_invoicing"
                 sequence="1"/>
+        <menuitem id="aftersale_mis_reprots"
+            name="MIS"
+            parent="sale.sale_menu_root"
+            sequence="5"/>
+            
+            <menuitem id="menu_aftersales_cust_enq_dump_mis"
+                name="Customer Enquiry Dumps MIS"
+                action="customer_dump_mis_action"
+                parent="aftersale_mis_reprots"
+                sequence="0"/>
 
+            <menuitem id="menu_aftersales_employee_mis_report"
+                name="Employee MIS Report"
+                action="action_employee_mis_report"
+                parent="aftersale_mis_reprots"
+                sequence="1"/>
+            <menuitem id="menu_aftersales_quotation"
+                name="Customer Booking Contract MIS"
+                action="ars_after_sales.action_cust_booking_contract_mis_report_act_window"
+                parent="aftersale_mis_reprots"
+                sequence="2"/>
         <menuitem id="sale.res_partner_menu"
             parent="sale.sale_menu_root"
             action="base.action_partner_form"
-            sequence="5" groups="sales_team.group_sale_salesman"/>
+            sequence="6" groups="sales_team.group_sale_salesman"/>
 
             <menuitem id="sale.menu_product_pricelist_main"
                   name="Vehicle Pricelist"

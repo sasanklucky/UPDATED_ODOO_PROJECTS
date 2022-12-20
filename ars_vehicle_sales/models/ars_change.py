@@ -12,9 +12,17 @@ class arsCompany(models.Model):
 
     dealer_code = fields.Char(string="Dealer Code")
     make_id = fields.Many2one('fleet.vehicle.model.brand',string="Make")
+    dealer_zone = fields.Selection([
+        ('east', 'EAST'),
+        ('west', 'WEST'),
+        ('north', 'NORTH'),
+        ('south', 'SOUTH')
+        ], 'Dealer Zone')
     
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
+
+    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Customer Type")
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict') 
 class ars_sale_crm_sale(models.Model):
