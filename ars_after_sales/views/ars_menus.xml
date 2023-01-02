@@ -250,16 +250,19 @@
                 parent="crm.crm_menu_root"
                 action="stock.stock_picking_type_action"
                 sequence="0"/>
+        <record id="crm_dashboard" model="ir.ui.menu">
+            <field name="active" eval="False" />
+        </record>
         <menuitem
             id="crm.crm_menu_pipeline"
             name="CRM Sales"
             parent="crm.crm_menu_root"
-            sequence="1"/>
+            sequence="2"/>
         <menuitem
                 id="crm_aftersales"
                 name="CRM AfterSales"
                 parent="crm.crm_menu_root"
-                sequence="1"/>
+                sequence="3"/>
             <menuitem id="menu_aftersales_leads"
                 name="Leads"
                 action="ars_after_sales.crm_lead_all_leads_inherit"

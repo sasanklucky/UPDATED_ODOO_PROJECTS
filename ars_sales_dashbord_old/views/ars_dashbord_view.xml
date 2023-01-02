@@ -45,6 +45,5 @@
                 name="CRM Dashboard"
                 parent="crm.crm_menu_root"
                 action="crm_team_ars_salesteams_act"
-                sequence="0"/>
-    0
+                sequence="1"/>
 </odoo>
