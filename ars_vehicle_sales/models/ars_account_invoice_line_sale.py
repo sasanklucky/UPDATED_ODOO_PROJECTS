@@ -54,8 +54,19 @@ class ARSAccountInvoiceLine(models.Model):
         return prot_id.vin_sn
 
 
+class product_attribute_custom(models.Model):
+    _inherit = "product.attribute.value"
+
+
+    @api.multi
+    def _variant_name(self, variable_attributes):
+        return ", ".join([f"{v.attribute_id.name}:{v.name}" for v in self if v.attribute_id in variable_attributes])
+
+
 class ARS_Product_Product(models.Model):
     _inherit = "product.product"
+
+    
 
     lot_id = fields.Many2one('stock.production.lot')
     catalog_type = fields.Many2one('product.catalog', related="product_tmpl_id.catalog_type")
@@ -67,6 +78,8 @@ class ARS_Product_Product(models.Model):
     #         vehicle_name = record.attribute_value_ids.mapped('name') if record.attribute_value_ids else ''
     #         result.append((record.id, vehicle_name))
     #     return result
+
+   
 
     @api.multi
     def name_get(self):
@@ -113,6 +126,7 @@ class ARS_Product_Product(models.Model):
             # display only the attributes with multiple possible values on the template
             variable_attributes = product.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')
             variant = product.attribute_value_ids._variant_name(variable_attributes)
+            print('variant=====================',variant,variable_attributes)
 
             name = variant and "(%s)" % (variant)
             sellers = []
