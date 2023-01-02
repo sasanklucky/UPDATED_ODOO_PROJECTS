@@ -18,7 +18,7 @@ class CRMDashboard(models.Model):
         pipeline_ids = self.env['crm.lead'].search([('type','=','opportunity'),('team_id.team_type','=','sales')])
         pipeline_count = self.env['crm.lead'].search_count([('type','=','opportunity'),('team_id.team_type','=','sales')])
         revenue = sum(pipeline_ids.mapped('planned_revenue'))
-        locale.setlocale(locale.LC_ALL, 'en_IN')
+        # locale.setlocale(locale.LC_ALL, 'en_US')
         revenue_amount = locale.format("%d", revenue, grouping=True)
         return [revenue_amount,pipeline_count]
 
