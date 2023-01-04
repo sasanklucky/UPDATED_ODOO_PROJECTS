@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-xs-6 text-right">
                                 <span class="fa fa-filter portlet-filter" id="filter_leads_generated"></span>
-                                <span class="fa fa-repeat portlet-filter"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_leads_generated"></span>
                             </div>
                         </div>
                     </div>
@@ -92,6 +92,18 @@
                                                     </select>
                                                 </td>
                                             </tr>
+                                            <tr id="filter_lead_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="lead-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
                                         </table>
                                         <div class="text-center mb-2">
                                             <button class="btn btn-danger" id="filter_leads_generated_button">Filter</button>
@@ -104,7 +116,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 byd_portlet" >
+            <div class="col-sm-6 byd_portlet">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -113,7 +125,7 @@
                             </div>
                             <div class="col-xs-6 text-right">
                                 <span class="fa fa-filter portlet-filter" id="filter_opportunities"></span>
-                                <span class="fa fa-repeat portlet-filter"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_opportunities"></span>
                             </div>
                         </div>
                     </div>
@@ -156,6 +168,18 @@
                                                     </select>
                                                 </td>
                                             </tr>
+                                            <tr id="filter_oppotunities_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="opportunities-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
                                         </table>
                                         <div class="text-center mb-2">
                                             <button class="btn btn-danger" id="filter_opportunities_button">Filter</button>
@@ -168,7 +192,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 byd_portlet" >
+            <div class="col-sm-6 byd_portlet">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -220,6 +244,18 @@
                                                     </select>
                                                 </td>
                                             </tr>
+                                            <tr id="filter_quotations_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="quotations-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
                                         </table>
                                         <div class="text-center mb-2">
                                             <button class="btn btn-danger" id="filter_quotations_button">Filter</button>
@@ -232,7 +268,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 byd_portlet" >
+            <div class="col-sm-6 byd_portlet">
                 <div class="card">
                     <div class="card-header">
                         <div class="row">
@@ -280,6 +316,18 @@
                                                         <option value="0" selected="selected">Select</option>
                                                         <t t-foreach="widget.sales_person_data" t-as="sales">
                                                             <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_model_wise_sale_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="model-wise-sale-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
                                                         </t>
                                                     </select>
                                                 </td>

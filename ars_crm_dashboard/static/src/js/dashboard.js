@@ -16,16 +16,20 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         events: {
             'click #filter_leads_generated': 'render_filter_leads_generated',
             'click .count' : 'render_action',
+            'click #refresh_leads_generated': 'render_lead_generated_graphs',
+            'click #refresh_opportunities': 'render_opportunities_graphs', 
             'click #filter_leads_generated_button': _.debounce(function(){
                 var self = this;
                 self.yearLeadSelect = $('#lead-year-select').val();
                 self.salesPersonLeadSelect = $('#lead-sales-person-select').val();
+                self.leadModelSelect = $('#lead-model-select').val();
                 setTimeout(function(){self.render_lead_generated_graphs("filter");},200);
             },200,true),
             'click #filter_opportunities_button': _.debounce(function(){
                 var self = this;
                 self.yearOpportunitiesSelect = $('#opportunities-year-select').val();
                 self.salesPersonOpportunitiesSelect = $('#opportunities-sales-person-select').val();
+                self.ModelOpportunitiesSelect = $('#opportunities-model-select').val();
                 setTimeout(function(){self.render_opportunities_graphs("filter");},200);
             },200,true),
         },
@@ -70,10 +74,11 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             });
             var year_list_rpc = this._rpc({
                 model: 'crm.lead',
-                method: 'get_year_user_list_data'
+                method: 'get_year_user_models_list_data'
             }).then(function(result) {
                 self.year_data = result[0];
                 self.sales_person_data = result[1];
+                self.model_data = result[2];
             });
             return $.when(dealer_rpc,revenue_rpc,year_list_rpc);
         },
@@ -122,18 +127,21 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_lead_generated_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'lead_year': self.yearLeadSelect, 'sales_person': self.salesPersonLeadSelect}}
+            if (filter == 'filter') {params = {'lead_year': self.yearLeadSelect, 'sales_person': self.salesPersonLeadSelect, 'model':self.leadModelSelect}}
             var lead_generated =  this._rpc({
                 model: 'crm.lead',
                 method: 'get_lead_portlet_data',
                 kwargs: params
             }).then(function(result) {
+                var filter_string = ''
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Leads Generated in <b>' + result[0] +'</b>'}
+                else {filter_string = 'Leads Generated in <b>' + result[0] + '</b>'}
                 Highcharts.chart('leades-generated', {
                     chart: {
                         type: 'column'
                     },
                     title: {
-                        text: 'Lead Generated in ' + result[0]
+                        text: filter_string
                     },
                     xAxis: {
                         categories: result[1],
@@ -178,20 +186,22 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_opportunities_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'opportunity_year': self.yearOpportunitiesSelect, 'sales_person': self.salesPersonOpportunitiesSelect}}
+            if (filter == 'filter') {params = {'opportunity_year': self.yearOpportunitiesSelect, 'sales_person': self.salesPersonOpportunitiesSelect, 'model': self.ModelOpportunitiesSelect}}
             var opportunities_generated =  this._rpc({
                 model: 'crm.lead',
                 method: 'get_opportunities_portlet_data',
                 kwargs: params
             }).then(function(result) {
-                console.log(result)
+                var filter_string = ''
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Historic Converted Opportunities by Stage <b>' + result[0] +'</b>'}
+                else {filter_string = 'Historic Converted Opportunities by Stage <b>' + result[0] + '</b>'}
                 Highcharts.chart('opportunities', {
                     chart: {
                         type: 'column'
                     },
                     title: {
                         align: 'left',
-                        text: 'Historic Converted Opportunities by Stage ' + result[0] 
+                        text: filter_string
                     },
                     accessibility: {
                         announceNewData: {
