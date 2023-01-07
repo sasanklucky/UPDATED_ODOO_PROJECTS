@@ -528,9 +528,16 @@ class CRMLeadStage(models.Model):
 class ARS_crm_lead_line(models.Model):
     _name = "crm.lead.line"
 
+    @api.model
+    def _get_default_product_catalog(self):
+        print("product_catalog")
+        # if self.lead_order_id.team_id.team_type == 'sales':
+        product_catalog = self.env['product.catalog'].search([('name','=','Vehicle')])
+        return product_catalog.id
+
     lead_order_id = fields.Many2one('crm.lead', string='Lead Order Lines')
     name = fields.Text(string='Description', required=True)
-    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog',default=_get_default_product_catalog)
     product_template_id = fields.Many2one('product.template',string='Model')
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict', required=True)
