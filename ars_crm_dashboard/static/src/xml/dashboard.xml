@@ -201,7 +201,7 @@
                             </div>
                             <div class="col-xs-6 text-right">
                                 <span class="fa fa-filter portlet-filter" id="filter_quotations"></span>
-                                <span class="fa fa-repeat portlet-filter"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_quotations"></span>
                             </div>
                         </div>
                     </div>
@@ -225,7 +225,7 @@
                                                 <td class="font-weight-bold">Year</td>
                                                 <td class="font-weight-bold">:</td>
                                                 <td>
-                                                    <select class="form-controls" id="quotation-year-select">
+                                                    <select class="form-controls" id="quotations-year-select">
                                                         <t t-foreach="widget.year_data" t-as="year">
                                                             <option t-att-value="year['year_index']"><t t-esc="year['year']" /></option>
                                                         </t>
@@ -316,18 +316,6 @@
                                                         <option value="0" selected="selected">Select</option>
                                                         <t t-foreach="widget.sales_person_data" t-as="sales">
                                                             <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
-                                                        </t>
-                                                    </select>
-                                                </td>
-                                            </tr>
-                                            <tr id="filter_model_wise_sale_models" class="d-none">
-                                                <td class="font-weight-bold">Models</td>
-                                                <td class="font-weight-bold">:</td>
-                                                <td>
-                                                    <select class="form-controls" id="model-wise-sale-model-select">
-                                                        <option value="0" selected="selected">Select</option>
-                                                        <t t-foreach="widget.model_data" t-as="model">
-                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
                                                         </t>
                                                     </select>
                                                 </td>
