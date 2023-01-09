@@ -284,8 +284,8 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                 kwargs: params
             }).then(function(result) {
                 var filter_string = ''
-                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Monthly Quotations Range <b>' + result[0] +'</b>'}
-                else {filter_string = 'Monthly Quotations Range <b>' + result[0] + '</b>'}
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Monthly Quotations / Sale Order Range <b>' + result[0] +'</b>'}
+                else {filter_string = 'Monthly Quotations / Sale Order Range <b>' + result[0] + '</b>'}
                 Highcharts.chart('quotations', {
                     chart: {
                         type: 'spline'
@@ -340,6 +340,13 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                             symbol: 'square'
                         },
                         data: result[4],
+                    },
+                    {
+                        name: 'Sales Order',
+                        marker: {
+                            symbol: 'circle'
+                        },
+                        data: result[5],
                     }]
                 });
             });

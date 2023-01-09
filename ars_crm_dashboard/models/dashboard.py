@@ -145,7 +145,7 @@ class CRMDashboard(models.Model):
         argsSalesPerson = args.get('sales_person',False)
         argsModel = args.get('model',False)
         current_year = int(argsYear) if argsYear else datetime.now().date().year
-        months,month_list, sent_quotation_data,cancel_quotation_data,filter_string = [],[],[],[],''
+        months,month_list, sent_quotation_data,cancel_quotation_data,order_generated_data,filter_string = [],[],[],[],[],''
         
         salesPerson = self.env['res.users'].search([('id','=',int(argsSalesPerson))])
         model = self.env['product.template'].search([('id','=',int(argsModel))])
@@ -164,33 +164,41 @@ class CRMDashboard(models.Model):
             else:
                 filter_string = argsYear + ' / ' + salesPerson.name  + ' / ' + model.name 
         for m in months:
-            sent_domain,cancel_domain = [],[]
+            sent_domain,cancel_domain,order_domain = [],[],[]
             start_date,end_date = self._get_month_range(current_year,m['month_index'])
             if 'quotation_year' in args or 'sales_person' in args:
                 if argsSalesPerson == '0' and argsModel == '0':
                     sent_domain = [('sale_aftersales','=','sales'),('state','=','sent')]  
                     cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel')]  
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale')]  
+
                 elif argsSalesPerson == '0' and argsModel != '0':
                     sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('order_line.product_template_id','in',[int(argsModel)])]  
                     cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('order_line.product_template_id','in',[int(argsModel)])]  
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('order_line.product_template_id','in',[int(argsModel)])]  
                 elif argsSalesPerson != '0' and argsModel == '0':
                     sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('user_id','=',int(argsSalesPerson))]
                     cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('user_id','=',int(argsSalesPerson))]
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('user_id','=',int(argsSalesPerson))]
                 elif argsSalesPerson != '0' and argsModel != '0':
                     sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
                     cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
             else:
                 sent_domain = [('sale_aftersales','=','sales'),('state','=','sent')] 
                 cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel')] 
+                order_domain = [('sale_aftersales','=','sales'),('state','=','sale')] 
             sent_quotation_ids = self.env['sale.order'].search(sent_domain)
             cancel_quotation_ids = self.env['sale.order'].search(cancel_domain)
-            
+            order_generated_ids = self.env['sale.order'].search(order_domain)
             filtered_sent_quotation_ids = sent_quotation_ids.filtered(lambda x: datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() >= start_date and datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() <= end_date if x.date_order else None)
             filtered_cancel_quotation_ids = cancel_quotation_ids.filtered(lambda x: datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() >= start_date and datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() <= end_date if x.date_order else None)
+            filtered_order_generated_ids = order_generated_ids.filtered(lambda x: datetime.strptime(x.effective_date,"%Y-%m-%d").date() >= start_date and datetime.strptime(x.effective_date,"%Y-%m-%d").date() <= end_date if x.effective_date else None)
 
             sent_quotation_data.append({'y': len(filtered_sent_quotation_ids)})
             cancel_quotation_data.append({'y': len(filtered_cancel_quotation_ids)})
-        return[current_year, month_list, sent_quotation_data,filter_string,cancel_quotation_data]
+            order_generated_data.append({'y': len(filtered_order_generated_ids)})
+        return[current_year, month_list, sent_quotation_data,filter_string,cancel_quotation_data,order_generated_data]
 
     @api.model
     def get_model_wise_sale_portlet_data(self,**args):
