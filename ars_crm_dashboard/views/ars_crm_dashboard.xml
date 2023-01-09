@@ -1,0 +1,29 @@
+<odoo>
+    <data>
+        <record id="client_action_ars_main_dashboard" model="ir.actions.client">
+            <field name="name">Main Dashboard</field>
+            <field name="tag">ac_main_dashboard</field>
+        </record>
+
+        <menuitem
+                id="ars_main_dashboard_menu"
+                name="Main Dashboard"
+                parent="crm.crm_menu_root"
+                action="client_action_ars_main_dashboard"
+                sequence="0"/>
+        
+        <template id="assets_backend_crm_dashboard" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/ars_crm_dashboard/static/src/css/dashboard_style.css" />
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/dashboard.js" />
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/highcharts.js"></script>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/data.js"></script>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/drilldown.js"></script>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/highcharts-3d.js"/>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/highchart-more.js"/>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/exporting.js"/>
+                <script type="text/javascript" src="/ars_crm_dashboard/static/src/js/export-data.js"/>
+            </xpath>
+        </template>
+    </data>
+</odoo>
