@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_consolidated_db_settings" model="ir.ui.view">
+        <field name="name">ars_config_consolidated_db_inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="ConsolidatedDB" string="Consolidated DB" data-key="consolidated_db">                   
+                    <h2>Consolidated DB Settings</h2>
+                    <div class="row mt16 o_settings_container" id="consolidated_db_settings">
+                        <div class="col-xs-12 o_setting_box" id="consolidated_db_settings">
+                            <div class="o_setting_right_pane">
+                                <div class="row mt16">
+                                    <label class="col-md-3" string="Company Type"/>
+                                    <field name="company_type" id='company_type' widget="radio" options="{'horizontal': true}"/>
+                                </div>
+
+                            </div>
+                            <br></br>
+                            <!-- <div class="o_setting_right_pane" attrs="{'invisible': [('is_parent_company', '=',True)]}"> -->
+                            <div class="o_setting_right_pane" attrs="{'invisible': [('company_type', '=','is_parent_company')]}">
+                                <label string="Child's Parent configuration"/>
+                                <div class="text-muted">
+                                    Child's Parent configuration
+                                </div>
+                                <div class="content-group">
+                                    <div class="row">
+                                        <label class="col-md-3" string="Connection Type"/>
+                                        <field name="child_connection_type" string="Connection Type" id='child_connection_type'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Parent DB Name"/>
+                                        <field name="db_name" string="Parent DB Name" id='db_name'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="External URL"/>
+                                        <field name="external_url" string="External URL" id='external_url'/>
+                                    </div>
+                                </div>
+                            </div>
+                            <br></br>
+                            <div class="o_setting_right_pane">
+                            <!-- <div class="o_setting_right_pane" attrs="{'invisible': [('is_child_company', '=',True)]}"> -->
+                                <label string="Parent's Child Configurations" attrs="{'invisible': [('company_type', '=','is_child_company')]}"/>
+                                <div class="text-muted">
+                                    Parent's Child Configurations
+                                </div>
+                                <div class="content-group">
+                                    <!-- <div class="row">
+                                        <label class="col-md-3" string="Connection Type"/>
+                                        <field name="parent_pconnection_type" string="Connection Type" id='parent_pconnection_type'/>
+                                    </div> -->
+                                    <div class="row">
+                                        <label class="col-md-3" string="Child configuration"/>
+                                        <field name="child_ids" string="Child configuration" editable='top'>
+                                            <field name="connection_type"/>
+                                            <field name="child_id"/>
+                                            <field name="internal_url"/>
+                                            <field name="external_url"/>
+                                            <field name="db_name"/>
+                                        </field>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_consolidateddb_config_settings" model="ir.actions.act_window">
+        <field name="name">Consolidated DB Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_consolidated_db_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'consolidated_apis'}</field>
+    </record>
+
+</odoo>

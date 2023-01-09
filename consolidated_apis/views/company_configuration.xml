@@ -1,0 +1,110 @@
+<odoo>
+    <data>
+        <!-- <record id="res_company_configuration_form" model="ir.ui.view">
+            <field name="name">company_configuration.form</field>
+            <field name="model">res.company</field>
+            <field name="priority" eval="999"/>
+            <field name="arch" type="xml">
+                <form string="">
+                  <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly='1'/>
+                            <field name="company_code" />
+                            <field name="parent_id" options="{'no_create': True, 'no_open': True}"/>
+                            <field name="is_child" />
+                            <field name="is_parent"/>
+                        </group>
+                        <group>
+                            <field name="connection_type"/>
+                            <field name="internal_url" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            <field name="external_url" attrs="{'invisible': [('connection_type', '=', 'internal')]}"/>
+                            <field name="db_name" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            <field name="host" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            <field name="port" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            <field name="db_user_name" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            <field name="db_password" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                        </group>
+                    </group>
+                    
+                  </sheet>
+                </form>
+            </field>
+        </record> -->
+
+        <record id="res_company_inherited_form" model="ir.ui.view">
+            <field name="name">res.company.form</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form" />
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//notebook" position="inside">
+                    <page name="consolidated_apis_configuration" string="Consolidated Apis configuration">
+                        <group>
+                            <group>
+                                <field name="name" readonly='1'/>
+                                <field name="company_code" />
+                                <field name="is_child" />
+                                <field name="is_parent"/>
+                            </group>
+                            <group>
+                                <field name="connection_type"/>
+                                <field name="internal_url" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                                <field name="external_url" attrs="{'invisible': [('connection_type', '=', 'internal')]}"/>
+                                <field name="db_name" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                                <field name="host" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                                <field name="port" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                                <field name="db_user_name" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                                <field name="db_password" attrs="{'invisible': [('connection_type', '=', 'external')]}"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath> -->
+                <!-- <xpath expr="//field[@name=parent_id]" position="after">
+                    <field name="company_code" />
+                </xpath> -->
+                <xpath expr="//form/sheet/notebook/page[1]/group/group[2]/field[@name='parent_id']" position="after">
+                    <field name="company_code" string='Company Code'/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- <record id="res_company_configuration_tree" model="ir.ui.view">
+            <field name="name">company_configuration.tree</field>
+            <field name="model">res.company</field>
+            <field name="priority" eval="999"/>
+            <field name="arch" type="xml">
+                <tree string="">
+                    <field name="name"/>
+                    <field name="company_code"/>
+                    <field name="parent_id"/>
+                    <field name="is_child" />
+                    <field name="is_parent"/>
+                    <field name="connection_type"/>
+                    <field name="internal_url"/>
+                    <field name="external_url"/>
+                    <field name="db_name"/>
+                    <field name="host"/>
+                    <field name="port"/>
+                    <field name="db_user_name"/>
+                    <field name="db_password"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="company_configuration_process" model="ir.actions.act_window">
+            <field name="name">Company Configuration</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.company</field>
+            <field name="view_type">form</field>
+            <field name="domain">[(1,'=',1)]</field>            
+            <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('consolidated_apis.res_company_configuration_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('consolidated_apis.res_company_configuration_form')})]"/>
+            <field name="help">This is company Type configuration master.</field>
+        </record> -->
+
+
+    </data>
+</odoo>

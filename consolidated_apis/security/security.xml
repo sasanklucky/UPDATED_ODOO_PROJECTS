@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.module.category" id="module_consolidated_apis">
+        <field name="name">Consolidated API's</field>
+        <field name="sequence">100</field>
+    </record>
+
+	<record id="group_api_manager" model="res.groups">
+		<field name="name">Manager</field>
+		<field name="category_id" ref="module_consolidated_apis"/>
+		<field name="comment">Allow CRUD access to the user</field>
+	</record>
+
+</odoo>

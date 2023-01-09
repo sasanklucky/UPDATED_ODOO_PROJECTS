@@ -19,7 +19,7 @@ class ars_dashbord(models.Model):
     @api.constrains('mobile')
     def check_dublicate_mob_no(self):
         if self.mobile:
-            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile'))], limit=2, order='id desc') - self
+            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile')),('company_id','=',self.company_id.id)], limit=2, order='id desc') - self
             if crm_dublicate_records:
                 raise ValidationError(f"""Mobile Number ({self.mobile}) already against the reference Lead/Opportunity :- {crm_dublicate_records.contact_name}""")
 
@@ -52,7 +52,8 @@ class ars_res_partner(models.Model):
     @api.constrains('mobile')
     def check_dublicate_mob_no(self):
         if self.mobile:
-            crm_dublicate_records = self.env['res.partner'].sudo().search([('mobile', '=', self.mobile)], limit=2, order='id desc') - self
+            crm_dublicate_records = self.env['res.partner'].sudo().search([('mobile', '=', self.mobile),('company_id', '=', self.company_id.id)], limit=2, order='id desc') - self
+            print("crm_dublicate_records===",self.env.user.company_id.id ,crm_dublicate_records)
             if crm_dublicate_records:
                 raise ValidationError(f"""Mobile Number ({self.mobile}) already against the Customer :- {crm_dublicate_records.name}""")
 
