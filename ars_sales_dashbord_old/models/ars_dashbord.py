@@ -19,7 +19,7 @@ class ars_dashbord(models.Model):
     @api.constrains('mobile')
     def check_dublicate_mob_no(self):
         if self.mobile:
-            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile'),('company_id','=',self.env.user.company_id.id))], limit=2, order='id desc') - self
+            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile')),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc') - self
             if crm_dublicate_records:
                 return {'warning' : 
                         {'title': _('Warning'),
