@@ -38,6 +38,14 @@
                                         <label class="col-md-3" string="External URL"/>
                                         <field name="external_url" string="External URL" id='external_url'/>
                                     </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable Pipeline Sync"/>
+                                        <field name="enable_pipeline_sync" string="Enable Pipeline Sync" id='db_name'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable quotation Sync"/>
+                                        <field name="enable_quotation_sync" string="Enable quotation Sync" id='external_url'/>
+                                    </div>
                                 </div>
                             </div>
                             <br></br>
