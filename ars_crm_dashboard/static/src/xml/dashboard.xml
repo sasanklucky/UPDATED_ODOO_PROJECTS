@@ -197,7 +197,7 @@
                     <div class="card-header">
                         <div class="row">
                             <div class="col-xs-6">
-                                <span class="portlet-header-name">Quotations</span>
+                                <span class="portlet-header-name">Quotations / Sale Order </span>
                             </div>
                             <div class="col-xs-6 text-right">
                                 <span class="fa fa-filter portlet-filter" id="filter_quotations"></span>
@@ -332,6 +332,7 @@
                     </div>
                 </div>
             </div>
+            
         </div>
     </t>
 </templates>
