@@ -90,7 +90,7 @@ class CrmLeadIherit(models.Model):
                         user_partner_created = False
                         new_partner_id = False
                         # print("rec.user_id.login===",rec.user_id.login)
-                        company = env['res.company'].sudo().search([('name','=',rec.company_id.name),('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
+                        company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                         
                         user = env['res.users'].sudo().search([('login','=',rec.user_id.login)])
                         if not user and rec.user_id:
