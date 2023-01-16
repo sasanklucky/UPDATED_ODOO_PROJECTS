@@ -13,7 +13,7 @@ class CrmLeadIherit(models.Model):
     _inherit = "crm.lead"
     _description = "CRM Lead"
 
-    sync_pipeline  = fields.Boolean(string='Sync',default='False')
+    sync_pipeline  = fields.Boolean(string='Sync',default=False)
     child_id_ref = fields.Char(string='Child Reference')
     # child_partner_ref = fields.Many2one('res.partner', string='Child Reference')
     child_db = fields.Char()
