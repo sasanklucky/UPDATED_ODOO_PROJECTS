@@ -17,7 +17,8 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             'click #filter_leads_generated': 'render_filter_leads_generated',
             'click .count' : 'render_action',
             'click #refresh_leads_generated': 'render_lead_generated_graphs',
-            'click #refresh_opportunities': 'render_opportunities_graphs', 
+            'click #refresh_opportunities': 'render_opportunities_graphs',
+            'click #refresh_quotations': 'render_quotations_graphs', 
             'click #filter_leads_generated_button': _.debounce(function(){
                 var self = this;
                 self.yearLeadSelect = $('#lead-year-select').val();
@@ -31,6 +32,19 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                 self.salesPersonOpportunitiesSelect = $('#opportunities-sales-person-select').val();
                 self.ModelOpportunitiesSelect = $('#opportunities-model-select').val();
                 setTimeout(function(){self.render_opportunities_graphs("filter");},200);
+            },200,true),
+            'click #filter_quotations_button': _.debounce(function(){
+                var self = this;
+                self.yearQuotationSelect = $('#quotations-year-select').val();
+                self.salesPersonQuotationSelect = $('#quotations-sales-person-select').val();
+                self.ModelQuotationSelect = $('#quotations-model-select').val();
+                setTimeout(function(){self.render_quotations_graphs("filter");},200);
+            },200,true),
+            'click #filter_model_wise_sale_button': _.debounce(function(){
+                var self = this;
+                self.yearModelWiseSaleSelect = $('#model-wise-year-select').val();
+                self.salesPersonModelWiseSaleSelect = $('#model-wise-sales-person-select').val();
+                setTimeout(function(){self.render_model_wise_sale_graphs("filter");},200);
             },200,true),
         },
         init: function(parent, action) {
@@ -121,8 +135,8 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             var self = this;
             self.render_lead_generated_graphs();
             self.render_opportunities_graphs();
-            self.render_model_wise_sale_graphs();
             self.render_quotations_graphs();
+            self.render_model_wise_sale_graphs();
         },
         render_lead_generated_graphs: function(filter){
             var self = this;
@@ -260,18 +274,27 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             });
             return $.when(opportunities_generated);
         },
-        render_quotations_graphs: function(){
-            setTimeout(function(){
+        render_quotations_graphs: function(filter){
+            var self = this;
+            var params = {}
+            if (filter == 'filter') {params = {'quotation_year': self.yearQuotationSelect, 'sales_person': self.salesPersonQuotationSelect, 'model':self.ModelQuotationSelect}}
+            var quotation_generated =  this._rpc({
+                model: 'crm.lead',
+                method: 'get_quotations_portlet_data',
+                kwargs: params
+            }).then(function(result) {
+                var filter_string = ''
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Monthly Quotations / Sale Order Range <b>' + result[0] +'</b>'}
+                else {filter_string = 'Monthly Quotations / Sale Order Range <b>' + result[0] + '</b>'}
                 Highcharts.chart('quotations', {
                     chart: {
                         type: 'spline'
                     },
                     title: {
-                        text: 'Monthly Quotations Range in 2022'
+                        text: filter_string //'Monthly Quotations Range in 2022'
                     },
                     xAxis: {
-                        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        categories: result[1],
                         accessibility: {
                             description: 'Months of the year'
                         },
@@ -289,12 +312,12 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                             }
                         }
                     },
-                    tooltip: {
-                        crosshairs: true,
-                        shared: true
-                    },
                     plotOptions: {
                         spline: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: true,
                             marker: {
                                 radius: 4,
                                 lineColor: '#666666',
@@ -306,35 +329,47 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                         enabled: false
                     },
                     series: [{
+                        name: 'Sent',
                         marker: {
-                            symbol: 'diamond'
+                            symbol: 'square'
                         },
-                        data: [
-                            // {
-                            // y: 1.5,
-                            // marker: {
-                            //     symbol: 'url(https://www.highcharts.com/samples/graphics/snow.png)'
-                            // },
-                            // accessibility: {
-                            //     description: 'Snowy symbol, this is the coldest point in the chart.'
-                            // }}, 
-                            15, 1.6, 33, 59, 105, 135, 145, 144, 115, 87, 47, 26],
-                        showInLegend: false,  
+                        data: result[2],
+                    }, {
+                        name: 'Cancelled',
+                        marker: {
+                            symbol: 'square'
+                        },
+                        data: result[4],
+                    },
+                    {
+                        name: 'Sales Order',
+                        marker: {
+                            symbol: 'circle'
+                        },
+                        data: result[5],
                     }]
                 });
-
-
-            },0);
+            });
+            return $.when(quotation_generated);
         },
-        render_model_wise_sale_graphs: function(){
-            setTimeout(function(){
-                // Create the chart
+        render_model_wise_sale_graphs: function(filter){
+            var self = this;
+            var params = {}
+            if (filter == 'filter') {params = {'model_wise_sale_year': self.yearModelWiseSaleSelect, 'sales_person': self.salesPersonModelWiseSaleSelect}}
+            var model_wise_sale = this._rpc({
+                model: 'crm.lead',
+                method: 'get_model_wise_sale_portlet_data',
+                kwargs: params
+            }).then(function(result) {
+                var filter_string = ''
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Leads Generated in <b>' + result[0] +'</b>'}
+                else {filter_string = 'Leads Generated in <b>' + result[0] + '</b>'}
                 Highcharts.chart('model-wise-sale', {
-                    chart: {
-                        type: 'pie'
-                    },
-                    title: {
-                        text: 'Model Wise Sale in 2022',
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                        text: filter_string,
                         align: 'left'
                     },
                     accessibility: {
@@ -351,15 +386,17 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                             allowPointSelect: true,
                             cursor: 'pointer',
                             dataLabels: {
+                                padding: 0,
+                                allowOverlap: true,
                                 enabled: true,
-                                format: '{point.name}: {point.y:.1f}%'
+                                format: '{point.name}: {point.y:.0f}'
                             }
                         }
                     },
 
                     tooltip: {
                         headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.2f}%</b><br/>'
+                        pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.0f}</b><br/>'
                     },
                     credits: {
                         enabled: false
@@ -368,69 +405,16 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                         {
                             name: 'Models',
                             colorByPoint: true,
-                            data: [
-                                {
-                                    name: 'ATTO3',
-                                    y: 61.04,
-                                    drilldown: 'ATTO3'
-                                },
-                                {
-                                    name: 'HAN',
-                                    y: 9.47,
-                                    drilldown: 'HAN'
-                                },
-                                {
-                                    name: 'TANG',
-                                    y: 9.32,
-                                    drilldown: 'TANG'
-                                },
-                                {
-                                    name: 'E6',
-                                    y: 8.15,
-                                    drilldown: 'E6'
-                                },
-                            ]
+                            data: result[1]
                         }
                     ],
                     drilldown: {
-                        series: [
-                            {
-                                name: 'ATTO3',
-                                id: 'ATTO3',
-                                data: [
-                                    ['Jan',36.89],['Feb',26.89],['Mar',13.89],['Apr',46.89],['May',76.89],['Jun',10.89],
-                                    ['Jul',6.89],['Aug',76.89],['Sep',89.89],['Oct',36.89],['Nov',49.89],['Dec',20.89]
-                                ]
-                            },
-                            {
-                                name: 'HAN',
-                                id: 'HAN',
-                                data: [
-                                    ['Jan',36.89],['Feb',36.89],['Mar',36.89],['Apr',36.89],['May',36.89],['Jun',36.89],
-                                    ['Jul',36.89],['Aug',36.89],['Sep',36.89],['Oct',36.89],['Nov',36.89],['Dec',36.89]
-                                ]
-                            },
-                            {
-                                name: 'TANG',
-                                id: 'TANG',
-                                data: [
-                                    ['Jan',36.89],['Feb',36.89],['Mar',36.89],['Apr',36.89],['May',36.89],['Jun',36.89],
-                                    ['Jul',36.89],['Aug',36.89],['Sep',36.89],['Oct',36.89],['Nov',36.89],['Dec',36.89]
-                                ]
-                            },
-                            {
-                                name: 'E6',
-                                id: 'E6',
-                                data: [
-                                    ['Jan',36.89],['Feb',36.89],['Mar',36.89],['Apr',36.89],['May',36.89],['Jun',36.89],
-                                    ['Jul',36.89],['Aug',36.89],['Sep',36.89],['Oct',36.89],['Nov',36.89],['Dec',36.89]
-                                ]
-                            }
-                        ]
+                        series: result[2]
                     }
                 });
 
-            },0);
+            });
+            return $.when(model_wise_sale);
         },
         render_action: function(){
             var self = this;

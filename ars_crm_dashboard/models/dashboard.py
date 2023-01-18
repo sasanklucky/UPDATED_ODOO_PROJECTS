@@ -139,4 +139,102 @@ class CRMDashboard(models.Model):
 
         return [current_year,opportunities_data,opportunities_stage_data,filter_string]
 
+    @api.model
+    def get_quotations_portlet_data(self,**args):
+        argsYear = args.get('quotation_year',False)
+        argsSalesPerson = args.get('sales_person',False)
+        argsModel = args.get('model',False)
+        current_year = int(argsYear) if argsYear else datetime.now().date().year
+        months,month_list, sent_quotation_data,cancel_quotation_data,order_generated_data,filter_string = [],[],[],[],[],''
         
+        salesPerson = self.env['res.users'].search([('id','=',int(argsSalesPerson))])
+        model = self.env['product.template'].search([('id','=',int(argsModel))])
+
+        for month in range(1,13):
+            months.append({'month_index': date(current_year, month, 1).strftime('%m'),'month_name': date(current_year, month, 1).strftime('%B')})
+            month_list.append(date(current_year, month, 1).strftime('%b'))
+        
+        if 'quotation_year' in args or 'sales_person' in args:
+            if argsSalesPerson == '0' and argsModel == '0':
+                filter_string = argsYear
+            elif argsSalesPerson == '0' and argsModel != '0':
+                filter_string = argsYear + ' / ' + model.name
+            elif argsSalesPerson != '0' and argsModel == '0':
+                filter_string = argsYear + ' / ' + salesPerson.name
+            else:
+                filter_string = argsYear + ' / ' + salesPerson.name  + ' / ' + model.name 
+        for m in months:
+            sent_domain,cancel_domain,order_domain = [],[],[]
+            start_date,end_date = self._get_month_range(current_year,m['month_index'])
+            if 'quotation_year' in args or 'sales_person' in args:
+                if argsSalesPerson == '0' and argsModel == '0':
+                    sent_domain = [('sale_aftersales','=','sales'),('state','=','sent')]  
+                    cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel')]  
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale')]  
+
+                elif argsSalesPerson == '0' and argsModel != '0':
+                    sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('order_line.product_template_id','in',[int(argsModel)])]  
+                    cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('order_line.product_template_id','in',[int(argsModel)])]  
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('order_line.product_template_id','in',[int(argsModel)])]  
+                elif argsSalesPerson != '0' and argsModel == '0':
+                    sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('user_id','=',int(argsSalesPerson))]
+                    cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('user_id','=',int(argsSalesPerson))]
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('user_id','=',int(argsSalesPerson))]
+                elif argsSalesPerson != '0' and argsModel != '0':
+                    sent_domain = [('sale_aftersales','=','sales'),('state','=','sent'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
+                    cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
+                    order_domain = [('sale_aftersales','=','sales'),('state','=','sale'),('user_id','=',int(argsSalesPerson)),('order_line.product_template_id','in',[int(argsModel)])]
+            else:
+                sent_domain = [('sale_aftersales','=','sales'),('state','=','sent')] 
+                cancel_domain = [('sale_aftersales','=','sales'),('state','=','cancel')] 
+                order_domain = [('sale_aftersales','=','sales'),('state','=','sale')] 
+            sent_quotation_ids = self.env['sale.order'].search(sent_domain)
+            cancel_quotation_ids = self.env['sale.order'].search(cancel_domain)
+            order_generated_ids = self.env['sale.order'].search(order_domain)
+            filtered_sent_quotation_ids = sent_quotation_ids.filtered(lambda x: datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() >= start_date and datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() <= end_date if x.date_order else None)
+            filtered_cancel_quotation_ids = cancel_quotation_ids.filtered(lambda x: datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() >= start_date and datetime.strptime(x.date_order,"%Y-%m-%d %H:%M:%S").date() <= end_date if x.date_order else None)
+            filtered_order_generated_ids = order_generated_ids.filtered(lambda x: datetime.strptime(x.effective_date,"%Y-%m-%d").date() >= start_date and datetime.strptime(x.effective_date,"%Y-%m-%d").date() <= end_date if x.effective_date else None)
+
+            sent_quotation_data.append({'y': len(filtered_sent_quotation_ids)})
+            cancel_quotation_data.append({'y': len(filtered_cancel_quotation_ids)})
+            order_generated_data.append({'y': len(filtered_order_generated_ids)})
+        return[current_year, month_list, sent_quotation_data,filter_string,cancel_quotation_data,order_generated_data]
+
+    @api.model
+    def get_model_wise_sale_portlet_data(self,**args):
+        argsYear = args.get('model_wise_sale_year',False)
+        argsSalesPerson = args.get('sales_person',False)
+        current_year = int(argsYear) if argsYear else datetime.now().date().year
+        salesPerson = self.env['res.users'].search([('id','=',int(argsSalesPerson))])
+
+        months,month_list,model_wise_sale_list,month_model_data,filter_string = [],[],[],[],''
+        model_ids = self.env['product.template'].search_read([('catalog_type','=', 'Vehicle')],['id','name'])
+
+        if 'model_wise_sale_year' in args or 'sales_person' in args:
+            if argsSalesPerson == '0':
+                filter_string = argsYear
+            else:
+                filter_string = argsYear + ' / ' + salesPerson.name
+
+        for month in range(1,13):
+            months.append({'month_index': date(current_year, month, 1).strftime('%m'),'month_name': date(current_year, month, 1).strftime('%B')})
+            month_list.append(date(current_year, month, 1).strftime('%b'))
+
+        for model in model_ids:
+            domain,filtered_model_data = [],[]
+            if 'model_wise_sale_year' in args or 'sales_person' in args:
+                if argsSalesPerson == '0':
+                    domain = [('sale_aftersales','=', 'sales'),('state','=','sale')]
+                elif argsSalesPerson != '0':
+                    domain = [('sale_aftersales','=', 'sales'),('state','=','sale'),('user_id','=',int(argsSalesPerson))]
+            else:
+                domain = [('sale_aftersales','=', 'sales'),('state','=','sale')]
+            model_wise_sale_ids = self.env['sale.order'].search(domain)
+            filtered_model_wise_sale_ids = model_wise_sale_ids.filtered(lambda x: int(model['id']) in x.order_line.mapped('product_template_id.id') and (datetime.strptime(x.effective_date,"%Y-%m-%d").date().year == current_year if x.effective_date else None))
+            model_wise_sale_list.append({'name': model['name'],'y': len(filtered_model_wise_sale_ids) or 0,'drilldown': model['name']})
+            for m in months:
+                start_date,end_date = self._get_month_range(current_year,m['month_index'])
+                filtered_model = model_wise_sale_ids.filtered(lambda x: datetime.strptime(x.effective_date,"%Y-%m-%d").date() >= start_date and int(model['id']) in x.order_line.mapped('product_template_id.id') and datetime.strptime(x.effective_date,"%Y-%m-%d").date() <= end_date if x.effective_date else None)
+                filtered_model_data.append([date(current_year, int(m['month_index']), 1).strftime('%b'), len(filtered_model)])
+            month_model_data.append({'name': model['name'],'id':model['name'],'data': filtered_model_data})
+        return [current_year,model_wise_sale_list,month_model_data,filter_string]

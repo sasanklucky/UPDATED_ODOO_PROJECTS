@@ -112,6 +112,14 @@ class ARS_crm_lead(models.Model):
     time_at_gate = fields.Date(string="Gate Time")
     is_estimation = fields.Char(default='No Estimation')
     crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
+    planned_revenue = fields.Float('Expected Revenue',compute="_get_compute_expected_revenue",track_visibility='always')
+
+    @api.multi
+    @api.depends('vehicle_line')
+    def _get_compute_expected_revenue(self):
+        for rec in self:
+            if rec.type == 'opportunity' and rec.team_id.team_type == 'sales':
+                 rec.planned_revenue = sum(rec.vehicle_line.mapped('product_template_id.list_price'))
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
@@ -520,9 +528,16 @@ class CRMLeadStage(models.Model):
 class ARS_crm_lead_line(models.Model):
     _name = "crm.lead.line"
 
+    @api.model
+    def _get_default_product_catalog(self):
+        print("product_catalog")
+        # if self.lead_order_id.team_id.team_type == 'sales':
+        product_catalog = self.env['product.catalog'].search([('name','=','Vehicle')])
+        return product_catalog.id
+
     lead_order_id = fields.Many2one('crm.lead', string='Lead Order Lines')
     name = fields.Text(string='Description', required=True)
-    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog',default=_get_default_product_catalog)
     product_template_id = fields.Many2one('product.template',string='Model')
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict', required=True)

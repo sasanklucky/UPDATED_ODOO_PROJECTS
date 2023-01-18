@@ -89,7 +89,7 @@ class ARS_Product_Product(models.Model):
             name = d.get('name', '')
             code = self._context.get('display_default_code', True) and d.get('default_code', False) or False
             if code:
-                name = '[%s] %s' % (code,name)
+                name = '%s' % (name)
             return (d['id'], name)
 
         partner_id = self._context.get('partner_id')
