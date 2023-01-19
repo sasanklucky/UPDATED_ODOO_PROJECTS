@@ -16,6 +16,8 @@ class ConsolidatedDbConfiguration(models.TransientModel):
     child_ids = fields.Many2many('parent.child.configuration', 'res_config_parent_child_cnfig_rel','res_id','parent_child_id', string='Set up Childs')
     is_child = fields.Boolean()
     is_parent = fields.Boolean()
+    enable_pipeline_sync = fields.Selection([('yes', 'Yes'),('no', 'No')])
+    enable_quotation_sync = fields.Selection([('yes', 'Yes'),('no', 'No')])
     connection_type = fields.Selection([('internal', 'Internal'),('external', 'External')])
     # port = fields.Char()
     # host = fields.Char()
@@ -33,6 +35,8 @@ class ConsolidatedDbConfiguration(models.TransientModel):
         set_param('consolidated_apis.external_url', self.external_url)
         set_param('consolidated_apis.db_name', self.db_name)
         set_param('consolidated_apis.child_ids', self.child_ids.ids)
+        set_param('consolidated_apis.enable_pipeline_sync', self.enable_pipeline_sync),
+        set_param('consolidated_apis.enable_quotation_sync', self.enable_quotation_sync),
     
     @api.model
     def get_values(self):
@@ -49,6 +53,8 @@ class ConsolidatedDbConfiguration(models.TransientModel):
             parent_pconnection_type='internal' if get_param('consolidated_apis.parent_pconnection_type') == 'internal' else 'external',
             external_url=get_param('consolidated_apis.external_url', ''),
             db_name=get_param('consolidated_apis.db_name', ''),
+            enable_pipeline_sync='yes' if get_param('consolidated_apis.enable_pipeline_sync') == 'yes' else 'no',
+            enable_quotation_sync='yes' if get_param('consolidated_apis.enable_quotation_sync') == 'yes' else 'no',
             child_ids=flines,
         )
         return res
