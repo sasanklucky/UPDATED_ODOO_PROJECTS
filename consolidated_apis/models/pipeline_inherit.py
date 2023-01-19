@@ -67,7 +67,7 @@ class CrmLeadIherit(models.Model):
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False)],order='id asc')
+                    pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False)],order='id asc',limit=50)
                     # print("===",pipelines)
                     for rec in pipelines:
                         # print("rec=====",rec)
@@ -113,8 +113,8 @@ class CrmLeadIherit(models.Model):
                         if user_partner_created:
                             if user.login == rec.user_id.login:
                                 new_partner_id = user.partner_id
-
-                        customer = env['res.partner'].sudo().search([('mobile','=',rec.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
+                        if rec.partner_id:
+                            customer = env['res.partner'].sudo().search([('mobile','=',rec.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
                         # if new_partner_id:
                         #     customer = new_partner_id
                         
