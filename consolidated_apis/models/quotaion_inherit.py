@@ -40,10 +40,11 @@ class SaleOrderInherit(models.Model):
             if child == 'is_child_company' and check_quotation_sync == 'yes':
                 # print("database=====",db_name)
                 db = sql_db.db_connect(f"{db_name}")
+                child_database = param.get_param('consolidated_apis.child_db_name')
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    exist_in_parent = env['sale.order'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',db_name)])
+                    exist_in_parent = env['sale.order'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',child_database)])
                     # print("exist_in_parent=====",exist_in_parent)
                     if exist_in_parent:
                         exist_in_parent.unlink()
@@ -63,6 +64,7 @@ class SaleOrderInherit(models.Model):
                 database = param.get_param('consolidated_apis.db_name')
                 # print("database=====",database)
                 db = sql_db.db_connect(f"{database}")
+                child_database = param.get_param('consolidated_apis.child_db_name')
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
@@ -76,7 +78,7 @@ class SaleOrderInherit(models.Model):
                         # import pdb
                         # pdb.set_trace()
                         quotation = env['sale.order'].sudo()
-                        exist_in_parent = quotation.search([('child_id_ref','=',str(rec.id)),('child_db','=',database)],limit=1, order='id desc')
+                        exist_in_parent = quotation.search([('child_id_ref','=',str(rec.id)),('child_db','=',child_database)],limit=1, order='id desc')
 
                         # print("sale_order=====",exist_in_parent)
                         customer = False
@@ -313,7 +315,7 @@ class SaleOrderInherit(models.Model):
                             'fiscal_position_id':fiscal_position_id.id if fiscal_position_id else False,
                             'child_id_ref':rec.id,
                             'state':rec.state,
-                            'child_db':database,
+                            'child_db':child_database,
                             
                         }
                         for line_data in rec.order_line:
@@ -363,7 +365,7 @@ class SaleOrderInherit(models.Model):
                                         'default_code':line_data.product_id.default_code if line_data.product_id.default_code else '',
                                         'active':line_data.product_id.active if line_data.product_id.active else '',
                                         'product_tmpl_id':line_data.product_id.product_tmpl_id.id if line_data.product_id.product_tmpl_id else False,
-                                        'barcode':line_data.product_id.barcode if line_data.product_id.barcode else '',
+                                        'barcode':line_data.product_id.barcode if line_data.product_id.barcode else False,
                                         'volume':line_data.product_id.volume if line_data.product_id.volume else '',
                                         'weight':line_data.product_id.weight if line_data.product_id.weight else '',
                                         'activity_date_deadline':line_data.product_id.activity_date_deadline if line_data.product_id.activity_date_deadline else '',
