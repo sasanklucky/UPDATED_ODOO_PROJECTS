@@ -41,10 +41,12 @@ class CrmLeadIherit(models.Model):
             if child == 'is_child_company' and check_quotation_sync == 'yes':
                 print("database=====",db_name)
                 db = sql_db.db_connect(f"{db_name}")
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    exist_in_parent = env['crm.lead'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',db_name)])
+                    exist_in_parent = env['crm.lead'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',child_database)])
                     print("exist_in_parent=====",exist_in_parent)
                     if exist_in_parent:
                         exist_in_parent.unlink()
@@ -62,6 +64,8 @@ class CrmLeadIherit(models.Model):
             # print("child---",child,check_pipeline_sync)
             if child == 'is_child_company' and check_pipeline_sync == 'yes':
                 database = param.get_param('consolidated_apis.db_name')
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 # print("database=====",database)
                 db = sql_db.db_connect(f"{database}")
                 with contextlib.closing(db.cursor()) as cr:
@@ -74,7 +78,7 @@ class CrmLeadIherit(models.Model):
                         # import pdb
                         # pdb.set_trace()
                         lead = env['crm.lead'].sudo()
-                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id)),('child_db','=',database)],limit=1, order='id desc')
+                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id)),('child_db','=',child_database)],limit=1, order='id desc')
                         # print("sale_order=====",exist_in_parent)
                         customer = False
                         user= False
@@ -251,7 +255,7 @@ class CrmLeadIherit(models.Model):
                             'child_id_ref':rec.id,
                             'stage_id':stage_id.id,
                             'date_deadline':rec.date_deadline,
-                            'child_db':database,
+                            'child_db':child_database,
                             'date_conversion':rec.date_conversion,
                         }
                         for line_data in rec.vehicle_line:
@@ -300,7 +304,7 @@ class CrmLeadIherit(models.Model):
                                         'default_code':line_data.product_id.default_code if line_data.product_id.default_code else '',
                                         'active':line_data.product_id.active if line_data.product_id.active else '',
                                         'product_tmpl_id':line_data.product_id.product_tmpl_id.id if line_data.product_id.product_tmpl_id else False,
-                                        'barcode':line_data.product_id.barcode if line_data.product_id.barcode else '',
+                                        'barcode':line_data.product_id.barcode if line_data.product_id.barcode else False,
                                         'volume':line_data.product_id.volume if line_data.product_id.volume else '',
                                         'weight':line_data.product_id.weight if line_data.product_id.weight else '',
                                         'activity_date_deadline':line_data.product_id.activity_date_deadline if line_data.product_id.activity_date_deadline else '',
