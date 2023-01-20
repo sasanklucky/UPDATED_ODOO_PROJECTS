@@ -44,7 +44,7 @@ class CrmLeadIherit(models.Model):
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    exist_in_parent = env['crm.lead'].sudo().search([('child_id_ref','=',str(child_id))])
+                    exist_in_parent = env['crm.lead'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',db_name)])
                     print("exist_in_parent=====",exist_in_parent)
                     if exist_in_parent:
                         exist_in_parent.unlink()
@@ -74,7 +74,7 @@ class CrmLeadIherit(models.Model):
                         # import pdb
                         # pdb.set_trace()
                         lead = env['crm.lead'].sudo()
-                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id))],limit=1, order='id desc')
+                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id)),('child_db','=',database)],limit=1, order='id desc')
                         # print("sale_order=====",exist_in_parent)
                         customer = False
                         user= False
@@ -251,6 +251,8 @@ class CrmLeadIherit(models.Model):
                             'child_id_ref':rec.id,
                             'stage_id':stage_id.id,
                             'date_deadline':rec.date_deadline,
+                            'child_db':database,
+                            'date_conversion':rec.date_conversion,
                         }
                         for line_data in rec.vehicle_line:
                             if line_data:
