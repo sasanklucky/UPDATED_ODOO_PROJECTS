@@ -40,7 +40,8 @@ class SaleOrderInherit(models.Model):
             if child == 'is_child_company' and check_quotation_sync == 'yes':
                 # print("database=====",db_name)
                 db = sql_db.db_connect(f"{db_name}")
-                child_database = param.get_param('consolidated_apis.child_db_name')
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
@@ -64,7 +65,8 @@ class SaleOrderInherit(models.Model):
                 database = param.get_param('consolidated_apis.db_name')
                 # print("database=====",database)
                 db = sql_db.db_connect(f"{database}")
-                child_database = param.get_param('consolidated_apis.child_db_name')
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})

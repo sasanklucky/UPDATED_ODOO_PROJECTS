@@ -12,7 +12,7 @@ class ConsolidatedDbConfiguration(models.TransientModel):
     parent_pconnection_type = fields.Selection([('internal', 'Internal'),('external', 'External')])
     external_url = fields.Char()
     db_name = fields.Char(string='Parent DB')
-    child_db_name = fields.Char(string='Parent DB')
+    # child_db_name = fields.Char(string='Parent DB')
     days_between_two_followups = fields.Char()
     child_ids = fields.Many2many('parent.child.configuration', 'res_config_parent_child_cnfig_rel','res_id','parent_child_id', string='Set up Childs')
     is_child = fields.Boolean()
@@ -35,7 +35,7 @@ class ConsolidatedDbConfiguration(models.TransientModel):
         set_param('consolidated_apis.parent_pconnection_type', self.parent_pconnection_type)
         set_param('consolidated_apis.external_url', self.external_url)
         set_param('consolidated_apis.db_name', self.db_name)
-        set_param('consolidated_apis.child_db_name', self.child_db_name)
+        # set_param('consolidated_apis.child_db_name', self.child_db_name)
         set_param('consolidated_apis.child_ids', self.child_ids.ids)
         set_param('consolidated_apis.enable_pipeline_sync', self.enable_pipeline_sync),
         set_param('consolidated_apis.enable_quotation_sync', self.enable_quotation_sync),
@@ -55,7 +55,7 @@ class ConsolidatedDbConfiguration(models.TransientModel):
             parent_pconnection_type='internal' if get_param('consolidated_apis.parent_pconnection_type') == 'internal' else 'external',
             external_url=get_param('consolidated_apis.external_url', ''),
             db_name=get_param('consolidated_apis.db_name', ''),
-            child_db_name=get_param('consolidated_apis.child_db_name', ''),
+            # child_db_name=get_param('consolidated_apis.child_db_name', ''),
             enable_pipeline_sync='yes' if get_param('consolidated_apis.enable_pipeline_sync') == 'yes' else 'no',
             enable_quotation_sync='yes' if get_param('consolidated_apis.enable_quotation_sync') == 'yes' else 'no',
             child_ids=flines,

@@ -41,7 +41,8 @@ class CrmLeadIherit(models.Model):
             if child == 'is_child_company' and check_quotation_sync == 'yes':
                 print("database=====",db_name)
                 db = sql_db.db_connect(f"{db_name}")
-                child_database = param.get_param('consolidated_apis.child_db_name')
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
@@ -63,7 +64,8 @@ class CrmLeadIherit(models.Model):
             # print("child---",child,check_pipeline_sync)
             if child == 'is_child_company' and check_pipeline_sync == 'yes':
                 database = param.get_param('consolidated_apis.db_name')
-                child_database = param.get_param('consolidated_apis.child_db_name')
+                # child_database = param.get_param('consolidated_apis.child_db_name')
+                child_database = self._cr.dbname
                 # print("database=====",database)
                 db = sql_db.db_connect(f"{database}")
                 with contextlib.closing(db.cursor()) as cr:

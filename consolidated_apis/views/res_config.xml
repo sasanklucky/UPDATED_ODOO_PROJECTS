@@ -34,10 +34,10 @@
                                         <label class="col-md-3" string="Parent DB Name"/>
                                         <field name="db_name" string="Parent DB Name" id='db_name'/>
                                     </div>
-                                    <div class="row">
+                                    <!-- <div class="row">
                                         <label class="col-md-3" string="Child DB Name"/>
                                         <field name="child_db_name" string="Child DB Name" id='child_db_name'/>
-                                    </div>
+                                    </div> -->
                                     <div class="row">
                                         <label class="col-md-3" string="External URL"/>
                                         <field name="external_url" string="External URL" id='external_url'/>
