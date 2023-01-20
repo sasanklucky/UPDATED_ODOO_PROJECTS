@@ -105,7 +105,7 @@ class CRMDashboard(models.Model):
             lead_ids = self.env['crm.lead'].search(domain)
             filtered_lead_ids = lead_ids.filtered(lambda x: datetime.strptime(x.create_date,"%Y-%m-%d %H:%M:%S").date() >= start_date and datetime.strptime(x.create_date,"%Y-%m-%d %H:%M:%S").date() <= end_date)
             lead_data.append({
-                'color': '#565656cc',
+                'color': '#658864',
                 'y': len(filtered_lead_ids)
             })
         return[current_year, month_list, lead_data,filter_string]
@@ -117,6 +117,7 @@ class CRMDashboard(models.Model):
         argsYear = args.get('opportunity_year',False)
         argsSalesPerson = args.get('sales_person',False)
         argsModel = args.get('model',False)
+        print(argsCompanyId,argsSalesPerson,argsModel)
 
         current_year = int(argsYear) if argsYear else datetime.now().date().year
         opportunities_data,months,month_list,opportunities_stage_data,filter_string = [],[],[],[],''
