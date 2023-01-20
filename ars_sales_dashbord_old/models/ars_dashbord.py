@@ -19,13 +19,16 @@ class ars_dashbord(models.Model):
     @api.constrains('mobile')
     def check_dublicate_mob_no(self):
         if self.mobile:
-            crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile')),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc') - self
-            if crm_dublicate_records:
-                return {'warning' : 
-                        {'title': _('Warning'),
-                        'message': _(f"""Mobile Number ({self.mobile}) already against the reference Lead/Opportunity :- {crm_dublicate_records.contact_name}""")
-                        }
-                }
+            param = self.env['ir.config_parameter'].sudo()
+            child = param.get_param('consolidated_apis.company_type')
+            if child == 'is_child_company':
+                crm_dublicate_records = self.env['crm.lead'].sudo().search([('mobile', '=', request.session.get('mobile')),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc') - self
+                if crm_dublicate_records:
+                    return {'warning' : 
+                            {'title': _('Warning'),
+                            'message': _(f"""Mobile Number ({self.mobile}) already against the reference Lead/Opportunity :- {crm_dublicate_records.contact_name}""")
+                            }
+                    }
                 # raise ValidationError(f"""Mobile Number ({self.mobile}) already against the reference Lead/Opportunity :- {crm_dublicate_records.contact_name}""")
 
     # def check_mob(self,mob_no):
