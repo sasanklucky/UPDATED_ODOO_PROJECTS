@@ -43,7 +43,7 @@ class SaleOrderInherit(models.Model):
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    exist_in_parent = env['sale.order'].sudo().search([('child_id_ref','=',str(child_id))])
+                    exist_in_parent = env['sale.order'].sudo().search([('child_id_ref','=',str(child_id)),('child_db','=',db_name)])
                     # print("exist_in_parent=====",exist_in_parent)
                     if exist_in_parent:
                         exist_in_parent.unlink()
@@ -76,7 +76,7 @@ class SaleOrderInherit(models.Model):
                         # import pdb
                         # pdb.set_trace()
                         quotation = env['sale.order'].sudo()
-                        exist_in_parent = quotation.search([('child_id_ref','=',str(rec.id))],limit=1, order='id desc')
+                        exist_in_parent = quotation.search([('child_id_ref','=',str(rec.id)),('child_db','=',database)],limit=1, order='id desc')
 
                         # print("sale_order=====",exist_in_parent)
                         customer = False
@@ -92,7 +92,7 @@ class SaleOrderInherit(models.Model):
                         user_partner_created = False
                         new_partner_id = False
                         # print("rec.user_id.login===",rec.user_id.login)
-                        company = env['res.company'].sudo().search([('name','=',rec.company_id.name),('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
+                        company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                         user = env['res.users'].sudo().search([('login','=',rec.user_id.login)])
                         if not user and rec.user_id:
                             # print("rec.user_id.company_id.name=====",rec.user_id.company_id.name)
@@ -115,8 +115,9 @@ class SaleOrderInherit(models.Model):
                         if user_partner_created:
                             if user.login == rec.user_id.login:
                                 new_partner_id = user.partner_id
-
-                        customer = env['res.partner'].sudo().search([('mobile','=',rec.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
+                        
+                        if rec.partner_id:
+                            customer = env['res.partner'].sudo().search([('mobile','=',rec.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
                         # # if new_partner_id:
                         # #     customer = new_partner_id
                         
@@ -312,6 +313,7 @@ class SaleOrderInherit(models.Model):
                             'fiscal_position_id':fiscal_position_id.id if fiscal_position_id else False,
                             'child_id_ref':rec.id,
                             'state':rec.state,
+                            'child_db':database,
                             
                         }
                         for line_data in rec.order_line:
