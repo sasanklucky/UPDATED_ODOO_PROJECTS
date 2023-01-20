@@ -10,12 +10,11 @@
                                 <div class="col-xs-12 col-md-8">
                                     <p class="h3">Dashboard</p>
                                 </div>
+                                <t t-set="selected_company" t-value="widget.current_company" />
                                 <div class="col-xs-6 col-md-4">
-                                    <select class="form-control company_list">
-                                        <t t-foreach="widget.dealer_data" t-as="dealer">
-                                            <t t-foreach="dealer" t-as="dl">
-                                                <option t-att-value="dl['id']"><t t-esc="dl['name']" /></option>
-                                            </t>
+                                    <select class="form-control company_list" t-att-data-selected="selected_company">
+                                        <t t-foreach="widget.dealer_data" t-as="dl">
+                                            <option t-att-value="dl['id']" t-att-selected="dl['id'] == selected_company"><t t-esc="dl['name']" /></option>
                                         </t>
                                       </select>
                                 </div>
@@ -34,7 +33,7 @@
             <div class="col-sm-12 byd_portlet">
                 <div class="card">
                     <div class="card-body text-center">
-                        <span class="text-center h1 text-danger"><t t-esc="widget.revenue_data[0]" /> Rs.</span> / <span class="portlet-header-name" ><span class="count" > <u><t t-esc="widget.revenue_data[1]" /></u></span> Opportunities </span>
+                        <span class="text-center h1 text-danger"><span id="opportunity_revenue"></span>Rs.</span> / <span class="portlet-header-name count"><u><span class="opportunity_count" ></span> </u>Opportunities </span>
                         <p class="text-center h4 portlet-header-name">Revenue</p>
                     </div>
                 </div>
@@ -85,10 +84,7 @@
                                                 <td class="font-weight-bold">:</td>
                                                 <td>
                                                     <select class="form-controls" id="lead-sales-person-select">
-                                                        <option value="0" selected="selected">Select</option>
-                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
-                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
-                                                        </t>
+                                                        
                                                     </select>
                                                 </td>
                                             </tr>
@@ -161,10 +157,7 @@
                                                 <td class="font-weight-bold">:</td>
                                                 <td>
                                                     <select class="form-controls" id="opportunities-sales-person-select">
-                                                        <option value="0" selected="selected">Select</option>
-                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
-                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
-                                                        </t>
+                                                        
                                                     </select>
                                                 </td>
                                             </tr>
@@ -237,10 +230,7 @@
                                                 <td class="font-weight-bold">:</td>
                                                 <td>
                                                     <select class="form-controls" id="quotations-sales-person-select">
-                                                        <option value="0" selected="selected">Select</option>
-                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
-                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
-                                                        </t>
+                                                        
                                                     </select>
                                                 </td>
                                             </tr>
@@ -277,7 +267,7 @@
                             </div>
                             <div class="col-xs-6 text-right">
                                 <span class="fa fa-filter portlet-filter" id="filter_model_wise_sale"></span>
-                                <span class="fa fa-repeat portlet-filter"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_model_wise_sale"></span>
                             </div>
                         </div>
                     </div>
@@ -313,10 +303,7 @@
                                                 <td class="font-weight-bold">:</td>
                                                 <td>
                                                     <select class="form-controls" id="model-wise-sales-person-select">
-                                                        <option value="0" selected="selected">Select</option>
-                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
-                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
-                                                        </t>
+                                                        
                                                     </select>
                                                 </td>
                                             </tr>

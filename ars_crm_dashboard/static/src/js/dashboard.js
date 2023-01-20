@@ -16,9 +16,39 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         events: {
             'click #filter_leads_generated': 'render_filter_leads_generated',
             'click .count' : 'render_action',
-            'click #refresh_leads_generated': 'render_lead_generated_graphs',
-            'click #refresh_opportunities': 'render_opportunities_graphs',
-            'click #refresh_quotations': 'render_quotations_graphs', 
+            'click #refresh_leads_generated':  _.debounce(function(){
+                var self = this;
+                self.company_id = $('.company_list').val();
+                setTimeout(function(){self.fetch_data("filter");},200);
+                setTimeout(function(){self.render_lead_generated_graphs("refresh");},200);
+            },200,true),
+            'click #refresh_opportunities': _.debounce(function(){
+                var self = this;
+                self.company_id = $('.company_list').val();
+                setTimeout(function(){self.fetch_data("filter");},200);
+                setTimeout(function(){self.render_opportunities_graphs("refresh");},200);
+            },200,true),
+            'click #refresh_quotations': _.debounce(function(){
+                var self = this;
+                self.company_id = $('.company_list').val();
+                setTimeout(function(){self.fetch_data("filter");},200);
+                setTimeout(function(){self.render_quotations_graphs("refresh");},200);
+            },200,true),
+            'click #refresh_model_wise_sale':  _.debounce(function(){
+                var self = this;
+                self.company_id = $('.company_list').val();
+                setTimeout(function(){self.fetch_data("filter");},200);
+                setTimeout(function(){self.render_model_wise_sale_graphs("refresh");},200);
+            },200,true),
+            'click .company_list': _.debounce(function(){
+                var self = this;
+                self.company_id = $('.company_list').val();
+                setTimeout(function(){self.fetch_data("filter");},200);
+                setTimeout(function(){self.render_lead_generated_graphs("filter");},200);
+                setTimeout(function(){self.render_opportunities_graphs("filter");},200);
+                setTimeout(function(){self.render_quotations_graphs("filter");},200);
+                setTimeout(function(){self.render_model_wise_sale_graphs("filter");},200);
+            },200,true),
             'click #filter_leads_generated_button': _.debounce(function(){
                 var self = this;
                 self.yearLeadSelect = $('#lead-year-select').val();
@@ -72,27 +102,43 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             });
         },
     
-        fetch_data: function() {
+        fetch_data: function(filter) {
             var self = this;
+            var params = {}
+            if (filter == 'filter') {params = {'company_id': self.company_id}}
             var dealer_rpc =  this._rpc({
                     model: 'crm.lead',
                     method: 'get_dealer_list'
             }).then(function(result) {
-                self.dealer_data = result;
+                self.dealer_data = result[0];
+                self.current_company = result[1];
+                
             });
             var revenue_rpc =  this._rpc({
                 model: 'crm.lead',
-                method: 'get_renvenue'
+                method: 'get_renvenue',
+                kwargs: params
             }).then(function(result) {
+                console.log(result)
                 self.revenue_data = result;
+                self.$el.find('#opportunity_revenue').text(self.revenue_data[0]);
+                self.$el.find('.opportunity_count').text(self.revenue_data[1]);
             });
             var year_list_rpc = this._rpc({
                 model: 'crm.lead',
-                method: 'get_year_user_models_list_data'
+                method: 'get_year_user_models_list_data',
+                kwargs: params
             }).then(function(result) {
                 self.year_data = result[0];
                 self.sales_person_data = result[1];
                 self.model_data = result[2];
+                $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').empty()
+                $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').append('<option value="0">Select</option>');
+                if (result[1].length > 0){
+                    $.each( result[1], function( key, value ) {
+                        $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').append('<option value='+value['id']+'>'+value['name']+'</option>');
+                      });
+                }
             });
             return $.when(dealer_rpc,revenue_rpc,year_list_rpc);
         },
@@ -126,6 +172,16 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
             self.$el.find('#close_model_wise_sale_filter,#filter_model_wise_sale_button').click(function(){
                 self.$el.find('.model-wise-sale-filter-wrapper').css("display", "none");
             });
+            self.$el.find('.company_list').val($('.company_list').attr('data-selected'));
+            self.$el.find('#opportunity_revenue').text(self.revenue_data[0]);
+            self.$el.find('.opportunity_count').text(self.revenue_data[1]);
+            $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').empty()
+                $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').append('<option value="0">Select</option>');
+                if (self.sales_person_data.length > 0){
+                    $.each(self.sales_person_data, function( key, value ) {
+                        $('#lead-sales-person-select,#opportunities-sales-person-select,#quotations-sales-person-select,#model-wise-sales-person-select').append('<option value='+value['id']+'>'+value['name']+'</option>');
+                      });
+                }
             return true;
         },
         render_filter_leads_generated: function(){
@@ -141,7 +197,8 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_lead_generated_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'lead_year': self.yearLeadSelect, 'sales_person': self.salesPersonLeadSelect, 'model':self.leadModelSelect}}
+            if (filter == 'filter') {params = {'lead_year': self.yearLeadSelect, 'sales_person': self.salesPersonLeadSelect, 'model':self.leadModelSelect,'company_id':self.company_id}}
+            if (filter == 'refresh') {params = {'company_id':self.company_id}}
             var lead_generated =  this._rpc({
                 model: 'crm.lead',
                 method: 'get_lead_portlet_data',
@@ -182,6 +239,13 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                         column: {
                             // pointPadding: 0.2,
                             borderWidth: 0
+                        },
+                        series: {
+                            borderWidth: 0,
+                            dataLabels: {
+                                enabled: true,
+                                format: '{point.y:.0f}'
+                            }
                         }
                     },
                     credits: {
@@ -200,7 +264,9 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_opportunities_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'opportunity_year': self.yearOpportunitiesSelect, 'sales_person': self.salesPersonOpportunitiesSelect, 'model': self.ModelOpportunitiesSelect}}
+            if (filter == 'filter') {params = {'opportunity_year': self.yearOpportunitiesSelect, 'sales_person': self.salesPersonOpportunitiesSelect, 'model': self.ModelOpportunitiesSelect,'company_id':self.company_id}}
+            if (filter == 'refresh') {params = {'company_id':self.company_id}}
+
             var opportunities_generated =  this._rpc({
                 model: 'crm.lead',
                 method: 'get_opportunities_portlet_data',
@@ -277,7 +343,9 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_quotations_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'quotation_year': self.yearQuotationSelect, 'sales_person': self.salesPersonQuotationSelect, 'model':self.ModelQuotationSelect}}
+            if (filter == 'filter') {params = {'quotation_year': self.yearQuotationSelect, 'sales_person': self.salesPersonQuotationSelect, 'model':self.ModelQuotationSelect,'company_id':self.company_id}}
+            if (filter == 'refresh') {params = {'company_id':self.company_id}}
+            
             var quotation_generated =  this._rpc({
                 model: 'crm.lead',
                 method: 'get_quotations_portlet_data',
@@ -355,15 +423,17 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         render_model_wise_sale_graphs: function(filter){
             var self = this;
             var params = {}
-            if (filter == 'filter') {params = {'model_wise_sale_year': self.yearModelWiseSaleSelect, 'sales_person': self.salesPersonModelWiseSaleSelect}}
+            if (filter == 'filter') {params = {'model_wise_sale_year': self.yearModelWiseSaleSelect, 'sales_person': self.salesPersonModelWiseSaleSelect,'company_id':self.company_id}}
+            if (filter == 'refresh') {params = {'company_id':self.company_id}}
+            
             var model_wise_sale = this._rpc({
                 model: 'crm.lead',
                 method: 'get_model_wise_sale_portlet_data',
                 kwargs: params
             }).then(function(result) {
                 var filter_string = ''
-                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/> Leads Generated in <b>' + result[0] +'</b>'}
-                else {filter_string = 'Leads Generated in <b>' + result[0] + '</b>'}
+                if(filter == 'filter'){filter_string = '<b style="color:#a94442; font-size: small;">' + result[3] + '</b> <br/>Model Wise Sale in <b>' + result[0] +'</b>'}
+                else {filter_string = 'Model Wise Sale in <b>' + result[0] + '</b>'}
                 Highcharts.chart('model-wise-sale', {
                 chart: {
                     type: 'pie'
@@ -418,6 +488,7 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
         },
         render_action: function(){
             var self = this;
+            console.log(self.company_id)
             self.do_action({
                 'name': _t("Revenue"),
                 type: 'ir.actions.act_window',
@@ -427,7 +498,7 @@ odoo.define('ars_crm_dashboard.Dashboard', function (require) {
                     [false, 'list']
                 ],
                 target: 'current',
-                domain: [['type','=','opportunity'],['team_id.team_type','=','sales']],
+                domain: [['type','=','opportunity'],['team_id.team_type','=','sales'],['company_id','=',self.company_id != undefined ? parseInt(self.company_id) : parseInt(self.current_company)]],
                 context: {},
             }, {
                 on_reverse_breadcrumb: this.on_reverse_breadcrumb,
