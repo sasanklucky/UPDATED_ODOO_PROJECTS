@@ -43,6 +43,9 @@ p.h3{margin-top: 9px !important;}
 .portlet-filter:first-child{ margin-right: 5px;}
 .portlet-filter{border: 2px solid #b0bec5; padding: 2px 3px; border-radius: 25px; color: #455a64;cursor: pointer;}
 .byd_portlet{ padding-bottom: 16px;}
+.card.byd_portlet{cursor: pointer;
+    box-shadow: 0px 0px 10px 7px rgb(0 0 0 / 15%);
+    transition: all 0.5s ease;}
 .leads_generated_container,
 .opportunities_container,
 .quotations_container,
