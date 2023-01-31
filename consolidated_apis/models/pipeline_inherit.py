@@ -295,6 +295,7 @@ class CrmLeadIherit(models.Model):
                                         'responsible_id':line_data.product_catalog_id.responsible_id.id if line_data.product_catalog_id.responsible_id else False,
                                         'sale_delay':line_data.product_catalog_id.sale_delay if line_data.product_catalog_id.sale_delay else '',
                                         'tracking':line_data.product_catalog_id.tracking if line_data.product_catalog_id.tracking else '',
+                                        'list_price':line_data.product_catalog_id.list_price if line_data.product_catalog_id.list_price else 0,
                                     }
                                     template_data = env['product.template'].sudo().create(data_dict)
 
@@ -322,24 +323,26 @@ class CrmLeadIherit(models.Model):
                             if vehicle_line_list:
                                 data['vehicle_line'] = vehicle_line_list
                             # print("----data prepared-------",data,lead)
-                            if exist_in_parent:
-                                """ Update existing records after unlinking the vehcile lines"""
-                                # line_data.unlink()
-                                if data:
+                        if exist_in_parent:
+                            """ Update existing records after unlinking the vehcile lines"""
+                            # line_data.unlink()
+                            if data:
+                                exist_in_parent.vehicle_line.unlink()
+                                result = exist_in_parent.sudo().write(data)
+                                # self.update_sync(rec)
+                                # print("-------------------update----------------------------",rec,rec.sync_pipeline)
+                                if result:
                                     rec.sudo().write({'sync_pipeline': True})
-                                    # self.update_sync(rec)
-                                    # print("-------------------update----------------------------",rec,rec.sync_pipeline)
-                                    exist_in_parent.vehicle_line.unlink()
-                                    exist_in_parent.sudo().write(data)
-                                print("update the record------")
-                            else:
-                                """ Insert new records """
-                                # print("--------------------Create----------------------------")
-                                if data:
+                            print("update the record------")
+                        else:
+                            """ Insert new records """
+                            # print("--------------------Create----------------------------")
+                            if data:
+                                new_recordds = env['crm.lead'].sudo().create(data)
+                                print("insert the records-----",new_recordds)
+                                # self.update_sync(rec)
+                                if new_recordds:
                                     rec.sudo().write({'sync_pipeline':  True})
-                                    # self.update_sync(rec)
-                                    new_recordds = env['crm.lead'].sudo().create(data)
-                                    print("insert the records-----",new_recordds)
 
         except Exception as e:
             raise ValidationError(e)

@@ -7,15 +7,12 @@ class customer_dump_mis_report(models.Model):
     _description = 'Customer Enquiry Dump Mis Report'
     _auto = False
 
-
+    
     def get_address(self):
         address = ''
         for record in self:
-            if record.partner_id.street:
-                address = record.partner_id.street
-            if record.partner_id.street2:
-                address += ',' + record.partner_id.street2 if len(address) > 0 else record.partner_id.street2
-            record.address = address
+            record.address2 = f'{record.address} {record.address1}'
+        
             
     def get_color(self):
         for record in self:
@@ -68,7 +65,9 @@ class customer_dump_mis_report(models.Model):
     user_id = fields.Many2one('res.users', 'Sales Consultant')
     partner_id = fields.Many2one('res.partner', 'Partner')
     city = fields.Char(related="partner_id.city")
-    address = fields.Char(compute="get_address")
+    address = fields.Char(related="partner_id.street")
+    address1 = fields.Char(related="partner_id.street2")
+    address2 = fields.Char(compute="get_address")
     title = fields.Many2one('res.partner.title', 'Salutation')
     contact_name = fields.Char('Contact Name')
     phone = fields.Char('Phone')

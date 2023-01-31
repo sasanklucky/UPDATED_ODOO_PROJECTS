@@ -23,7 +23,9 @@
                     <field name="phone"/>
                     <field name="email"/>
                     <field name="city" string="City"/>
-                    <field name="address" string="Address"/>
+                    <field name="address" invisible="1"/>
+                    <field name="address1" invisible="1"/>
+                    <field name="address2" string="Address"/>
                     <field name="make" string="Vehicle Make"/>
                     <field name="model" string="Vehicle Model"/>
                     <field name="product_id"/>

@@ -359,6 +359,8 @@ class SaleOrderInherit(models.Model):
                                         # 'responsible_id':line_data.product_catalog_id.responsible_id.id if line_data.product_catalog_id.responsible_id else False,
                                         'sale_delay':line_data.product_catalog_id.sale_delay if line_data.product_catalog_id.sale_delay else '',
                                         'tracking':line_data.product_catalog_id.tracking if line_data.product_catalog_id.tracking else '',
+                                        'list_price':line_data.product_catalog_id.list_price if line_data.product_catalog_id.list_price else 0,
+
                                     }
                                     template_data = env['product.template'].sudo().create(data_dict)
 
@@ -411,17 +413,19 @@ class SaleOrderInherit(models.Model):
                             """ Update existing records after unlinking the vehcile lines"""
                             # line_data.unlink()
                             if data:
-                                rec.sudo().write({'sync_pipeline':  True})
-                                # print("-------------------update----------------------------")
                                 exist_in_parent.order_line.unlink()
-                                exist_in_parent.sudo().write(data)
+                                result = exist_in_parent.sudo().write(data)
+                                # print("-------------------update----------------------------")
+                                if result:
+                                    rec.sudo().write({'sync_pipeline':  True})
                             # print("update the record------")
                         else:
                             """ Insert new records """
                             # print("--------------------Create----------------------------")
                             if data:
-                                rec.sudo().write({'sync_pipeline':  True})
                                 new_recordds = env['sale.order'].sudo().create(data)
+                                if new_recordds:
+                                    rec.sudo().write({'sync_pipeline':  True})
                                 # print("insert the records-----",new_recordds)
         
         except Exception as e:
