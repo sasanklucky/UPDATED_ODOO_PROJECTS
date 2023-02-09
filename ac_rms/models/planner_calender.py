@@ -395,11 +395,12 @@ class crm_lead_main(models.Model):
 
     @api.multi
     def write(self, vals):
-        sale_order_obj = self.env['sale.order'].search([('opportunity_id', '=', self.id)])
-        if sale_order_obj:
-            for sale_id in sale_order_obj:
-                if vals.get('main_process_id'):
-                    sale_id.main_process_id = vals.get('main_process_id')
+        for rec in self:
+            sale_order_obj = self.env['sale.order'].search([('opportunity_id', '=', rec.id)])
+            if sale_order_obj:
+                for sale_id in sale_order_obj:
+                    if vals.get('main_process_id'):
+                        sale_id.main_process_id = vals.get('main_process_id')
         return super(crm_lead_main, self).write(vals)
 
 class ResConfigSettings(models.TransientModel):
