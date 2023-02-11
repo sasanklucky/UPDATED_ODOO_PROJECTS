@@ -20,10 +20,12 @@ class CrmLeadIherit(models.Model):
 
     @api.multi
     def unlink(self):
-        param = self.env['ir.config_parameter'].sudo()
-        database = param.get_param('consolidated_apis.db_name')
-        self.unlink_pipeline_from_parent(database,self.id)
+        for record in self:
+            param = self.env['ir.config_parameter'].sudo()
+            database = param.get_param('consolidated_apis.db_name')
+            self.unlink_pipeline_from_parent(database,record.id)
         return super(CrmLeadIherit, self).unlink()
+        
 
     @api.multi
     def write(self, vals):
