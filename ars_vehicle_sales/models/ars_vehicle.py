@@ -191,6 +191,14 @@ class FleetVehicle(models.Model):
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
 
+class CrmLeadLost(models.TransientModel):
+    _inherit = 'crm.lead.lost'
 
+    @api.multi
+    def action_lost_reason_apply(self):
+        for rec in self:
+            leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
+            leads.write({'lost_reason': rec.lost_reason_id.id})
+            return leads.action_set_lost()
 
 
