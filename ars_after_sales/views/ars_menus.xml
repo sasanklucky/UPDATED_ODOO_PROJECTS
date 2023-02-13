@@ -409,7 +409,7 @@
             <menuitem id="menu_aftersales_cust_enq_dump_mis"
                 name="Customer Enquiry Dumps MIS"
                 action="customer_dump_mis_action"
-                parent="aftersale_mis_reprots"
+                parent="crm.crm_menu_report"
                 sequence="0"/>
 
             <menuitem id="menu_aftersales_employee_mis_report"
@@ -421,7 +421,7 @@
                 name="Customer Booking Contract MIS"
                 action="ars_after_sales.action_cust_booking_contract_mis_report_act_window"
                 parent="aftersale_mis_reprots"
-                sequence="2"/>
+                sequence="10"/>
         <menuitem id="sale.res_partner_menu"
             parent="sale.sale_menu_root"
             action="base.action_partner_form"
