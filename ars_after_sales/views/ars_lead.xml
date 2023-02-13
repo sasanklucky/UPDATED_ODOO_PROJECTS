@@ -143,7 +143,8 @@
                     <attribute name="invisible">1</attribute>
                 </field>
                 <field name="phone" position="replace">
-
+                    <field name="mobile"/>
+                    <field name="source_id"/>
                 </field>
                 <field name="team_id" position="replace"/>
                 <xpath expr="/tree/field[@name='country_id']" position="replace">
