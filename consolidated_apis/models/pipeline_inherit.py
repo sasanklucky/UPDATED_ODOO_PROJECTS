@@ -57,7 +57,7 @@ class CrmLeadIherit(models.Model):
 
 
     @api.model
-    def _cron_update_pipe_line_to_parent(self):
+    def _cron_update_pipe_line_to_parent(self,crm_rec=None):
         """ connect to parent db set up in general settings """
         try:
             param = self.env['ir.config_parameter'].sudo()
@@ -68,15 +68,18 @@ class CrmLeadIherit(models.Model):
                 database = param.get_param('consolidated_apis.db_name')
                 # child_database = param.get_param('consolidated_apis.child_db_name')
                 child_database = self._cr.dbname
-                # print("database=====",database)
+                print("database=====",database,child_database)
                 db = sql_db.db_connect(f"{database}")
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False)],order='id asc',limit=50)
+                    if crm_rec:
+                        pipelines = crm_rec
+                    else:
+                        pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False)],order='id asc')
                     # print("===",pipelines)
                     for rec in pipelines:
-                        # print("rec=====",rec)
+                        print("rec=====",rec,self._cr.dbname)
                         # import pdb
                         # pdb.set_trace()
                         lead = env['crm.lead'].sudo()
@@ -332,13 +335,13 @@ class CrmLeadIherit(models.Model):
                                 exist_in_parent.vehicle_line.unlink()
                                 result = exist_in_parent.sudo().write(data)
                                 # self.update_sync(rec)
-                                # print("-------------------update----------------------------",rec,rec.sync_pipeline)
+                                print("-------------------update----------------------------",rec,rec.sync_pipeline,result)
                                 if result:
                                     rec.sudo().write({'sync_pipeline': True})
                             print("update the record------")
                         else:
                             """ Insert new records """
-                            # print("--------------------Create----------------------------")
+                            print("--------------------Create----------------------------",self._cr.dbname)
                             if data:
                                 new_recordds = env['crm.lead'].sudo().create(data)
                                 print("insert the records-----",new_recordds)
