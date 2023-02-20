@@ -1,5 +1,6 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, registry, SUPERUSER_ID, sql_db
 import re
+import contextlib
 from openerp.exceptions import UserError, ValidationError
 from ast import literal_eval
 
@@ -61,3 +62,76 @@ class ConsolidatedDbConfiguration(models.TransientModel):
             child_ids=flines,
         )
         return res
+    
+    def button_view(self):
+        print('hello baby i am called')
+        param = self.env['ir.config_parameter'].sudo()
+        child = param.get_param('consolidated_apis.company_type')
+        check_pipeline_sync = param.get_param('consolidated_apis.enable_pipeline_sync')
+        child_database = self._cr.dbname
+        if child == 'is_child_company' and check_pipeline_sync == 'yes':
+            database = param.get_param('consolidated_apis.db_name')
+            # child_database = param.get_param('consolidated_apis.child_db_name')
+            reference_ids = []
+            db = sql_db.db_connect(f"{database}")
+            with contextlib.closing(db.cursor()) as cr:
+                cr.autocommit(True)
+                env = api.Environment(cr, SUPERUSER_ID, {})
+                exist_in_parent = env['crm.lead'].sudo().search([('child_db','=',child_database)])
+                if exist_in_parent:
+                    reference_ids = exist_in_parent.mapped('child_id_ref')
+            pipelines = self.env['crm.lead'].sudo().search([('id','not in',reference_ids)]).mapped('id')
+        view_id = self.env.ref('consolidated_apis.crm_wizard')
+        print('action called again',pipelines)
+        action = {
+            'name': 'Sync Data',
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view_id.id,
+            'res_model': 'crm_wizard',
+            'target': 'self',
+            'context': {'crm_ids': pipelines, }
+        }
+        return action
+
+
+class crm_wizard(models.TransientModel):
+    _name = "crm_wizard"
+    _description = "Pipeline Records"
+
+    @api.model
+    def default_get(self, fields):
+        res = super(crm_wizard, self).default_get(fields)
+        crm_records = self.env.context.get('crm_ids', [])
+        # print(self.env.context)
+
+        res.update({
+            'crm_ids': crm_records,
+        })
+
+        return res
+
+
+    crm_ids = fields.Many2many(
+        string='Crm Ids',
+        comodel_name='crm.lead',
+        relation='crm_wizard_rel',
+        column1='process_id',
+        column2='crm_id',
+    )
+
+
+
+    def sync_data(self):
+        if not self.crm_ids:
+            raise ValidationError('No records for manual sync')
+        else:
+            self.env['crm.lead'].sudo()._cron_update_pipe_line_to_parent(self.crm_ids)
+            action_id = self.env.ref("base_setup.action_general_configuration").id
+            return {
+                    'type': 'ir.actions.act_url',
+                    'target': 'self',
+                    'url': f'/web#action={action_id}&model=res.config.settings',
+                }
+            
