@@ -64,7 +64,7 @@ class ConsolidatedDbConfiguration(models.TransientModel):
         return res
     
     def button_view(self):
-        print('hello baby i am called')
+#         print('hello baby i am called')
         param = self.env['ir.config_parameter'].sudo()
         child = param.get_param('consolidated_apis.company_type')
         check_pipeline_sync = param.get_param('consolidated_apis.enable_pipeline_sync')
@@ -82,7 +82,7 @@ class ConsolidatedDbConfiguration(models.TransientModel):
                     reference_ids = exist_in_parent.mapped('child_id_ref')
             pipelines = self.env['crm.lead'].sudo().search([('id','not in',reference_ids)]).mapped('id')
         view_id = self.env.ref('consolidated_apis.crm_wizard')
-        print('action called again',pipelines)
+#         print('action called again',pipelines)
         action = {
             'name': 'Sync Data',
             'type': 'ir.actions.act_window',
