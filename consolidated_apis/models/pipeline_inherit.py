@@ -76,14 +76,14 @@ class CrmLeadIherit(models.Model):
                     if crm_rec:
                         pipelines = crm_rec
                     else:
-                        pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False)],order='id asc')
+                        pipelines = self.env['crm.lead'].sudo().search([('sync_pipeline','=',False),'|',('active','=',True),('active','=',False)],order='id asc')
                     # print("===",pipelines)
                     for rec in pipelines:
                         print("rec=====",rec,self._cr.dbname)
                         # import pdb
                         # pdb.set_trace()
                         lead = env['crm.lead'].sudo()
-                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id)),('child_db','=',child_database)],limit=1, order='id desc')
+                        exist_in_parent = lead.search([('child_id_ref','=',str(rec.id)),('child_db','=',child_database),'|',('active','=',True),('active','=',False)],limit=1, order='id desc')
                         # print("sale_order=====",exist_in_parent)
                         customer = False
                         user= False
@@ -182,7 +182,8 @@ class CrmLeadIherit(models.Model):
                             customer = env['res.partner'].sudo().create(data_dict)
                             # print("====customer====",customer.company_id)
                     
-                        tag = env['crm.lead.tag'].sudo().search([('name','in',rec.tag_ids.mapped('name'))],order='id desc',limit=1)
+                        tag = env['crm.lead.tag'].sudo().search([('name','in',rec.tag_ids.mapped('name'))],order='id desc')
+                        print('tag==============',tag)
                         if not tag and rec.tag_ids:
                             tag_list = []
                             for rec in rec.tag_ids:
@@ -262,6 +263,7 @@ class CrmLeadIherit(models.Model):
                             'date_deadline':rec.date_deadline,
                             'child_db':child_database,
                             'date_conversion':rec.date_conversion,
+                            'active': rec.active,
                         }
                         for line_data in rec.vehicle_line:
                             if line_data:
@@ -332,11 +334,12 @@ class CrmLeadIherit(models.Model):
                             """ Update existing records after unlinking the vehcile lines"""
                             # line_data.unlink()
                             if data:
+                                result = False
                                 exist_in_parent.vehicle_line.unlink()
                                 result = exist_in_parent.sudo().write(data)
                                 # self.update_sync(rec)
                                 print("-------------------update----------------------------",rec,rec.sync_pipeline,result)
-                                if result:
+                                if result == True:
                                     rec.sudo().write({'sync_pipeline': True})
                             print("update the record------")
                         else:
@@ -346,7 +349,7 @@ class CrmLeadIherit(models.Model):
                                 new_recordds = env['crm.lead'].sudo().create(data)
                                 print("insert the records-----",new_recordds)
                                 # self.update_sync(rec)
-                                if new_recordds:
+                                if len(new_recordds) > 0:
                                     rec.sudo().write({'sync_pipeline':  True})
 
         except Exception as e:
