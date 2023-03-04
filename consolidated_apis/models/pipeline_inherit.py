@@ -227,7 +227,7 @@ class CrmLeadIherit(models.Model):
                         vehicle_line_list = []
                         data = {
                             'planned_revenue':rec.planned_revenue if rec.planned_revenue else '',
-                            'probability':rec.probability if rec.probability else '',
+                            'probability': int(rec.probability) if rec.probability else 0,
                             'company_type':rec.company_type if rec.company_type else '',
                             'partner_id':customer.id if customer else False,
                             'email_from':rec.email_from if rec.email_from else '',
