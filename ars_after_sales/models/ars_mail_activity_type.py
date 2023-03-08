@@ -1,5 +1,5 @@
-from odoo import models, fields, api,_
-from datetime import datetime,timedelta
+from odoo import models, fields, api, _
+from datetime import datetime, timedelta
 from lxml import etree
 from openerp.osv.orm import setup_modifiers
 
@@ -7,12 +7,22 @@ from openerp.osv.orm import setup_modifiers
 class MailActivityType(models.Model):
     _inherit = "mail.activity.type"
 
-
     stages = fields.Many2one('crm.stage')
 
 
 class ARS_MailActivity(models.Model):
     _inherit = "mail.activity"
+
+    mobile = fields.Char(string="Mobile", compute='_get_mobile_number', store=True)
+
+    @api.multi
+    def _get_mobile_number(self):
+        for res in self:
+            if res.res_model == 'crm.lead':
+                crm_rec = self.env[res.res_model].browse(res.res_id)
+                res.mobile = crm_rec.mobile
+            else:
+                print("Mail activity mobile update", res.res_model)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
@@ -35,7 +45,6 @@ class ARS_MailActivity(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-
     @api.model
     def default_get(self, fields):
         con = self.env.context
@@ -52,7 +61,6 @@ class ARS_MailActivity(models.Model):
         if not fields or 'res_model_id' in fields and res.get('res_model'):
             res['res_model_id'] = self.env['ir.model']._get(res['res_model']).id
         return res
-
 
     @api.multi
     def action_close_dialog(self):
@@ -81,7 +89,7 @@ class ARS_MailActivity(models.Model):
             'name': _('Customer Details'),
             'res_model': self.res_model,
             'res_id': self.res_id,
-            'views': [(False,'form'),],
+            'views': [(False, 'form'), ],
             'view_type': 'form',
             'view_mode': 'form',
             'type': 'ir.actions.act_window',

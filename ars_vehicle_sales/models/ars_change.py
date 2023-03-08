@@ -24,7 +24,9 @@ class ars_sale_crm_lead(models.Model):
 
     company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Customer Type")
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
-                                 change_default=True, ondelete='restrict') 
+                                 change_default=True, ondelete='restrict')
+    is_test_drive = fields.Boolean("Test Drive")
+
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 

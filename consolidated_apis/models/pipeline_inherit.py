@@ -25,7 +25,7 @@ class CrmLeadIherit(models.Model):
             database = param.get_param('consolidated_apis.db_name')
             self.unlink_pipeline_from_parent(database,record.id)
         return super(CrmLeadIherit, self).unlink()
-        
+
 
     @api.multi
     def write(self, vals):
@@ -97,7 +97,7 @@ class CrmLeadIherit(models.Model):
                         new_partner_id = False
                         # print("rec.user_id.login===",rec.user_id.login)
                         company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
-                        
+
                         user = env['res.users'].sudo().search([('login','=',rec.user_id.login)])
                         if not user and rec.user_id:
                             # print("company.name=====",company.name)
@@ -123,7 +123,7 @@ class CrmLeadIherit(models.Model):
                             customer = env['res.partner'].sudo().search([('mobile','=',rec.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
                         # if new_partner_id:
                         #     customer = new_partner_id
-                        
+
                         title = env['res.partner.title'].sudo().search([('name','=',rec.title.name)],order='id desc',limit=1)
                         if not title and rec.title:
                             data_dict = {
@@ -131,7 +131,7 @@ class CrmLeadIherit(models.Model):
                                 'shortcut':rec.title.shortcut if rec.title.shortcut else '',
                             }
                             title = env['res.partner.title'].sudo().create(data_dict)
-                        
+
                         country = env['res.country'].sudo().search([('name','=',rec.country_id.name)],order='id desc',limit=1)
                         if not country and rec.country_id:
                             data_dict = {
@@ -145,7 +145,7 @@ class CrmLeadIherit(models.Model):
                                 'vat_label':rec.country_id.vat_label if rec.country_id.vat_label else '',
                             }
                             country = env['res.country'].sudo().create(data_dict)
-                    
+
                         state = env['res.country.state'].sudo().search([('name','=',rec.state_id.name)],limit=1,order='id desc')
                         if not state and rec.state_id:
                             data_dict = {
@@ -154,7 +154,7 @@ class CrmLeadIherit(models.Model):
                                 'country_id':country.id if country else False,
                             }
                             state = env['res.country.state'].sudo().create(data_dict)
-                        
+
                         if not customer and rec.partner_id:
                             data_dict = {
                                 'name':rec.partner_id.name if rec.partner_id else '',
@@ -178,18 +178,18 @@ class CrmLeadIherit(models.Model):
                             # print("=====data_dict===",data_dict)
                             customer = env['res.partner'].sudo().create(data_dict)
                             # print("====customer====",customer.company_id)
-                    
+
                         tag = env['crm.lead.tag'].sudo().search([('name','in',rec.tag_ids.mapped('name'))],order='id desc',limit=1)
                         if not tag and rec.tag_ids:
                             tag_list = []
                             for rec in rec.tag_ids:
                                 tag_list.append({
                                     'name':rec.name if rec.name else '',
-                                    'color':rec.color if rec.color else '',
+                                    'color':int(rec.color) if rec.color else int(10),
                                 })
                             if tag_list:
                                 tag = env['crm.lead.tag'].sudo().create(tag_list)
-                    
+
 
 
                         campaign = env['utm.campaign'].sudo().search([('name','=',rec.campaign_id.name)],order='id desc',limit=1)
@@ -198,28 +198,28 @@ class CrmLeadIherit(models.Model):
                                 'name':rec.campaign_id.name,
                             }
                             campaign = env['utm.campaign'].sudo().create(data_dict)
-                    
+
                         medium = env['utm.medium'].sudo().search([('name','=',rec.medium_id.name)],order='id desc',limit=1)
                         if not medium and rec.medium_id.name:
                             data_dict = {
                                 'name':rec.medium_id.name,
                             }
                             medium =env['utm.medium'].sudo().create(data_dict)
-                    
+
                         source = env['utm.source'].sudo().search([('name','=',rec.source_id.name)],order='id desc',limit=1)
                         if not source and rec.source_id.name:
                             data_dict = {
                                 'name':rec.source_id.name,
                             }
                             source = env['utm.source'].sudo().create(data_dict)
-                        
+
                         stage_id = env['crm.stage'].sudo().search([('name','=',rec.stage_id.name)],order='id desc',limit=1)
                         if not stage_id and rec.stage_id.name:
                             data_dict = {
                                 'name':rec.stage_id.name,
                             }
                             stage_id = env['crm.stage'].sudo().create(data_dict)
-                    
+
                         vehicle_line_list = []
                         data = {
                             'planned_revenue':rec.planned_revenue if rec.planned_revenue else '',

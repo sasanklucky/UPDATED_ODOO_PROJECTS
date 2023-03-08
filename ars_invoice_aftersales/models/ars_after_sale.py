@@ -258,7 +258,7 @@ class ARS_sale_order_line(models.Model):
 
     """ Product line varient """
     product_varient_ids = fields.Many2many('product.attribute.value','order_line_attribute_rel','order_id','attribute_id',string='Attribute')
-    product_template_id = fields.Many2one('product.template',string='Model')
+    product_template_id = fields.Many2one('product.template',string='Product')
 
     @api.multi
     @api.onchange('product_catalog_id')

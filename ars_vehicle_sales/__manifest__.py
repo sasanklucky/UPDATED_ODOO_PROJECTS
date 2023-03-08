@@ -13,12 +13,12 @@
     'website': "www.autochip.in",
     'category': 'Uncategorized',
     'version': '0.1',
-    'depends': ['product','stock','purchase','sale','fleet','account','hr', 'account'],
+    'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr'],
     'data': [
         'data/product_data.xml',
         'data/ars_mail_template_data.xml',
-         'security/ars_security.xml',
-         'security/ir.model.access.csv',
+        'security/ars_security.xml',
+        'security/ir.model.access.csv',
         'views/ars_gatepass_template.xml',
         'views/ars_model_views.xml',
         'views/ars_menus.xml',
@@ -37,10 +37,10 @@
         'views/ars_home.xml',
         'views/ars_footer.xml',
         'views/ars_css.xml',
-
+        # 'views/stock_picking.xml',
 
     ],
-   'installable': True,
-   'application': True,
-   'auto_install': False,
+    'installable': True,
+    'application': True,
+    'auto_install': False,
 }

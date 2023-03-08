@@ -41,7 +41,7 @@ class ARS_sale_order_line(models.Model):
     wrn_price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
     wrn_price_tax = fields.Float(compute='_compute_amount', string='Taxes', readonly=True, store=True)
     wrn_price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
-    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
     product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
     # product_temp_id = fields.Many2one('product.template', string="Product Template")?
 
