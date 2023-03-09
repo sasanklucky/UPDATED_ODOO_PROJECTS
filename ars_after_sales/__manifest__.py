@@ -13,7 +13,7 @@
     'version': '0.1',
     'depends': ['web','product','crm','sale','sale_stock','stock_account',
                 'ars_vehicle_sales','account','website','sale_crm','hr','sale_timesheet',
-                'l10n_in_sale','fleet','mail', 'auth_signup','purchase_requisition','web_domain_field'],
+                'l10n_in_sale','fleet','mail', 'auth_signup','purchase_requisition'],
     'data': [
 
                 'security/ars_security_xml.xml',

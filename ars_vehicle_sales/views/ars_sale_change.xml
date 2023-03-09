@@ -1,146 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
-      <record id="ars_sale_form_inherit_edit" model="ir.ui.view">
-       <field name="name">crm.lead.form.simple.edit</field>
-       <field name="model">crm.lead</field>
-       <field name="inherit_id" ref="crm.view_create_opportunity_simplified" />
-       <field name="arch" type="xml">
-       <!--<xpath expr="//form/sheet/group/group[1]/field[@name=''email_from]" position="replace">-->
-           <!--<field name="email_from"/>-->
-       <!--</xpath>-->
-        <field name="partner_id" position="before">
-            <field name="company_type" required="True"/>
-        </field>
-        <field name = 'phone' position="before">
-            <field name="mobile" string="Mobile"/>
-        </field>
-        <field name="email_from" position="replace">
-                <field name="email_from"/>
-        </field>
-        <field name = 'phone' position="after">
-                <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
-        </field>
-        <field name = 'planned_revenue' position="replace">
-                <field name="planned_revenue" invisible="1"/>
-        </field>
-        <label for="planned_revenue" position='attributes'>
-            <attribute name='invisible'>1</attribute>
-        </label>
-        <field name="name" position="attributes">
-            <attribute name="invisible">1</attribute>
-        </field>
-       </field>
-      </record>
+    <data>
+        <record id="ars_sale_form_inherit_edit" model="ir.ui.view">
+            <field name="name">crm.lead.form.simple.edit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_create_opportunity_simplified"/>
+            <field name="arch" type="xml">
+                <!--<xpath expr="//form/sheet/group/group[1]/field[@name=''email_from]" position="replace">-->
+                <!--<field name="email_from"/>-->
+                <!--</xpath>-->
+                <field name="partner_id" position="before">
+                    <field name="company_type" required="True"/>
+                </field>
+                <field name='phone' position="before">
+                    <field name="mobile" string="Mobile"/>
+                </field>
+                <field name="email_from" position="replace">
+                    <field name="email_from"/>
+                </field>
+                <field name='phone' position="after">
+                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
+                </field>
+                <field name='planned_revenue' position="replace">
+                    <field name="planned_revenue" invisible="1"/>
+                </field>
+                <label for="planned_revenue" position='attributes'>
+                    <attribute name='invisible'>1</attribute>
+                </label>
+                <field name="name" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+            </field>
+        </record>
 
-      <record id="ars_sale_order_inherit_edit" model="ir.ui.view">
-       <field name="name">sale.order.form.simple.edit</field>
-       <field name="model">sale.order</field>
-       <field name="inherit_id" ref="sale.view_order_form" />
-       <field name="arch" type="xml">
-       <field name = 'partner_id' position="after">
-           <field name="mobile" string="Mobile"/>
-           <field name="email" />
-       </field>
-           <field name="payment_term_id" position="after">
-               <field name="user_id" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
-       </field>
+        <record id="ars_sale_order_inherit_edit" model="ir.ui.view">
+            <field name="name">sale.order.form.simple.edit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name='partner_id' position="after">
+                    <field name="mobile" string="Mobile"/>
+                    <field name="email"/>
+                </field>
+                <field name="payment_term_id" position="after">
+                    <field name="user_id" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
+                </field>
 
-       </field>
-      </record>
+            </field>
+        </record>
 
-      <!--<record id="sale_order_form_inherit" model="ir.ui.view">-->
-            <!--<field name="name">sale.order.line.form</field>-->
-            <!--<field name="model">sale.order.line</field>-->
-            <!--<field name="inherit_id" ref="sale.view_order_form"/>-->
-            <!--<field name="arch" type="xml">-->
-                <!--<xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">-->
-                    <!--<field name="vin_no"/>-->
-               <!--</xpath>-->
-            <!--</field>-->
-      <!--</record>-->
+        <!--<record id="sale_order_form_inherit" model="ir.ui.view">-->
+        <!--<field name="name">sale.order.line.form</field>-->
+        <!--<field name="model">sale.order.line</field>-->
+        <!--<field name="inherit_id" ref="sale.view_order_form"/>-->
+        <!--<field name="arch" type="xml">-->
+        <!--<xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']" position="before">-->
+        <!--<field name="vin_no"/>-->
+        <!--</xpath>-->
+        <!--</field>-->
+        <!--</record>-->
 
-      <record id="ars_sale_crm_inherit_edit" model="ir.ui.view">
-       <field name="name">crm.lead.form.simple.edit</field>
-       <field name="model">crm.lead</field>
-       <field name="inherit_id" ref="crm.crm_case_form_view_oppor" />
-       <field name="arch" type="xml">
+        <record id="ars_sale_crm_inherit_edit" model="ir.ui.view">
+            <field name="name">crm.lead.form.simple.edit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
 
-           <field name="user_id" position="replace"/>
-           <field name="priority" position="replace"/>
-           <field name="tag_ids" position="replace"/>
+                <field name="user_id" position="replace"/>
+                <field name="priority" position="replace"/>
+                <field name="tag_ids" position="replace"/>
 
-           <field name="phone" position="after">
-               <field name="mobile"></field>
-           </field>
-           <field name="phone" position="attributes">
-               <attribute name="invisible">True</attribute>
-           </field>
-           <field name="phone" position="attributes">
-               <attribute name="invisible">1</attribute>
-           </field>
-           <field name="function" position="before">
-               <field name="priority" widget="priority"/>
-               <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}"/>
-                <field name="user_id" domain="[('share', '=', False),('salesperson', '=', True)]"
-                    options="{'no_create': True}"
-                    context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
-           </field>
-           <field name="function" position="replace"/>
-           <field name="opt_out" position="before">
-               <field name="phone"></field>
-               <field name="function"></field>
-               
-           </field>
-           <!--<xpath expr="//form/sheet/notebook/page[2]/group/group[2]/field[@name='mobile']" position="after">-->
-               <!--<field name="phone"></field>-->
-           <!--</xpath>-->
+                <field name="phone" position="after">
+                    <field name="mobile"></field>
+                    <field name="is_test_drive"/>
+                </field>
+                <field name="phone" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </field>
+                <field name="phone" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="function" position="before">
+                    <field name="priority" widget="priority"/>
+                    <field name="tag_ids" widget="many2many_tags"
+                           options="{'color_field': 'color', 'no_create_edit': True}"/>
+                    <field name="user_id" domain="[('share', '=', False),('salesperson', '=', True)]"
+                           options="{'no_create': True}"
+                           context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
+                </field>
+                <field name="function" position="replace"/>
+                <field name="opt_out" position="before">
+                    <field name="phone"></field>
+                    <field name="function"></field>
 
-           <xpath expr="//form/sheet/group/group[3]" position="attributes">
-                <attribute name="invisible">True</attribute>
-           </xpath>
-           <xpath expr="//form/sheet/group/group[4]" position="attributes">
-                <attribute name="invisible">True</attribute>
-           </xpath>
+                </field>
+                <!--<xpath expr="//form/sheet/notebook/page[2]/group/group[2]/field[@name='mobile']" position="after">-->
+                <!--<field name="phone"></field>-->
+                <!--</xpath>-->
 
-       </field>
-      </record>
+                <xpath expr="//form/sheet/group/group[3]" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
+                <xpath expr="//form/sheet/group/group[4]" position="attributes">
+                    <attribute name="invisible">True</attribute>
+                </xpath>
 
-      <record id="invoice_form_sale_inherit" model="ir.ui.view">
-       <field name="name">account.invoice.form</field>
-       <field name="model">account.invoice</field>
-       <field name="inherit_id" ref="account.invoice_form" />
-       <field name="arch" type="xml">
-           <field name='payment_term_id' position="before">
-               <field name="mobile"/>
-               <field name="email"/>
-           </field>
-           <field name='payment_term_id' position="replace"/>
-           <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="after">
-               <field name="payment_term_id"/>
-           </xpath>
-           <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="replace">
-               <field name="team_id" invisible="1"/>
-           </xpath>
-       </field>
-      </record>
+            </field>
+        </record>
 
-      <record id="ars_sale_form_inherit" model="ir.ui.view">
-       <field name="name">ars_sale_form_inherit</field>
-       <field name="model">sale.order</field>
-       <field name="inherit_id" ref="sale.view_order_form" />
-       <field name="arch" type="xml">
-               <button name="action_confirm" id="action_confirm" position="after">
-                   <field name="is_approve" invisible="1"/>
-                   <button name="action_confirm" id="to_approve"
-                        string="To Approve" class="btn-primary" type="object"
-                        attrs="{'invisible': [('is_approve', '=', False)]}"/>
-               </button>
-               <button name="action_cancel" type="object" position="attributes">
-                   <attribute name="states">draft,sent,sale,to_approve</attribute>
-               </button>
-       </field>
-      </record>
+        <record id="invoice_form_sale_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name='payment_term_id' position="before">
+                    <field name="mobile"/>
+                    <field name="email"/>
+                </field>
+                <field name='payment_term_id' position="replace"/>
+                <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="after">
+                    <field name="payment_term_id"/>
+                </xpath>
+                <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="replace">
+                    <field name="team_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
 
-  </data>
+        <record id="ars_sale_form_inherit" model="ir.ui.view">
+            <field name="name">ars_sale_form_inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <button name="action_confirm" id="action_confirm" position="after">
+                    <field name="is_approve" invisible="1"/>
+                    <button name="action_confirm" id="to_approve"
+                            string="To Approve" class="btn-primary" type="object"
+                            attrs="{'invisible': [('is_approve', '=', False)]}"/>
+                </button>
+                <button name="action_cancel" type="object" position="attributes">
+                    <attribute name="states">draft,sent,sale,to_approve</attribute>
+                </button>
+            </field>
+        </record>
+
+    </data>
 </odoo>

@@ -127,8 +127,12 @@ class ARS_Product_Product(models.Model):
             variable_attributes = product.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')
             variant = product.attribute_value_ids._variant_name(variable_attributes)
             print('variant=====================',variant,variable_attributes)
-
-            name = variant and "(%s)" % (variant)
+            if variant != '':
+                name = variant and "(%s)" % (variant)
+            else:
+                name = product.product_tmpl_id.name and (
+                        variant and "%s (%s)" % (product.product_tmpl_id.name, variant) or product.product_tmpl_id.name
+                        ) or False
             sellers = []
             if partner_ids:
                 product_supplier_info = supplier_info_by_template.get(product.product_tmpl_id, [])

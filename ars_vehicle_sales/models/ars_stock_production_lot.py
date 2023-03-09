@@ -162,6 +162,9 @@ class ARS_stock_production_lot(models.Model):
 class Picking(models.Model):
     _inherit = 'stock.picking'
 
+    product_template_id = fields.Many2one('product.template', string='Product')
+    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
+
     @api.multi
     def button_validate(self):
         print ('called validate')

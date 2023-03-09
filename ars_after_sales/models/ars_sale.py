@@ -6,6 +6,7 @@ import time
 from odoo.exceptions import UserError
 from lxml import etree
 from openerp.osv.orm import setup_modifiers
+import json
 
 
 class ARS_sale_order(models.Model):
@@ -541,18 +542,40 @@ class ARSPurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'Purchase Order Line'
 
-    @api.onchange('product_id')
-    def onchange_product_id(self):
-        result = {}
-        res = super(ARSPurchaseOrderLine, self).onchange_product_id()
-        if self.env.user.has_group('base.group_system'):
-            pass
-        elif self.env.user.has_group('ars_after_sales.group_vehicle'):
-            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle', 'Accessories'))]}
-        elif self.env.user.has_group('ars_after_sales.group_part'):
-            result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
+    product_template_id = fields.Many2one('product.template', string='Product')
+    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
+    product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
 
-        return result
+    @api.multi
+    @api.depends('product_catalog_id')
+    def _compute_product_id_domain(self):
+        for this in self:
+            if not this.product_catalog_id:
+                this.product_catalog_id = this.order_id.product_catalog_id.id
+            domain = ([('catalog_type', '=', this.product_catalog_id.id)] if this.product_catalog_id else [])
+            this.product_id_domain = json.dumps(domain)
+
+    # @api.onchange('product_id')
+    # def onchange_product_id(self):
+    #     result = {}
+    #     res = super(ARSPurchaseOrderLine, self).onchange_product_id()
+    #     if self.env.user.has_group('base.group_system'):
+    #         pass
+    #     elif self.env.user.has_group('ars_after_sales.group_vehicle'):
+    #         result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle', 'Accessories'))]}
+    #     elif self.env.user.has_group('ars_after_sales.group_part'):
+    #         result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
+    #     return
+    @api.multi
+    @api.onchange('product_template_id')
+    def onchange_product_template_id(self):
+        self.product_id = False
+        if self.product_template_id:
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
+            return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
 
 
 class ARS_AccountInvoiceLine(models.Model):
@@ -720,6 +743,8 @@ class ARS_PurchaseOrder(models.Model):
                                                values={'self': picking, 'origin': order},
                                                subtype_id=self.env.ref('mail.mt_note').id)
         return True
+
+    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
 
 
 class ars_sale_advance_payment_inv(models.TransientModel):
