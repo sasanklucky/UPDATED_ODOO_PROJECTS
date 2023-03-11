@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="annual_income_view_tree" model="ir.ui.view">
+            <field name="name">Annual Income</field>
+            <field name="model">annual.income</field>
+            <field name="arch" type="xml">
+                <tree editable="bottom">
+                    <field name="name"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="annual_income_view_action" model="ir.actions.act_window">
+            <field name="name">Annual Income</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">annual.income</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="annual_income_view_tree"/>
+        </record>
+
+        <menuitem id="annual_income_view_menu" name="Annual Income"
+                  parent="contacts.res_partner_menu_config"
+                  action="annual_income_view_action"
+                  web_icon=""/>
+
+    </data>
+</odoo>
