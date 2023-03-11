@@ -226,10 +226,23 @@ class PowerWindow(models.Model):
     product_id = fields.Many2one('product.template', string="Product", readonly=True)
 
 
+class UsersAnnualIncome(models.Model):
+    _name = 'annual.income'
+
+    name = fields.Char('Annual Income')
+    active = fields.Boolean('Active')
+
+
 class ARS_Sale_ResUsers(models.Model):
     _inherit = 'res.users'
 
     salesperson = fields.Boolean()
+
+
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    annual_income = fields.Many2one('annual.income', 'Annual Income')
 
 
 class ARS_ProductChangeQuantity(models.TransientModel):
