@@ -111,7 +111,20 @@ class StockMoveLine(models.Model):
     @api.constrains('lot_name')
     def lot_name_alphanumeric_constrains(self):
         for record in self:
-            if not record.lot_name.isalnum():
-                raise ValidationError(_('Please enter valid Lot/Serial Number!'))
+            if record.lot_name:
+                if not record.lot_name.isalnum():
+                    raise ValidationError(_('Please enter valid Lot/Serial Number!'))
+            elif record.lot_id:
+                if not record.lot_id.name.isalnum():
+                    raise ValidationError(_('Please enter valid Lot/Serial Number!'))
 
 
+class StockProductionLot(models.Model):
+    _inherit = 'stock.production.lot'
+
+    @api.constrains('lot_name')
+    def lot_name_alphanumeric_constrains(self):
+        for record in self:
+            if record.name:
+                if not record.name.isalnum():
+                    raise ValidationError(_('Please enter valid Lot/Serial Number!'))
