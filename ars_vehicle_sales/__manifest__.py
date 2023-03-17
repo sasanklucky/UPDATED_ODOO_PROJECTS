@@ -39,7 +39,7 @@
         'views/ars_home.xml',
         'views/ars_footer.xml',
         'views/ars_css.xml',
-        # 'views/stock_picking.xml',
+        'views/stock_picking.xml',
 
     ],
     'installable': True,

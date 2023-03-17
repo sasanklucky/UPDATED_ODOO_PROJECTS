@@ -253,6 +253,33 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="view_crm_case_opportunities_filter_ac_inherit">
+            <field name="name">crm.lead.search.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+            <field name="arch" type="xml">
+                <field name="tag_ids" position="after">
+                    <field name="mobile" string="Mobile" filter_domain="[('mobile', 'ilike',self)]"/>
+                </field>
+                <xpath expr="//group/filter" position="inside">
+                    <separator orientation="vertical"/>
+                    <filter name="group_by_month" string="Creation Month" domain="[]"
+                            context="{'group_by':'create_date:month'}"
+                            help="Create By Month"/>
+                    <filter name="group_by_week" string="Creation Week" domain="[]"
+                            context="{'group_by':'create_date:week'}"
+                            help="Create By  Week"/>
+                    <filter name="group_by_day" string="Creation Day" domain="[]"
+                            context="{'group_by': 'create_date:day'}"
+                            help="Create By Month"/>
+                    <filter name="group_by_year" string="Creation Year" domain="[]"
+                            context="{'group_by':'create_date:year'}"
+                            help="Create By Year"/>
+                    <separator/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_crm_case_leads_filter_inherit" model="ir.ui.view">
             <field name="name">crm.lead.search.lead</field>
             <field name="model">crm.lead</field>
@@ -348,7 +375,6 @@
                 'search_default_type': 'lead',
                 'needaction_menu_ref': 'crm.menu_crm_opportunities',
                 'search_default_to_process':1,
-
                 }
             </field>
             <field name="help" type="html">
@@ -572,6 +598,7 @@
                            filter_domain="['|','|','|',('partner_id','ilike',self),('partner_name','ilike',self),('email_from','ilike',self),('name', 'ilike', self)]"/>
                     <field name="tag_ids" string="Tag" filter_domain="[('tag_ids', 'ilike', self)]"/>
                     <field name="team_id"/>
+                    <field name="mobile"/>
                     <field name="user_id" invisible="1"/>
                     <field name="user_id"/>
                     <field name="partner_id" operator="child_of" string="Customer"/>
