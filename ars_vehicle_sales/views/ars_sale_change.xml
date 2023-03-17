@@ -95,6 +95,8 @@
                         <field name="dob"/>
                         <field name="age" placeholder="Age" domain="[]"/>
                     </div>
+                    <field name="gender"/>
+                    <field name="annual_income" options="{'no_create': True}"/>
                     <field name="phone"></field>
                     <field name="function"></field>
                 </field>

@@ -57,12 +57,14 @@ class ars_res_partner(models.Model):
     _inherit = 'res.partner'
         
     
-    @api.constrains('mobile')
-    def check_dublicate_mob_no(self):
-        if self.mobile:
-            crm_dublicate_records = self.env['res.partner'].sudo().search([('mobile', '=', self.mobile),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc') - self
-            if crm_dublicate_records:
-                raise ValidationError(f"""Mobile Number ({self.mobile}) already against the Customer :- {crm_dublicate_records.name}""")
+    # @api.constrains('mobile')
+    # def check_dublicate_mob_no(self):
+    #     if self.mobile:
+    #         print(self.env['res.partner'].sudo().search([('mobile', '=', self.mobile),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc'))
+    #         crm_dublicate_records = self.env['res.partner'].sudo().search([('mobile', '=', self.mobile),('company_id','=',self.env.user.company_id.id)], limit=2, order='id desc') - self
+    #         if crm_dublicate_records:
+    #             print(crm_dublicate_records,crm_dublicate_records.mobile,crm_dublicate_records.name)
+    #             raise ValidationError(f"""Mobile Number ({self.mobile}) already against the Customer :- {crm_dublicate_records.name}""")
 
     # @api.multi
     # def check_mob(self,mob_no):

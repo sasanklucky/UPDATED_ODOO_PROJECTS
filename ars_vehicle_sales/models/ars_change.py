@@ -31,6 +31,32 @@ class ars_sale_crm_lead(models.Model):
     no_of_test_drive = fields.Integer(compute='_total_test_drive')
     dob = fields.Date('DOB')
     age = fields.Integer(compute='_compute_age_from_dob')
+    gender = fields.Selection([('male', 'Male'), ('female', 'Female'), ('transgender', 'Transgender')])
+    annual_income = fields.Many2one('annual.income', 'Annual Income')
+
+    @api.multi
+    def write(self, values):
+        result = super(ars_sale_crm_lead, self).write(values)
+        res_value = {}
+        print(values)
+        if self.partner_id:
+            if 'gender' in values:
+                res_value.update({'gender': values['gender']})
+            if 'annual_income' in values:
+                res_value.update({'annual_income': values['annual_income']})
+            if 'street' in values:
+                res_value.update({'street': values['street']})
+            if 'street2' in values:
+                res_value.update({'street2': values['street2']})
+            if res_value:
+                self.partner_id.write(res_value)
+        return result
+
+    # @api.model
+    # def create(self, values):
+    #     res_id = super(ars_sale_crm_lead, self).create(values)
+    #
+    #     return res_id
 
     @api.depends('dob')
     def _compute_age_from_dob(self):

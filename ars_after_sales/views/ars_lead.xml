@@ -111,7 +111,7 @@
                 </xpath>
                 <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
                     <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="campaign_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="campaign_id" options="{'no_create': True, 'no_open': True}" invisible="1"/>
                     <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="referred"/>
                 </xpath>

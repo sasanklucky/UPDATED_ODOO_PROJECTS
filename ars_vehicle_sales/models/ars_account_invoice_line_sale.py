@@ -36,7 +36,6 @@ class ARSAccountInvoiceLine(models.Model):
         else:
             return {'domain': {'product_template_id': [('id', 'in', False)]}}
 
-
     # @api.multi
     # @api.onchange('product_id')
     # def onchange_product_id(self):
@@ -57,16 +56,17 @@ class ARSAccountInvoiceLine(models.Model):
 class product_attribute_custom(models.Model):
     _inherit = "product.attribute.value"
 
-
     @api.multi
     def _variant_name(self, variable_attributes):
+        variant_name = ''
+        # for variant in variable_attributes:
+        #     variant_name += ", ".join(
+        #         [f"{v.attribute_id.name}:{v.name}" for v in variant if v.attribute_id in variable_attributes])
         return ", ".join([f"{v.attribute_id.name}:{v.name}" for v in self if v.attribute_id in variable_attributes])
 
 
 class ARS_Product_Product(models.Model):
     _inherit = "product.product"
-
-    
 
     lot_id = fields.Many2one('stock.production.lot')
     catalog_type = fields.Many2one('product.catalog', related="product_tmpl_id.catalog_type")
@@ -78,8 +78,6 @@ class ARS_Product_Product(models.Model):
     #         vehicle_name = record.attribute_value_ids.mapped('name') if record.attribute_value_ids else ''
     #         result.append((record.id, vehicle_name))
     #     return result
-
-   
 
     @api.multi
     def name_get(self):
@@ -107,7 +105,8 @@ class ARS_Product_Product(models.Model):
 
         # Prefetch the fields used by the `name_get`, so `browse` doesn't fetch other fields
         # Use `load=False` to not call `name_get` for the `product_tmpl_id`
-        self.sudo().read(['name', 'default_code', 'product_tmpl_id', 'attribute_value_ids', 'attribute_line_ids'], load=False)
+        self.sudo().read(['name', 'default_code', 'product_tmpl_id', 'attribute_value_ids', 'attribute_line_ids'],
+                         load=False)
 
         product_template_ids = self.sudo().mapped('product_tmpl_id').ids
 
@@ -124,15 +123,17 @@ class ARS_Product_Product(models.Model):
                 supplier_info_by_template.setdefault(r.product_tmpl_id, []).append(r)
         for product in self.sudo():
             # display only the attributes with multiple possible values on the template
-            variable_attributes = product.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')
+            variable_attributes = product.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped(
+                'attribute_id')
             variant = product.attribute_value_ids._variant_name(variable_attributes)
-            print('variant=====================',variant,variable_attributes)
-            if variant != '':
+            print('variant=====================', variant, variable_attributes)
+            active_model = self.env.context.get('active_model')
+            if variant != '' and active_model in ['crm.lead', 'sale.order', 'purchase.order']:
                 name = variant and "(%s)" % (variant)
             else:
                 name = product.product_tmpl_id.name and (
                         variant and "%s (%s)" % (product.product_tmpl_id.name, variant) or product.product_tmpl_id.name
-                        ) or False
+                ) or False
             sellers = []
             if partner_ids:
                 product_supplier_info = supplier_info_by_template.get(product.product_tmpl_id, [])
@@ -142,21 +143,21 @@ class ARS_Product_Product(models.Model):
             if sellers:
                 for s in sellers:
                     seller_variant = s.product_name and (
-                        variant and "%s (%s)" % (s.product_name, variant) or s.product_name
-                        ) or False
+                            variant and "%s (%s)" % (s.product_name, variant) or s.product_name
+                    ) or False
                     mydict = {
-                              'id': product.id,
-                              'name': name,
-                              'default_code': s.product_code or product.default_code,
-                              }
+                        'id': product.id,
+                        'name': name,
+                        'default_code': s.product_code or product.default_code,
+                    }
                     temp = _name_get(mydict)
                     if temp not in result:
                         result.append(temp)
             else:
                 mydict = {
-                          'id': product.id,
-                          'name': name,
-                          'default_code': product.default_code,
-                          }
+                    'id': product.id,
+                    'name': name,
+                    'default_code': product.default_code,
+                }
                 result.append(_name_get(mydict))
         return result
