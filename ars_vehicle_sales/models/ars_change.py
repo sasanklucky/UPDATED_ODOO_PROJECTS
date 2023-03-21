@@ -11,7 +11,7 @@ from datetime import date
 class arsCompany(models.Model):
     _inherit = 'res.company'
 
-    dealer_code = fields.Char(string="Dealer Code")
+    dealer_code = fields.Char(string="Dealer Code", required=True)
     make_id = fields.Many2one('fleet.vehicle.model.brand', string="Make")
     dealer_zone = fields.Selection([
         ('east', 'EAST'),
