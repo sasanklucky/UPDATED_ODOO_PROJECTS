@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- model.name tree view -->
+        <record id="report_epv_sales_enquiry_tree" model="ir.ui.view">
+            <field name="name">report_epv_sales_enquiry_report</field>
+            <field name="model">report_epv_sales_enquiry</field>
+            <field name="arch" type="xml">
+                <tree string="Customer Enquiry Dump Mis Report" decoration-bf="enquiry_category == 'HOT'" decoration-danger="enquiry_category == 'COLD'" decoration-success="enquiry_category == 'HOT'" decoration-warning="enquiry_category == 'WARM'" create="false" import="false" delete="false">
+                    <field name="dealer_zone" string="Dealer Zone" invisible="1"/>
+                    <field name="dealer_code" string="Dealer Code"/>
+                    <field name="company_id"/>
+                    <field name="dealer_state" string="Dealer State"/>
+                    <field name="dealer_city" string="Dealer City"/>
+                    <field name="record_id" invisible="1"/>
+                    <field name="enquiry_date" string="Create Date"/>
+                    <field name="enquiry_category" string="Stage of Sales Pipeline"/>
+                    <field name="source_id"/>
+                    <field name="contact_name"/>
+                    <field name="gender" string="Customer Gender"/>
+                    <field name="age"/>
+                    <field name="function"/>
+                    <field name="annual_income"/>
+                    <field name="phone"/>
+                    <field name="email"/>
+                    <field name="address" string="Customer Address1"/>
+                    <field name="address1" string="Customer Address2"/>
+                    <field name="address2" invisible="1"/>
+                    <field name="test_drive"/>
+                    <field name="test_drive_date"/>
+                    <field name="booking"/>
+                    <field name="booking_date"/>
+                    <field name="booking_token"/>
+                    <field name="purchase_date" invisible="1"/>
+                    <field name="no_of_days" invisible="1"/>
+                    <field name="user_id"/>
+                    <field name="lost_reason" string="Why not booking reason"/>
+                    <field name="sale_cancel_reason" string="Cancellation of booking reason"/>
+                    <field name="partner_id" invisible="1"/>
+                    <field name="model" string="Vehicle Model"/>
+                    <field name="product_id"/>
+                    <field name="color" string="Color"/>
+                    <field name="retail" string="Retail"/>
+                    <field name="retail_date" string="Retail Date"/>
+                    <field name="retail_reason" string="Why not retail reason"/>
+                    <field name="loan" string="Loan or Not"/>
+                    <field name="loan_bank" string="Loan Bank"/>
+                    <field name="delivery_date"/>
+<!--                    <field name="title"/>-->
+<!--                    <field name="city" string="City"/>-->
+<!--                    <field name="make" string="Vehicle Make"/>-->
+<!--                    <field name="model" string="Vehicle Model"/>-->
+<!--                    <field name="product_id"/>-->
+<!--                    <field name="sale_order_id" invisible="1"/>-->
+<!--                    <field name="color" string="Color"/>-->
+<!--                    <field name="medium_id"/>-->
+<!--                    <field name="invoice" string="Proforma Invoice"/>-->
+<!--                    <field name="stage_id" string="Enquiry Status"/>-->
+<!--                    <field name="existing_customer" string="Existing BYD Customer"/>-->
+<!--                    <field name="referred" string="BYD Referral"/>-->
+                </tree>
+            </field>
+        </record>
+
+      <record id="report_epv_sales_enquiry_action" model="ir.actions.act_window">
+            <field name="name">EPV Sales Enquiry Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">report_epv_sales_enquiry</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+        </record>
+
+        <menuitem id="report_epv_sales_enquiry_menu"
+                name="EPV Sales Enquiry Report1"
+                action="report_epv_sales_enquiry_action"
+                parent="crm.crm_menu_report"
+                sequence="105"/>
+
+    </data>
+</odoo>

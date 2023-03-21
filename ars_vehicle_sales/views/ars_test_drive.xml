@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id='ars_test_drive_tree_view' model='ir.ui.view'>
+            <field name="name">ars.test.drive.tree</field>
+            <field name="model">ars.test.drive</field>
+            <field name="arch" type="xml">
+                <tree string="Test Drive" editable="bottom" default_order="test_drive_date">
+                    <field name="test_drive_date"/>
+                    <field name="user_id"/>
+                    <field name="test_drive_remark"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="ars_test_drive_tree_action" model="ir.actions.act_window">
+            <field name="name">Test Drive</field>
+            <field name="res_model">ars.test.drive</field>
+            <field name="domain">[('opportunity_id', '=', active_id)]</field>
+            <field name="context">{'default_opportunity_id': active_id}</field>
+        </record>
+
+    </data>
+</odoo>

@@ -7,25 +7,70 @@ from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
 from datetime import date
 
+
 class arsCompany(models.Model):
     _inherit = 'res.company'
 
     dealer_code = fields.Char(string="Dealer Code")
-    make_id = fields.Many2one('fleet.vehicle.model.brand',string="Make")
+    make_id = fields.Many2one('fleet.vehicle.model.brand', string="Make")
     dealer_zone = fields.Selection([
         ('east', 'EAST'),
         ('west', 'WEST'),
         ('north', 'NORTH'),
         ('south', 'SOUTH')
-        ], 'Dealer Zone')
-    
+    ], 'Dealer Zone')
+
+
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
 
-    company_type = fields.Selection([('individual','Individual'),('company','Company')],string="Customer Type")
+    company_type = fields.Selection([('individual', 'Individual'), ('company', 'Company')], string="Customer Type")
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict')
     is_test_drive = fields.Boolean("Test Drive")
+    no_of_test_drive = fields.Integer(compute='_total_test_drive')
+    dob = fields.Date('DOB')
+    age = fields.Integer(compute='_compute_age_from_dob')
+    gender = fields.Selection([('male', 'Male'), ('female', 'Female'), ('transgender', 'Transgender')])
+    annual_income = fields.Many2one('annual.income', 'Annual Income')
+
+    @api.multi
+    def write(self, values):
+        result = super(ars_sale_crm_lead, self).write(values)
+        res_value = {}
+        print(values)
+        if self.partner_id:
+            if 'gender' in values:
+                res_value.update({'gender': values['gender']})
+            if 'annual_income' in values:
+                res_value.update({'annual_income': values['annual_income']})
+            if 'street' in values:
+                res_value.update({'street': values['street']})
+            if 'street2' in values:
+                res_value.update({'street2': values['street2']})
+            if res_value:
+                self.partner_id.write(res_value)
+        return result
+
+    # @api.model
+    # def create(self, values):
+    #     res_id = super(ars_sale_crm_lead, self).create(values)
+    #
+    #     return res_id
+
+    @api.depends('dob')
+    def _compute_age_from_dob(self):
+        today = date.today()
+        if self.dob:
+            dob = datetime.strptime(self.dob, '%Y-%m-%d')
+            self.age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+            if self.partner_id:
+                self.partner_id.write({'dob': self.dob})
+
+    @api.depends('is_test_drive')
+    def _total_test_drive(self):
+        self.no_of_test_drive = self.env['ars.test.drive'].search_count([('opportunity_id', '=', self.id)])
+
 
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
@@ -33,7 +78,7 @@ class ars_sale_crm_sale(models.Model):
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
-            rounded_value = round(sale.amount_total,0)
+            rounded_value = round(sale.amount_total, 0)
             sale.amount_total_words = sale.currency_id.amount_to_text(rounded_value)
 
     # @api.multi
@@ -48,7 +93,6 @@ class ars_sale_crm_sale(models.Model):
     #     # print("proforma",proforma_type)
     #     return proforma_type
 
-            
     @api.multi
     def _get_vehicle_tax_amount_by_group_wise(self):
         self.ensure_one()
@@ -56,7 +100,8 @@ class ars_sale_crm_sale(models.Model):
         for line in self.order_line:
             if line.product_id.catalog_type.name == 'Vehicle':
                 price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
-                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id,
+                                                partner=self.partner_shipping_id)['taxes']
                 for tax in line.tax_id:
                     group = tax.tax_group_id
                     res.setdefault(group, {'amount': 0.0, 'base': 0.0})
@@ -79,7 +124,8 @@ class ars_sale_crm_sale(models.Model):
         for line in self.order_line:
             if line.product_id.catalog_type.name != 'Vehicle':
                 price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
-                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id, partner=self.partner_shipping_id)['taxes']
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id,
+                                                partner=self.partner_shipping_id)['taxes']
                 for tax in line.tax_id:
                     group = tax.tax_group_id
                     res.setdefault(group, {'amount': 0.0, 'base': 0.0})
@@ -103,15 +149,15 @@ class ars_sale_crm_sale(models.Model):
         for order in self:
             order.is_approve = False
             if self.state == 'to_approve':
-               emp = self.env['hr.employee'].search([('user_id','=', order.user_id and order.user_id.id or False)])
-               emp = emp and emp[0] or False
-               user_list = []
-               emp and emp.parent_id and emp.parent_id.user_id and user_list.append(emp.parent_id.user_id.id)
-               admin_lst = self.env['hr.employee'].search_read([('parent_id', '=', False)],fields=['user_id'])
-               for ad in admin_lst:
-                   user_list.append(ad.get('user_id')[0])
-               if self._uid in user_list:
-                  order.is_approve = True
+                emp = self.env['hr.employee'].search([('user_id', '=', order.user_id and order.user_id.id or False)])
+                emp = emp and emp[0] or False
+                user_list = []
+                emp and emp.parent_id and emp.parent_id.user_id and user_list.append(emp.parent_id.user_id.id)
+                admin_lst = self.env['hr.employee'].search_read([('parent_id', '=', False)], fields=['user_id'])
+                for ad in admin_lst:
+                    user_list.append(ad.get('user_id')[0])
+                if self._uid in user_list:
+                    order.is_approve = True
 
     @api.multi
     def action_quotation_send(self):
@@ -161,35 +207,40 @@ class ars_sale_crm_sale(models.Model):
         ('done', 'Locked'),
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
-    is_approve = fields.Boolean(string='Enable Approve button', compute="_enable_approve_button", copy=False, store=False)
+    is_approve = fields.Boolean(string='Enable Approve button', compute="_enable_approve_button", copy=False,
+                                store=False)
 
     @api.multi
     def action_confirm(self):
-        print ('called action confirm')
+        print('called action confirm')
         self.ensure_one()
         if self.state != 'to_approve':
-           approval = self.env['sales.approval'].search([('employee_id.user_id','=',self.user_id and self.user_id.id or False),('type','=','sale')])
+            approval = self.env['sales.approval'].search(
+                [('employee_id.user_id', '=', self.user_id and self.user_id.id or False), ('type', '=', 'sale')])
         elif self.state == 'to_approve':
-           approval = self.env['sales.approval'].search([('employee_id.user_id','=',self._uid),('type','=','sale')])
+            approval = self.env['sales.approval'].search(
+                [('employee_id.user_id', '=', self._uid), ('type', '=', 'sale')])
 
         approval = approval and approval[0] or False
 
         if approval:
-           print('approval', approval)
-           print('approval', approval.amount, self.amount_total)
-           if approval.amount and approval.amount < self.amount_total:
-              if self.state == 'to_approve':
-                 self.write({'user_id': self._uid})
-                 raise UserError(_('Your approval limit has been exceded. Please contact your admin to proceed further.'))
-              self.write({'state': 'to_approve','user_id':self._uid})
-              return True
-           for ol in self.order_line:
-               if approval.discount and approval.discount < ol.discount :
-                  if self.state == 'to_approve':
-                     self.write({'user_id': self._uid})
-                     raise UserError(_('Your approval limit has been exceded. Please contact your admin to proceed further.'))
-                  self.write({'state': 'to_approve','user_id':self._uid})
-                  return True
+            print('approval', approval)
+            print('approval', approval.amount, self.amount_total)
+            if approval.amount and approval.amount < self.amount_total:
+                if self.state == 'to_approve':
+                    self.write({'user_id': self._uid})
+                    raise UserError(
+                        _('Your approval limit has been exceded. Please contact your admin to proceed further.'))
+                self.write({'state': 'to_approve', 'user_id': self._uid})
+                return True
+            for ol in self.order_line:
+                if approval.discount and approval.discount < ol.discount:
+                    if self.state == 'to_approve':
+                        self.write({'user_id': self._uid})
+                        raise UserError(
+                            _('Your approval limit has been exceded. Please contact your admin to proceed further.'))
+                    self.write({'state': 'to_approve', 'user_id': self._uid})
+                    return True
         result = super(ars_sale_crm_sale, self).action_confirm()
         return result
 
@@ -217,7 +268,9 @@ class ars_sale_invoice(models.Model):
     @api.multi
     def action_print_gate_pass(self):
         self.ensure_one()
-        vehcile_obj = self.env['fleet.vehicle'].sudo().search([('mvariant_id','in',self.invoice_line_ids.mapped('product_id.id')),('driver_id','=',self.partner_id.id),('vin_sn','in',self.invoice_line_ids.mapped('vin_no.name'))])
+        vehcile_obj = self.env['fleet.vehicle'].sudo().search(
+            [('mvariant_id', 'in', self.invoice_line_ids.mapped('product_id.id')),
+             ('driver_id', '=', self.partner_id.id), ('vin_sn', 'in', self.invoice_line_ids.mapped('vin_no.name'))])
         if vehcile_obj:
             if not vehcile_obj.license_plate:
                 raise ValidationError(_('Please enter Registration Number of Vehicle to print Gate Pass.'))
@@ -236,6 +289,7 @@ class ars_sale_invoice(models.Model):
     mobile = fields.Char(string="Mobile")
     email = fields.Char(string="Email")
     amount_total_words = fields.Char("Total (In Words)", compute="_compute_amount_total_words")
+
 
 class ars_sale_advance_payment_inv(models.TransientModel):
     _inherit = 'sale.advance.payment.inv'
@@ -286,7 +340,7 @@ class ars_sale_advance_payment_inv(models.TransientModel):
                     'is_downpayment': True,
                 })
                 del context
-                res =self._create_invoice(order, so_line, amount)
+                res = self._create_invoice(order, so_line, amount)
                 res.mobile = order.mobile
                 res.email = order.email
 
@@ -303,23 +357,26 @@ class ars_sale_advance_payment_inv(models.TransientModel):
             'taxes_id': [(6, 0, self.deposit_taxes_id.ids)],
         }
 
+
 class HRRmployee(models.Model):
     _inherit = 'hr.employee'
 
     sale_approval = fields.One2many('sales.approval', 'approval_id')
+
 
 class HRSalesApproval(models.Model):
     _name = 'sales.approval'
 
     approval_id = fields.Many2one('hr.employee')
     employee_id = fields.Many2one('hr.employee', string="Employee")
-    company_id = fields.Many2one('res.company', string ='Company',default=lambda self: self.env['res.company']._company_default_get('sales.approval'))
-    type = fields.Selection([('sale', 'Sale'), ('purchase', 'Purchase')], string = 'Type')
-    amount = fields.Float(string = 'Amount')
+    company_id = fields.Many2one('res.company', string='Company',
+                                 default=lambda self: self.env['res.company']._company_default_get('sales.approval'))
+    type = fields.Selection([('sale', 'Sale'), ('purchase', 'Purchase')], string='Type')
+    amount = fields.Float(string='Amount')
     discount = fields.Float(string='Discount (%)', digits=dp.get_precision('Discount'), default=0.0)
 
-class Menu(models.Model):
 
+class Menu(models.Model):
     _inherit = "website.menu"
 
     is_visible = fields.Boolean(compute='_compute_visible', string='Is Visible')
@@ -328,6 +385,7 @@ class Menu(models.Model):
     def _compute_visible(self):
         visible = True
         print('group portal', self.user_has_groups('base.group_portal'))
-        if self.page_id and not self.page_id.sudo().is_visible and (not self.user_has_groups('base.group_user') and not self.user_has_groups('base.group_portal')):
+        if self.page_id and not self.page_id.sudo().is_visible and (
+                not self.user_has_groups('base.group_user') and not self.user_has_groups('base.group_portal')):
             visible = False
         self.is_visible = visible

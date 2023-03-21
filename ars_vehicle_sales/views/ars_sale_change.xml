@@ -90,9 +90,15 @@
                 </field>
                 <field name="function" position="replace"/>
                 <field name="opt_out" position="before">
+                    <label for="dob" style="font-weight: bold;"/>
+                    <div class="o_row">
+                        <field name="dob"/>
+                        <field name="age" placeholder="Age" domain="[]"/>
+                    </div>
+                    <field name="gender"/>
+                    <field name="annual_income" options="{'no_create': True}"/>
                     <field name="phone"></field>
                     <field name="function"></field>
-
                 </field>
                 <!--<xpath expr="//form/sheet/notebook/page[2]/group/group[2]/field[@name='mobile']" position="after">-->
                 <!--<field name="phone"></field>-->
@@ -105,6 +111,16 @@
                     <attribute name="invisible">True</attribute>
                 </xpath>
 
+                <xpath expr="//form/sheet/div[@name='button_box']" position="inside">
+                    <button class="oe_stat_button" type="action" icon="fas fa-car"
+                            name="%(ars_test_drive_tree_action)d"
+                            attrs="{'invisible': [('is_test_drive', '=', False)]}">
+                        <div class="o_stat_info">
+                            <field name="no_of_test_drive"/>
+                            <span class="o_stat_text">Test Drive</span>
+                        </div>
+                    </button>
+                </xpath>
             </field>
         </record>
 

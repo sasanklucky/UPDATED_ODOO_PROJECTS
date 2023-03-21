@@ -428,7 +428,6 @@ class SaleOrderInherit(models.Model):
                                 if new_recordds:
                                     rec.sudo().write({'sync_pipeline':  True})
                                 # print("insert the records-----",new_recordds)
-        
         except Exception as e:
             raise ValidationError(e)
 
