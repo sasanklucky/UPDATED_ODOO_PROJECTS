@@ -8,9 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//notebook/page/field[@name='move_lines']/tree/field[@name='product_id']"
                        position="replace">
-                    <field name="product_catalog_id" required="True"/>
-                    <field name="product_template_id" required="True"/>
-                    <field name="product_id" required="True" string="Variant"/>
+                    <field name="product_catalog_id" required="True" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="product_template_id" required="True" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="product_id" required="True" string="Variant" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
             </field>
         </record>
