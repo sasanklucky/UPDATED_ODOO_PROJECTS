@@ -117,6 +117,9 @@ class ARS_product_vehicle(models.Model):
     description = fields.Text()
     brand_id = fields.Many2one('fleet.vehicle.model.brand', 'Make', help='Make of the vehicle')
     brand_logo = fields.Binary('Brand Logo', related="brand_id.image_medium", store=False)
+    model_id = fields.Many2one('product.template', 'Model')
+    catalog_type_name = fields.Char(related='catalog_type.name')
+    labor_unit = fields.Float()
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
@@ -186,6 +189,11 @@ class ARS_product_vehicle(models.Model):
             #     return super(ARS_product_vehicle, self).write(vals)
         return val
 
+    @api.onchange('type', 'catalog_type')
+    def product_type_constrain(self):
+        if self.catalog_type.type and self.catalog_type.type != self.type:
+            self.type = self.catalog_type.type
+
 
 class ARS_product_product(models.Model):
     _inherit = 'product.product'
@@ -212,10 +220,10 @@ class ARS_product_product(models.Model):
         return res
 
 
-class ARS_product_Catalog(models.Model):
-    _name = 'product.catalog'
-
-    name = fields.Char()
+# class ARS_product_Catalog(models.Model):
+#     _inherit = 'product.catalog'
+#
+#     name = fields.Char()
 
 
 class PowerWindow(models.Model):

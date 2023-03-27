@@ -52,11 +52,11 @@ class ars_sale_crm_lead(models.Model):
                 self.partner_id.write(res_value)
         return result
 
-    # @api.model
-    # def create(self, values):
-    #     res_id = super(ars_sale_crm_lead, self).create(values)
-    #
-    #     return res_id
+    @api.model
+    def create(self, values):
+        res_id = super(ars_sale_crm_lead, self).create(values)
+
+        return res_id
 
     @api.depends('dob')
     def _compute_age_from_dob(self):
@@ -220,9 +220,7 @@ class ars_sale_crm_sale(models.Model):
         elif self.state == 'to_approve':
             approval = self.env['sales.approval'].search(
                 [('employee_id.user_id', '=', self._uid), ('type', '=', 'sale')])
-
         approval = approval and approval[0] or False
-
         if approval:
             print('approval', approval)
             print('approval', approval.amount, self.amount_total)

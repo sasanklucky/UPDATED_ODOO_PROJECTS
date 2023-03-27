@@ -13,7 +13,7 @@
                     <div class="o_row">
                         <field name="contact_name" required="True"/>
                         <field name="title" placeholder="Title" domain="[]"
-                               options="{'no_create': True, 'no_open': True}"/>
+                               options="{'no_create': False, 'no_open': False}"/>
                     </div>
                     <field name="mobile"/>
                     <field name="email_from" widget="email"/>
@@ -21,6 +21,7 @@
                     <field name="function"/>
                     <field name="crm_lead_stage"/>
                 </xpath>
+
                 <xpath expr="//group/group[1]/label[@for='street']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -112,7 +113,7 @@
                 </xpath>
                 <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
                     <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="campaign_id" options="{'no_create': True, 'no_open': True}" invisible="1"/>
+                    <field name="campaign_id" options="{'no_create': False, 'no_open': False}"/>
                     <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="referred"/>
                 </xpath>
