@@ -43,7 +43,17 @@ class ARS_sale_order_line(models.Model):
     wrn_price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
     product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
+    labor_unit = fields.Float()
     # product_temp_id = fields.Many2one('product.template', string="Product Template")?
+
+    @api.multi
+    @api.onchange('product_id')
+    def _compute_labour_unit(self):
+        for this in self:
+            if this.product_id:
+                this.labor_unit = this.product_id.product_tmpl_id.labor_unit
+
+
 
     @api.multi
     @api.depends('product_catalog_id')
