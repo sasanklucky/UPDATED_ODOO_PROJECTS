@@ -146,14 +146,14 @@ class Employee(models.Model):
         # regex = re.compile(r"^\d{4}\s\d{4}\s\d{4}$") # if spaces between the numbers
         regex = re.compile(r"^([0-9]){12}$")  # if no spaces between the numbers
         for rec in self:
-            if regex.search(rec.aadhar_id) != None:
+            if rec.aadhar_id and regex.search(rec.aadhar_id) is not None:
                 raise ValidationError("Please Add correct Aadhar No.")
 
     @api.constrains('voter_id')
     def validate_voter_id(self):
         regex = re.compile(r"^[A-Z]{3}\d{7}$")  # for voter formate = ABC1234567
         for rec in self:
-            if regex.search(rec.voter_id) != None:
+            if rec.voter_id and regex.search(rec.voter_id) is not None:
                 raise ValidationError("Please Add correct Voter ID.")
 
 
