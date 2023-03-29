@@ -19,6 +19,7 @@ class CustBookingContractMISReport(models.Model):
     salutation_id = fields.Many2one('res.partner.title',string="Salutation")
     partner_id = fields.Many2one('res.partner',string="Customer")
     phone = fields.Char(string="Phone")
+    mobile = fields.Char(string="Mobile")
     address = fields.Text(string="Address")
     expected_delivery_date = fields.Datetime(string="Expected Delivery Date")
     enquiry_creation_date = fields.Datetime(string="Enquiry Creation Date")
@@ -50,7 +51,7 @@ class CustBookingContractMISReport(models.Model):
             ),
             partner as
             (
-                select rp.id,rp.name,rp.phone, rp.title,
+                select rp.id,rp.name,rp.phone, rp.title,rp.mobile,
                 CONCAT(rp.street,',',rp.street2,',',rp.city,',',rcs.name,',',rc.name,',',zip) as address
                 from res_partner rp
                 left join res_country_state rcs on rcs.id = rp.state_id
