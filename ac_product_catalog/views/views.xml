@@ -18,7 +18,8 @@
                 <form>
                     <group col="4" string="Product Catalog">
                         <field name="name"/>
-                        <field name="code" attrs="{'readonly': [('code','!=',False)]}"/>
+                        <field name="code"/>
+<!--                         attrs="{'readonly': [('code','!=',False)]}"-->
                         <field name="type"/>
                     </group>
                 </form>

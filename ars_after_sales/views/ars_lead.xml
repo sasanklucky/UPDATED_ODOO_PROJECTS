@@ -349,7 +349,7 @@
                        position="replace">
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
                     <field name="product_id_domain" invisible="1"/>
-                    <field name="product_id" domain="product_id_domain"
+                    <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
                     />
@@ -378,7 +378,7 @@
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
                     <field name="product_id_domain" invisible="1"/>
                     <field name="product_template_id" domain="product_id_domain"/>
-                    <field name="product_id" domain="product_id_domain"
+                    <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}"
                            context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"/>
                 </xpath>
