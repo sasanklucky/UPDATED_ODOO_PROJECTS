@@ -62,6 +62,7 @@ class customer_dump_mis_report(models.Model):
     title = fields.Many2one('res.partner.title', 'Salutation')
     contact_name = fields.Char('Contact Name')
     phone = fields.Char('Phone')
+    mobile = fields.Char("Mobile")
     email = fields.Char('Email ID')
     product_id = fields.Many2one('product.product', 'Variant')
     make = fields.Char(related="product_id.product_tmpl_id.brand_id.name")
@@ -88,7 +89,7 @@ class customer_dump_mis_report(models.Model):
             when a.date_deadline - a.create_date::Date > 60 then 'COLD'
             else ''
             end as enquiry_category,a.user_id,a.partner_id,a.title,a.contact_name,
-            a.phone,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
+            a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
             a.referred as referred
             from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
             where a.type = 'opportunity'

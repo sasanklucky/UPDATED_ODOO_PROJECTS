@@ -21,6 +21,7 @@
                     <field name="title"/>
                     <field name="contact_name"/>
                     <field name="phone"/>
+                    <field name="mobile"/>
                     <field name="email"/>
                     <field name="city" string="City"/>
                     <field name="address" invisible="1"/>

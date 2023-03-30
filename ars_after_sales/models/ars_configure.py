@@ -12,8 +12,8 @@ class ars_company(models.Model):
     next_service_remainder = fields.Char(string="Next Service Date Remainder")
     next_km_service_due_date = fields.Char(string="Lead by K M next Due")
     next_service_due = fields.Char(string="Next Service Due")
-
-
+    labor_rate = fields.Float()
+    labor_warranty_rate = fields.Float()
 
 
 class ars_configure_settings(models.TransientModel):
@@ -34,6 +34,10 @@ class ars_configure_settings(models.TransientModel):
     next_service_due = fields.Char(related="company_id.next_service_due")
     rms_team_types = fields.Many2one(related="company_id.team_typ_id")
     rms_stages_id = fields.Many2one(related="company_id.team_stage_id")
+    labor_rate = fields.Float(related="company_id.labor_rate")
+    labor_warranty_rate = fields.Float(related="company_id.labor_warranty_rate")
+
+
 #     @api.multi
 #     @api.onchange('team_types')
 #     def team_types_change(self):
@@ -42,49 +46,49 @@ class ars_configure_settings(models.TransientModel):
 #         return res
 
 
-
 #     @api.model
 #     def get_values(self):
 #         res = super(ars_configure_settings, self).get_values()
 #         conf = self.env['ir.config_parameter'].sudo()
 #         return res
-    
 
 
-    # @api.multi
-    # def set_values(self):
-    #     super(ars_configure_settings, self).set_values()
-    #     conf = self.env['ir.config_parameter'].sudo()
-    #     conf.set_param('ars_after_sales.stages_id',self.stages_id.id)
-    #     conf.set_param('ars_after_sales.team_types', self.team_types.id)class ars_landing(models.Model):
-    
+# @api.multi
+# def set_values(self):
+#     super(ars_configure_settings, self).set_values()
+#     conf = self.env['ir.config_parameter'].sudo()
+#     conf.set_param('ars_after_sales.stages_id',self.stages_id.id)
+#     conf.set_param('ars_after_sales.team_types', self.team_types.id)class ars_landing(models.Model):
+
 class landing_urls(models.Model):
     _name = 'landing.url'
-    
+
     name = fields.Char()
     url = fields.Char()
+
 
 class ars_landing(models.Model):
     _name = 'landing.setting'
 
     landing_link = fields.Many2one('landing.url')
     landing_user = fields.Many2one('res.users')
-    
+
+
 class labour_group(models.Model):
     _name = 'labour.group'
     _description = 'Configuration for Labour Group'
 
     name = fields.Char('Name')
     code = fields.Char('Code')
-    company_id = fields.Many2one('res.company','Company')
-    parent_id = fields.Many2one('labour.group','Parent Group')
+    company_id = fields.Many2one('res.company', 'Company')
+    parent_id = fields.Many2one('labour.group', 'Parent Group')
 
     @api.model
     def create(self, vals):
         # Prefix parent labour code to the current record
         if vals.get('parent_id') and vals.get('code'):
             plg = self.env['labour.group'].browse(vals.get('parent_id'))
-            vals['code'] = plg.code + vals.get('code','')
+            vals['code'] = plg.code + vals.get('code', '')
         return super(labour_group, self).create(vals)
 
     @api.multi
@@ -96,24 +100,25 @@ class labour_group(models.Model):
         if 'parent_id' in vals and 'code' in vals:
             plg = self.env['labour.group'].browse(vals.get('parent_id'))
             if plgcode in vals.get('code'):
-               code = vals.get('code').replace(plgcode, '')
-               vals['code'] = plg.code + code
+                code = vals.get('code').replace(plgcode, '')
+                vals['code'] = plg.code + code
             elif plg not in code:
-                 vals['code'] = plg.code + code
+                vals['code'] = plg.code + code
 
         elif 'parent_id' in vals:
             plg = self.env['labour.group'].browse(vals.get('parent_id'))
             if plgcode in code:
-               code = code.replace(plgcode, '')
-               vals['code'] = plg.code + code
+                code = code.replace(plgcode, '')
+                vals['code'] = plg.code + code
             elif plg not in code:
-                 vals['code'] = plg.code + code
+                vals['code'] = plg.code + code
 
         elif 'code' in vals:
             if plgcode not in vals['code']:
-               vals['code'] = plgcode + code
+                vals['code'] = plgcode + code
 
         return super(labour_group, self).write(vals)
+
 
 class Employee(models.Model):
     _inherit = 'hr.employee'
@@ -124,7 +129,8 @@ class Employee(models.Model):
     education_details = fields.Char(string="Education Details")
     aadhar_id = fields.Char(string="Aadhar No")
     voter_id = fields.Char(string="Voter ID")
-    employement_type = fields.Selection([('probationer', 'Probationer'),('permanent', 'Permanent'),('contract', 'Contract')])
+    employement_type = fields.Selection(
+        [('probationer', 'Probationer'), ('permanent', 'Permanent'), ('contract', 'Contract')])
     date_of_joining = fields.Date(string="Joining Date")
     date_of_exit = fields.Date(string="Exit Date")
 
@@ -134,20 +140,20 @@ class Employee(models.Model):
     #     for rec in self:
     #         if regex.search(rec.blood_group) != None:
     #             raise ValidationError("Please Add correct Blood Group.")
-    
+
     @api.constrains('aadhar_id')
     def validate_aadhar_id(self):
         # regex = re.compile(r"^\d{4}\s\d{4}\s\d{4}$") # if spaces between the numbers
-        regex = re.compile(r"^([0-9]){12}$") #if no spaces between the numbers
+        regex = re.compile(r"^([0-9]){12}$")  # if no spaces between the numbers
         for rec in self:
-            if regex.search(rec.aadhar_id) != None:
+            if rec.aadhar_id and regex.search(rec.aadhar_id) is not None:
                 raise ValidationError("Please Add correct Aadhar No.")
-    
+
     @api.constrains('voter_id')
     def validate_voter_id(self):
-        regex = re.compile(r"^[A-Z]{3}\d{7}$") # for voter formate = ABC1234567
+        regex = re.compile(r"^[A-Z]{3}\d{7}$")  # for voter formate = ABC1234567
         for rec in self:
-            if regex.search(rec.voter_id) != None:
+            if rec.voter_id and regex.search(rec.voter_id) is not None:
                 raise ValidationError("Please Add correct Voter ID.")
 
 
@@ -173,8 +179,8 @@ class ars_sale_warranty(models.Model):
 
     name = fields.Char('Warranty No.')
     partner_id = fields.Many2one('res.partner', 'Customer')
-    regn_no = fields.Many2one('fleet.vehicle','Reg No.')
-    model_id = fields.Many2one('product.product','Model')
+    regn_no = fields.Many2one('fleet.vehicle', 'Reg No.')
+    model_id = fields.Many2one('product.product', 'Model')
     vin_no = fields.Char('VIN No.')
     order_id = fields.Many2one('sale.order', 'Service Document')
     order_lines = fields.Many2many('sale.order.line', 'warranty_order_line_rel', )
@@ -182,7 +188,9 @@ class ars_sale_warranty(models.Model):
     order_date = fields.Datetime(related='order_id.confirmation_date')
     user_id = fields.Many2one(related='order_id.user_id')
 
-    state   = fields.Selection([('draft','Draft'),('inprocess','In-Process'),('processed','Processed'),('done','Done'),('cancel','Cancel')], default='draft', string='State')
+    state = fields.Selection(
+        [('draft', 'Draft'), ('inprocess', 'In-Process'), ('processed', 'Processed'), ('done', 'Done'),
+         ('cancel', 'Cancel')], default='draft', string='State')
     amount_untaxed = fields.Monetary(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all',
                                      track_visibility='onchange')
     amount_tax = fields.Monetary(string='Taxes', store=True, readonly=True, compute='_amount_all')
@@ -190,37 +198,39 @@ class ars_sale_warranty(models.Model):
                                    track_visibility='always')
     company_id = fields.Many2one('res.company', 'Company',
                                  default=lambda self: self.env['res.company']._company_default_get('sale.order'))
-    currency_id = fields.Many2one("res.currency", related='company_id.currency_id', string="Currency", readonly=True, required=True)
-    base_url = fields.Char('Base URl', default=lambda self: self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
+    currency_id = fields.Many2one("res.currency", related='company_id.currency_id', string="Currency", readonly=True,
+                                  required=True)
+    base_url = fields.Char('Base URl',
+                           default=lambda self: self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
 
     @api.multi
     def set_aligment(self):
         for wr in self:
             for ol in wr.order_lines:
                 if ol.category and ol.category.name.lower() == 'warranty' and ol.ars_warranty_price != ol.price_unit:
-                   ol.price_unit = ol.ars_warranty_price
+                    ol.price_unit = ol.ars_warranty_price
         return True
 
     @api.multi
     def write(self, vals):
         for vl in self:
             if self.state == 'cancel':
-               vals['state'] = 'draft'
+                vals['state'] = 'draft'
 
         res = super(ars_sale_warranty, self).write(vals)
         for wc in self:
-            state = vals.get('state','draft')
+            state = vals.get('state', 'draft')
             for ol in wc.order_lines:
                 if not ol.apr_action:
-                   state = 'draft'
-                   break
+                    state = 'draft'
+                    break
                 elif ol.apr_action in ('hold', 'reject', 're_submission'):
-                   state = 'inprocess'
-                   break
+                    state = 'inprocess'
+                    break
 
                 elif ol.apr_action == 'approved':
-                   state = 'processed'
-            self._cr.execute("update ars_sale_warranty set state=%s where id=%s",(state,wc.id))
+                    state = 'processed'
+            self._cr.execute("update ars_sale_warranty set state=%s where id=%s", (state, wc.id))
         return res
 
     @api.multi

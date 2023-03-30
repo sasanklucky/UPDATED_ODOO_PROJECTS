@@ -64,12 +64,25 @@
                             </div>
                             </div>
                     </div>
-                    <!--<group col="4" colspan="4">-->
-                                <!--<field name="next_service_due"/>-->
-                                <!--<field name="next_service_remainder"/>-->
-                                <!--<field name="ext_service_due"/>-->
-                                <!--<field name="next_km_service_due_date"/>-->
-                        <!--</group>-->
+                    <h2>Labor Rate</h2>
+                     <div class="row mt16 o_settings_container" id="ars_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Labor Rate"/>
+                                <div class="text-muted">
+                                    Labor Rate
+                                </div>
+                                <field name="labor_rate"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                    <label string="Labor Warranty Rate"/>
+                                <div class="text-muted">
+                                    Labor Warranty Rate
+                                </div>
+                                <field name="labor_warranty_rate"/>
+                            </div>
+                        </div>
+                     </div>
                 </div>
             </xpath>
         </field>

@@ -13,7 +13,7 @@
                     <div class="o_row">
                         <field name="contact_name" required="True"/>
                         <field name="title" placeholder="Title" domain="[]"
-                               options="{'no_create': True, 'no_open': True}"/>
+                               options="{'no_create': False, 'no_open': False}"/>
                     </div>
                     <field name="mobile"/>
                     <field name="email_from" widget="email"/>
@@ -21,6 +21,7 @@
                     <field name="function"/>
                     <field name="crm_lead_stage"/>
                 </xpath>
+
                 <xpath expr="//group/group[1]/label[@for='street']" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </xpath>
@@ -112,7 +113,7 @@
                 </xpath>
                 <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
                     <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="campaign_id" options="{'no_create': True, 'no_open': True}" invisible="1"/>
+                    <field name="campaign_id" options="{'no_create': False, 'no_open': False}"/>
                     <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="referred"/>
                 </xpath>
@@ -348,7 +349,7 @@
                        position="replace">
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
                     <field name="product_id_domain" invisible="1"/>
-                    <field name="product_id" domain="product_id_domain"
+                    <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
                     />
@@ -377,7 +378,7 @@
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
                     <field name="product_id_domain" invisible="1"/>
                     <field name="product_template_id" domain="product_id_domain"/>
-                    <field name="product_id" domain="product_id_domain"
+                    <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}"
                            context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"/>
                 </xpath>

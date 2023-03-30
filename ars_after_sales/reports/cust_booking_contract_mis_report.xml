@@ -19,6 +19,7 @@
                     <field name="salutation_id" />
                     <field name="partner_id" />
                     <field name="phone" />
+                    <field name="mobile"/>
                     <field name="address" />
                     <field name="expected_delivery_date" />
                     <field name="enquiry_creation_date" />
