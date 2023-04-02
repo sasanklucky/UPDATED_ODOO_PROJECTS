@@ -17,7 +17,7 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/purchase_order.xml',
-        'views/stock_picking.xml',
+        # 'views/stock_picking.xml',
         # 'views/templates.xml',
     ],
     # only loaded in demonstration mode
