@@ -8,7 +8,7 @@
        <!--<li class="divider"/>-->
        <li><a href="#" data-menu="settings">Preferences</a></li>
        <!--<li><a href="#" data-menu="account">My Odoo.com account</a></li>-->
-       <li><a href="/role_center">Role Center</a></li>
+<!--       <li><a href="/role_center">Role Center</a></li>-->
        <li><a href="#" data-menu="logout">Log out</a></li>
    </t>
 

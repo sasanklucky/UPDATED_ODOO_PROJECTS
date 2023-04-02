@@ -373,6 +373,9 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="product_catalog_id"/>
+                </field>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
                        position="replace">
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>

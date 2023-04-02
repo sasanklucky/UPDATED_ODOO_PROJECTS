@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--vehicle Sales Group-->
+
+        <record model="ir.module.category" id="module_vehicle_sales_ars_user_right">
+            <field name="name">Vehicle Sales</field>
+            <field name="sequence">105</field>
+        </record>
+
+        <record id="ac_vehicle_sale_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle sales user</field>
+            <field name="category_id" ref="module_vehicle_sales_ars_user_right"/>
+        </record>
+
+        <record id="ac_vehicle_sale_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle sales manager</field>
+            <field name="category_id" ref="module_vehicle_sales_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_vehicle_management.ac_vehicle_sale_user'))]"/>
+        </record>
+
+        <!--vehicle Inventory Group-->
+
+        <record model="ir.module.category" id="module_vehicle_inventory_ars_user_right">
+            <field name="name">Vehicle Inventory</field>
+            <field name="sequence">106</field>
+        </record>
+
+        <record id="ac_vehicle_inventory_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle inventory user</field>
+            <field name="category_id" ref="module_vehicle_inventory_ars_user_right"/>
+        </record>
+
+        <record id="ac_vehicle_inventory_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle inventory manager</field>
+            <field name="category_id" ref="module_vehicle_inventory_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_vehicle_management.ac_vehicle_inventory_user'))]"/>
+        </record>
+
+        <!--vehicle Purchase Group-->
+
+        <record model="ir.module.category" id="module_vehicle_purchase_ars_user_right">
+            <field name="name">Vehicle Purchase</field>
+            <field name="sequence">107</field>
+        </record>
+
+        <record id="ac_vehicle_management_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle inventory user</field>
+            <field name="category_id" ref="module_vehicle_purchase_ars_user_right"/>
+        </record>
+
+        <record id="ac_vehicle_management_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Vehicle inventory manager</field>
+            <field name="category_id" ref="module_vehicle_purchase_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_vehicle_management.ac_vehicle_management_user'))]"/>
+        </record>
+
+    </data>
+</odoo>
