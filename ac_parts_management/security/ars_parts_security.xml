@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!--parts Sales Group-->
+
+        <record model="ir.module.category" id="module_parts_sales_ars_user_right">
+            <field name="name">Parts Sales</field>
+            <field name="sequence">105</field>
+        </record>
+
+        <record id="ac_parts_sale_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Parts sales user</field>
+            <field name="category_id" ref="module_parts_sales_ars_user_right"/>
+        </record>
+
+        <record id="ac_parts_sale_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">Parts sales manager</field>
+            <field name="category_id" ref="module_parts_sales_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_parts_management.ac_parts_sale_user'))]"/>
+        </record>
+
+        <!--parts Inventory Group-->
+
+        <record model="ir.module.category" id="module_parts_inventory_ars_user_right">
+            <field name="name">Parts Inventory</field>
+            <field name="sequence">106</field>
+        </record>
+
+        <record id="ac_parts_inventory_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">parts inventory user</field>
+            <field name="category_id" ref="module_parts_inventory_ars_user_right"/>
+        </record>
+
+        <record id="ac_parts_inventory_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">parts inventory manager</field>
+            <field name="category_id" ref="module_parts_inventory_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_parts_management.ac_parts_inventory_user'))]"/>
+        </record>
+
+        <!--parts Purchase Group-->
+
+        <record model="ir.module.category" id="module_parts_purchase_ars_user_right">
+            <field name="name">Parts Purchase</field>
+            <field name="sequence">107</field>
+        </record>
+
+        <record id="ac_parts_management_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">parts inventory user</field>
+            <field name="category_id" ref="module_parts_purchase_ars_user_right"/>
+        </record>
+
+        <record id="ac_parts_management_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+            <field name="comment">parts inventory manager</field>
+            <field name="category_id" ref="module_parts_purchase_ars_user_right"/>
+            <field name="implied_ids" eval="[(4, ref('ac_parts_management.ac_parts_management_user'))]"/>
+        </record>
+
+    </data>
+</odoo>

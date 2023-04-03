@@ -566,15 +566,20 @@ class ARSPurchaseOrderLine(models.Model):
     #     elif self.env.user.has_group('ars_after_sales.group_part'):
     #         result['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
     #     return
+
     @api.multi
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id = False
-        if self.product_template_id:
+        print(self.product_template_id.attribute_line_ids)
+        if self.product_template_id and self.product_template_id.attribute_line_ids:
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
+            self.product_id = varient_ids.id
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
 
@@ -744,7 +749,21 @@ class ARS_PurchaseOrder(models.Model):
                                                subtype_id=self.env.ref('mail.mt_note').id)
         return True
 
-    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
+    @api.depends('purchase_type')
+    def _get_default_product_catalog(self):
+        print("product_catalog")
+        # if self.lead_order_id.team_id.team_type == 'sales':
+        product_catalog = []
+        if self.purchase_type == 'vehicle':
+            product_catalog = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
+        elif self.purchase_type == 'after_sales':
+            product_catalog = self.env['product.catalog'].search([('name', '=', 'Parts')], limit=1)
+        # else:
+        #     product_catalog = self.env['product.catalog'].search([], limit=1)
+        self.product_catalog_id = product_catalog.id
+
+    product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type',
+                                         compute='_get_default_product_catalog')
 
 
 class ars_sale_advance_payment_inv(models.TransientModel):
