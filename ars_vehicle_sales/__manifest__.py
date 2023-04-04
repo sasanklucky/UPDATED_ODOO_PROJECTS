@@ -17,6 +17,7 @@
     'data': [
         'data/product_data.xml',
         'data/ars_mail_template_data.xml',
+        'data/quotation_sequence.xml',
         'security/ars_security.xml',
         'security/ir.model.access.csv',
         'views/ars_test_drive.xml',

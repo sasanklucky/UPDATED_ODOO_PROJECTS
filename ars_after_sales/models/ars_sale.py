@@ -758,8 +758,8 @@ class ARS_PurchaseOrder(models.Model):
             product_catalog = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
         elif self.purchase_type == 'after_sales':
             product_catalog = self.env['product.catalog'].search([('name', '=', 'Parts')], limit=1)
-        # else:
-        #     product_catalog = self.env['product.catalog'].search([], limit=1)
+        else:
+            product_catalog = self.env['product.catalog'].search([], limit=1)
         self.product_catalog_id = product_catalog.id
 
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type',
