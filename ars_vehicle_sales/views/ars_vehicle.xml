@@ -110,7 +110,7 @@
                                 <field name="categ_id" readonly="1"/>
                                 <field name="fuel_type" />
                                 <field name="engine_code"/>
-                                <field name="engine_number"/>
+                                <field name="engine_number" string="Motor Number"/>
                                 <field name="key_serial_number"/>
                                 <label for="co2"/>
                                 <div class="o_row" name="co2">
