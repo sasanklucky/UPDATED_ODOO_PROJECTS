@@ -309,7 +309,6 @@ class ARS_sale_order(models.Model):
 
     @api.multi
     def action_confirm(self):
-        print('called action ccccccccccccccccccccccccccccccccccccccccc=')
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if sale_team.team_type == 'sales' or self.sale_type == 'vehicle':
             if self.company_id:
