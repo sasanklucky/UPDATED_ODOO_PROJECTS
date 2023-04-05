@@ -105,8 +105,10 @@ class StockMove(models.Model):
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
 
-# class StockMoveLine(models.Model):
-#     _inherit = "stock.move.line"
+class StockMoveLine(models.Model):
+    _inherit = "stock.move.line"
+    
+    motor_number = fields.Char(string="Motor Number")
 #
 #     @api.constrains('lot_name', 'lot_id')
 #     def lot_name_alphanumeric_constrains(self):

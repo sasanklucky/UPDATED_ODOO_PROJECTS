@@ -75,6 +75,8 @@ class ars_sale_crm_lead(models.Model):
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 
+    bank_account = fields.Many2one('res.bank',string="Financer")
+    
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:

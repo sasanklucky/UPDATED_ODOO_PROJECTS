@@ -139,11 +139,18 @@
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">Financer Name</td>
-                                                <td class="py-1" style="border: none; padding: 0px 2px;">: </td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <t t-esc="doc.order_id.bank_account.name" /></td>
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">Financer Add.</td>
-                                                <td class="py-1" style="border: none; padding: 0px 2px;">: </td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: 
+                                                    <t t-if="doc.order_id.bank_account.street"> <span  t-field="doc.order_id.bank_account.street"/>, </t>
+                                                    <t t-if="doc.order_id.bank_account.street2"> <span  t-field="doc.order_id.bank_account.street2"/>,  </t>
+                                                    <t t-if="doc.order_id.bank_account.city"> <span  t-field="doc.order_id.bank_account.city"/>,  </t>
+                                                    <t t-if="doc.order_id.bank_account.state"> <span  t-field="doc.order_id.bank_account.state.name"/>,  </t>
+                                                    <t t-if="doc.order_id.bank_account.country"> <span  t-field="doc.order_id.bank_account.country.name"/>,  </t>
+                                                    <t t-if="doc.order_id.bank_account.zip"> <span  t-field="doc.order_id.bank_account.zip"/></t>
+                                                </td>
                                             </tr>
                                         </table>
                                     </td>
@@ -214,6 +221,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <t t-set="car_price" t-value="0" />
                                     <t t-foreach="doc.order_id.order_line" t-as="ord_lin">
                                         <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
                                             <tr class="active">
@@ -229,7 +237,7 @@
                                                 </td>
                                             </tr>
                                         </t>
-
+                                        
                                         <t t-if="ord_lin.product_id.catalog_type.name != 'Vehicle'">
                                             <tr>
                                                 <td style="background-color:#FFF;padding: 0px 2px;">
@@ -244,27 +252,32 @@
                                                 </td>
                                             </tr>
                                         </t>
+                                        <t t-set="car_price" t-value="car_price + ord_lin.price_unit" />
                                     </t>
+                                    <t t-set="gst_amount" t-value="0"/>
                                     <t t-foreach="doc.order_id.order_line" t-as="ord_lin">
                                         <t t-if="ord_lin.product_id.catalog_type.name == 'Vehicle'">
                                             <t t-foreach="doc.tax_line_ids" t-as="amount_by_group">
-                                                <tr style="border-bottom:1px solid #dddddd;">
-                                                    <td style="padding: 0px 2px;">
-                                                        <span t-esc="amount_by_group.name"/>
-                                                    </td>
-                                                    <td style="background-color:#FFF;padding: 0px 2px;">
-                                                        :
-                                                    </td>
-                                                    <td style="padding: 0px 2px;" class="text-right">
-                                                        <span t-esc="amount_by_group.amount_total"
-                                                            t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
-                                                    </td>
-                                                </tr>
+
+                                                <t t-if="amount_by_group.tax_id.name[0:3].lower() != 'tcs'">
+                                                    <tr style="border-bottom:1px solid #dddddd;">
+                                                        <td style="padding: 0px 2px;">
+                                                            <span t-esc="amount_by_group.name"/>
+                                                        </td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group.amount_total"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </tr>
+                                                    <t t-set="gst_amount" t-value="gst_amount+amount_by_group.amount_total" />
+                                                </t>
                                             </t>
                                         </t>
-                                        
-                                        
                                     </t>
+                                    <t t-set="ex_showroom_price" t-value="gst_amount + car_price" />
                                     <t t-foreach="doc.order_id.order_line" t-as="ord_line">
                                         <t t-if="ord_line.product_id.catalog_type.name == 'Vehicle'">
                                             <tr>
@@ -273,20 +286,36 @@
                                                     :
                                                 </td>
                                                 <td style="padding: 0px 2px;" class="text-right">
-                                                    <span t-field="doc.amount_total"
+                                                    <span t-esc="ex_showroom_price"
                                                         t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
                                                 </td>
                                             </tr>
+                                            <t t-foreach="doc.tax_line_ids" t-as="amount_by_group">
+                                                <t t-if="amount_by_group.tax_id.name[0:3].lower() == 'tcs'">
+                                                    <tr style="border-bottom:1px solid #dddddd;">
+                                                        <td style="padding: 0px 2px;">
+                                                            <span t-esc="amount_by_group.name"/>
+                                                        </td>
+                                                        <td style="background-color:#FFF;padding: 0px 2px;">
+                                                            :
+                                                        </td>
+                                                        <td style="padding: 0px 2px;" class="text-right">
+                                                            <span t-esc="amount_by_group.amount_total"
+                                                                t-options='{"widget": "monetary", "display_currency": doc.order_id.pricelist_id.currency_id}'/>
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
                                             <tr>
-<!--                                                <td style="padding: 0px 2px;"><strong>On-Road Price of <span t-field="ord_line.product_id.name"/> (Paisa Rounded-Off)</strong></td>-->
-<!--                                                <td style="background-color:#FFF;padding: 0px 2px;">-->
-<!--                                                    :-->
-<!--                                                </td>-->
-<!--                                                <td style="padding: 0px 2px;" class="text-right">-->
-<!--                                                    <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"-->
-<!--                                                        t-options='{"widget": "float", "precision":0, "display_currency": doc.order_id.pricelist_id.currency_id}'/>-->
-<!--                                                    <span t-field="doc.order_id.pricelist_id.currency_id.symbol" />-->
-<!--                                                </td>-->
+                                                <td style="padding: 0px 2px;"><strong>Total (Paisa Rounded-Off)</strong></td>
+                                                <td style="background-color:#FFF;padding: 0px 2px;">
+                                                    :
+                                                </td>
+                                                <td style="padding: 0px 2px;" class="text-right">
+                                                    <span t-if="doc.amount_total" t-esc="round(doc.amount_total,0)"
+                                                        t-options='{"widget": "float", "precision":0, "display_currency": doc.order_id.pricelist_id.currency_id}'/>
+                                                    <span t-field="doc.order_id.pricelist_id.currency_id.symbol" />
+                                                </td>
                                             </tr>
                                         </t>
                                     </t>
