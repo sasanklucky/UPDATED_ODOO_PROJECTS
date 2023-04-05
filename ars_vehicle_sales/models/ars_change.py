@@ -97,12 +97,15 @@ class ars_sale_crm_sale(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(ars_sale_crm_sale, self).create(vals)
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team or 'sale_type' in vals:
-            if sale_team.team_type == 'sales' or vals['sale_type'] == 'vehicle':
-                s_name = self.env['ir.sequence'].next_by_code('sale.quotation')
-                res.name = s_name
+        if vals.get('name', _('New')) == _('New'):
+            if sale_team or 'sale_type' in vals:
+                if sale_team.team_type == 'sales' or vals['sale_type'] == 'vehicle':
+                    if 'company_id' in vals:
+                        vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('sale.quotation') or _('New')
+                    else:
+                        vals['name'] = self.env['ir.sequence'].next_by_code('sale.quotation') or _('New')
+        res = super(ars_sale_crm_sale, self).create(vals)
         return res
 
     @api.multi
