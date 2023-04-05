@@ -313,7 +313,7 @@ class ARS_sale_order(models.Model):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if sale_team.team_type == 'sales' or self.sale_type == 'vehicle':
             if self.company_id:
-                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id).next_by_code(
+                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
                     'sale.quotation') or _('New')
             else:
                 self.name = self.env['ir.sequence'].next_by_code('sale.order') or _('New')
