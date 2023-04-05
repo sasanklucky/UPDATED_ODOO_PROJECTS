@@ -56,6 +56,7 @@ class Picking(models.Model):
                             'license_plate': '/',
                             'company_id': line.move_id.company_id.id,
                             'vehicle_status': 'new',
+                            'engine_number': line.motor_number,
                             'lot_id': line.lot_id and line.lot_id.id,
                             'driver_id': self.env.user.company_id.partner_id.id
                             }
