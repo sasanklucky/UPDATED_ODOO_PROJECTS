@@ -1043,6 +1043,7 @@
                                     </group>
                                     <group string="Sales Information" name="sales_person">
                                         <!--<field name="user_id" invisible="1"/>-->
+                                        <field name="sale_type" groups="base.group_no_one"/>
                                         <field name="team_id" options="{'no_create': True}" invisible="1"/>
                                         <field name="client_order_ref"/>
                                         <field name="company_id" options="{'no_create': True}"
@@ -1672,7 +1673,8 @@
                           (0, 0, {'view_mode': 'pivot'}),
                           (0, 0, {'view_mode': 'graph'})]"/>
             <field name="search_view_id" ref="sale_order_view_search_inherit_quotation_inherit"/>
-            <field name="domain">[('sale_aftersales','=', 'after_sales')]</field>
+            <field name="domain">['|',('sale_aftersales','=', 'after_sales'),('sale_type', '=', 'parts')]</field>
+            <field name="context">{ 'default_sale_type': 'parts'}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Create a Quotation, the first step of a new sale.

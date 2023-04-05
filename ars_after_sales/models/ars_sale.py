@@ -293,18 +293,18 @@ class ARS_sale_order(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(ARS_sale_order, self).create(vals)
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team:
-            if sale_team.team_type == 'after_sales':
-                s_name = self.env['ir.sequence'].next_by_code('sale_estimate')
-                res.name = s_name
-                if self.env.context.get('counter_parts'):
-                    res.counter_parts = 'parts'
-                else:
-                    res.sale_aftersales = 'after_sales'
-            elif sale_team.team_type == 'sales':
-                res.sale_aftersales = 'sales'
+        if vals.get('name', _('New')) == _('New'):
+            if sale_team or 'sale_type' in vals:
+                if sale_team.team_type == 'after_sales' or vals['sale_type'] == 'parts':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
+                    if self.env.context.get('counter_parts'):
+                        vals['counter_parts'] = 'parts'
+                    else:
+                        vals['sale_aftersales'] = 'after_sales'
+                elif sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
+                    vals['sale_aftersales'] = 'sales'
+            res = super(ARS_sale_order, self).create(vals)
         return res
 
     @api.multi
