@@ -2,3 +2,4 @@
 
 from . import product_catalog
 from . import ars_operational_type
+from . import ars_account_invoice

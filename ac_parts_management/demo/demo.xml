@@ -11,5 +11,23 @@
             <field name="number_increment">1</field>
         </record>
 
+        <record id="sequence_parts_inventory_sequence" model="ir.sequence">
+            <field name="name">Parts Inventory</field>
+            <field name="code">parts.inventory.transfer</field>
+            <field name="prefix">PAR/IN/%(year)s</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_parts_invoice_sequence" model="ir.sequence">
+            <field name="name">Parts Invoice</field>
+            <field name="code">parts.account.invoice</field>
+            <field name="prefix">PAR/INV/%(year)s</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
     </data>
 </odoo>

@@ -5,7 +5,7 @@ from odoo.tools import format_date
 class ARSPurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    purchase_type = fields.Selection([('general', 'General Sales'), ('vehicle', 'Vehicle Sales'),
+    purchase_type = fields.Selection([('general', 'General Purchase'), ('vehicle', 'Vehicle Purchase'),
                                       ('after_sales', 'After Sales')], string='Type')
 
     # @api.depends('purchase_type')
@@ -31,12 +31,6 @@ class PurchaseRequisition(models.Model):
     purchase_type = fields.Selection([('general', 'General Sales'), ('vehicle', 'Vehicle Sales'),
                                       ('after_sales', 'After Sales')], string='Type')
 
-
-class ARSInvoice(models.Model):
-    _inherit = 'account.invoice'
-
-    ars_type = fields.Selection([('general', 'General Sales'), ('vehicle', 'Vehicle Sales'),
-                                 ('after_sales', 'After Sales')], string='Type')
 
 
 class ARSStockPicking(models.Model):

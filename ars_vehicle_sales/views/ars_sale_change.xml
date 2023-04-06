@@ -44,6 +44,7 @@
                 </field>
                 <field name="payment_term_id" position="after">
                     <field name="user_id" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
+                    <field name="bank_account"  options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
 
             </field>

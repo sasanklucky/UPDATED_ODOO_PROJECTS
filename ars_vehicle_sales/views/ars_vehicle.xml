@@ -103,65 +103,59 @@
                                        options="{'color_field': 'color', 'no_create_edit': True}"/>
                             </div>
 
-                            <group>
-                                <group>
-                                    <group colspan="4" string="Customer Details">
-                                        <field name="driver_id" string="Customer"/>
-                                        <field name="contact_name" string="Contact Person"/>
-                                    </group>
-                                    <group colspan="4" string="Vehicle Specification">
-                                        <field name="categ_id" readonly="1"/>
-                                        <field name="fuel_type"/>
-                                        <field name="engine_code"/>
-                                        <field name="engine_number"/>
-                                        <field name="key_serial_number"/>
-                                        <label for="co2"/>
-                                        <div class="o_row" name="co2">
-                                            <field name="co2"/>
-                                            <span>g/km</span>
-                                        </div>
-                                        <field name="horsepower"/>
-                                        <field name="horsepower_tax"/>
-                                        <label for="power"/>
-                                        <div class="o_row">
-                                            <field name="power"/>
-                                            <span>kW</span>
-                                        </div>
-                                    </group>
-                                </group>
-
-                                <group>
-                                    <group colspan="4" string="Vehicle Information">
-                                        <field name="vehicle_status"
-                                               attrs="{'readonly':[('vehicle_status','=','new')]}"/>
-                                        <field name="initial_reg_no"/>
-                                        <field name="vin_sn" string="VIN"/>
-                                        <label for="model_year"/>
-                                        <div class="o_row">
-                                            <field name="model_month"/>
-                                            <field name="model_year"/>
-                                        </div>
-                                        <label for="prodcution_year"/>
-                                        <div class="o_row">
-                                            <field name="prodcution_month"/>
-                                            <field name="prodcution_year"/>
-                                        </div>
-                                        <label for="odometer"/>
-                                        <div class="o_row">
-                                            <field name="odometer"/>
-                                            <field name="odometer_unit"/>
-                                        </div>
-                                        <field name="location"/>
-                                    </group>
-                                    <group colspan="4" string="Warranty Details">
-                                        <field name="warranty_validation"/>
-                                        <field name="extented_warranty_no"/>
-                                        <field name="emission_test_category" string="Emmision category"/>
-                                        <field name="extented_warranty_validation"
-                                               string="Extented Warranty validation"/>
-                                        <field name="transmission"/>
-                                    </group>
-                                </group>
+                    <group>
+                        <group>
+                            <group colspan="4" string="Customer Details">
+                                <field name="driver_id" string="Customer"/>
+                                <field name="contact_name" string="Contact Person"/>
+                            </group>
+                            <group colspan="4" string="Vehicle Specification">
+                                <field name="categ_id" readonly="1"/>
+                                <field name="fuel_type" />
+                                <field name="engine_code"/>
+                                <field name="engine_number" string="Motor Number"/>
+                                <field name="key_serial_number"/>
+                                <label for="co2"/>
+                                <div class="o_row" name="co2">
+                                    <field name="co2"/><span>g/km</span>
+                                </div>
+                                <field name="horsepower" />
+                                <field name="horsepower_tax" />
+                                <label for="power"/>
+                                <div class="o_row">
+                                    <field name="power"/><span>kW</span>
+                                </div>
+                            </group>
+                        </group>
+                        
+                        <group>
+                           <group colspan="4" string="Vehicle Information">
+                                <field name="vehicle_status" attrs="{'readonly':[('vehicle_status','=','new')]}"/>
+                                <field name="initial_reg_no"/>
+                                <field name="vin_sn" string="VIN"/>
+                                <label for="model_year"/>
+                                <div class="o_row">
+                                    <field name="model_month" />
+                                    <field name="model_year"/>
+                                </div>
+                                <label for="prodcution_year"/>
+                                <div class="o_row">
+                                    <field name="prodcution_month" />
+                                    <field name="prodcution_year"/>
+                                </div>
+                                <label for="odometer"/>
+                                <div class="o_row">
+                                    <field name="odometer"/>
+                                    <field name="odometer_unit"/>
+                                </div>
+                               <field name="location"/>
+                           </group>
+                            <group colspan="4" string="Warranty Details">
+                                <field name="warranty_validation"/>
+                                <field name="extented_warranty_no"/>
+                                <field name="emission_test_category" string="Emmision category"/>
+                                <field name="extented_warranty_validation" string="Extented Warranty validation"/>
+                                <field name="transmission" />
                             </group>
 
                             <!--<group col="2" string="General Properties">-->
@@ -319,7 +313,8 @@
             <field name="inherit_id" ref="stock.view_change_product_quantity"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/group/field[@name='lot_id']" position="replace">
-                    <field name="lot_id" domain="[('product_id', '=', product_id),('check_new_lotno','!=',True)]"
+<!--                    ,('check_new_lotno','!=',True)-->
+                    <field name="lot_id"  domain="[('product_id', '=', product_id)]"
                            context="{'search_default_product_id':product_id,'default_product_id':product_id}"
                            groups="stock.group_production_lot"/>
                 </xpath>

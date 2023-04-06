@@ -293,26 +293,32 @@ class ARS_sale_order(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(ARS_sale_order, self).create(vals)
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team:
-            if sale_team.team_type == 'after_sales':
-                s_name = self.env['ir.sequence'].next_by_code('sale_estimate')
-                res.name = s_name
-                if self.env.context.get('counter_parts'):
-                    res.counter_parts = 'parts'
-                else:
-                    res.sale_aftersales = 'after_sales'
-            elif sale_team.team_type == 'sales':
-                res.sale_aftersales = 'sales'
+        if vals.get('name', _('New')) == _('New'):
+            if sale_team or 'sale_type' in vals:
+                if sale_team.team_type == 'after_sales' or vals['sale_type'] == 'parts':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
+                    if self.env.context.get('counter_parts'):
+                        vals['counter_parts'] = 'parts'
+                    else:
+                        vals['sale_aftersales'] = 'after_sales'
+                elif sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
+                    vals['sale_aftersales'] = 'sales'
+            res = super(ARS_sale_order, self).create(vals)
         return res
 
     @api.multi
     def action_confirm(self):
-        print('called action ccccccccccccccccccccccccccccccccccccccccc=')
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        if sale_team.team_type == 'sales' or self.sale_type == 'vehicle':
+            if self.company_id:
+                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                    'sale.order') or _('New')
+            else:
+                self.name = self.env['ir.sequence'].next_by_code('sale.order') or _('New')
+        elif sale_team.team_type == 'after_sales' or self.sale_type in ['parts', 'accessories']:
+            self.name = self.env['ir.sequence'].next_by_code('aftersale_so')
         result = super(ARS_sale_order, self).action_confirm()
-        confirm_so = self.env['ir.sequence'].next_by_code('aftersale_so')
-        self.name = confirm_so
         return result
 
     @api.multi
@@ -758,8 +764,8 @@ class ARS_PurchaseOrder(models.Model):
             product_catalog = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
         elif self.purchase_type == 'after_sales':
             product_catalog = self.env['product.catalog'].search([('name', '=', 'Parts')], limit=1)
-        # else:
-        #     product_catalog = self.env['product.catalog'].search([], limit=1)
+        else:
+            product_catalog = self.env['product.catalog'].search([], limit=1)
         self.product_catalog_id = product_catalog.id
 
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type',

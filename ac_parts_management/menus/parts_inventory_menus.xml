@@ -1,0 +1,86 @@
+<odoo>
+    <data>
+
+        <menuitem name="Parts Inventory" id="menu_parts_stock_root" sequence="30"
+                  groups="ac_parts_inventory_user"
+                  web_icon="stock,static/description/icon.png"/>
+
+        <menuitem id="parts_stock_dashboard"
+                  name="Dashboard"
+                  parent="menu_parts_stock_root"
+                  action="stock.stock_picking_type_action"
+                  sequence="0"/>
+
+        <menuitem id="stock_parts_inventory_operation"
+                  name="Parts Operations"
+                  parent="menu_parts_stock_root"
+                  sequence="3"/>
+
+        <menuitem id="stock_parts_transfer"
+                  name="Transfers"
+                  parent="stock_parts_inventory_operation"
+                  sequence="0" action="stock.action_picking_tree_all"/>
+
+        <menuitem id="stock_parts_batch"
+                  name="Batch Pickings"
+                  parent="stock_parts_inventory_operation"
+                  sequence="1" action="stock.action_picking_tree_all"/>
+
+        <menuitem id="stock_adjustments"
+                  name="Inventory Adjustments"
+                  parent="stock_parts_inventory_operation"
+                  sequence="2" action="stock.action_inventory_form"/>
+
+        <!--        <menuitem id="stock.menu_stock_scrap"-->
+        <!--                  name="Scrap"-->
+        <!--                  parent="stock_parts_inventory_operation"-->
+        <!--                  sequence="3" action="stock.action_stock_scrap"/>-->
+
+        <menuitem id="stock_parts_costs"
+                  name="Landed Costs"
+                  parent="stock_parts_inventory_operation"
+                  sequence="4" action="stock.action_picking_tree_all"/>
+
+        <!--        <menuitem action="stock.action_procurement_compute"-->
+        <!--                  id="stock.menu_procurement_compute"-->
+        <!--                  parent="stock_parts_inventory_operation"-->
+        <!--                  sequence="5"/>-->
+
+        <menuitem id="stock_parts_catalog"
+                  name="Catalog"
+                  parent="menu_parts_stock_root"
+                  sequence="4"/>
+
+        <menuitem id="stock_parts_accessories"
+                  name="Accessories"
+                  action="ars_after_sales.action_accessories"
+                  parent="stock_parts_catalog"
+                  sequence="3"/>
+
+        <menuitem id="parts_stock_menu"
+                  name="Parts"
+                  action="ars_after_sales.action_parts"
+                  parent="stock_parts_catalog"
+                  sequence="4"/>
+
+        <menuitem id="stock_parts_reporting"
+                  name="Reporting"
+                  parent="menu_parts_stock_root"
+                  sequence="4"/>
+
+        <menuitem id="parts_inventory_menu_valuation_parts"
+                  name="Parts Inventory"
+                  parent="stock_parts_reporting"
+                  sequence="4"
+                  action="stock.action_stock_quantity_history"/>
+
+        <menuitem id="stock_inventory_move_line_menu"
+                  action="stock.stock_move_line_action"
+                  name="Parts Moves"
+                  parent="stock_parts_reporting"
+                  sequence="6"
+                  groups="base.group_no_one"/>
+
+
+    </data>
+</odoo>

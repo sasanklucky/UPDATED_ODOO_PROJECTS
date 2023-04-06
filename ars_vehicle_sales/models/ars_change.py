@@ -75,6 +75,8 @@ class ars_sale_crm_lead(models.Model):
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 
+    bank_account = fields.Many2one('res.bank',string="Financer")
+    
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
@@ -92,6 +94,19 @@ class ars_sale_crm_sale(models.Model):
     #                 proforma_type = 'vehicle'
     #     # print("proforma",proforma_type)
     #     return proforma_type
+
+    @api.model
+    def create(self, vals):
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        if vals.get('name', _('New')) == _('New'):
+            if sale_team or 'sale_type' in vals:
+                if sale_team.team_type == 'sales' or vals['sale_type'] == 'vehicle':
+                    if 'company_id' in vals:
+                        vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('sale.quotation') or _('New')
+                    else:
+                        vals['name'] = self.env['ir.sequence'].next_by_code('sale.quotation') or _('New')
+        res = super(ars_sale_crm_sale, self).create(vals)
+        return res
 
     @api.multi
     def _get_vehicle_tax_amount_by_group_wise(self):

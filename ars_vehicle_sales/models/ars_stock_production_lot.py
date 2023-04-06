@@ -56,6 +56,7 @@ class Picking(models.Model):
                             'license_plate': '/',
                             'company_id': line.move_id.company_id.id,
                             'vehicle_status': 'new',
+                            'engine_number': line.motor_number,
                             'lot_id': line.lot_id and line.lot_id.id,
                             'driver_id': self.env.user.company_id.partner_id.id
                             }
@@ -105,8 +106,10 @@ class StockMove(models.Model):
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
 
-# class StockMoveLine(models.Model):
-#     _inherit = "stock.move.line"
+class StockMoveLine(models.Model):
+    _inherit = "stock.move.line"
+    
+    motor_number = fields.Char(string="Motor Number")
 #
 #     @api.constrains('lot_name', 'lot_id')
 #     def lot_name_alphanumeric_constrains(self):

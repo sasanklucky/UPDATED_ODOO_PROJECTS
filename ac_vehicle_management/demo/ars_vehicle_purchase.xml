@@ -3,9 +3,27 @@
     <data noupdate="1">
 
         <record id="sequence_ars_vehicle_purchase" model="ir.sequence">
-            <field name="name">Parts Purchase</field>
+            <field name="name">Vehicle Purchase</field>
             <field name="code">vehicle.purchase.order</field>
             <field name="prefix">VPO/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_vehicle_inventory_sequence" model="ir.sequence">
+            <field name="name">Vehicle Inventory</field>
+            <field name="code">vehicle.inventory.transfer</field>
+            <field name="prefix">VEH/IN/%(year)s</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_vehicle_invoice_sequence" model="ir.sequence">
+            <field name="name">Vehicle Invoice</field>
+            <field name="code">vehicle.account.invoice</field>
+            <field name="prefix">VEH/INV/%(year)s</field>
             <field name="padding">5</field>
             <field name="number_next">1</field>
             <field name="number_increment">1</field>

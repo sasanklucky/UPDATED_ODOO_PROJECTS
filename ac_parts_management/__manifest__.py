@@ -13,9 +13,10 @@
                 'ars_vehicle_sales'],
     'data': [
         # 'security/ir.model.access.csv',
+        'security/ars_parts_security.xml',
         'demo/demo.xml',
         'views/parts_purchase.xml',
-        'security/ars_parts_security.xml',
+        'menus/parts_inventory_menus.xml',
         'menus/parts_purchase.xml',
 
     ],
