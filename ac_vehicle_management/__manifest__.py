@@ -20,6 +20,8 @@
         'security/ars_vehicle_security.xml',
         'views/views.xml',
         'views/vehicle_purchase.xml',
+        'views/vehicle_sales_action.xml',
+        'menu/ac_vehicle_sales_menus.xml',
         'menu/ac_vehicle_menus.xml',
     ],
     # only loaded in demonstration mode

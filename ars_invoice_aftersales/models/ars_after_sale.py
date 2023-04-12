@@ -1,5 +1,5 @@
-from odoo import models, fields, api,_
-from datetime import datetime,timedelta
+from odoo import models, fields, api, _
+from datetime import datetime, timedelta
 from datetime import date
 from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.exceptions import UserError, AccessError
@@ -7,7 +7,6 @@ from odoo.exceptions import UserError, AccessError
 
 class ARS_After_sale_order(models.Model):
     _inherit = "sale.order"
-
 
     state = fields.Selection([
         ('draft', 'Quotation'),
@@ -19,30 +18,30 @@ class ARS_After_sale_order(models.Model):
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, copy=False, index=True, track_visibility='onchange', default='draft')
 
-
     @api.multi
     def action_convert(self):
         self.write({'state': 'so'})
         if self.sale_aftersales == 'after_sales':
-           self.create_warranty_order()
+            self.create_warranty_order()
 
     def create_warranty_order(self):
         for od in self:
             line_ids = []
             warnVals = {}
-            vendors  = {}
+            vendors = {}
             for ol in od.order_line:
                 if ol.category and ol.category.name == 'Warranty':
-                   if ol.customer_split and ol.customer_split.id not in vendors:
-                      vendors[ol.customer_split.id] = [ol.id]
-                   elif ol.customer_split and ol.customer_split.id in vendors:
-                      vendors[ol.customer_split.id].append(ol.id)
-            print('vendors',vendors)
-            warranty_ids = self.env['ars.sale.warranty'].search_read([('order_id', '=', od.id)], fields=['partner_id', 'order_id'])
+                    if ol.customer_split and ol.customer_split.id not in vendors:
+                        vendors[ol.customer_split.id] = [ol.id]
+                    elif ol.customer_split and ol.customer_split.id in vendors:
+                        vendors[ol.customer_split.id].append(ol.id)
+            print('vendors', vendors)
+            warranty_ids = self.env['ars.sale.warranty'].search_read([('order_id', '=', od.id)],
+                                                                     fields=['partner_id', 'order_id'])
 
             for wr in warranty_ids:
                 if wr.get('partner_id')[0] not in vendors.keys():
-                   vendors[wr.get('partner_id')[0]] = []
+                    vendors[wr.get('partner_id')[0]] = []
 
             for v in vendors.keys():
                 warranty_ids = self.env['ars.sale.warranty'].search([('order_id', '=', od.id), ('partner_id', '=', v)])
@@ -54,12 +53,12 @@ class ARS_After_sale_order(models.Model):
                             'order_lines': [(6, 0, vendors.get(v))]}
 
                 if not vendors.get(v):
-                    warnVals.update({'state':'cancel'})
+                    warnVals.update({'state': 'cancel'})
 
                 if warnVals:
                     if not warranty_ids:
-                       warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
-                       self.env['ars.sale.warranty'].create(warnVals)
+                        warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+                        self.env['ars.sale.warranty'].create(warnVals)
                     else:
                         warranty_ids.write(warnVals)
         return True
@@ -69,7 +68,7 @@ class ARS_After_sale_order(models.Model):
         action = ''
         if len(self.order_line.ids) > 1:
             action = self.env.ref('ars_invoice_aftersales.action_split_line').read()[0]
-            action.update({'domain': [('id','in',self.order_line.ids)]})
+            action.update({'domain': [('id', 'in', self.order_line.ids)]})
         return action
 
     @api.multi
@@ -84,7 +83,6 @@ class ARS_After_sale_order(models.Model):
         :param final: if True, refunds will be generated if necessary
         :returns: list of created invoices
         """
-
 
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
@@ -107,8 +105,10 @@ class ARS_After_sale_order(models.Model):
                     # if float_is_zero(line.qty_to_invoice, precision_digits=precision):
                     #     continue
                     # if line.customer_split.id == data.get('customer_split'):
-                    invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],limit=1)
-                    inv_data = order.with_context({'customer_split':line.customer_split.id,'count_line':count})._prepare_invoice()
+                    invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],
+                                             limit=1)
+                    inv_data = order.with_context(
+                        {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
                     count += 1
                     if invoice:
                         products = invoice.invoice_line_ids.mapped('product_id').ids
@@ -125,50 +125,51 @@ class ARS_After_sale_order(models.Model):
                             # by onchanges, which are not triggered when doing a create.
                             invoice.compute_taxes()
                             invoice.message_post_with_view('mail.message_origin_link',
-                                                   values={'self': invoice, 'origin': order},
-                                                   subtype_id=self.env.ref('mail.mt_note').id)
+                                                           values={'self': invoice, 'origin': order},
+                                                           subtype_id=self.env.ref('mail.mt_note').id)
                         invoices[invoice.id] = invoice
                     else:
                         print("invoice created----")
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
-#                         references[invoice] = order
+                        #                         references[invoice] = order
                         # invoices[group_key] = invoice
                         line.invoice_line_create(invoice.id, line.qty_to_invoice)
 
                     invoice.write({'mobile': order.mobile, 'email': order.email,
-                                   'reg_no':order.regn_no.id,'vin':order.vin_no,
-                                   'model':order.model.id,'kilometer':order.mileage_in,
-                                   'doc_type':order.doc_type,'appointment_date':order.appointment_date,
-                                   'delivery_service_advisor':order.delivery_service_advisor.id,'delivery_date':order.delivery_date})
-#                     elif group_key in invoices:
-#                         vals = {}
-#                         if order.name not in invoices[group_key].origin.split(', '):
-#                             vals['origin'] = invoices[group_key].origin + ', ' + order.name
-#                         if order.client_order_ref and order.client_order_ref not in invoices[group_key].name.split(
-#                                 ', ') and order.client_order_ref != invoices[group_key].name:
-#                             vals['name'] = invoices[group_key].name + ', ' + order.client_order_ref
-#                         invoices[group_key].write(vals)
+                                   'reg_no': order.regn_no.id, 'vin': order.vin_no,
+                                   'model': order.model.id, 'kilometer': order.mileage_in,
+                                   'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
+                                   'delivery_service_advisor': order.delivery_service_advisor.id,
+                                   'delivery_date': order.delivery_date, 'service_options': order.service_options.id,
+                                   'service_type': order.service_type.id})
+                #                     elif group_key in invoices:
+                #                         vals = {}
+                #                         if order.name not in invoices[group_key].origin.split(', '):
+                #                             vals['origin'] = invoices[group_key].origin + ', ' + order.name
+                #                         if order.client_order_ref and order.client_order_ref not in invoices[group_key].name.split(
+                #                                 ', ') and order.client_order_ref != invoices[group_key].name:
+                #                             vals['name'] = invoices[group_key].name + ', ' + order.client_order_ref
+                #                         invoices[group_key].write(vals)
 
+                #                     if references.get(invoices.get(group_key)):
+                #                         if order not in references[invoices[group_key]]:
+                #                             references[invoice] = references[invoice] | order
+                #
+                #                     invoices[group_key] = invoice
 
-#                     if references.get(invoices.get(group_key)):
-#                         if order not in references[invoices[group_key]]:
-#                             references[invoice] = references[invoice] | order
-# 
-#                     invoices[group_key] = invoice
-
-#                 if not invoices:
-#                     raise UserError(_('There is no invoiceable line.'))
-# 
-#                 for invoice in invoices.values():
-#                     if not invoice.invoice_line_ids:
-#                         raise UserError(_('There is no invoiceable line.'))
-#                     # If invoice is negative, do a refund invoice instead
-#                     if invoice.amount_untaxed < 0:
-#                         invoice.type = 'out_refund'
-#                         for line in invoice.invoice_line_ids:
-#                             line.quantity = -line.quantity
-#                     # Use additional field helper function (for account extensions)
+                #                 if not invoices:
+                #                     raise UserError(_('There is no invoiceable line.'))
+                #
+                #                 for invoice in invoices.values():
+                #                     if not invoice.invoice_line_ids:
+                #                         raise UserError(_('There is no invoiceable line.'))
+                #                     # If invoice is negative, do a refund invoice instead
+                #                     if invoice.amount_untaxed < 0:
+                #                         invoice.type = 'out_refund'
+                #                         for line in invoice.invoice_line_ids:
+                #                             line.quantity = -line.quantity
+                #                     # Use additional field helper function (for account extensions)
                 for line1 in invoice.invoice_line_ids:
                     line1._set_additional_fields(invoice)
                 # Necessary to force computation of taxes. In account_invoice, they are triggered
@@ -181,22 +182,21 @@ class ARS_After_sale_order(models.Model):
                 return [inv.id for inv in invoices.values()]
 
             if order.sale_aftersales != 'after_sales':
-                res = super(ARS_After_sale_order,self).action_invoice_create(grouped=False, final=False)
+                res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)
-                rest.write({'mobile':order.mobile,'email':order.email,
-                            'reg_no':order.regn_no.license_plate,'vin':order.vin_no,
-                            'model':order.model,'kilometer':order.mileage_in,
-                            'doc_type':order.doc_type,'appointment_date':order.appointment_date,
-                            'delivery_date':order.delivery_date,
+                rest.write({'mobile': order.mobile, 'email': order.email,
+                            'reg_no': order.regn_no.license_plate, 'vin': order.vin_no,
+                            'model': order.model, 'kilometer': order.mileage_in,
+                            'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
+                            'delivery_date': order.delivery_date,
                             })
-                
+
                 for order_line in order.order_line:
                     invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
                     invoice.product_template_id = order_line.product_template_id.id
 
-                    
                 # 'product_template_id':order.order_line.product_template_id.id
-                
+
                 # """ Update Product attribute from sale order lie to account invoice lines """
                 # query = f"""INSERT INTO account_line_attribute_rel (account_id, attribute_id) VALUES ({str(rest.invoice_line_ids.ids)[1:-1]},{str(order.order_line.product_varient_ids.ids)[1:-1]});"""
                 # self._cr.execute(query)
@@ -231,7 +231,7 @@ class ARS_After_sale_order(models.Model):
     @api.multi
     def _prepare_invoice(self):
         context = self.env.context
-        res = super(ARS_After_sale_order,self)._prepare_invoice()
+        res = super(ARS_After_sale_order, self)._prepare_invoice()
         if context.get('customer_split'):
             res['partner_id'] = context.get('customer_split')
             res['partner_shipping_id'] = context.get('customer_split')
@@ -247,7 +247,6 @@ class ARS_After_sale_order(models.Model):
     #            res = {'domain': {'customer_split': [('id', 'in', seller_ids)]}}
 
 
-
 class ARS_sale_order_line(models.Model):
     _inherit = "sale.order.line"
 
@@ -257,8 +256,9 @@ class ARS_sale_order_line(models.Model):
     #         customer.customer_split = customer.order_id.partner_id.id
 
     """ Product line varient """
-    product_varient_ids = fields.Many2many('product.attribute.value','order_line_attribute_rel','order_id','attribute_id',string='Attribute')
-    product_template_id = fields.Many2one('product.template',string='Product')
+    product_varient_ids = fields.Many2many('product.attribute.value', 'order_line_attribute_rel', 'order_id',
+                                           'attribute_id', string='Attribute')
+    product_template_id = fields.Many2one('product.template', string='Product')
 
     @api.multi
     @api.onchange('product_catalog_id')
@@ -272,13 +272,14 @@ class ARS_sale_order_line(models.Model):
     @api.multi
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
-        self.product_id=False
+        self.product_id = False
         if self.product_template_id:
-            varient_ids = self.env['product.product'].sudo().search([('product_tmpl_id','=',self.product_template_id.id)])
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
             return {'domain': {'product_id': [('id', 'in', False)]}}
-    
+
     # @api.multi
     # @api.onchange('product_id')
     # def onchange_product_id(self):
@@ -286,17 +287,15 @@ class ARS_sale_order_line(models.Model):
     #     if self.product_id:
     #         return {'domain': {'product_varient_ids': [('id', 'in', self.product_id.attribute_value_ids.ids)]}}
 
-    
-
     @api.multi
     @api.onchange('product_id')
     def product_id_change(self):
-        res = super(ARS_sale_order_line,self).product_id_change()
-        self.category = self.env['order.line.category'].search([('name','=','Customer')])
+        res = super(ARS_sale_order_line, self).product_id_change()
+        self.category = self.env['order.line.category'].search([('name', '=', 'Customer')])
         self.customer_split = self.env.context.get('partner_id')
         # res.update({'customer_split':self.env.context.get('partner_id')})
-        print('res5453453', res,self.price_unit)
-        self.update({'ars_warranty_price':self.price_unit,
+        print('res5453453', res, self.price_unit)
+        self.update({'ars_warranty_price': self.price_unit,
                      'ars_std_price': self.price_unit})
         return res
 
@@ -306,7 +305,8 @@ class ARS_sale_order_line(models.Model):
         if self.order_id:
             if self.customer_split:
                 inv_obj = self.env['account.invoice']
-                invoice = inv_obj.search([('origin', '=', self.order_id.name), ('partner_id', '=', self.customer_split.id)])
+                invoice = inv_obj.search(
+                    [('origin', '=', self.order_id.name), ('partner_id', '=', self.customer_split.id)])
                 count = len(invoice)
         self.split_type = count
 
@@ -317,14 +317,13 @@ class ARS_sale_order_line(models.Model):
         """
         for line in self:
             if line.category and line.category.name.lower() == 'warranty':
-               line.cust_filter_ids = [sl.name.id for sl in self.product_id.seller_ids]
+                line.cust_filter_ids = [sl.name.id for sl in self.product_id.seller_ids]
 
             elif self.category and self.category.name.lower() == 'customer':
-                 line.cust_filter_ids = self.env['res.partner'].search([('customer','=',True)])
+                line.cust_filter_ids = self.env['res.partner'].search([('customer', '=', True)])
 
-
-    customer_split = fields.Many2one('res.partner',string="Customer", readonly=False)
-    split_type = fields.Integer(compute='_get_customer_invoice_count',default=1)
+    customer_split = fields.Many2one('res.partner', string="Customer", readonly=False)
+    split_type = fields.Integer(compute='_get_customer_invoice_count', default=1)
     cust_filter_ids = fields.Many2many('res.partner', compute='_filter_partner', string='Customer Filter')
 
     @api.multi
@@ -341,7 +340,8 @@ class ARS_sale_order_line(models.Model):
                 invoice = self.env['account.invoice'].browse(invoice_id)
                 if invoice.partner_id == line.customer_split:
                     vals = line._prepare_invoice_line(qty=qty)
-                    line_obj = self.env['account.invoice.line'].search([('invoice_id','=',invoice_id),('product_id','=',vals.get('product_id'))])
+                    line_obj = self.env['account.invoice.line'].search(
+                        [('invoice_id', '=', invoice_id), ('product_id', '=', vals.get('product_id'))])
                     if not line_obj:
                         vals.update({'invoice_id': invoice_id, 'sale_line_ids': [(6, 0, [line.id])]})
                         invoice_lines |= self.env['account.invoice.line'].create(vals)
@@ -355,9 +355,10 @@ class ARS_sale_order_line(models.Model):
 
     @api.multi
     def _prepare_invoice_line(self, qty):
-        res = super(ARS_sale_order_line,self)._prepare_invoice_line(qty)
+        res = super(ARS_sale_order_line, self)._prepare_invoice_line(qty)
         res.update({'vin_no': self.vin_no.id})
         return res
+
 
 class ARS_account_invoice_line(models.Model):
     _inherit = "account.invoice.line"
@@ -393,7 +394,6 @@ class ARS_account_invoice_line(models.Model):
 class ARS_split_invoice(models.Model):
     _name = "split.invoice"
 
-
     @api.multi
     @api.onchange('customer')
     def split_customer(self):
@@ -418,7 +418,6 @@ class ARS_split_invoice(models.Model):
         records = self.env['sale.order.line'].browse(record_ids)
         self.percentage = '100%'
 
-
     customer = fields.Many2one('res.partner')
     percentage = fields.Char()
     amount = fields.Char()
@@ -428,37 +427,31 @@ class ARS_split_invoice(models.Model):
         self.customer
         account = self.env['account.invoice']
         return
-    
-    
+
+
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
 
-
     @api.multi
     def action_invoice_open(self):
-    # lots of duplicate calls to action_invoice_open, so we remove those already open
-        warranty_ids = self.env['ars.sale.warranty'].search([('order_id.name','=',self.origin),('partner_id','=',self.partner_id.id)])
+        # lots of duplicate calls to action_invoice_open, so we remove those already open
+        warranty_ids = self.env['ars.sale.warranty'].search(
+            [('order_id.name', '=', self.origin), ('partner_id', '=', self.partner_id.id)])
         for wr in warranty_ids:
             if wr.state in ('draft', 'inprocess'):
-               raise UserError(_('Some of warranty claims are in Draft/In-Process state. Please check and proceed.'))
+                raise UserError(_('Some of warranty claims are in Draft/In-Process state. Please check and proceed.'))
             else:
-               self._cr.execute("update ars_sale_warranty set state='done' where id ="+ str(wr.id))
+                self._cr.execute("update ars_sale_warranty set state='done' where id =" + str(wr.id))
         res = super(AccountInvoice_inherit, self).action_invoice_open()
         return res
 
-
     @api.model
     def line_get_convert(self, line, part):
-        res = super(AccountInvoice_inherit,self).line_get_convert(line, part)
+        res = super(AccountInvoice_inherit, self).line_get_convert(line, part)
         if line.get('invoice_id'):
             invoice = self.env['account.invoice'].browse(int(line.get('invoice_id')))
-            for inv_ln in  invoice.invoice_line_ids:
+            for inv_ln in invoice.invoice_line_ids:
                 if inv_ln.split_type == 'split':
                     res['debit'] = 0.0
                     res['credit'] = 0.0
         return res
-
-
-
-
-        
