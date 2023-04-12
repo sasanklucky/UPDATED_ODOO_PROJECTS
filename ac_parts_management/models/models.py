@@ -9,6 +9,6 @@ class PartsPurchaseOrder(models.Model):
     def create(self, vals):
         if vals.get('name', 'New') == 'New' and 'purchase_type' in vals and vals.get('purchase_type') == 'after_sales':
             vals['name'] = self.env['ir.sequence'].next_by_code('parts.purchase.order') or '/'
-        elif vals.get('name', 'New') == 'New':
-            vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order') or '/'
+        # elif vals.get('name', 'New') == 'New':
+        #     vals['name'] = self.env['ir.sequence'].next_by_code('purchase.order') or '/'
         return super(PartsPurchaseOrder, self).create(vals)

@@ -15,6 +15,7 @@
                     <field name="dealer_city" string="Dealer City"/>
                     <field name="record_id" invisible="1"/>
                     <field name="enquiry_date" string="Create Date"/>
+                    <field name="stage_id"/>
                     <field name="enquiry_category" string="Stage of Sales Pipeline"/>
                     <field name="source_id"/>
                     <field name="contact_name"/>
@@ -23,6 +24,7 @@
                     <field name="function"/>
                     <field name="annual_income"/>
                     <field name="phone"/>
+                    <field name="mobile"/>
                     <field name="email"/>
                     <field name="address" string="Customer Address1"/>
                     <field name="address1" string="Customer Address2"/>

@@ -1,0 +1,80 @@
+<odoo>
+    <data>
+
+        <menuitem id="vehicle_sale_menu_root"
+                  name="Vehicle Sales"
+                  web_icon="sale,static/description/icon.png"
+                  active="True"
+                  sequence="8"/>
+
+        <menuitem id="vehicle_sale_order_menu"
+                  name="Vehicle Operations"
+                  parent="vehicle_sale_menu_root"
+                  sequence="1"/>
+
+        <menuitem id="menu_vehicle_sale_quotations"
+                  action="vehicle_sale_action_quotations"
+                  parent="vehicle_sale_order_menu"
+                  sequence="1" groups="sales_team.group_sale_salesman"/>
+
+        <menuitem id="menu_vehicle_sale_sale_order"
+                  name="Orders"
+                  action="vehicle_sale_action_orders"
+                  parent="vehicle_sale_order_menu"
+                  sequence="2" groups="sales_team.group_sale_salesman"/>
+
+        <menuitem id="menu_vehicle_sale_sale_invoicing"
+                  name="Vehicle Invoicing"
+                  parent="vehicle_sale_menu_root"
+                  sequence="3" groups="sales_team.group_sale_salesman"/>
+
+        <menuitem id="menu_vehicle_sale_order_invoice"
+                  action="vehicle_sale_action_orders_to_invoice"
+                  parent="menu_vehicle_sale_sale_invoicing"
+                  sequence="2" active="True"/>
+
+        <menuitem action="vehicle_sale_action_orders_upselling"
+                  id="menu_vehicle_sale_order_upselling"
+                  parent="menu_vehicle_sale_sale_invoicing"
+                  sequence="5" active="True"/>
+
+        <menuitem id="ac_vehicle_management_catalog"
+                  name="Catalog"
+                  parent="vehicle_sale_menu_root" sequence="5"/>
+
+        <menuitem id="ac_vehicle_management_menu_vehicle"
+                  name="Vehicle"
+                  action="fleet.fleet_vehicle_action"
+                  parent="ac_vehicle_management_catalog"
+                  sequence="0"/>
+
+        <menuitem id="ac_vehicle_management_menu_models1"
+                  name="Models"
+                  action="ars_vehicle_sales.action_models"
+                  parent="ac_vehicle_management_catalog"
+                  sequence="1"/>
+
+        <menuitem id="menu_ac_vehicle_management_models_variants1"
+                  name="Models Variants"
+                  action="ars_vehicle_sales.action_models_variants"
+                  parent="ac_vehicle_management_catalog"
+                  sequence="2"/>
+
+        <menuitem id="menu_ac_vehicle_management_product_pricelist_main"
+                  name="Vehicle Pricelist"
+                  action="product.product_pricelist_action2"
+                  parent="ac_vehicle_management_catalog" sequence="6"/>
+
+        <menuitem id="menu_ac_vehicle_management_sale_report"
+                  name="Report"
+                  parent="vehicle_sale_menu_root"
+                  sequence="5"/>
+
+        <menuitem id="menu_ac_vehicle_management_report_product_all"
+                  name="Vehicle Sales"
+                  action="ac_vehicle_management_action_order_report_all"
+                  parent="menu_ac_vehicle_management_sale_report"
+                  sequence="1"/>
+
+    </data>
+</odoo>

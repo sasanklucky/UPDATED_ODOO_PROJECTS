@@ -17,13 +17,18 @@ class ARS_sale_order(models.Model):
 
         userid = self.env.user
         company = self.env.user.company_id.id
-        if userid.sale_team_id.team_type == 'sales':
-            warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        if userid.sale_team_id.team_type == 'sales' or self.sale_type == 'vehicle':
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'vehicle')], limit=1)
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
             return warehouse_ids
-        if userid.sale_team_id.team_type == 'after_sales':
-            warehouse_ids = self.env['stock.warehouse'].search([('name', '=', 'Parts Warehouse')], limit=1)
-            # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        elif userid.sale_team_id.team_type == 'after_sales' or self.sale_type in ['parts', 'accessories']:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
+            return warehouse_ids
+        else:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)
             return warehouse_ids
 
     @api.multi
@@ -85,6 +90,19 @@ class ARS_sale_order(models.Model):
                                          compute="_get_product_sale_catalog")
     sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
                                   ('accessories', 'Accessories'), ('others', 'Others')])
+    service_type = fields.Many2one('service.type', 'Service Type')
+    service_options = fields.Many2one('service.options', 'Service Options')
+
+    @api.multi
+    @api.onchange('service_type')
+    def domain_set_service_option(self):
+        self.service_options = False
+        if self.service_type:
+            service_options = self.env['service.options'].sudo().search(
+                [('service_type', '=', self.service_type.id)])
+            return {'domain': {'service_options': [('id', 'in', service_options.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
 
     @api.multi
     @api.depends('sale_type')

@@ -7,6 +7,8 @@ class ARS_account_invoice(models.Model):
     _inherit = "account.invoice"
 
     gate_pass_date = fields.Date(string='Gate Pass Date')
+    service_type = fields.Many2one('service.type', 'Service Type')
+    service_options = fields.Many2one('service.options', 'Service Options')
 
     @api.multi
     def invoice_print(self):

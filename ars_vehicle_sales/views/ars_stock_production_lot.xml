@@ -269,11 +269,10 @@
             <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <xpath expr="//tree/field[@name='lot_id']" position="replace">
+<!--                    ,('check_new_lotno','!=',True)-->
                     <field name="lot_id" string="VIN" options="{'no_quick_create': True, 'no_create_edit' : True}" invisible="not context.get('show_lots_m2o')"
-                           groups="stock.group_production_lot" domain="[('product_id', '=', parent.product_id),('check_new_lotno','!=',True)]"
-
+                           groups="stock.group_production_lot" domain="[('product_id', '=', parent.product_id)]"
                            context="{'default_product_id': parent.product_id, 'active_picking_id': picking_id}"/>
-                    
                 </xpath>
                 <field name="lot_id" position="after">
                     <field name="motor_number" />

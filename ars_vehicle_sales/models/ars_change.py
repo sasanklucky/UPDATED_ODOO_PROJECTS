@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, time
 from datetime import timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
