@@ -157,6 +157,8 @@
                                 <field name="extented_warranty_validation" string="Extented Warranty validation"/>
                                 <field name="transmission" />
                             </group>
+                        </group>
+                            </group>
 
                             <!--<group col="2" string="General Properties">-->
                             <!--<group>-->
