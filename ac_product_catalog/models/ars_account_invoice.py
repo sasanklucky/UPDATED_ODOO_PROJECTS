@@ -24,3 +24,15 @@ class ARSCatalogInvoice(models.Model):
             self.ars_type = self.purchase_id.purchase_type
         domain = super(ARSCatalogInvoice, self).purchase_order_change()
         return domain
+
+
+class ARSaccount_journal(models.Model):
+    _inherit = "account.journal"
+
+    ars_type = fields.Selection([('general', 'General'), ('vehicle', 'Vehicle'),
+                                 ('after_sales', 'Parts/After Sales')], string='Journal Type')
+
+
+
+
+

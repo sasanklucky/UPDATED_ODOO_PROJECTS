@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="ac_vehicle_management_vehicle_sales_quotation_sequence" model="ir.sequence">
+            <field name="name">Vehicle Sales Quotation</field>
+            <field name="code">vehicle.sale.quotation</field>
+            <field name="prefix">VEH/QTN/%(year)s</field>
+            <field name="padding">3</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="ac_vehicle_management_vehicle_sales_order_sequence" model="ir.sequence">
+            <field name="name">Vehicle Sale Order</field>
+            <field name="code">vehicle.sale.order</field>
+            <field name="prefix">VEH/SO/%(year)s</field>
+            <field name="padding">3</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_vehicle_sales_invoice_sequence" model="ir.sequence">
+            <field name="name">Vehicle Sale Invoice</field>
+            <field name="code">vehicle.sale.account.invoice</field>
+            <field name="prefix">VEH/SO/INV/%(year)s</field>
+            <field name="padding">3</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+    </data>
+</odoo>

@@ -19,17 +19,27 @@ class ARS_sale_order(models.Model):
         company = self.env.user.company_id.id
         if userid.sale_team_id.team_type == 'sales' or self.sale_type == 'vehicle':
             warehouse_ids = self.env['stock.warehouse'].search(
-                [('company_id', '=', company), ('ars_type', '=', 'vehicle')], limit=1)
+                [('company_id', '=', company)], limit=1)
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
             return warehouse_ids
-        elif userid.sale_team_id.team_type == 'after_sales' or self.sale_type in ['parts', 'accessories']:
+
+    @api.onchange('sale_type')
+    def _get_default_warehouse_based_on_sales_type(self):
+        userid = self.env.user
+        company = self.env.user.company_id.id
+        if userid.sale_team_id.team_type == 'sales' and self.sale_type == 'vehicle':
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'vehicle')], limit=1)
+            self.warehouse_id = warehouse_ids.id
+            # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        elif self.sale_type in ['parts', 'accessories']:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
-            return warehouse_ids
+            self.warehouse_id = warehouse_ids.id
         else:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)
-            return warehouse_ids
+            self.warehouse_id = warehouse_ids.id
 
     @api.multi
     def _compute_vehicle_count(self):
@@ -232,6 +242,8 @@ class ARS_sale_order(models.Model):
         rse_data = {}
         data = {
             'product_id': line.product_id.id,
+            'product_template_id': line.product_template_id.id,
+            'product_catalog_id': line.product_catalog_id.id,
             # 'layout_category_id': line.layout_category_id.id,
             'name': line.name,
             'product_uom_qty': line.product_uom_qty,
@@ -314,7 +326,7 @@ class ARS_sale_order(models.Model):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if vals.get('name', _('New')) == _('New'):
             if sale_team or 'sale_type' in vals:
-                if sale_team.team_type == 'after_sales' or vals['sale_type'] == 'parts':
+                if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':
                     vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
                     if self.env.context.get('counter_parts'):
                         vals['counter_parts'] = 'parts'
@@ -328,14 +340,22 @@ class ARS_sale_order(models.Model):
     @api.multi
     def action_confirm(self):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team.team_type == 'sales' or self.sale_type == 'vehicle':
+        if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
             if self.company_id:
                 self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
-                    'sale.order') or _('New')
+                    'vehicle.sale.order') or _('New')
             else:
-                self.name = self.env['ir.sequence'].next_by_code('sale.order') or _('New')
+                self.name = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
+        elif sale_team.team_type == 'sales' and self.sale_type == 'parts':
+            if self.company_id:
+                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                    'parts.sale.order') or _('New')
+            else:
+                self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
         elif sale_team.team_type == 'after_sales' or self.sale_type in ['parts', 'accessories']:
             self.name = self.env['ir.sequence'].next_by_code('aftersale_so')
+        else:
+            self.name = self.env['ir.sequence'].next_by_code('sale.order')
         result = super(ARS_sale_order, self).action_confirm()
         return result
 
