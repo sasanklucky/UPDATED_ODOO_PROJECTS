@@ -18,6 +18,7 @@
         'views/views.xml',
         'views/purchase_order.xml',
         'views/account_invoice.xml',
+        'views/ars_stock_warehouse_views.xml',
         # 'views/stock_picking.xml',
         # 'views/templates.xml',
     ],

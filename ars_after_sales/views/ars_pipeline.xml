@@ -808,6 +808,8 @@
                             <separator string="Service Details" colspan="4"/>
                             <group>
                                 <field name="doc_type"/>
+                                <field name="service_type" options="{'no_create': True}"/>
+                                <field name="service_options" options="{'no_create': True}"/>
                                 <!--<field name="resource_id_sale" invisible="1" domain="[('resource_category.code','=','SA')]"/>-->
                                 <field name="user_id" string="Service Advisor" options="{'no_create': True}"
                                        domain="[('serviceadvisor','=',True)]"/>
@@ -1846,6 +1848,8 @@
                             <separator colspan="4" string="Service Details"/>
                             <group>
                                 <field name="doc_type"/>
+                                <field name="service_type" options="{'no_create': True}"/>
+                                <field name="service_options" options="{'no_create': True}"/>
                                 <!--<field name="resource_id_sale" domain="[('resource_category.code','=','SA')]"/>-->
                                 <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]"/>
                                 <field name="appointment_date"/>
@@ -2758,14 +2762,39 @@
                 </form>
             </field>
         </record>
+
         <record id="invoice_form_gate_pass_inherit" model="ir.ui.view">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <field name="journal_id" position="before">
+                    <field name="service_type"
+                           attrs="{'invisible':[('ars_invoice_type', '!=', 'after_sales')]}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                    <field name="service_options"
+                           attrs="{'invisible':[('ars_invoice_type', '!=', 'after_sales')]}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                </field>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="after">
                     <field name="gate_pass_date"/>
                 </xpath>
+            </field>
+        </record>
+
+        <record id="ac_vendor_bill_form_inherit" model="ir.ui.view">
+            <field name="name">invoice.supplier.form.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="journal_id" position="before">
+                    <field name="service_type"
+                           attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                    <field name="service_options"
+                           attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
+                           options="{'no_create': True, 'no_open': True}"/>
+                </field>
             </field>
         </record>
 
