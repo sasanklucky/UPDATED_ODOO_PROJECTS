@@ -12,7 +12,7 @@
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
                     <field name="vin_no"/>
                </xpath>
-            </field>service_type
+            </field>
     </record>
 
   </data>
