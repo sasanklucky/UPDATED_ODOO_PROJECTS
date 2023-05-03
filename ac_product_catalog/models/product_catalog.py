@@ -26,7 +26,11 @@ class ARSProcurementRule(models.Model):
 
     def _get_stock_move_values(self, product_id, product_qty, product_uom, location_id, name, origin, values, group_id):
         result = super(ARSProcurementRule, self)._get_stock_move_values(product_id, product_qty, product_uom,
-                                                                        location_id, name, origin, values, group_id)
+                                                                        location_id,
+                                                                        name, origin, values, group_id)
         if values.get('sale_line_id', False):
-            result['sale_line_id'] = values['sale_line_id']
+            order_line = self.env['sale.order.line'].browse(values['sale_line_id'])
+            if order_line:
+                result['product_template_id'] = order_line.product_template_id.id
+                result['product_catalog_id'] = order_line.product_catalog_id.id
         return result

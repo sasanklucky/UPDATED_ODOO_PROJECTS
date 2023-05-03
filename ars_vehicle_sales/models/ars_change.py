@@ -1,3 +1,5 @@
+
+import json
 from odoo import models, fields, api, _
 from datetime import datetime, time
 from datetime import timedelta
@@ -404,7 +406,7 @@ class ars_sale_advance_payment_inv(models.TransientModel):
                 res.email = order.email
                 if order.sale_type == 'vehicle':
                     res.ars_invoice_type = 'vehicle'
-                elif order.sale_type in ('parts','accessories'):
+                elif order.sale_type in ('parts', 'accessories'):
                     res.ars_invoice_type = 'after_sales'
                 else:
                     res.ars_invoice_type = 'general'
@@ -453,3 +455,12 @@ class Menu(models.Model):
                 not self.user_has_groups('base.group_user') and not self.user_has_groups('base.group_portal')):
             visible = False
         self.is_visible = visible
+
+
+class ARSCrmLostReason(models.Model):
+    _inherit = "crm.lost.reason"
+
+    type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
+                            help="Type is used to separate Leads and Opportunities")
+
+

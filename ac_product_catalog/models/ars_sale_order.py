@@ -7,4 +7,5 @@ class ARSSaleOrder(models.Model):
     @api.multi
     def _prepare_invoice(self):
         res = super(ARSSaleOrder, self)._prepare_invoice()
+
         return res

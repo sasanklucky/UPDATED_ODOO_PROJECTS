@@ -41,6 +41,7 @@
         'views/ars_footer.xml',
         'views/ars_css.xml',
         'views/stock_picking.xml',
+        'views/ars_crm_lost_reason.xml',
 
     ],
     'installable': True,

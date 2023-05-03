@@ -546,11 +546,30 @@ class ARS_sale_order(models.Model):
     #     #         'stop':starttime.strftime("%Y-%m-%d %H:%M:%S")}
     #     # self.env['calendar.event'].create(vals)
     #     return False
+    @api.multi
+    def get_sale_type(self):
+        if self.sale_type == 'vehicle':
+            return 'vehicle'
+        elif self.sale_type in ('parts', 'accessories'):
+            return 'after_sales'
+        else:
+            return 'general'
+
+    @api.multi
+    def _get_journal_type(self, type):
+        if self.sale_type:
+            domain = [('type', 'in', {'out_invoice': ['sale'], 'out_refund': ['sale'], 'in_refund': ['purchase'],
+                                      'in_invoice': ['purchase']}.get(type, [])),
+                      ('company_id', '=', self.company_id.id), ('ars_type', '=', self.get_sale_type())]
+            journal = self.env['account.journal'].search(domain, limit=1)
+            return journal.id
 
     @api.multi
     def _prepare_invoice(self):
         res = super(ARS_sale_order, self)._prepare_invoice()
-        res.update({'order_id': self.id})
+        res.update({'order_id': self.id, 'ars_invoice_type': self.get_sale_type()})
+        if 'type' in res:
+            res.update({'journal_id': self._get_journal_type(res['type'])})
         # create service history if service order created
         vehicle = self.env['fleet.vehicle'].search(
             [('driver_id', '=', self.partner_id.id), ('license_plate', '=', self.regn_no.license_plate),
@@ -560,25 +579,27 @@ class ARS_sale_order(models.Model):
         if vehicle and self.sale_aftersales == 'after_sales':
             #             date_1 = datetime.strptime(date.today(), "%m/%d/%y")
             #             fields.Datetime.from_string(date.today()) + timedelta(days=int(nxt_due))
-            if not vehicle.service_due:
-                next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
-                set_reminder = datetime.now().date() + timedelta(days=int(remainder))
-            else:
-                ser_history = vehicle.service_due
-                last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
-                next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
-                    days=int(nxt_due))
-                set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
-                    days=int(remainder))
-            if self.env.context.get('count_line') == 0:
-                self.env['service.history'].create({
-                    'order': self.id,
-                    'servicetype': 'First Free Service',
-                    'date': date.today(),
-                    'next_service_due': next_service_due,
-                    'set_reminder': set_reminder,
-                    'vehicle_id': vehicle.id,
-                })
+            res.update({'service_type': self.service_type.id if self.service_type else False,
+                        'service_options': self.service_options.id if self.service_options else False, })
+        if not vehicle.service_due:
+            next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
+            set_reminder = datetime.now().date() + timedelta(days=int(remainder))
+        else:
+            ser_history = vehicle.service_due
+            last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
+            next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
+                days=int(nxt_due))
+            set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
+                days=int(remainder))
+        if self.env.context.get('count_line') == 0:
+            self.env['service.history'].create({
+                'order': self.id,
+                'servicetype': 'First Free Service',
+                'date': date.today(),
+                'next_service_due': next_service_due,
+                'set_reminder': set_reminder,
+                'vehicle_id': vehicle.id,
+            })
         return res
 
 
@@ -641,7 +662,6 @@ class ARS_AccountInvoiceLine(models.Model):
             domain['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle', 'Accessories'))]}
         elif self.env.user.has_group('ars_after_sales.group_aftersale_invoice'):
             domain['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
-
         return domain
 
 
