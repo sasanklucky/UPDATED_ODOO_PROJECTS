@@ -12,15 +12,55 @@ class ARSCatalogInvoice(models.Model):
     ars_invoice_type = fields.Selection([('general', 'General Invoice'), ('vehicle', 'Vehicle Invoice'),
                                          ('after_sales', 'After Sales Invoice')], string='Invoice Type')
 
-    # @api.model
-    # def create(self, values):
-    #     print(values)
-    #     res = super(ARSCatalogInvoice, self).create(values)
-    #     return res
+    @api.onchange('ars_invoice_type','ars_type')
+    def default_invoice_type(self):
+        if self.ars_invoice_type:
+            domain = [('type', 'in', {'out_invoice': ['sale'], 'out_refund': ['sale'], 'in_refund': ['purchase'],
+                                      'in_invoice': ['purchase']}.get(self.type, [])),
+                      ('company_id', '=', self.company_id.id), ('ars_type', '=', self.ars_invoice_type)]
+            journal = self.env['account.journal'].search(domain, limit=1)
+            self.journal_id = journal.id
+        if self.ars_type:
+            domain = [('type', 'in', {'out_invoice': ['sale'], 'out_refund': ['sale'], 'in_refund': ['purchase'],
+                                      'in_invoice': ['purchase']}.get(self.type, [])),
+                      ('company_id', '=', self.company_id.id), ('ars_type', '=', self.ars_type)]
+            journal = self.env['account.journal'].search(domain, limit=1)
+            self.journal_id = journal.id
+
 
     @api.onchange('purchase_id')
     def purchase_order_change(self):
         if self.purchase_id:
             self.ars_type = self.purchase_id.purchase_type
+            self.default_invoice_type()
         domain = super(ARSCatalogInvoice, self).purchase_order_change()
         return domain
+
+    @api.onchange('partner_id', 'company_id')
+    def _onchange_partner_id(self):
+        res = super(ARSCatalogInvoice, self)._onchange_partner_id()
+        if not self.env.context.get('default_journal_id') and self.partner_id and self.currency_id and\
+                self.type in ['in_invoice', 'in_refund'] and\
+                self.currency_id != self.partner_id.property_purchase_currency_id:
+            journal_domain = [
+                ('type', '=', 'purchase'),
+                ('company_id', '=', self.company_id.id),
+                ('currency_id', '=', self.partner_id.property_purchase_currency_id.id),
+                ('ars_type', '=', self.ars_type),
+            ]
+            default_journal_id = self.env['account.journal'].search(journal_domain, limit=1)
+            if default_journal_id:
+                self.journal_id = default_journal_id
+        return res
+
+
+class ARSaccount_journal(models.Model):
+    _inherit = "account.journal"
+
+    ars_type = fields.Selection([('general', 'General'), ('vehicle', 'Vehicle'),
+                                 ('after_sales', 'Parts/After Sales')], string='Journal Type')
+
+
+
+
+

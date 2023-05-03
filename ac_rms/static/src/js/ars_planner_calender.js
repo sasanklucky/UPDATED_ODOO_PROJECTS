@@ -46,7 +46,7 @@ odoo.define('ac_rms.script', function(require) {
 	  
 		
 	    function myFunction(val){
-	        //console.log($('.fc-time-area').find('.fc-content').find('table th').html());
+	          //console.log($('.fc-time-area').find('.fc-content').find('table th').html());
               $('.fc-time-area').find('.fc-content').find('table th').each(function(index,e) {
                     var time = $(this).text();
                     var res_digit = time.slice(0,-2);
@@ -72,18 +72,19 @@ odoo.define('ac_rms.script', function(require) {
                         var left = (index * distance) + (index * 2) + min_wid;
                         $('.current_time').css("left", left+'px');
                     }
-               });
-              var update_view = $("#view :selected").val();
-              var show_resource = $(".showall").text();
-              var button_text = $(".fc-showall-button").text();
-              ajax.jsonRpc("/resource_planner/get", 'call', { 'view': update_view,'showall':show_resource,'button_text':button_text}).then(function(data) {
-            	  if(data){
-            		  $('#calendar').fullCalendar('removeEvents');
-                	  $('#calendar').fullCalendar('addEventSource', data['events']);
-                	  $('#calendar').fullCalendar('rerenderEvents');
-            	  }
-
               });
+              var update_view = $("#view :selected").val();
+              if (update_view != undefined){
+                  var show_resource = $(".showall").text();
+                  var button_text = $(".fc-showall-button").text();
+                  ajax.jsonRpc("/resource_planner/get", 'call', { 'view': update_view,'showall':show_resource,'button_text':button_text}).then(function(data) {
+                      if(data){
+                          $('#calendar').fullCalendar('removeEvents');
+                          $('#calendar').fullCalendar('addEventSource', data['events']);
+                          $('#calendar').fullCalendar('rerenderEvents');
+                      }
+                  });
+              }
 	    }
 
 
@@ -1557,8 +1558,10 @@ odoo.define('ac_rms.script', function(require) {
 	
 	var selected_view = $("#view :selected").val();
 	//alert(selected_view);
-	resource_planner_ajaxcall(selected_view)
-	setInterval(function() { resource_planner_ajaxcall(selected_view); }, 60000);
+	if (selected_view != undefined){
+	    resource_planner_ajaxcall(selected_view)
+	    setInterval(function() { resource_planner_ajaxcall(selected_view); }, 60000);
+	}
 	$('#skill_grp').on('change', function() {
 		var skill = this.value;
 		var IDs = [];
@@ -1591,7 +1594,8 @@ odoo.define('ac_rms.script', function(require) {
 	function resource_planner_ajaxcall(view) {
         var show_resource = $(".showall").text();
         var button_text = $(".fc-showall-button").text();
-		ajax.jsonRpc("/resource_planner/get", 'call', { 'view': view,'showall':show_resource,'button_text':button_text}).then(function(data) {
+        try {
+		    ajax.jsonRpc("/resource_planner/get", 'call', { 'view': view,'showall':show_resource,'button_text':button_text}).then(function(data) {
 			if (data['status']){
 				//console.log(data['events']);
 				$('#calendar').fullCalendar({
@@ -1601,8 +1605,6 @@ odoo.define('ac_rms.script', function(require) {
 				      aspectRatio: 1.8,
 				      scrollTime: '00:00', // undo default 6am scrollTime
 				      contentHeight: 375,
-
-
 				      header: {
 				        left: 'today prev,next showall',
 				        center: 'title',
@@ -1643,18 +1645,9 @@ odoo.define('ac_rms.script', function(require) {
 				      },
 				      eventOverlap: true,
 				      resourceColumns: [
-				          {
-				            group: true,
-				            labelText: "Resource's",
-				            field: 'resource'
-				          },
-				          {
-				            labelText: 'Entry Type',
-				            field: 'title'
-				          },
-				          
+				          {group: true,labelText: "Resource's",field: 'resource'},
+				          {labelText: 'Entry Type',field: 'title'},
 				        ],
-				      
 				      resources:data['resource'],
 				      events:data['events'],
 				      eventClick: function(calEvent, jsEvent, view) {
@@ -1944,6 +1937,10 @@ odoo.define('ac_rms.script', function(require) {
 				//window.location.href = '/resource_planner';
 			}
 		});
+		}
+		catch(err) {
+            console.log(err);
+        }
 	}
 	
 	function revertFunc(title,start,end){

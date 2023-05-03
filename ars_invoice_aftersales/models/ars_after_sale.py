@@ -194,6 +194,7 @@ class ARS_After_sale_order(models.Model):
                 for order_line in order.order_line:
                     invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
                     invoice.product_template_id = order_line.product_template_id.id
+                return [inv.id for inv in invoices.values()]
 
                 # 'product_template_id':order.order_line.product_template_id.id
 
@@ -273,13 +274,16 @@ class ARS_sale_order_line(models.Model):
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id = False
-        if self.product_template_id:
+        if self.product_template_id and self.product_template_id.attribute_line_ids:
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
+            self.product_id = varient_ids.id
             return {'domain': {'product_id': [('id', 'in', False)]}}
-
+    
     # @api.multi
     # @api.onchange('product_id')
     # def onchange_product_id(self):

@@ -1,6 +1,8 @@
 from dateutil.relativedelta import relativedelta
+import json
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
+
 
 class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
@@ -13,16 +15,16 @@ class FleetVehicle(models.Model):
             year_list.append((i, str(i)))
         return year_list
 
-
     mvariant_id = fields.Many2one('product.product', 'Model Variants')
     model_id = fields.Many2one('product.template', 'Model', required=True, help='Model of the vehicle')
     name = fields.Char(compute="_compute_vehicle_name", store=True)
 
-    contact_name = fields.Many2one('res.partner',string='Contact Person')
-    vehicle_status = fields.Selection([('demo', 'Demo'), ('customer', 'Customer'), ('own', 'Own'), ('new', 'New Vehicle')], 'Vehicle Status',
+    contact_name = fields.Many2one('res.partner', string='Contact Person')
+    vehicle_status = fields.Selection(
+        [('demo', 'Demo'), ('customer', 'Customer'), ('own', 'Own'), ('new', 'New Vehicle')], 'Vehicle Status',
         select=True)
     # kilometer_till = fields.Integer(string='Kilometer Till')
-#     reg_no = fields.Char(string='Regn No.')
+    #     reg_no = fields.Char(string='Regn No.')
     age = fields.Integer(string='Age', compute="_age")
     # prodcution_year = fields.Date(string='Prodcution Year')
     prodcution_month = fields.Selection([(1, 'January'), (2, 'February'), (3, 'March'), (4, 'April'),
@@ -50,7 +52,7 @@ class FleetVehicle(models.Model):
     emission_ids = fields.One2many('emission.history', 'vehicle_id')
     insurance_ids = fields.One2many('insurance.history', 'vehicle_id')
     service_ids = fields.One2many('service.history', 'vehicle_id')
-    lot_id = fields.Many2one('stock.production.lot','Stock Production Lot ')
+    lot_id = fields.Many2one('stock.production.lot', 'Stock Production Lot ')
     license_plate = fields.Char(required=False, help='License plate number of the vehicle (i = plate number for a car)')
 
     # engine_type_code = fields.Char(string='Engine Type Code', related="product_id.product_tmpl_id.engine_type_code")
@@ -93,8 +95,9 @@ class FleetVehicle(models.Model):
     @api.depends('model_id.brand_id.name', 'model_id.name', 'license_plate')
     def _compute_vehicle_name(self):
         for record in self:
-            brand_name = (record.model_id.brand_id and record.model_id.brand_id.name + '/')or ''
-            record.name = brand_name + record.model_id.name + '/' +(record.license_plate == '/' and record.vin_sn or record.license_plate or _('No Plate'))
+            brand_name = (record.model_id.brand_id and record.model_id.brand_id.name + '/') or ''
+            record.name = brand_name + record.model_id.name + '/' + (
+                    record.license_plate == '/' and record.vin_sn or record.license_plate or _('No Plate'))
 
     @api.multi
     def get_vehcile_features(self):
@@ -113,13 +116,13 @@ class FleetVehicle(models.Model):
             'res_id': self.model_id.id,
             'context': self.env.context,
         }
-    
+
     @api.multi
     def name_get(self):
         context = dict(self.env.context)
         print(context)
         result = []
-        ress = super(FleetVehicle,self).name_get()
+        ress = super(FleetVehicle, self).name_get()
 
         if ress:
             for res in ress:
@@ -149,12 +152,12 @@ class FleetVehicle(models.Model):
 
     @api.multi
     def write(self, vals):
-        res= self.env['res.partner'].browse(vals.get('driver_id'))
+        res = self.env['res.partner'].browse(vals.get('driver_id'))
         # self.contact_name = res.name
-        vals.update({'customer_ids' : [(0, 0, {'custmer_name': res.id,
-                                           'date_of_ownership': datetime.now(),
-                                           'address': res.street,
-                                           'mobile': res.mobile})]})
+        vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
+                                              'date_of_ownership': datetime.now(),
+                                              'address': res.street,
+                                              'mobile': res.mobile})]})
         return super(FleetVehicle, self).write(vals)
 
     @api.model
@@ -162,6 +165,7 @@ class FleetVehicle(models.Model):
         self.env.cr.execute("""
                                 ALTER TABLE fleet_vehicle  DROP CONSTRAINT IF EXISTS fleet_vehicle_driver_id_unique;
                             """)
+
     @api.onchange('driver_id')
     def child_user(self):
         driver = self.driver_id.id
@@ -191,6 +195,7 @@ class FleetVehicle(models.Model):
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
 
+
 class CrmLeadLost(models.TransientModel):
     _inherit = 'crm.lead.lost'
 
@@ -201,4 +206,13 @@ class CrmLeadLost(models.TransientModel):
             leads.write({'lost_reason': rec.lost_reason_id.id})
             return leads.action_set_lost()
 
+    # @api.depends('lead_id')
+    # def get_lost_reason_domain(self):
+    #     for this in self:
+    #         domain = ([('type', '=', this.lead_id.type)] if this.lead_id else [])
+    #         this.lost_reason_domain = json.dumps(domain)
+    #
+    # lead_id = fields.Many2one('crm.lead')
+    # lost_reason_domain = fields.Char(compute='get_lost_reason_domain')
 
+    # @api.depends('lost_reason_id')

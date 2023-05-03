@@ -29,8 +29,22 @@
                             <field name="stages_id" string="Stages"/>
                         </div>
                     </div>
+
+                    <h2>Report Setup</h2>
+                     <div class="row mt16 o_settings_container" id="ars_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Format Changes"/>
+                                <div class="text-muted">
+                                    Pro-Forma &amp;  Sale Order Format
+                                </div>
+                                <field name="sale_report_format"/>
+                            </div>
+                        </div>
+                     </div>
+
                     <h2>Service Settings</h2>
-                    <div class="row mt16 o_settings_container" id="ars_settings">
+                    <div class="row mt16 o_settings_container" id="ars_settings2">
                         <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
                             <div class="o_setting_right_pane">
                                 <label string="Next Service Due"/>
