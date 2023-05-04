@@ -7,7 +7,7 @@
                   web_icon="purchase,static/description/icon.png"
                   sequence="25"/>>
 
-        <menuitem id="purchase_vehicle_menu" name="vehicle Operations"
+        <menuitem id="purchase_vehicle_menu" name="Vehicle Operations"
                   parent="menu_vehicle_purchase_root" sequence="2"/>
 
         <menuitem action="ac_vehicle_purchase_rfq" id="vehicle_purchase_rfq"
@@ -25,7 +25,7 @@
                   action="action_ac_vehicle_management_purchase_requisition" sequence="2"/>
 
         <menuitem id="vehicle_purchase_control_menu"
-                  name="vehicle Control"
+                  name="Vehicle Control"
                   parent="menu_vehicle_purchase_root"
                   sequence="4"/>
 

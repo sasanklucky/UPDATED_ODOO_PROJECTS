@@ -17,6 +17,7 @@
     'data': [
         # 'security/ir.model.access.csv',
         'demo/ars_vehicle_purchase.xml',
+        'demo/ars_vehicle_sales.xml',
         'security/ars_vehicle_security.xml',
         'views/views.xml',
         'views/vehicle_purchase.xml',

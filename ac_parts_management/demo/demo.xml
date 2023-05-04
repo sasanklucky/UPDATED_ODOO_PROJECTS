@@ -21,7 +21,7 @@
         </record>
 
         <record id="sequence_parts_invoice_sequence" model="ir.sequence">
-            <field name="name">Parts Invoice</field>
+            <field name="name">Parts Purchase Invoice</field>
             <field name="code">parts.account.invoice</field>
             <field name="prefix">PAR/INV/%(year)s</field>
             <field name="padding">5</field>

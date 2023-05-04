@@ -36,6 +36,8 @@ class ars_configure_settings(models.TransientModel):
     rms_stages_id = fields.Many2one(related="company_id.team_stage_id")
     labor_rate = fields.Float(related="company_id.labor_rate")
     labor_warranty_rate = fields.Float(related="company_id.labor_warranty_rate")
+    sale_report_format = fields.Selection([('format1', 'Format1'), ('format2', 'Format2'), ('format3', 'Format3')],
+                                          related="company_id.sale_report_format")
 
 
 #     @api.multi

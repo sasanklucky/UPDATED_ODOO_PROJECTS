@@ -21,7 +21,7 @@
         </record>
 
         <record id="sequence_vehicle_invoice_sequence" model="ir.sequence">
-            <field name="name">Vehicle Invoice</field>
+            <field name="name">Vehicle Purchase Invoice</field>
             <field name="code">vehicle.account.invoice</field>
             <field name="prefix">VEH/INV/%(year)s</field>
             <field name="padding">5</field>

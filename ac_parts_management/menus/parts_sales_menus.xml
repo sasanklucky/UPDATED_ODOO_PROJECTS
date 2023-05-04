@@ -12,17 +12,17 @@
                   parent="parts_sale_menu_root"
                   sequence="2"/>
 
-        <menuitem id="menu_aftersales_quotation"
-                  name="Estimation"
-                  action="ars_after_sales.action_quotations_inherit"
-                  parent="ac_ars_parts_operation"
-                  sequence="0"/>
+<!--        <menuitem id="menu_aftersales_quotation"-->
+<!--                  name="Estimation"-->
+<!--                  action="ars_after_sales.action_quotations_inherit"-->
+<!--                  parent="ac_ars_parts_operation"-->
+<!--                  sequence="0"/>-->
 
-        <menuitem id="menu_aftersales_orders"
-                  name="Orders"
-                  action="ars_after_sales.action_orders_inherit"
-                  parent="ac_ars_parts_operation"
-                  sequence="1"/>
+<!--        <menuitem id="menu_aftersales_orders"-->
+<!--                  name="Orders"-->
+<!--                  action="ars_after_sales.action_orders_inherit"-->
+<!--                  parent="ac_ars_parts_operation"-->
+<!--                  sequence="1"/>-->
 
         <menuitem id="parts_menu_sale_quotations"
                   name="Quotations"

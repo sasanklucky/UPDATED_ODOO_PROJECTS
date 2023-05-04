@@ -112,19 +112,19 @@ class ARS_crm_lead(models.Model):
     time_at_gate = fields.Date(string="Gate Time")
     is_estimation = fields.Char(default='No Estimation')
     crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
+
     # planned_revenue = fields.Float('Expected Revenue', compute="_get_compute_expected_revenue",
     #                                track_visibility='always', store=True)
 
     @api.multi
-    @api.onchange('vehicle_line')
+    @api.onchange('vehicle_line.product_id')
     def _get_compute_expected_revenue(self):
         for rec in self:
             if rec.type == 'opportunity' and rec.team_id.team_type == 'sales':
                 # print("Expected Revenue", rec.stage, sum(rec.vehicle_line.mapped('product_template_id.list_price')))
-                rec.write({'planned_revenue':sum(rec.vehicle_line.mapped('product_template_id.list_price'))})
+                rec.write({'planned_revenue': sum(rec.vehicle_line.mapped('product_template_id.list_price'))})
             else:
                 print("Expected Revenue")
-
 
     @api.model
     def _read_group_stage_ids(self, stages, domain, order):
@@ -279,9 +279,29 @@ class ARS_crm_lead(models.Model):
                     [('id', '=', vals.get('regn_no'))])
                 model_sn = customer_details.mvariant_id.id
                 vals.update({'vehicle_model': model_sn})
-        return super(ARS_crm_lead, self).create(vals)
+        res = super(ARS_crm_lead, self).create(vals)
+        if res.vehicle_line:
+            if res.type == 'opportunity' and res.team_id.team_type == 'sales':
+                res.planned_revenue = sum(res.vehicle_line.mapped('product_template_id.list_price'))
+        return res
 
-    # Appointment stage id default set in 'Service Due'
+    # @api.multi
+    # def write(self, vals):
+    #     if self.vehicle_line:
+    #         if 'vehicle_line' in vals:
+    #             print(vals['vehicle_line'])
+    #             for val in vals['vehicle_line']:
+    #                 print("Val", val)
+    #         #         if 'product_template_id' in val:
+    #         #             product_template = self.env['product.template'].browse('product_template_id')
+    #         #     planned_revenue = sum(
+    #         #         self.vehicle_line.mapped('product_template_id.list_price')) + product_template.list_price
+    #         # print("Planned Revenue", planned_revenue)
+    #         # vals['planned_revenue'] = planned_revenue
+    #     return super(ARS_crm_lead, self).write(vals)
+
+        # Appointment stage id default set in 'Service Due'
+
     def _default_stage_id(self):
         team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
         userid = self.env.user
@@ -557,11 +577,14 @@ class ARS_crm_lead_line(models.Model):
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id = False
-        if self.product_template_id:
+        if self.product_template_id and self.product_template_id.attribute_line_ids:
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
+            self.product_id = varient_ids.id
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
     @api.multi
