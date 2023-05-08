@@ -793,7 +793,7 @@
                                     <field name="regn_no" string="Reg No"/>
                                     <field name="vin_no" string="VIN"/>
                                     <field name="model" string="Vehicle Model"/>
-                                    <field name="mileage_in" string="Kilometer"/>
+                                    <field name="mileage_in" string="Kilometer"  attrs="{'required': [('state','!=', 'draft')]}"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible':[('warranty_cnt','&lt;=',0)]}">
@@ -1832,7 +1832,7 @@
 
                                 <field name="vin_no"/>
                                 <field name="model"/>
-                                <field name="mileage_in" string="Kilometer"/>
+                                <field name="mileage_in" string="Kilometer" attrs="{'required': [('state','!=', 'draft')]}"/>
                             </group>
                         </group>
 
@@ -2103,7 +2103,7 @@
         </record>
 
         <record id="action_orders_inherit" model="ir.actions.act_window">
-            <field name="name">Sales Orders</field>
+            <field name="name">Service Orders</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>

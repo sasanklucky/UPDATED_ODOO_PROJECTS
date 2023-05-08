@@ -308,6 +308,22 @@
                 </strong>
             </field>
         </record>
+
+        <record id="fleet_vehicle_view_search_inherit_ars" model="ir.ui.view">
+            <field name="name">fleet.vehicle.search.inherit.ars</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='driver_id']" position="attribute">
+                    <attribute name="string">Customer</attribute>
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <filter name="groupby_customer" context="{'group_by' : 'driver_id'}" string="Customer"/>
+                </xpath>
+            </field>
+        </record>
+
         <menuitem name="Vehicles" id="fleet.menu_root" sequence="115" groups="fleet.fleet_group_user"
                   web_icon="fleet,static/description/icon.png"/>
 
