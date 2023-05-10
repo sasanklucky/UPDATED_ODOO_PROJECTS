@@ -282,8 +282,9 @@ class ARS_sale_order_line(models.Model):
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])
             self.product_id = varient_ids.id
+            self.customer_split = self.order_id.partner_id.id
             return {'domain': {'product_id': [('id', 'in', False)]}}
-    
+
     # @api.multi
     # @api.onchange('product_id')
     # def onchange_product_id(self):
@@ -296,7 +297,8 @@ class ARS_sale_order_line(models.Model):
     def product_id_change(self):
         res = super(ARS_sale_order_line, self).product_id_change()
         self.category = self.env['order.line.category'].search([('name', '=', 'Customer')])
-        self.customer_split = self.env.context.get('partner_id')
+        self.customer_split = self.env.context.get(
+            'partner_id') if 'partner_id' in self.env.context else self.order_id.partner_id.id
         # res.update({'customer_split':self.env.context.get('partner_id')})
         print('res5453453', res, self.price_unit)
         self.update({'ars_warranty_price': self.price_unit,
