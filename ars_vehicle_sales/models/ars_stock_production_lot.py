@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from openerp.exceptions import UserError, ValidationError
 from datetime import datetime, timedelta
+# from pynotifier import Notification,NotificationClient
 from odoo.tools.float_utils import float_compare, float_is_zero, float_round
 
 
@@ -20,6 +21,24 @@ class ARS_stock_production_lot(models.Model):
         browse_lot = self.env['product.product'].browse(lot_no)
         browse_lot.lot_id = res.id
         return res
+
+    @api.multi
+    def create_missing_vehicle_card(self):
+        lot_numbers = self.env['stock.production.lot'].search([])
+        fleet_vehicle = self.env['fleet.vehicle']
+        for lot_number in lot_numbers:
+            if not fleet_vehicle.search([('vin_sn', '=', lot_number.name)]):
+                line = self.env['stock.move.line'].search([('lot_id', '=', lot_number.id)], order='id desc', limit=1)
+                vals = {'mvariant_id': lot_number.product_id.id,
+                        'model_id': lot_number.product_id.product_tmpl_id.id,
+                        'vin_sn': lot_number.name,
+                        'license_plate': '/',
+                        'company_id': line.move_id.company_id.id,
+                        'vehicle_status': 'new',
+                        'lot_id': line.lot_id and line.lot_id.id,
+                        'driver_id': line.move_id.company_id.partner_id.id
+                        }
+                res = fleet_vehicle.create(vals)
 
 
 class Picking(models.Model):
@@ -60,11 +79,19 @@ class Picking(models.Model):
                                 'lot_id': line.lot_id and line.lot_id.id,
                                 'driver_id': self.env.user.company_id.partner_id.id
                                 }
-                        res = self.env['fleet.vehicle'].create(vals)
-                        res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
-                                                    'date_of_ownership': datetime.now(),
-                                                    'address': self.partner_id.city,
-                                                    'mobile': self.partner_id.mobile})]
+                        vin_sn = line.lot_id.name if line.lot_id else line.lot_name
+                        if self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
+                            raise ValidationError(_('The Lot Number is already assigned to a vehicle'))
+                        else:
+                            res = self.env['fleet.vehicle'].create(vals)
+                            res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+                                                        'date_of_ownership': datetime.now(),
+                                                        'address': self.partner_id.city,
+                                                        'mobile': self.partner_id.mobile})]
+                        # Notification(title='Fleet Vehicle Validation',
+                        #              description="Validated",
+                        #              duration=25,
+                        #              ).send()
                     elif self.origin and 'Return' in self.origin:
                         vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
                         for vehicle in vehicles:
@@ -116,7 +143,7 @@ class StockMove(models.Model):
 
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
-    
+
     motor_number = fields.Char(string="Motor Number")
 #
 #     @api.constrains('lot_name', 'lot_id')
