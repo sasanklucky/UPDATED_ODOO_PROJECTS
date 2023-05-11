@@ -1,4 +1,4 @@
-import notify2
+# import notify2
 from odoo import models, fields, api, _
 from openerp.exceptions import UserError, ValidationError
 from datetime import datetime, timedelta
@@ -50,8 +50,8 @@ class Picking(models.Model):
 
     @api.multi
     def button_validate(self):
-        notify2.init("Button Validate Notification")
-        notification = notify2.Notification(None)
+        # notify2.init("Button Validate Notification")
+        # notification = notify2.Notification(None)
         for stock_production_obj in self.move_line_ids:
             if stock_production_obj.lot_id:
                 stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
@@ -85,16 +85,11 @@ class Picking(models.Model):
                                 'driver_id': self.env.user.company_id.partner_id.id
                                 }
                         vin_sn = line.lot_id.name if line.lot_id else line.lot_name
-                        if self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
-                            notification.update('Validate Error',
-                                                'The lot number already assigned to a vehicle')
-                            notification.set_urgency(notify2.URGENCY_NORMAL)
-                            notification.show()
-                        else:
+                        if not self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
                             res = self.env['fleet.vehicle'].create(vals)
-                            notification.update('Validated',
-                                                'Vehicle card created')
-                            notification.show()
+                            # notification.update('Validated',
+                            #                     'Vehicle card created')
+                            # notification.show()
                             res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                                                         'date_of_ownership': datetime.now(),
                                                         'address': self.partner_id.city,
