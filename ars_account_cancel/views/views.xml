@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record id="invoice_form_cancel_inherit_ars" model="ir.ui.view">
+            <field name="name">invoice.form.cancel.inherit</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_invoice_draft']" position="before">
+                    <button name="action_invoice_cancel" type="object" states="draft,open" string="Cancel Invoice"
+                            groups="account.group_account_invoice"/>
+                </xpath>
+            </field>
+        </record>
+
+<!--        <record id="invoice_supplier_cancel_form_inherit_ars" model="ir.ui.view">-->
+<!--            <field name="name">invoice.supplier.cancel.form.inherit</field>-->
+<!--            <field name="model">account.invoice</field>-->
+<!--            <field name="inherit_id" ref="account.invoice_supplier_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//button[@name='action_invoice_draft']" position="before">-->
+<!--                    <button name="action_invoice_cancel" type="object" states="draft,open" string="Cancel Invoice"-->
+<!--                            groups="account.group_account_invoice"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+    </data>
+</odoo>
