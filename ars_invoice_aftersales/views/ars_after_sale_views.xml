@@ -193,7 +193,7 @@
                     <field name="product_varient_ids" widget="many2many_tags" invisible="1" required='0' options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="before">
-                    <field name="product_template_id"  options="{'no_create': True, 'no_open': True}" required='1'/>
+                    <field name="product_template_id"  options="{'limit': 1000,'no_create': True, 'no_open': True}" required='1'/>
                 </xpath>
 
             </field>
