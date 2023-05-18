@@ -1,3 +1,4 @@
+# import notify2
 from odoo import models, fields, api, _
 from openerp.exceptions import UserError, ValidationError
 from datetime import datetime, timedelta
@@ -21,21 +22,44 @@ class ARS_stock_production_lot(models.Model):
         browse_lot.lot_id = res.id
         return res
 
+    @api.multi
+    def create_missing_vehicle_card(self):
+        lot_numbers = self.env['stock.production.lot'].search([])
+        fleet_vehicle = self.env['fleet.vehicle']
+        for lot_number in lot_numbers:
+            if not fleet_vehicle.search([('vin_sn', '=', lot_number.name)]):
+                line = self.env['stock.move.line'].search([('lot_id', '=', lot_number.id)], order='id desc', limit=1)
+                vals = {'mvariant_id': lot_number.product_id.id,
+                        'model_id': lot_number.product_id.product_tmpl_id.id,
+                        'vin_sn': lot_number.name,
+                        'license_plate': '/',
+                        'company_id': line.move_id.company_id.id,
+                        'vehicle_status': 'new',
+                        'lot_id': line.lot_id and line.lot_id.id,
+                        'driver_id': line.move_id.company_id.partner_id.id
+                        }
+                res = fleet_vehicle.create(vals)
+
 
 class Picking(models.Model):
     _inherit = 'stock.picking'
 
+    def create_vehicle_card(self, vals, location):
+        res = {}
+        return res
+
     @api.multi
     def button_validate(self):
-        print('called validate')
+        # notify2.init("Button Validate Notification")
+        # notification = notify2.Notification(None)
         for stock_production_obj in self.move_line_ids:
             if stock_production_obj.lot_id:
                 stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                                                                     'date_of_ownership': datetime.now(),
                                                                     'address': self.partner_id.city,
                                                                     'mobile': self.partner_id.mobile})]
-
-                stock_production_obj.lot_id.check_new_lotno = True
+                if stock_production_obj.move_id.sale_line_id:
+                    stock_production_obj.lot_id.check_new_lotno = True
         res = super(Picking, self).button_validate()
         self._cr.commit()
         picking_type = self.picking_type_id
@@ -50,21 +74,31 @@ class Picking(models.Model):
 
             for line in lines_to_check:
                 if not line.move_id.sale_line_id and (line.lot_name or line.lot_id):
-                    vals = {'mvariant_id': line.product_id.id,
-                            'model_id': line.product_id.product_tmpl_id.id,
-                            'vin_sn': line.lot_id and line.lot_id.name or line.lot_name,
-                            'license_plate': '/',
-                            'company_id': line.move_id.company_id.id,
-                            'vehicle_status': 'new',
-                            'engine_number': line.motor_number,
-                            'lot_id': line.lot_id and line.lot_id.id,
-                            'driver_id': self.env.user.company_id.partner_id.id
-                            }
-                    res = self.env['fleet.vehicle'].create(vals)
-                    res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
-                                                'date_of_ownership': datetime.now(),
-                                                'address': self.partner_id.city,
-                                                'mobile': self.partner_id.mobile})]
+                    if self.origin and 'Return' not in self.origin:
+                        vals = {'mvariant_id': line.product_id.id,
+                                'model_id': line.product_id.product_tmpl_id.id,
+                                'vin_sn': line.lot_id and line.lot_id.name or line.lot_name,
+                                'license_plate': '/',
+                                'company_id': line.move_id.company_id.id,
+                                'vehicle_status': 'new',
+                                'lot_id': line.lot_id and line.lot_id.id,
+                                'driver_id': self.env.user.company_id.partner_id.id
+                                }
+                        vin_sn = line.lot_id.name if line.lot_id else line.lot_name
+                        if not self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
+                            res = self.env['fleet.vehicle'].create(vals)
+                            # notification.update('Validated',
+                            #                     'Vehicle card created')
+                            # notification.show()
+                            res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+                                                        'date_of_ownership': datetime.now(),
+                                                        'address': self.partner_id.city,
+                                                        'mobile': self.partner_id.mobile})]
+                    elif self.origin and 'Return' in self.origin:
+                        vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
+                        for vehicle in vehicles:
+                            if vehicle.vehicle_status == 'new':
+                                vehicle.unlink()
                 elif line.lot_id and line.move_id.sale_line_id:
                     vals = {
                         'vin_no': line.lot_id.id,
@@ -98,17 +132,20 @@ class StockMove(models.Model):
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id = False
-        if self.product_template_id:
+        if self.product_template_id and self.product_template_id.attribute_line_ids:
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])
             return {'domain': {'product_id': [('id', 'in', varient_ids.ids)]}}
         else:
+            varient_ids = self.env['product.product'].sudo().search(
+                [('product_tmpl_id', '=', self.product_template_id.id)])
+            self.product_id = varient_ids.id
             return {'domain': {'product_id': [('id', 'in', False)]}}
 
 
 class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
-    
+
     motor_number = fields.Char(string="Motor Number")
 #
 #     @api.constrains('lot_name', 'lot_id')

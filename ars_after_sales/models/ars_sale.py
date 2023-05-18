@@ -17,14 +17,29 @@ class ARS_sale_order(models.Model):
 
         userid = self.env.user
         company = self.env.user.company_id.id
-        if userid.sale_team_id.team_type == 'sales':
-            warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
+        if userid.sale_team_id.team_type == 'sales' or self.sale_type == 'vehicle':
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company)], limit=1)
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
             return warehouse_ids
-        if userid.sale_team_id.team_type == 'after_sales':
-            warehouse_ids = self.env['stock.warehouse'].search([('name', '=', 'Parts Warehouse')], limit=1)
+
+    @api.onchange('sale_type')
+    def _get_default_warehouse_based_on_sales_type(self):
+        userid = self.env.user
+        company = self.env.user.company_id.id
+        if userid.sale_team_id.team_type == 'sales' and self.sale_type == 'vehicle':
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'vehicle')], limit=1)
+            self.warehouse_id = warehouse_ids.id
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
-            return warehouse_ids
+        elif self.sale_type in ['parts', 'accessories']:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
+            self.warehouse_id = warehouse_ids.id
+        else:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)
+            self.warehouse_id = warehouse_ids.id
 
     @api.multi
     def _compute_vehicle_count(self):
@@ -85,6 +100,19 @@ class ARS_sale_order(models.Model):
                                          compute="_get_product_sale_catalog")
     sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
                                   ('accessories', 'Accessories'), ('others', 'Others')])
+    service_type = fields.Many2one('service.type', 'Service Type')
+    service_options = fields.Many2one('service.options', 'Service Options')
+
+    @api.multi
+    @api.onchange('service_type')
+    def domain_set_service_option(self):
+        self.service_options = False
+        if self.service_type:
+            service_options = self.env['service.options'].sudo().search(
+                [('service_type', '=', self.service_type.id)])
+            return {'domain': {'service_options': [('id', 'in', service_options.ids)]}}
+        else:
+            return {'domain': {'product_id': [('id', 'in', False)]}}
 
     @api.multi
     @api.depends('sale_type')
@@ -214,6 +242,8 @@ class ARS_sale_order(models.Model):
         rse_data = {}
         data = {
             'product_id': line.product_id.id,
+            'product_template_id': line.product_template_id.id,
+            'product_catalog_id': line.product_catalog_id.id,
             # 'layout_category_id': line.layout_category_id.id,
             'name': line.name,
             'product_uom_qty': line.product_uom_qty,
@@ -293,32 +323,43 @@ class ARS_sale_order(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(ARS_sale_order, self).create(vals)
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team:
-            if sale_team.team_type == 'after_sales':
-                s_name = self.env['ir.sequence'].next_by_code('sale_estimate')
-                res.name = s_name
-                if self.env.context.get('counter_parts'):
-                    res.counter_parts = 'parts'
-                else:
-                    res.sale_aftersales = 'after_sales'
-            elif sale_team.team_type == 'sales':
-                res.sale_aftersales = 'sales'
+        if vals.get('name', _('New')) == _('New'):
+            if sale_team or 'sale_type' in vals:
+                if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':
+                    vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
+                    if self.env.context.get('counter_parts'):
+                        vals['counter_parts'] = 'parts'
+                    else:
+                        vals['sale_aftersales'] = 'after_sales'
+                elif sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
+                    vals['sale_aftersales'] = 'sales'
+            res = super(ARS_sale_order, self).create(vals)
         return res
+
 
     @api.multi
     def action_confirm(self):
-        print('called action ccccccccccccccccccccccccccccccccccccccccc=')
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team.team_type == 'sales' or self.sale_type == 'vehicle':
+        if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
+            if self.mileage_in == 0:
+                raise UserError(_('Please enter the mileage'))
+        if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
             if self.company_id:
-                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id).next_by_code(
-                    'sale.quotation') or _('New')
+                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                    'vehicle.sale.order') or _('New')
             else:
-                self.name = self.env['ir.sequence'].next_by_code('sale.order') or _('New')
-        elif sale_team.team_type == 'after_sales' or self.sale_type in ['parts', 'accessories']:
+                self.name = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
+        elif sale_team.team_type == 'sales' and self.sale_type == 'parts':
+            if self.company_id:
+                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                    'parts.sale.order') or _('New')
+            else:
+                self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
+        elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
             self.name = self.env['ir.sequence'].next_by_code('aftersale_so')
+        else:
+            self.name = self.env['ir.sequence'].next_by_code('sale.order')
         result = super(ARS_sale_order, self).action_confirm()
         return result
 
@@ -509,11 +550,30 @@ class ARS_sale_order(models.Model):
     #     #         'stop':starttime.strftime("%Y-%m-%d %H:%M:%S")}
     #     # self.env['calendar.event'].create(vals)
     #     return False
+    @api.multi
+    def get_sale_type(self):
+        if self.sale_type == 'vehicle':
+            return 'vehicle'
+        elif self.sale_type in ('parts', 'accessories'):
+            return 'after_sales'
+        else:
+            return 'general'
+
+    @api.multi
+    def _get_journal_type(self, type):
+        if self.sale_type:
+            domain = [('type', 'in', {'out_invoice': ['sale'], 'out_refund': ['sale'], 'in_refund': ['purchase'],
+                                      'in_invoice': ['purchase']}.get(type, [])),
+                      ('company_id', '=', self.company_id.id), ('ars_type', '=', self.get_sale_type())]
+            journal = self.env['account.journal'].search(domain, limit=1)
+            return journal.id
 
     @api.multi
     def _prepare_invoice(self):
         res = super(ARS_sale_order, self)._prepare_invoice()
-        res.update({'order_id': self.id})
+        res.update({'order_id': self.id, 'ars_invoice_type': self.get_sale_type()})
+        if 'type' in res:
+            res.update({'journal_id': self._get_journal_type(res['type'])})
         # create service history if service order created
         vehicle = self.env['fleet.vehicle'].search(
             [('driver_id', '=', self.partner_id.id), ('license_plate', '=', self.regn_no.license_plate),
@@ -523,25 +583,27 @@ class ARS_sale_order(models.Model):
         if vehicle and self.sale_aftersales == 'after_sales':
             #             date_1 = datetime.strptime(date.today(), "%m/%d/%y")
             #             fields.Datetime.from_string(date.today()) + timedelta(days=int(nxt_due))
-            if not vehicle.service_due:
-                next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
-                set_reminder = datetime.now().date() + timedelta(days=int(remainder))
-            else:
-                ser_history = vehicle.service_due
-                last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
-                next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
-                    days=int(nxt_due))
-                set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
-                    days=int(remainder))
-            if self.env.context.get('count_line') == 0:
-                self.env['service.history'].create({
-                    'order': self.id,
-                    'servicetype': 'First Free Service',
-                    'date': date.today(),
-                    'next_service_due': next_service_due,
-                    'set_reminder': set_reminder,
-                    'vehicle_id': vehicle.id,
-                })
+            res.update({'service_type': self.service_type.id if self.service_type else False,
+                        'service_options': self.service_options.id if self.service_options else False, })
+        if not vehicle.service_due:
+            next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
+            set_reminder = datetime.now().date() + timedelta(days=int(remainder))
+        else:
+            ser_history = vehicle.service_due
+            last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
+            next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
+                days=int(nxt_due))
+            set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
+                days=int(remainder))
+        if self.env.context.get('count_line') == 0:
+            self.env['service.history'].create({
+                'order': self.id,
+                'servicetype': 'First Free Service',
+                'date': date.today(),
+                'next_service_due': next_service_due,
+                'set_reminder': set_reminder,
+                'vehicle_id': vehicle.id,
+            })
         return res
 
 
@@ -604,7 +666,6 @@ class ARS_AccountInvoiceLine(models.Model):
             domain['domain'] = {'product_id': [('catalog_type.name', 'in', ('Vehicle', 'Accessories'))]}
         elif self.env.user.has_group('ars_after_sales.group_aftersale_invoice'):
             domain['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
-
         return domain
 
 

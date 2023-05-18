@@ -15,7 +15,9 @@
         # 'security/ir.model.access.csv',
         'security/ars_parts_security.xml',
         'demo/demo.xml',
+        'demo/ars_parts_sales.xml',
         'views/parts_purchase.xml',
+        'menus/parts_sales_menus.xml',
         'menus/parts_inventory_menus.xml',
         'menus/parts_purchase.xml',
 

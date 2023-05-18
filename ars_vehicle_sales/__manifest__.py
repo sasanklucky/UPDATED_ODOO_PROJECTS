@@ -18,6 +18,7 @@
         'data/product_data.xml',
         'data/ars_mail_template_data.xml',
         'data/quotation_sequence.xml',
+        'data/ars_cron_job.xml',
         'security/ars_security.xml',
         'security/ir.model.access.csv',
         'views/ars_test_drive.xml',
@@ -41,6 +42,7 @@
         'views/ars_footer.xml',
         'views/ars_css.xml',
         'views/stock_picking.xml',
+        'views/ars_crm_lost_reason.xml',
 
     ],
     'installable': True,

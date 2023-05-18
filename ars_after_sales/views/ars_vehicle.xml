@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!--<record id="ars_vehicle_view_form_inherit" model="ir.ui.view">-->
+        <!--<field name="name">ars_vehicle_view_form_inherit</field>-->
+        <!--<field name="model">fleet.vehicle</field>-->
+        <!--<field name="inherit_id" ref="fleet.fleet_vehicle_view_form" />-->
+        <!--<field name="arch" type="xml">-->
+        <!--<label for="license_plate" class="oe_edit_only" position="before">-->
+        <!--<label for="mvariant_id" class="oe_edit_only"/>-->
+        <!--<h2>-->
+        <!--<field name="mvariant_id" class="oe_inline" required="1"/>-->
+        <!--</h2>-->
+        <!--</label>-->
+        <!--<field name="vin_sn" position="attributes">-->
+        <!--<attribute name="string">VIN Number</attribute>-->
+        <!--</field>-->
+        <!--</field>-->
+        <!--</record>-->
+        <!---->
+
+
+        <record id='ars_vehicle_view_form_inherit' model='ir.ui.view'>
+            <field name="name">ars_vehicle_view_form_inherit</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+            <field name="arch" type="xml">
+                <form position="replace">
+                    <form string="Vehicle">
+                        <header>
+                            <field name="state_id" widget="statusbar" clickable="True"/>
+                        </header>
+                        <sheet>
+                            <div class="oe_button_box" name="button_box">
+                                <button name="return_action_to_open"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-book"
+                                        context="{'xml_id':'fleet_vehicle_log_contract_action', 'search_default_open': 1}"
+                                        help="show the contract for this vehicle">
+                                    <field name="contract_count" widget="statinfo" string="Contracts"/>
+                                </button>
+                                <button name="act_show_log_cost"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-usd"
+                                        help="show all the costs for this vehicle"
+                                        groups="fleet.fleet_group_manager">
+                                    <field name="cost_count" widget="statinfo" string="Costs"/>
+                                </button>
+                                <!--<button name="return_action_to_open"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-wrench"
+                                    context="{'xml_id':'fleet_vehicle_log_services_action'}"
+                                    help="show the services logs for this vehicle" >
+                                    <field name="service_count" widget="statinfo" string="Services"/>
+                                </button>-->
+                                <button name="return_action_to_open"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-flask"
+                                        context="{'xml_id':'fleet_vehicle_log_fuel_action'}"
+                                        help="show the fuel logs for this vehicle">
+                                    <field name="fuel_logs_count" widget="statinfo" string="Fuel"/>
+                                </button>
+                                <button name="return_action_to_open"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-tachometer"
+                                        context="{'xml_id':'fleet_vehicle_odometer_action'}"
+                                        help="show the odometer logs for this vehicle">
+                                    <field name="odometer_count" widget="statinfo" string="Odometer"/>
+                                </button>
+                                <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                    <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                                </button>
+                                <button
+                                        icon="fa-align-justify"
+                                        name="get_vehcile_features"
+                                        string="Vehicle Features" type="object"
+                                        target="new"/>
+                            </div>
+                            <field name="image_medium" widget='image' class="oe_avatar"/>
+                            <div class="oe_title">
+                                <label for="model_id" class="oe_edit_only"/>
+                                <h1>
+                                    <field name="model_id" domain="[('catalog_type','=','Vehicle')]"
+                                           placeholder="e.g. Model S"/>
+                                </h1>
+                                <label for="mvariant_id" class="oe_edit_only"/>
+                                <h2>
+                                    <field name="mvariant_id" class="oe_inline"
+                                           domain="[('product_tmpl_id','=',model_id)]" required="1"/>
+                                </h2>
+                                <label for="license_plate" class="oe_edit_only"/>
+                                <h2>
+                                    <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
+                                </h2>
+                                <label for="tag_ids" class="oe_edit_only"/>
+                                <field name="tag_ids" widget="many2many_tags"
+                                       options="{'color_field': 'color', 'no_create_edit': True}"/>
+                            </div>
+
+                            <group>
+                                <group>
+                                    <group colspan="4" string="Customer Details">
+                                        <field name="driver_id" string="Customer"/>
+                                        <field name="contact_name" string="Contact Person"/>
+                                    </group>
+                                    <group colspan="4" string="Vehicle Specification">
+                                        <field name="categ_id" readonly="1"/>
+                                        <field name="fuel_type"/>
+                                        <field name="engine_code"/>
+                                        <field name="engine_number"/>
+                                        <field name="key_serial_number"/>
+                                        <label for="co2"/>
+                                        <div class="o_row" name="co2">
+                                            <field name="co2"/>
+                                            <span>g/km</span>
+                                        </div>
+                                        <field name="horsepower"/>
+                                        <field name="horsepower_tax"/>
+                                        <label for="power"/>
+                                        <div class="o_row">
+                                            <field name="power"/>
+                                            <span>kW</span>
+                                        </div>
+                                    </group>
+                                </group>
+
+                                <group>
+                                    <group colspan="4" string="Vehicle Information">
+                                        <field name="vehicle_status"
+                                               attrs="{'readonly':[('vehicle_status','=','new')]}"/>
+                                        <field name="initial_reg_no"/>
+                                        <field name="vin_sn" string="VIN"/>
+                                        <label for="model_year"/>
+                                        <div class="o_row">
+                                            <field name="model_month"/>
+                                            <field name="model_year"/>
+                                        </div>
+                                        <label for="prodcution_year"/>
+                                        <div class="o_row">
+                                            <field name="prodcution_month"/>
+                                            <field name="prodcution_year"/>
+                                        </div>
+                                        <label for="odometer"/>
+                                        <div class="o_row">
+                                            <field name="odometer"/>
+                                            <field name="odometer_unit"/>
+                                        </div>
+                                        <field name="location"/>
+                                    </group>
+                                    <group colspan="4" string="Warranty Details">
+                                        <field name="warranty_validation"/>
+                                        <field name="extented_warranty_no"/>
+                                        <field name="emission_test_category" string="Emmision category"/>
+                                        <field name="extented_warranty_validation"
+                                               string="Extented Warranty validation"/>
+                                        <field name="transmission"/>
+                                    </group>
+                                </group>
+                            </group>
+
+                            <!--<group col="2" string="General Properties">-->
+                            <!--<group>-->
+                            <!--<field name="driver_id" string="Customer"/>-->
+                            <!--<field name="contact_name"/>-->
+                            <!--<field name="vehicle_status" attrs="{'readonly':[('vehicle_status','=','new')]}"/>-->
+                            <!--<label for="model_year"/>-->
+                            <!--<div class="o_row">-->
+                            <!--<field name="model_month" />-->
+                            <!--<field name="model_year"/>-->
+                            <!--</div>-->
+                            <!--<label for="prodcution_year"/>-->
+                            <!--<div class="o_row">-->
+                            <!--<field name="prodcution_month" />-->
+                            <!--<field name="prodcution_year"/>-->
+                            <!--</div>-->
+                            <!--</group>-->
+                            <!--<group>-->
+                            <!--<field name="initial_reg_no"/>-->
+                            <!--&lt;!&ndash; <field name="reg_no"/> &ndash;&gt;-->
+                            <!--<label for="odometer"/>-->
+                            <!--<div class="o_row">-->
+                            <!--<field name="odometer"/>-->
+                            <!--<field name="odometer_unit"/>-->
+                            <!--</div>-->
+                            <!--<field name="location" />-->
+                            <!--<field name="vin_sn" string="VIN"/>-->
+                            <!--<field name="acquisition_date" invisible="1"/>-->
+                            <!--<field name="car_value" invisible="1"/>-->
+                            <!--<field name="residual_value" invisible="1"/>-->
+                            <!--<field name="company_id" groups="base.group_multi_company"/>-->
+                            <!--</group>-->
+                            <!--</group>-->
+                            <!--<group col="2" string="Vehicle details">-->
+                            <!--<group>-->
+                            <!--<field name="engine_code"/>-->
+                            <!--<field name="engine_number"/>-->
+                            <!--<field name="key_serial_number"/>-->
+                            <!--<field name="categ_id" readonly="1"/>-->
+                            <!--</group>-->
+                            <!--<group >-->
+                            <!--<field name="warranty_validation"/>-->
+                            <!--<field name="extented_warranty_no"/>-->
+                            <!--<field name="emission_test_category" string="Emmision category"/>-->
+                            <!--<field name="extented_warranty_validation" string="Extented Warranty validation"/>-->
+                            <!--<field name="transmission" />-->
+                            <!--<field name="fuel_type" />-->
+                            <!--<label for="co2"/>-->
+                            <!--<div class="o_row" name="co2">-->
+                            <!--<field name="co2"/><span>g/km</span>-->
+                            <!--</div>-->
+                            <!--<field name="horsepower" />-->
+                            <!--<field name="horsepower_tax" />-->
+                            <!--<label for="power"/>-->
+                            <!--<div class="o_row">-->
+                            <!--<field name="power"/><span>kW</span>-->
+                            <!--</div>-->
+                            <!--</group>-->
+                            <!--</group>-->
+
+                            <notebook>
+                                <page string="Service History">
+                                    <field name="service_ids">
+                                        <tree editable="bottom">
+                                            <field name="order" string="RO No"/>
+                                            <field name="servicetype" string="Service Type"/>
+                                            <field name="date" string="Date"/>
+                                            <field name="mileage" string="Mileage"/>
+                                            <field name="next_service_due" string="Next Service Due"/>
+                                            <field name="set_reminder" string="Set Reminder"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                                <page string="Ownership History">
+                                    <field name="customer_ids" readonly="True">
+                                        <tree editable="bottom">
+                                            <field name="custmer_name" string="Customer Name"/>
+                                            <field name="date_of_ownership" string="Date of Ownership"/>
+                                            <field name="address" string="Address"/>
+                                            <field name="mobile" string="Mobile"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                                <page string="Insurance History">
+                                    <field name="insurance_ids">
+                                        <tree editable="bottom">
+                                            <field name="insurance_doc_no" string="Insurance Doc No"/>
+                                            <field name="vender_name" string="Vendor Name"/>
+                                            <field name="insurance_start" string="Insurance Start Date"/>
+                                            <field name="insurance_end" string="Insurance End Date"/>
+                                            <field name="set_reminder" string="Set Reminder"/>
+                                        </tree>
+                                    </field>
+                                </page>
+                                <page string="Emission History">
+                                    <field name="emission_ids">
+                                        <tree editable="bottom">
+                                            <field name="emission_doc_no" string="Emission Doc No"/>
+                                            <field name="agency_name" string="Agency Name"/>
+                                            <field name="emission_start" string="Emission Start Date"/>
+                                            <field name="emision_end" string="Emission End Date"/>
+                                            <field name="set_reminder" string="Set Reminder"/>
+                                        </tree>
+                                    </field>
+                                </page>
+
+                            </notebook>
+                        </sheet>
+                        <div class="oe_chatter">
+                            <field name="message_follower_ids" widget="mail_followers"/>
+                            <field name="message_ids" widget="mail_thread" options='{"thread_level": 1}'/>
+                        </div>
+                    </form>
+                </form>
+            </field>
+        </record>
+
+
+        <record id='ars_fleet_vehicle_view_kanban' model='ir.ui.view'>
+            <field name="name">ars.fleet.vehicle.kanban</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_kanban"/>
+            <field name="arch" type="xml">
+                <strong class="o_kanban_record_title" position="replace">
+                    <t t-if="record.license_plate.raw_value != '/'">
+                        <strong class="o_kanban_record_title">
+                            <field name="license_plate"/>
+                            :
+                            <field name="model_id"/>
+                            :
+                            <field name="mvariant_id"/>
+                        </strong>
+                    </t>
+                    <t t-if="record.license_plate.raw_value == '/'">
+                        <strong class="o_kanban_record_title">
+                            <field name="vin_sn"/>
+                            :
+                            <field name="model_id"/>
+                            :
+                            <field name="mvariant_id"/>
+                        </strong>
+                    </t>
+                </strong>
+            </field>
+        </record>
+
+        <record id="fleet_vehicle_view_search_inherit_ars" model="ir.ui.view">
+            <field name="name">fleet.vehicle.search.inherit.ars</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="mode">primary</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='driver_id']" position="attribute">
+                    <attribute name="string">Customer</attribute>
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <filter name="groupby_customer" context="{'group_by' : 'driver_id'}" string="Customer"/>
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem name="Vehicles" id="fleet.menu_root" sequence="115" groups="fleet.fleet_group_user"
+                  web_icon="fleet,static/description/icon.png"/>
+
+
+        <!--Update QTY Product Add domain filter in lot_id-->
+        <record id="view_change_product_quantity_inherit" model="ir.ui.view">
+            <field name="name">Change Product Quantity</field>
+            <field name="model">stock.change.product.qty</field>
+            <field name="inherit_id" ref="stock.view_change_product_quantity"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/group/field[@name='lot_id']" position="replace">
+                    <field name="lot_id" domain="[('product_id', '=', product_id),('check_new_lotno','!=',True)]"
+                           context="{'search_default_product_id':product_id,'default_product_id':product_id}"
+                           groups="stock.group_production_lot"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="fleet_vehicle_view_tree_inherit" model="ir.ui.view">
+            <field name="name">fleet.vehicle.tree</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="driver_id" position="replace">
+                    <field name="driver_id" string="Customer"/>
+                    <field name="contact_name" string="Contact Person"/>
+                </field>
+                <field name="vin_sn" position="attributes">
+                    <attribute name="string">VIN Number</attribute>
+                </field>
+
+            </field>
+        </record>
+    </data>
+</odoo>

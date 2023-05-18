@@ -1,5 +1,7 @@
+
+import json
 from odoo import models, fields, api, _
-from datetime import datetime
+from datetime import datetime, time
 from datetime import timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
@@ -13,6 +15,8 @@ class arsCompany(models.Model):
 
     dealer_code = fields.Char(string="Dealer Code", required=True)
     make_id = fields.Many2one('fleet.vehicle.model.brand', string="Make")
+    sale_report_format = fields.Selection([('format1', 'Format1'), ('format2', 'Format2'), ('format3', 'Format3')],
+                                          default='format1')
     dealer_zone = fields.Selection([
         ('east', 'EAST'),
         ('west', 'WEST'),
@@ -75,8 +79,8 @@ class ars_sale_crm_lead(models.Model):
 class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 
-    bank_account = fields.Many2one('res.bank',string="Financer")
-    
+    bank_account = fields.Many2one('res.bank', string="Financer")
+
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
@@ -100,11 +104,18 @@ class ars_sale_crm_sale(models.Model):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if vals.get('name', _('New')) == _('New'):
             if sale_team or 'sale_type' in vals:
-                if sale_team.team_type == 'sales' or vals['sale_type'] == 'vehicle':
+                if sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
                     if 'company_id' in vals:
-                        vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('sale.quotation') or _('New')
+                        vals['name'] = self.env['ir.sequence'].with_context(
+                            force_company=vals['company_id']).next_by_code('vehicle.sale.quotation') or _('New')
                     else:
-                        vals['name'] = self.env['ir.sequence'].next_by_code('sale.quotation') or _('New')
+                        vals['name'] = self.env['ir.sequence'].next_by_code('vehicle.sale.quotation') or _('New')
+                elif sale_team.team_type == 'sales' and vals['sale_type'] == 'parts':
+                    if 'company_id' in vals:
+                        vals['name'] = self.env['ir.sequence'].with_context(
+                            force_company=vals['company_id']).next_by_code('parts.sale.quotation') or _('New')
+                    else:
+                        vals['name'] = self.env['ir.sequence'].next_by_code('parts.sale.quotation') or _('New')
         res = super(ars_sale_crm_sale, self).create(vals)
         return res
 
@@ -119,6 +130,7 @@ class ars_sale_crm_sale(models.Model):
                                                 partner=self.partner_shipping_id)['taxes']
                 for tax in line.tax_id:
                     group = tax.tax_group_id
+                    print(group.name)
                     res.setdefault(group, {'amount': 0.0, 'base': 0.0})
                     for t in taxes:
                         if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
@@ -131,6 +143,42 @@ class ars_sale_crm_sale(models.Model):
         res = [(l[1]['name'], l[1]['amount'], l[1]['base'], len(res)) for l in res]
         # print(res)
         return res
+
+    @api.multi
+    def _get_tcs_vehicle_tax_amount(self):
+        self.ensure_one()
+        tcs = {}
+        other_tax = {}
+        tax_amount = {'amount': 0.0}
+        for line in self.order_line:
+            if line.product_id.catalog_type.name == 'Vehicle':
+                price_reduce = line.price_unit * (1.0 - line.discount / 100.0)
+                taxes = line.tax_id.compute_all(price_reduce, quantity=line.product_uom_qty, product=line.product_id,
+                                                partner=self.partner_shipping_id)['taxes']
+                for tax in line.tax_id:
+                    group = tax.tax_group_id
+                    if 'TCS' in group.name:
+                        tcs.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                    else:
+                        other_tax.setdefault(group, {'amount': 0.0, 'base': 0.0})
+                    for t in taxes:
+                        if t['id'] == tax.id or t['id'] in tax.children_tax_ids.ids:
+                            if 'TCS' in tax.name:
+                                tcs[group]['name'] = tax.name
+                                tcs[group]['amount'] += t['amount']
+                                tcs[group]['base'] += t['base']
+                            else:
+                                other_tax[group]['name'] = tax.name
+                                other_tax[group]['amount'] += t['amount']
+                                other_tax[group]['base'] += t['base']
+                                tax_amount['amount'] += t['amount']
+            else:
+                pass
+        tcs = sorted(tcs.items(), key=lambda l: l[0].sequence)
+        tcs = [(l[1]['name'], l[1]['amount'], l[1]['base'] + tax_amount['amount'], len(tcs)) for l in tcs]
+        other_tax = sorted(other_tax.items(), key=lambda l: l[0].sequence)
+        other_tax = [(l[1]['name'], l[1]['amount'], l[1]['base'], len(other_tax)) for l in other_tax]
+        return tcs
 
     @api.multi
     def _get_other_tax_amount_by_group_wise(self):
@@ -356,7 +404,12 @@ class ars_sale_advance_payment_inv(models.TransientModel):
                 res = self._create_invoice(order, so_line, amount)
                 res.mobile = order.mobile
                 res.email = order.email
-
+                if order.sale_type == 'vehicle':
+                    res.ars_invoice_type = 'vehicle'
+                elif order.sale_type in ('parts', 'accessories'):
+                    res.ars_invoice_type = 'after_sales'
+                else:
+                    res.ars_invoice_type = 'general'
         if self._context.get('open_invoices', False):
             return sale_orders.action_view_invoice()
         return {'type': 'ir.actions.act_window_close'}
@@ -402,3 +455,12 @@ class Menu(models.Model):
                 not self.user_has_groups('base.group_user') and not self.user_has_groups('base.group_portal')):
             visible = False
         self.is_visible = visible
+
+
+class ARSCrmLostReason(models.Model):
+    _inherit = "crm.lost.reason"
+
+    type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
+                            help="Type is used to separate Leads and Opportunities")
+
+

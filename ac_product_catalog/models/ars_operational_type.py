@@ -1,28 +1,60 @@
-from odoo import models, fields, _
+from odoo import models, fields,api, _
 from odoo.tools import format_date
 
 
 class ARSPurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    READONLY_STATES = {
+        'purchase': [('readonly', True)],
+        'done': [('readonly', True)],
+        'cancel': [('readonly', True)],
+    }
+
+    @api.model
+    def _default_picking_type(self):
+        print(self.purchase_type)
+        type_obj = self.env['stock.picking.type']
+        company_id = self.env.context.get('company_id') or self.env.user.company_id.id
+        types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id)])
+        if not types:
+            types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
+        return types[:1]
+
     purchase_type = fields.Selection([('general', 'General Purchase'), ('vehicle', 'Vehicle Purchase'),
                                       ('after_sales', 'After Sales')], string='Type')
 
-    # @api.depends('purchase_type')
-    # def _get_default_product_catalog(self):
-    #     print("product_catalog")
-    #     # if self.lead_order_id.team_id.team_type == 'sales':
-    #     product_catalog = []
-    #     if self.purchase_type == 'vehicle':
-    #         product_catalog = self.env['product.catalog'].search([('name', '=', 'Vehicle')], limit=1)
-    #     elif self.purchase_type == 'after_sales':
-    #         product_catalog = self.env['product.catalog'].search([('name', '=', 'Parts')], limit=1)
-    #     # else:
-    #     #     product_catalog = self.env['product.catalog'].search([], limit=1)
-    #     self.product_catalog_id = product_catalog.id
-    #
-    # product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type',
-    #                                      compute='_get_default_product_catalog')
+    picking_type_id = fields.Many2one('stock.picking.type', 'Deliver To', states=READONLY_STATES, required=True,
+                                      default=_default_picking_type,
+                                      help="This will determine operation type of incoming shipment")
+
+    @api.onchange('purchase_type')
+    def _update_picking_type_based_on_purchase_type(self):
+        global types
+        type_obj = self.env['stock.picking.type']
+        company_id = self.env.context.get('company_id') or self.env.user.company_id.id
+        if self.purchase_type:
+            if self.purchase_type == 'vehicle':
+                types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id),
+                                         ('warehouse_id.ars_type', '=', 'vehicle')])
+            elif self.purchase_type == 'after_sales':
+                types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id.company_id', '=', company_id),
+                                         ('warehouse_id.ars_type', '=', 'after_sales')])
+            else:
+                types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
+        self.picking_type_id = types[:1].id
+
+
+class ARSPurchaseOrderLine(models.Model):
+    _inherit = "purchase.order.line"
+
+    @api.multi
+    def _prepare_stock_moves(self, picking):
+        res = super(ARSPurchaseOrderLine, self)._prepare_stock_moves(picking)
+        for re in res:
+            re['product_template_id'] = self.product_template_id.id
+            re['product_catalog_id'] = self.product_catalog_id.id
+        return res
 
 
 class PurchaseRequisition(models.Model):
