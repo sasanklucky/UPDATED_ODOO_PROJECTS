@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_retail_report,retail_report,model_retail_report,,1,1,1,0
+access_wholesale_report,wholesale_report,model_wholesale_report,,1,1,1,0
+
