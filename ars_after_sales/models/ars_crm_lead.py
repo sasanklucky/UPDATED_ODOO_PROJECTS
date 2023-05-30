@@ -161,6 +161,13 @@ class ARS_crm_lead(models.Model):
         orderid = self.env['sale.order']
         orderline = self.env['sale.order.line']
         action_rec = self.env.ref('sale_crm.sale_action_quotations_new')
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        if sale_team.team_type == 'sales':
+            sale_type = 'vehicle'
+        elif sale_team.team_type == 'after_sales':
+            sale_type = 'parts'
+        else:
+            sale_type = 'others'
         for record in self:
             if action_rec:
                 action = action_rec.read([])[0]
@@ -171,7 +178,7 @@ class ARS_crm_lead(models.Model):
                                          'product_id': vehicle.product_id.id, 'name': vehicle.name}))
                 order_id = orderid.create({'opportunity_id': self.id,
                                            'user_id': record.user_id.id,
-                                           'partner_id': record.partner_id.id,
+                                           'partner_id': record.partner_id.id, 'sale_type': sale_type,
                                            'order_line': lines, 'mobile': self.mobile, 'email': self.email_from})
                 action['res_id'] = order_id.id
                 return action
@@ -300,7 +307,7 @@ class ARS_crm_lead(models.Model):
     #         # vals['planned_revenue'] = planned_revenue
     #     return super(ARS_crm_lead, self).write(vals)
 
-        # Appointment stage id default set in 'Service Due'
+    # Appointment stage id default set in 'Service Due'
 
     def _default_stage_id(self):
         team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)

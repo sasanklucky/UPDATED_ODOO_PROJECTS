@@ -1,309 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-  <data>
+    <data>
 
-<!-- <record id="view_production_lot_form_inherit" model="ir.ui.view">
-       <field name="name">stock.production.lot.inherit.form</field>
-       <field name="model">stock.production.lot</field>
-       <field name="inherit_id" ref="stock.view_production_lot_form" />
-       <field name="arch" type="xml">
+        <record id="view_production_lot_form_ars_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.inherit.form</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="product_catalog" readonly="True"/>
+                    <field name="motor_number" attrs="{'required': [('product_catalog', '=', 'Vehicle')]}"/>
+                </field>
+            </field>
+        </record>
 
-       <xpath expr="//form/sheet/div/label" position="replace">
-           <label for="name" class="oe_edit_only" string="VIN"/>
-       </xpath>
-           <field name="product_id" position="replace">
-               <field name="product_id" string="Vehicle Model" domain="[('catalog_type','=','Vehicle')]" help="Product this lot/serial number contains. You cannot change it anymore if it has already been moved."/>
-           </field>
-
-       <xpath expr="//group[@name='main_group']" position="after">
-
-           <group>
-               <group string="Customer Details">
-                    <field name="function_customer_id"/>
-                    <field name="function_contact_name" />
-               </group>
-               <group string="Vehicle Specification">
-                    <field name="engine_code"/>
-                    <field name="engine_number"/>
-                    <field name="key_serial_number"/>
-               </group>
-           </group>
-
-           <group>
-               <group string="Vehicle Information">
-                    <field name="vehicle_status" attrs="{'readonly':[('vehicle_status','=','new')]}"/>
-                    <field name="reg_no"/>
-                    <field name="initial_reg_no"/>
-                    <label for="model_year"/>
-                    <div class="o_row">
-                        <field name="model_month" />
-                        <field name="model_year"/>
-                    </div>
-                    <label for="prodcution_year"/>
-                    <div class="o_row">
-                        <field name="prodcution_month" />
-                        <field name="prodcution_year"/>
-                    </div>
-                    <field name="kilometer_till" />
-               </group>
-               <group string="Warranty Details">
-                    <field name="warranty_validation"/>
-                    <field name="extented_warranty_no"/>
-                    <field name="extented_warranty_validation" string="Extented Warranty Validation"/>
-                    <field name="emission_test_category" string="Emission Category"/>
-               </group>
-           </group>
-
-
-           <group>
-               <group string="Personal Details">
-                   <field name="function_customer_id"/>
-                   <field name="function_contact_name" />
-                   <field name="customer_id" invisible="1"/>
-                   <field name="contact_name" invisible="1"/>
-                   <field name="reg_no"/>
-                   <field name="vehicle_status" attrs="{'readonly':[('vehicle_status','=','new')]}"/>
-                   <field name="initial_reg_no"/>
-                     <label for="model_year"/>
-                   <div class="o_row">
-                        <field name="model_month" />
-                        <field name="model_year"/>
-                    </div>
-                    <label for="prodcution_year"/>
-                   <div class="o_row">
-                        <field name="prodcution_month" />
-                        <field name="prodcution_year"/>
-                    </div>
-                   <field name="kilometer_till" />
-                   &lt;!&ndash;<field name="prodcution_year"/>&ndash;&gt;
-                    &lt;!&ndash;<field name="model_year" />&ndash;&gt;
-                </group>
-
-               <group string="Vehicle details">
-                   <field name="engine_code"/>
-                   <field name="engine_number"/>
-                   <field name="key_serial_number"/>
-                   <field name="categ_id" readonly="1"/>
-                   <field name="warranty_validation"/>
-                   <field name="extented_warranty_no"/>
-                   <field name="emission_test_category" string="Emmision category"/>
-                   <field name="extented_warranty_validation" string="Extented Warranty validation"/>
-               </group>
-
-           </group>
-            <notebook>
-               <page string="Service History">
-                   <field name="service_ide">
-                       <tree editable="bottom">
-                           <field name ="order" string="RO No"/>
-                           <field name = "servicetype" string="Service Type"/>
-                           <field name="date" string="Date"/>
-                           <field name="mileage" string="Mileage"/>
-                           <field name="next_service_due" string="Next Service Due"/>
-                           <field name="set_reminder" string="Set Reminder"/>
-                       </tree>
-                   </field>
-               </page>
-               <page string="Ownership History">
-                   <field name="custumer_ide">
-                       <tree editable="bottom">
-                           <field name="custmer_name" string="Customer Name"/>
-                           <field name="date_of_ownership" string="Date of Ownership"/>
-                           <field name="address" string="Address"/>
-                           <field name="mobile" string="Mobile"/>
-                       </tree>
-                   </field>
-               </page>
-               <page string="Insurance History">
-                   <field name="insurance_ide">
-                       <tree editable="bottom">
-                           <field name="insurance_doc_no" string="Insurance Doc No"/>
-                           <field name="vender_name" string="Vendor Name"/>
-                           <field name="insurance_start" string="Insurance Start Date"/>
-                           <field name="insurance_end" string="Insurance End Date"/>
-                           <field name="set_reminder" string="Set Reminder"/>
-                       </tree>
-                   </field>
-               </page>
-               <page string="Emission History">
-                   <field name="emission_ide">
-                        <tree editable="bottom">
-                           <field name="emission_doc_no" string="Emission Doc No"/>
-                           <field name="agency_name" string="Agency Name"/>
-                           <field name="emission_start" string="Emission Start Date"/>
-                           <field name="emision_end" string="Emission End Date"/>
-                           <field name="set_reminder" string="Set Reminder"/>
-                       </tree>
-                   </field>
-               </page>
-               <page string="Features">
-
-                   <group>
-                       <group>
-                           <group colspan="4" string="Design &amp; Dimensions">
-                               <field name="car_type" readonly="1"/>
-                               <field name="seating_capacity" readonly="1"/>
-                               <field name="no_of_doors" readonly="1"/>
-                           </group>
-                           <group colspan="4" string="Comfort &amp; Convenience">
-                               <field name="power_steering" readonly="1"/>
-                               <field name="ac" readonly="1"/>
-                               <field name="steering_adjustment" readonly="1"/>
-                               <field name="power_window" readonly="1"/>
-                               <field name="centre_locking" readonly="1"/>
-                           </group>
-                       </group>
-                       <group string="Power &amp; Performance">
-                           <field name="transmission_type_code" readonly="1"/>
-                           <field name="city_mileage" readonly="1"/>
-                           <field name="no_of_cylinder" readonly="1"/>
-                           <field name="power_kw" readonly="1"/>
-                           <field name="top_speed" readonly="1"/>
-                           <field name="engine_capacity" readonly="1"/>
-                           <field name="highway_mileage" readonly="1"/>
-                           <field name="cylinder_capacity" readonly="1"/>
-                           <field name="power_hp" readonly="1"/>
-                           <field name="accellaration" readonly="1"/>
-                       </group>
-                   </group>
-
-                   <group>
-                       <group string="Comfort &amp; Convenience">
-                           <field name="power_steering"/>
-                           <field name="ac"/>
-                           <field name="steering_adjustment"/>
-                           <field name="power_window"/>
-                           <field name="centre_locking"/>
-                       </group>
-                       <group>
-                       </group>
-                   </group>
-
-                   <group>
-                       <group string="Other Details">
-                           <field name="engine_type_code" readonly="1"/>
-                           <field name="awd" readonly="1"/>
-                           <field name="transmission_type_code" readonly="1"/>
-                       </group>
-                       <group string="Weight &amp; Loads">
-                            <field name="empty_weight" readonly="1"/>
-                            <field name="total_weight" readonly="1"/>
-                            <field name="roof_load" readonly="1"/>
-                            <field name="trailer_load" readonly="1"/>
-                            <field name="no_of_axeles" readonly="1"/>
-                            <field name="wheel_base" readonly="1"/>
-                            <field name="tyre_details" readonly="1"/>
-                            <field name="front_axle_load" readonly="1"/>
-                            <field name="rear_axle_load" readonly="1"/>
-                       </group>
-                   </group>
-               </page>
-            </notebook>
-           </sheet>
-       </xpath>
-
-       </field>
-   </record> -->
-
-    <!-- <record id="view_production_lot_tree_inherit" model="ir.ui.view">
-        <field name="name">stock.production.lot.tree</field>
-        <field name="model">stock.production.lot</field>
-        <field name="arch" type="xml">
-            <tree string="Lots/Serial Numbers">
-                <field name="name" string="VIN"/>
-                <field name="ref"/>
-                <field name="reg_no"/>
-                <field name="function_customer_id"/>
-                <field name="product_id"/>
-                <field name="create_date"/>
-            </tree>
-        </field>
-    </record> -->
-
-      <!--old code using for the displaying the vehicle in a sales-->
-
-      <!-- <record id="action_production_lot_form_inherit" model="ir.actions.act_window">
-        <field name="name">Vehicle</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">stock.production.lot</field>
-        <field name="view_type">form</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_production_lot_form_inherit"/>
-        <field name="view_ids"
-                   eval="[(5, 0, 0),
-                          (0, 0, {'view_mode': 'tree', 'view_id': ref('view_production_lot_tree_inherit')})]"/>
-        <field name="search_view_id" ref="search_product_lot_filter"/>
-        <field name="context">{'search_default_group_by_product': 0}</field>
-		<field name="domain">[]</field>
-        <field name="help" type="html">
-          <p class="oe_view_nocontent_create">
-            Click to add a lot/serial number.
-          </p><p>
-            This is the list of all the production lots you recorded. When
-            you select a lot, you can get the traceability of the products contained in lot.
-          </p>
-        </field>
-      </record> -->
-
-    <!--<record id="action_production_lot_form_inherit1" model="ir.actions.act_window">-->
-         <!--<field name="name">Vehicle</field>-->
-         <!--<field name="res_model">stock.production.lot</field>-->
-         <!--<field name="type">ir.actions.act_window</field>-->
-         <!--<field name="view_mode">tree,form</field>-->
-         <!--<field name="context">{'form_view_ref': 'ars_vehicle.view_vehicle_form'}</field>-->
-         <!--<field name="view_type">form</field>-->
-         <!--<field name="view_id" ref="ars_vehicle_sales.view_production_lot_form_inherit"/>-->
-         <!--<field name='limit'>20</field>-->
-    <!--</record>-->
-
-       <menuitem name="Vehicle" id="menu_vehicle_sales" action="fleet.fleet_vehicle_action"
-              parent="sale.product_menu_catalog" sequence="1"/>
-
-      <!--<record model="ir.ui.menu" id="sale.menu_product">-->
-          <!--<field name="groups_id" eval="[(6,ref('ars_vehicle_sales.group_ars_sales_product'))]"/>-->
-      <!--</record>-->
-   <record id="view_stock_move_line_operation_tree_inherit" model="ir.ui.view">
+        <record id="view_stock_move_line_operation_tree_inherit" model="ir.ui.view">
             <field name="name">stock.move.line.operations.tree</field>
             <field name="model">stock.move.line</field>
-            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree" />
+            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
             <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <xpath expr="//tree/field[@name='lot_id']" position="replace">
-<!--                    ,('check_new_lotno','!=',True)-->
-                    <field name="lot_id" string="VIN" options="{'no_quick_create': True, 'no_create_edit' : True}" invisible="not context.get('show_lots_m2o')"
+                    <!--                    ,('check_new_lotno','!=',True)-->
+                    <field name="lot_id" string="VIN" options="{'no_quick_create': True, 'no_create_edit' : True}"
+                           invisible="not context.get('show_lots_m2o')"
                            groups="stock.group_production_lot" domain="[('product_id', '=', parent.product_id)]"
                            context="{'default_product_id': parent.product_id, 'active_picking_id': picking_id}"/>
                 </xpath>
                 <field name="lot_id" position="after">
-                    <field name="motor_number" />
+                    <field name="motor_number"/>
                 </field>
-                
+
             </field>
-    </record>
+        </record>
 
-    <!--<record id="view_move_line_form_inherit" model="ir.ui.view">
-            <field name="name">stock.move.line.form</field>
-            <field name="model">stock.move.line</field>
-            <field name="inherit_id" ref="stock.view_move_line_form" />
-            <field name="arch" type="xml">
-                <xpath expr="//form/sheet/group/group[2]/field[@name='lot_name']" position="replace">
-                    <field name="lot_name" string="VIN" groups="stock.group_production_lot"/>
-                </xpath>
-            </field>
-    </record>-->
+        <!--        Menu for vehicle in a product Catalog-->
 
+        <menuitem name="Vehicle" id="menu_vehicle_sales" action="fleet.fleet_vehicle_action"
+                  parent="sale.product_menu_catalog" sequence="1"/>
 
-
-
-
-
-
-
-
-
-
-
-
-
-  </data>
+    </data>
 </odoo>
