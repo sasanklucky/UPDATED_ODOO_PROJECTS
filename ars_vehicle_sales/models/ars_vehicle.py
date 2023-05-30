@@ -90,8 +90,19 @@ class FleetVehicle(models.Model):
     # centre_locking = fields.Boolean(string="Centre Locking")
     # description = fields.Text()
     sql_constraints = [
-        ('driver_id_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same employee!')
+        ('driver_id_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same employee!'),
+        ('vin_sn_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same VIN Number!')
     ]
+
+    @api.onchange('vin_sn')
+    def _check_lot_number(self):
+        if self.vin_sn:
+            if not self.lot_id:
+                lot_id = self.env['stock.production.lot'].search([('name', '=', self.vin_sn)])
+                if lot_id:
+                    self.lot_id = lot_id.id
+                else:
+                    raise ValueError(_("Lot number %s not found " % self.vin_sn))
 
     @api.depends('model_id.brand_id.name', 'model_id.name', 'license_plate')
     def _compute_vehicle_name(self):

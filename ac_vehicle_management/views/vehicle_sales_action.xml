@@ -8,7 +8,7 @@
             <field name="view_type">form</field>
             <field name="view_id" ref="sale.view_quotation_tree"/>
             <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
-            <field name="context">{'default_sale_type': 'vehicle'}</field>
+            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="help" type="html">
@@ -29,7 +29,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
-            <field name="context">{'default_sale_type': 'vehicle'}</field>
+            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
             <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),
                                 ('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]
             </field>
@@ -73,7 +73,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar,graph,pivot,kanban</field>
             <field name="domain">[('invoice_status','=','upselling'),('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
-            <field name="context">{'create': False,'default_sale_type': 'vehicle'}</field>
+            <field name="context">{'create': False,'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
             <field name="search_view_id" ref="sale.view_sales_order_filter"/>
             <field name="help" type="html">
                 <p>
@@ -98,6 +98,7 @@
             <field name="view_id"></field>  <!-- force empty -->
             <field name="search_view_id" ref="sale.view_order_product_search"/>
             <field name="context">{'search_default_Sales':1, 'group_by_no_leaf':1,'group_by':[]}</field>
+            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
             <field name="help">This report performs analysis on your quotations and sales orders. Analysis check your
                 sales revenues and sort it by different group criteria (salesman, partner, product, etc.) Use this
                 report to perform analysis on sales not having invoiced yet. If you want to analyse your turnover, you

@@ -274,6 +274,15 @@ class ars_sale_crm_sale(models.Model):
                                 store=False)
 
     @api.multi
+    def get_sale_type(self):
+        if self.sale_type == 'vehicle':
+            return 'vehicle'
+        elif self.sale_type in ('parts', 'accessories'):
+            return 'after_sales'
+        else:
+            return 'general'
+
+    @api.multi
     def action_confirm(self):
         print('called action confirm')
         self.ensure_one()
@@ -291,7 +300,7 @@ class ars_sale_crm_sale(models.Model):
                 if self.state == 'to_approve':
                     self.write({'user_id': self._uid})
                     raise UserError(
-                        _('Your approval limit has been exceded. Please contact your admin to proceed further.'))
+                        _('Your approval limit has been exceeded. Please contact your admin to proceed further.'))
                 self.write({'state': 'to_approve', 'user_id': self._uid})
                 return True
             for ol in self.order_line:
@@ -299,9 +308,10 @@ class ars_sale_crm_sale(models.Model):
                     if self.state == 'to_approve':
                         self.write({'user_id': self._uid})
                         raise UserError(
-                            _('Your approval limit has been exceded. Please contact your admin to proceed further.'))
+                            _('Your approval limit has been exceeded. Please contact your admin to proceed further.'))
                     self.write({'state': 'to_approve', 'user_id': self._uid})
                     return True
+        # if self.team_id.team_type == 'sales' and
         result = super(ars_sale_crm_sale, self).action_confirm()
         return result
 

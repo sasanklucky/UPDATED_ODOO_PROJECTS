@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ars_web_changes_ars_web_changes,ars_web_changes.ars_web_changes,model_ars_web_changes_ars_web_changes,,1,0,0,0

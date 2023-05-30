@@ -173,14 +173,13 @@
             <field name="name">Parts</field>
             <field name="res_model">product.template</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="view_mode">kanban,form</field>
+            <field name="view_mode">kanban,form,tree</field>
             <field name="context">{}</field>
             <!--<field name="context">{'form_view_ref': 'ars_vehicle.view_vehicle_form'}</field>-->
             <field name="view_type">form</field>
             <!--<field name="view_id" ref="tree_view_vehicle"/>-->
             <field name="domain">[('catalog_type','=', 'Parts')]</field>
-            <field name='limit'>20</field>
-
+<!--            <field name='limit'>20</field>-->
         </record>
 
         <!--<menuitem name="Parts" id="menu_parts" action="ars_after_sales.action_parts"-->
@@ -361,7 +360,7 @@
             <field name="view_type">form</field>
             <!--<field name="view_id" ref="tree_view_vehicle"/>-->
             <field name="domain">[('catalog_type','=', 'Accessories')]</field>
-            <field name='limit'>20</field>
+<!--            <field name='limit'>20</field>-->
 
         </record>
 
@@ -374,7 +373,7 @@
             <field name="view_type">form</field>
             <!--<field name="view_id" ref="tree_view_vehicle"/>-->
             <field name="domain">[('catalog_type','=', 'Other Products')]</field>
-            <field name='limit'>20</field>
+<!--            <field name='limit'>20</field>-->
 
         </record>
 
@@ -592,7 +591,7 @@
             <field name="view_type">form</field>
             <!--<field name="view_id" ref="tree_view_vehicle"/>-->
             <field name="domain">[('catalog_type','=', 'Labor')]</field>
-            <field name='limit'>20</field>
+<!--            <field name='limit'>20</field>-->
 
         </record>
 
