@@ -222,9 +222,9 @@ class StockMoveLine(models.Model):
 
     @api.onchange('lot_id', 'motor_number')
     def _update_motor_number(self):
-        if not self.motor_number:
+        if not self.motor_number and self.lot_id:
             self.motor_number = self.lot_id.motor_number
-        if not self.lot_id:
+        if not self.lot_id and self.motor_number:
             lot = self.env['stock.production.lot'].search([('motor_number', '=', self.motor_number)], limit=1)
             self.lot_id = lot.id
         #
