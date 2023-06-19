@@ -12,6 +12,10 @@
             <field name="arch" type="xml">
                 <tree string="wholesale_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
                     <field name="id" string="Sl. No." />
+                    <field name="dealer_code" />
+                    <field name="outlet" />
+                    <field name="dealer_state" />
+                    <field name="dealer_city" />
                     <field name="invoice_number" />
                     <field name="product_template_id" string="Product" />
                     <field name="date_of_invoice" />
@@ -21,7 +25,6 @@
                     <field name="basic_price" />
                     <field name="gst" />
                     <field name="total" />
-                    <field name="outlet" />
                 </tree>
             </field>
         </record>
