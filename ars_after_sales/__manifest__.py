@@ -18,6 +18,7 @@
 
         'security/ars_security_xml.xml',
         'security/ir.model.access.csv',
+        'demo/demo.xml',
         # 'security/ars_security_xml.xml',
         # 'security/ir.model.access.csv',
         'views/ars_parts_views.xml',

@@ -9,12 +9,11 @@ class ARS_stock_production_lot(models.Model):
     _inherit = 'stock.production.lot'
     # _rec_name = 'reg_no'
     check_new_lotno = fields.Boolean(default=False)
+    motor_number = fields.Char(string="Motor Number")
+    product_catalog = fields.Char(string='Catalog Type', related='product_id.catalog_type.name')
 
     @api.model
     def create(self, vals):
-        # for d in dates:
-        #     if not vals.get(d):
-        #         vals[d] = dates[d]
         vals.update({'vehicle_status': 'new'})
         res = super(ARS_stock_production_lot, self).create(vals)
         lot_no = vals.get('product_id')
@@ -48,10 +47,76 @@ class Picking(models.Model):
         res = {}
         return res
 
+    # @api.multi
+    # def button_validate(self):
+    #     res = super(Picking, self).button_validate()
+    #     self._cr.commit()
+    #     picking_type = self.picking_type_id
+    #
+    #     if self.location_dest_id.usage == 'internal' and self.location_id.usage == 'supplier':
+    #         print(self.location_id.usage)
+    #     elif self.location_dest_id.usage == 'customer' and self.location_id.usage == 'internal':
+    #         for stock_production_obj in self.move_line_ids:
+    #             if stock_production_obj.lot_id:
+    #                 val = {'custmer_name': self.partner_id.id,'date_of_ownership': datetime.now(),
+    #                         'address': self.partner_id.city,'mobile': self.partner_id.mobile}
+    #                 stock_production_obj.lot_id.custumer_ide = [(0, 0, )]
+    #                 if stock_production_obj.move_id.sale_line_id:
+    #                     stock_production_obj.lot_id.check_new_lotno = True
+    #         print(self.location_id.usage)
+    #     elif self.location_dest_id.usage == 'internal' and self.location_id.usage == 'customer':
+    #         print(self.location_id.usage)
+    #     elif self.location_dest_id.usage == 'supplier' and self.location_id.usage == 'internal':
+    #         print(self.location_id.usage)
+    #     no_quantities_done = all(
+    #         float_is_zero(move_line.qty_done, precision_rounding=move_line.product_uom_id.rounding) for move_line in
+    #         self.move_line_ids)
+    #     if picking_type.use_create_lots or picking_type.use_existing_lots:
+    #         lines_to_check = self.move_line_ids
+    #         if not no_quantities_done:
+    #             lines_to_check = lines_to_check.filtered(
+    #                 lambda line: float_compare(line.qty_done, 0, precision_rounding=line.product_uom_id.rounding))
+    #         for line in lines_to_check:
+    #             if not line.move_id.sale_line_id and (line.lot_name or line.lot_id):
+    #                 if self.origin and 'Return' not in self.origin:
+    #                     vals = {'mvariant_id': line.product_id.id,
+    #                             'model_id': line.product_id.product_tmpl_id.id,
+    #                             'vin_sn': line.lot_id and line.lot_id.name or line.lot_name,
+    #                             'license_plate': '/',
+    #                             'company_id': line.move_id.company_id.id,
+    #                             'vehicle_status': 'new',
+    #                             'lot_id': line.lot_id and line.lot_id.id,
+    #                             'driver_id': self.env.user.company_id.partner_id.id
+    #                             }
+    #                     vin_sn = line.lot_id.name if line.lot_id else line.lot_name
+    #                     if not self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
+    #                         res = self.env['fleet.vehicle'].create(vals)
+    #                         # notification.update('Validated',
+    #                         #                     'Vehicle card created')
+    #                         # notification.show()
+    #                         res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+    #                                                     'date_of_ownership': datetime.now(),
+    #                                                     'address': self.partner_id.city,
+    #                                                     'mobile': self.partner_id.mobile})]
+    #                 elif self.origin and 'Return' in self.origin:
+    #                     vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
+    #                     for vehicle in vehicles:
+    #                         if vehicle.vehicle_status == 'new':
+    #                             vehicle.unlink()
+    #             elif line.lot_id and line.move_id.sale_line_id:
+    #                 vals = {
+    #                     'vin_no': line.lot_id.id,
+    #                 }
+    #                 line.move_id.sale_line_id.write(vals)
+    #                 self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)]).write(
+    #                     {'driver_id': line.move_id.partner_id and line.move_id.partner_id.id,
+    #                      'vehicle_status': 'customer', 'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
+    #                                                                             'date_of_ownership': datetime.now(),
+    #                                                                             'address': self.partner_id.city,
+    #                                                                             'mobile': self.partner_id.mobile})]})
+    #     return res
     @api.multi
     def button_validate(self):
-        # notify2.init("Button Validate Notification")
-        # notification = notify2.Notification(None)
         for stock_production_obj in self.move_line_ids:
             if stock_production_obj.lot_id:
                 stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
@@ -71,9 +136,8 @@ class Picking(models.Model):
             if not no_quantities_done:
                 lines_to_check = lines_to_check.filtered(
                     lambda line: float_compare(line.qty_done, 0, precision_rounding=line.product_uom_id.rounding))
-
             for line in lines_to_check:
-                if not line.move_id.sale_line_id and (line.lot_name or line.lot_id):
+                if self.location_id and self.location_id.usage == 'supplier':
                     if self.origin and 'Return' not in self.origin:
                         vals = {'mvariant_id': line.product_id.id,
                                 'model_id': line.product_id.product_tmpl_id.id,
@@ -85,11 +149,14 @@ class Picking(models.Model):
                                 'driver_id': self.env.user.company_id.partner_id.id
                                 }
                         vin_sn = line.lot_id.name if line.lot_id else line.lot_name
-                        if not self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
+                        existing_lot_numbers = []
+                        if line.lot_id:
+                            line.lot_id.write({'motor_number': line.motor_number})
+                        if self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
+                            existing_lot_numbers.extend([vin_sn])
+                            print(existing_lot_numbers)
+                        else:
                             res = self.env['fleet.vehicle'].create(vals)
-                            # notification.update('Validated',
-                            #                     'Vehicle card created')
-                            # notification.show()
                             res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                                                         'date_of_ownership': datetime.now(),
                                                         'address': self.partner_id.city,
@@ -99,17 +166,22 @@ class Picking(models.Model):
                         for vehicle in vehicles:
                             if vehicle.vehicle_status == 'new':
                                 vehicle.unlink()
-                elif line.lot_id and line.move_id.sale_line_id:
+                elif self.location_dest_id and self.location_dest_id.usage == 'customer':
                     vals = {
                         'vin_no': line.lot_id.id,
                     }
                     line.move_id.sale_line_id.write(vals)
-                    self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)]).write(
-                        {'driver_id': line.move_id.partner_id and line.move_id.partner_id.id,
-                         'vehicle_status': 'customer', 'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
-                                                                                'date_of_ownership': datetime.now(),
-                                                                                'address': self.partner_id.city,
-                                                                                'mobile': self.partner_id.mobile})]})
+                    vehicle_card = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
+                    if not vehicle_card:
+                        vehicle_card = self.env['fleet.vehicle'].search([('vin_sn', '=', line.lot_id.name)])
+                    customer = line.move_id.partner_id if line.move_id.partner_id else self.partner_id
+                    if vehicle_card:
+                        vehicle_card.write(
+                            {'driver_id': customer.id, 'vehicle_status': 'customer', 'lot_id': line.lot_id.id,
+                             'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
+                                                      'date_of_ownership': datetime.now(),
+                                                      'address': self.partner_id.city,
+                                                      'mobile': self.partner_id.mobile})]})
         return res
 
 
@@ -147,7 +219,15 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     motor_number = fields.Char(string="Motor Number")
-#
+
+    @api.onchange('lot_id', 'motor_number')
+    def _update_motor_number(self):
+        if not self.motor_number and self.lot_id:
+            self.motor_number = self.lot_id.motor_number
+        if not self.lot_id and self.motor_number:
+            lot = self.env['stock.production.lot'].search([('motor_number', '=', self.motor_number)], limit=1)
+            self.lot_id = lot.id
+        #
 #     @api.constrains('lot_name', 'lot_id')
 #     def lot_name_alphanumeric_constrains(self):
 #         for record in self:

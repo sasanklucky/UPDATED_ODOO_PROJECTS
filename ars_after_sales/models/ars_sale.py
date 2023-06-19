@@ -357,7 +357,7 @@ class ARS_sale_order(models.Model):
             else:
                 self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
         elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
-            self.name = self.env['ir.sequence'].next_by_code('aftersale_so')
+            self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code('aftersale_so')
         else:
             self.name = self.env['ir.sequence'].next_by_code('sale.order')
         result = super(ARS_sale_order, self).action_confirm()

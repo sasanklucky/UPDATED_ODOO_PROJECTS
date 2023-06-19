@@ -314,11 +314,11 @@
 			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
 
 		</record>
-		<record model="ir.ui.menu" id="sale.sale_order_menu">
+<!--		<record model="ir.ui.menu" id="sale.sale_order_menu">-->
 
-			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>
+<!--			<field name="groups_id" eval="[(6, 0, [ref('group_vehicle_sales')])]"/>-->
 
-		</record>
+<!--		</record>-->
 
 		<record model="ir.ui.menu" id="stock.menu_stock_warehouse_mgmt">
 

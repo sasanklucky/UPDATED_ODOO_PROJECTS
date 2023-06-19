@@ -350,35 +350,35 @@
                 parent="sale.sale_menu_root"
                 action="stock.stock_picking_type_action"
                 sequence="0"/>
-        <menuitem id="sale.sale_order_menu"
-                  name="Vehicle Operations"
-                  parent="sale.sale_menu_root"
-                  sequence="1"/>
+<!--        <menuitem id="sale.sale_order_menu"-->
+<!--                  name="Vehicle Operations"-->
+<!--                  parent="sale.sale_menu_root"-->
+<!--                  sequence="1"/>-->
 
-        <menuitem id="aftersale_parts_operation"
-                  name="Parts Operations"
-                  parent="sale.sale_menu_root"
-                  sequence="2"/>
-        <menuitem id="menu_aftersales_quotation"
-                  name="Estimation"
-                  action="ars_after_sales.action_quotations_inherit"
-                  parent="aftersale_parts_operation"
-                  sequence="0"/>
-        <menuitem id="menu_aftersales_orders"
-                  name="Orders"
-                  action="ars_after_sales.action_orders_inherit"
-                  parent="aftersale_parts_operation"
-                  sequence="1"/>
-        <menuitem id="parts_menu_sale_quotations"
-                  name="Quotations"
-                  action="ars_after_sales.counter_sale_action_qotations"
-                  parent="aftersale_parts_operation"
-                  sequence="2" groups="sales_team.group_sale_salesman"/>
-        <menuitem id="parts_menu_sale_order"
-                  name="Orders"
-                  action="ars_after_sales.counter_sale_action_orders"
-                  parent="aftersale_parts_operation"
-                  sequence="3" groups="sales_team.group_sale_salesman"/>
+<!--        <menuitem id="aftersale_parts_operation"-->
+<!--                  name="Parts Operations"-->
+<!--                  parent="sale.sale_menu_root"-->
+<!--                  sequence="2"/>-->
+<!--        <menuitem id="menu_aftersales_quotation"-->
+<!--                  name="Estimation"-->
+<!--                  action="ars_after_sales.action_quotations_inherit"-->
+<!--                  parent="aftersale_parts_operation"-->
+<!--                  sequence="0"/>-->
+<!--        <menuitem id="menu_aftersales_orders"-->
+<!--                  name="Orders"-->
+<!--                  action="ars_after_sales.action_orders_inherit"-->
+<!--                  parent="aftersale_parts_operation"-->
+<!--                  sequence="1"/>-->
+<!--        <menuitem id="parts_menu_sale_quotations"-->
+<!--                  name="Quotations"-->
+<!--                  action="ars_after_sales.counter_sale_action_qotations"-->
+<!--                  parent="aftersale_parts_operation"-->
+<!--                  sequence="2" groups="sales_team.group_sale_salesman"/>-->
+<!--        <menuitem id="parts_menu_sale_order"-->
+<!--                  name="Orders"-->
+<!--                  action="ars_after_sales.counter_sale_action_orders"-->
+<!--                  parent="aftersale_parts_operation"-->
+<!--                  sequence="3" groups="sales_team.group_sale_salesman"/>-->
         <menuitem id="sale.menu_sale_invoicing"
                   name="Vehicle Invoicing"
                   parent="sale.sale_menu_root"

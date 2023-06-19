@@ -1,30 +1,15 @@
 <odoo>
     <data>
-        <!--  -->
-        <!--   <record id="object0" model="ac-ars.ac-ars"> -->
-        <!--     <field name="name">Object 0</field> -->
-        <!--     <field name="value">0</field> -->
-        <!--   </record> -->
-        <!--  -->
-        <!--   <record id="object1" model="ac-ars.ac-ars"> -->
-        <!--     <field name="name">Object 1</field> -->
-        <!--     <field name="value">10</field> -->
-        <!--   </record> -->
-        <!--  -->
-        <!--   <record id="object2" model="ac-ars.ac-ars"> -->
-        <!--     <field name="name">Object 2</field> -->
-        <!--     <field name="value">20</field> -->
-        <!--   </record> -->
-        <!--  -->
-        <!--   <record id="object3" model="ac-ars.ac-ars"> -->
-        <!--     <field name="name">Object 3</field> -->
-        <!--     <field name="value">30</field> -->
-        <!--   </record> -->
-        <!--  -->
-        <!--   <record id="object4" model="ac-ars.ac-ars"> -->
-        <!--     <field name="name">Object 4</field> -->
-        <!--     <field name="value">40</field> -->
-        <!--   </record> -->
-        <!--  -->
+        <record id="action_create_seller_data" model="ir.actions.server">
+            <field name="name">Add Sellers</field>
+            <field name="model_id" ref="model_product_template"/>
+            <field name="binding_model_id" ref="account.model_product_template"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.create_supplier_info()
+            </field>
+        </record>
     </data>
 </odoo>
