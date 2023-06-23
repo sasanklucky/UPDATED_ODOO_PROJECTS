@@ -103,16 +103,16 @@ class ARS_sale_order(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
 
-    @api.multi
-    @api.onchange('service_type')
-    def domain_set_service_option(self):
-        self.service_options = False
-        if self.service_type:
-            service_options = self.env['service.options'].sudo().search(
-                [('service_type', '=', self.service_type.id)])
-            return {'domain': {'service_options': [('id', 'in', service_options.ids)]}}
-        else:
-            return {'domain': {'product_id': [('id', 'in', False)]}}
+    # @api.multi
+    # @api.onchange('service_type')
+    # def domain_set_service_option(self):
+    #     self.service_options = False
+    #     if self.service_type:
+    #         service_options = self.env['service.options'].sudo().search(
+    #             [('service_type', '=', self.service_type.id)])
+    #         return {'domain': {'service_options': [('id', 'in', service_options.ids)]}}
+    #     else:
+    #         return {'domain': {'product_id': [('id', 'in', False)]}}
 
     @api.multi
     @api.depends('sale_type')
