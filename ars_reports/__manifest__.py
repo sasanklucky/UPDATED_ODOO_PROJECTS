@@ -5,7 +5,7 @@
     """,
     "installable": True,
     "depends": [
-        'base','sale','account','l10n_in',
+        'base','sale','account','l10n_in','ars_after_sales',
     ],
     "data": [
         'security/ir.model.access.csv',
