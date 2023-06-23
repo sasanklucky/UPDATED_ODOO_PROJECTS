@@ -12,7 +12,10 @@
             <field name="arch" type="xml">
                 <tree string="retail_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
                     <field name="id" string="Sl. No." />
+                    <field name="dealer_code" />
                     <field name="outlet" />
+                    <field name="dealer_state" />
+                    <field name="dealer_city" />
                     <field name="date_of_booking" />
                     <field name="date_of_invoice" />
                     <field name="invoice_number" />
@@ -55,7 +58,7 @@
         <!-- Main window action for "retail.report" -->
         <record id="action_retail_report_act_window" model="ir.actions.act_window">
             <field name="type">ir.actions.act_window</field>
-            <field name="name">Retial Report</field>
+            <field name="name">Retail Report</field>
             <field name="res_model">retail.report</field>
             <field name="view_mode">tree</field>
             <field name="view_type">form</field>

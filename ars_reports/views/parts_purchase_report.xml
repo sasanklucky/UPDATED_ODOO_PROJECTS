@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Tree view for "parts.purchase.report" -->
+        <record id="view_parts_purchase_report_tree" model="ir.ui.view">
+            <field name="name">view.parts_purchase_report.tree</field>
+            <field name="model">parts.purchase.report</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <tree string="parts_purchase_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
+                    <field name="id" string="Sl. No." />
+                    <field name="dealer_code" />
+                    <field name="dealer_id" />
+                    <field name="dealer_state_id" />
+                    <field name="dealer_city_id" />
+                    <field name="invoice_no" />
+                    <field name="invoice_date" />
+                    <field name="po_id" />
+                    <field name="po_date" />
+                    <field name="part_id" />
+                    <field name="part_description" />
+                    <field name="hsn_code" />
+                    <field name="quantity" />
+                    <field name="unit_price" />
+                    <field name="cgst_per" />
+                    <field name="sgst_per" />
+                    <field name="igst_per" />
+                    <field name="net_dealer_price" />
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search view for "parts.purchase.report" -->
+        <record id="view_parts_purchase_report_search" model="ir.ui.view">
+            <field name="name">view.parts_purchase_report.search</field>
+            <field name="model">parts.purchase.report</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <search string="parts_purchase_report_search">
+                    <field name="dealer_code" />
+                </search>
+            </field>
+        </record>
+        
+        <!-- Main window action for "parts.purchase.report" -->
+        <record id="action_parts_purchase_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Parts Purchase Report</field>
+            <field name="res_model">parts.purchase.report</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">\{}</field>
+            <field name="search_view_id" ref="view_parts_purchase_report_search" />
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Parts Purchase Report
+                </p>
+            </field>
+        </record>
+        
+        <!-- Main menu for "parts.purchase.report" -->
+        <record id="menu_purchase_order_report" model="ir.ui.menu" >
+            <field name="name">Parts Purchase Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_parts_purchase_report_act_window" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+    </data>
+</odoo>

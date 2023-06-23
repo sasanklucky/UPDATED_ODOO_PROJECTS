@@ -12,6 +12,9 @@ class WholesaleReport(models.Model):
                 attribute = self.env['product.attribute.value'].sudo().search([('id', 'in', color)])
                 record.color = attribute.name
 
+    dealer_code = fields.Char(string="Dealer Code")
+    dealer_city = fields.Char(string="City", related="outlet.city")
+    dealer_state = fields.Many2one('res.country.state',string="State",related="outlet.state_id")
     date_of_invoice = fields.Date(string="Date of Invoice")
     invoice_number = fields.Char(string="Invoice Number")
     vin_no = fields.Many2one('stock.production.lot',string="Vin No")
@@ -38,10 +41,12 @@ class WholesaleReport(models.Model):
             ail.price_subtotal_signed as basic_price,
 			(ail.price_total - ail.price_subtotal) as gst,
 			ail.price_total as total,
-            so.company_id as outlet
+            ai.company_id as outlet,
+            rc.dealer_code as dealer_code
 
             from account_invoice_line ail 
             left join account_invoice ai on ai.id = ail.invoice_id
+            left join res_company rc on rc.id = ai.company_id
             left join sale_order so on so.id = ai.order_id
             where ai.type = 'in_invoice'
            

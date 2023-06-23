@@ -11,10 +11,12 @@ class RetailReport(models.Model):
             if color:
                 attribute = self.env['product.attribute.value'].sudo().search([('id', 'in', color)])
                 record.color = attribute.name
-
+    dealer_code = fields.Char(string="Dealer Code")
+    dealer_city = fields.Char(string="City", related="outlet.city")
+    dealer_state = fields.Many2one('res.country.state',string="State",related="outlet.state_id")
     date_of_invoice = fields.Date(string="Date of Invoice")
     invoice_number = fields.Char(string="Invoice Number")
-    vin_no = fields.Many2one('stock.production.lot',string="Vin No")
+    vin_no = fields.Many2one('stock.production.lot',string="VIN")
     customer_name = fields.Many2one('res.partner',string="Customer Name")
     product_template_id = fields.Many2one('product.template',string="Model")
     product_id = fields.Many2one('product.product',string="Product")
@@ -26,10 +28,10 @@ class RetailReport(models.Model):
     contact_no = fields.Char(string="Contact No")
     email = fields.Char(string="Email")
     city = fields.Char(string="City")
-    state = fields.Many2one('res.state',string="State")
+    state = fields.Many2one('res.country.state',string="State")
     source = fields.Many2one('utm.source',string="Enquiry Source")
     salesperson = fields.Many2one('res.users',string="SalesPerson")
-    finance_bank = fields.Many2one('res.bank','Fincance Bank')
+    finance_bank = fields.Many2one('res.bank','Finance Bank')
     basic_price = fields.Float(string="Basic Price")
     gst = fields.Float(string="GST")
     total = fields.Float(String="Total")
@@ -50,6 +52,8 @@ class RetailReport(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
             select row_number() over(order by ai.id desc) as id,
+            ai.company_id as dealer_id,
+            rc.dealer_code as dealer_code,
             ai.date_invoice as date_of_invoice,
             ai.number as invoice_number,
             ail.product_template_id as product_template_id,
@@ -72,6 +76,7 @@ class RetailReport(models.Model):
 
             from account_invoice_line ail 
             left join account_invoice ai on ai.id = ail.invoice_id
+            left join res_company rc on rc.id = ai.company_id
             left join sale_order so on so.id = ai.order_id
             left join crm_team ct on ct.id = ai.team_id
             where ai.type = 'out_invoice' and ct.team_type = 'sales'
