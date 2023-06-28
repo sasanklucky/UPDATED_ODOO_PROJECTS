@@ -8,23 +8,23 @@
                 <div class="page">
                     <div class="oe_structure"/>
                     <div class="row">
-
                         <div class="col-xs-12">
-                            <h2>
-                                <strong>Estimation #</strong>
-                                <span t-field="doc.name"/>
-                            </h2>
+                            <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
+                                <h3>
+                                    <strong>Service Cost Estimation #</strong>
+                                    <span t-field="doc.name"/>
+                                </h3>
+                            </div>
                         </div>
-
                         <div class="col-xs-12">
                             <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
                                 <!--								 Customer Demanded - -->
                                 <span style="font-size:16px;color:black;font-weight:bold;">CUSTOMER &amp; VEHICLE INFO
                                 </span>
                             </div>
-                            <div class="col-xs-12 table table-bordered">
+                            <div class="col-xs-12 table table-bordered" style="margin-bottom: 2px;">
                                 <div class="col-xs-6">
-                                    <table class="table ">
+                                    <table class="table" style="margin-bottom: 2px;">
                                         <tr>
                                             <td>Customer:</td>
                                             <td>
@@ -84,7 +84,7 @@
                                                 <t t-foreach="doc.model.attribute_value_ids" t-as="o">
                                                     <span t-field="o.name"/>
                                                 </t>
-<!--                                                <t t-set="product" t-value="doc.model"></t>-->
+                                                <!--                                                <t t-set="product" t-value="doc.model"></t>-->
 
                                             </td>
                                         </tr>
@@ -133,10 +133,9 @@
                                     </table>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="col-xs-12">
-                            <table class="table table-bordered">
+                            <!--                        </div>-->
+                            <!--                        <div class="col-xs-12">-->
+                            <table class="table table-bordered" style="margin-bottom: 2px;">
                                 <thead>
                                     <tr style="background-color:#F5F5F5;">
                                         <th>SL</th>
@@ -157,17 +156,17 @@
                                     </t>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <div class="col-xs-12">
+                            <!--                        </div>-->
+                            <!--                        <div class="col-xs-12">-->
                             <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
                                 <!--								Customer Demanded - -->
                                 <span style="font-size:16px;color:black;font-weight:bold;">Spares Estimate</span>
                             </div>
-                            <table class="table table-bordered" style="background-color:#F5F5F5;">
+                            <table class="table table-bordered" style="background-color:#F5F5F5;margin-bottom: 2px;">
                                 <thead>
                                     <tr>
                                         <th>SL</th>
+                                        <th>Part Number</th>
                                         <th>Item Name</th>
                                         <th class="text-right">Qty</th>
                                         <th class="text-center">UOM</th>
@@ -190,8 +189,20 @@
                                                     <span t-esc="i"/>
                                                     <t t-set="i" t-value="i+1"/>
                                                 </td>
+                                                <td class="text-right" style="background-color:#FFF;">
+                                                    <span t-field="ord_lin.product_id.default_code"/>
+                                                </td>
                                                 <td style="background-color:#FFF;">
-                                                    <span t-field="ord_lin.product_id.name"/>
+                                                    <div>
+                                                        <span t-field="ord_lin.product_id.name"/>
+                                                    </div>
+                                                    <div>
+                                                        <span style="font-size:10px;color:black;font-weight:bold;">
+                                                            HSN/SAC Code:
+                                                        </span>
+                                                        <span style="font-size:10px;color:black;"
+                                                              t-field="ord_lin.product_id.l10n_in_hsn_code"/>
+                                                    </div>
                                                 </td>
                                                 <td class="text-right" style="background-color:#FFF;">
                                                     <span t-field="ord_lin.product_uom_qty"/>
@@ -216,7 +227,7 @@
                                     </t>
 
                                     <tr class="text-right">
-                                        <td colspan="6">
+                                        <td colspan="7">
                                         </td>
                                         <td>
                                             <strong>Total:</strong>
@@ -231,14 +242,13 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-
-                        <div class="col-xs-12">
+                            <!--                        </div>-->
+                            <!--                        <div class="col-xs-12">-->
                             <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
                                 <!--								 Customer Demanded - -->
                                 <span style="font-size:16px;color:black;font-weight:bold;">Services Estimate</span>
                             </div>
-                            <table class="table table-bordered">
+                            <table class="table table-bordered" style="margin-bottom: 2px;">
                                 <thead>
                                     <tr style="background-color:#F5F5F5;">
                                         <th>SL</th>
@@ -265,7 +275,13 @@
                                                     <t t-set="i" t-value="i+1"/>
                                                 </td>
                                                 <td style="background-color:#FFF;">
-                                                    <span t-field="ord_lin.product_id.name"/>
+                                                    <div>
+                                                        <span t-field="ord_lin.product_id.name"/>
+                                                    </div>
+                                                    <!--                                                    <div>-->
+                                                    <!--                                                        <span>Product Code: </span>-->
+                                                    <!--                                                        <span t-field="ord_lin.product_id.default_code"/>-->
+                                                    <!--                                                    </div>-->
                                                 </td>
                                                 <td class="text-right" style="background-color:#FFF;">
                                                     <span t-field="ord_lin.product_uom_qty"/>
@@ -309,8 +325,6 @@
                             </table>
                         </div>
                     </div>
-
-
                     <div class="col-xs-12 clearfix">
                         <div class="pull-left">
                             <span class="pull-left"
