@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_po_db_settings" model="ir.ui.view">
+        <field name="name">ars_config_po_db_inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="purchase_order_sync_apis" string="PO Sync API Configuration" data-key="purchase_order_sync_apis">                   
+                    <h2>PO Sync API's Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="purchase_order_sync_apis_settings">
+                        <div class="col-xs-12 o_setting_box" id="purchase_order_sync_apis_settings">
+                            <br></br>
+                            <div class="o_setting_right_pane">
+                            <!-- <div class="o_setting_right_pane" attrs="{'invisible': [('is_child_company', '=',True)]}"> -->
+                                <label string="PO sync API Configurations" attrs="{'invisible': [('po_company_type', '=','is_child_company')]}"/>
+                                <div class="text-muted">
+                                    PO Sync API Configurations (Here Purchase Order will Sync to parent ot create Sale Order)
+                                </div>
+                                <div class="content-group">
+                                    <div class="row">
+                                        <label class="col-md-3" string="Company Type"/>
+                                        <field name="po_company_type" string="Connection Type" id='po_company_type_id'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Child's DB name"/>
+                                        <field name="child_db_name" string="Child's DB name" id='child_db_name_id'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Parent's DB name"/>
+                                        <field name="parent_db_name" string="Parent's DB name" id='parent_db_name_id'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable PO sync"/>
+                                        <field name="enable_po_sync" string="Enable PO sync" id='enable_po_sync_id'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable SO sync"/>
+                                        <field name="enable_sale_sync" string="Enable SO sync" id='enable_sale_sync_id'/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button name="po_sync_check" string="PO Sync Check" type="object" class="btn-primary"/>
+                                </div>
+                                <br></br>
+                                <div>
+                                    <button name="so_sync_check" string="SO Sync Check" type="object" class="btn-primary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_po_config_settings" model="ir.actions.act_window">
+        <field name="name">Purchase Order API Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_po_db_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'purchase_order_sync_apis'}</field>
+    </record>
+
+</odoo>

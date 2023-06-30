@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="purchase_order_sync_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.sync.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group/field[@name='company_id']"
+                       position="after">
+                       <field name="sync_po" readonly='1'/>
+                       <field name="parent_sale_id_ref" readonly='1'/>
+                       <field name="child_db" readonly='1'/>
+                       <field name="parent_db" readonly='1'/>
+                       <field name="test_css" invisible='1'/>
+                </xpath>
+                <xpath expr="//form/header"
+                       position="inside">
+                       <field name="hide_sync" invisible='1'/>
+                       <button class="oe_highlight" name="call_po_sync" 
+                        string="Send to NSC" type="object" attrs="{'invisible': [('hide_sync','=',True)]}"
+                        />
+                </xpath>
+            </field>
+        </record>
+
+    <record id="purchase_order_sync_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.sync.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='state']"
+                       position="after">
+                       <field name="sync_po" readonly='1'/>
+                       <field name="parent_sale_id_ref" readonly='1'/>
+                       <field name="child_db" readonly='1'/>
+                       <field name="parent_db" readonly='1'/>
+                       <field name="test_css" invisible='1'/>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                     <attribute name="decoration-danger">"sync_po=='False'"</attribute>
+                </xpath>
+            </field>
+        </record>
+        
+</odoo>

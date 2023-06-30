@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="posync_check_wizard_view" model="ir.ui.view">
+            <field name="name">PO Sync Check Wizard</field>
+            <field name="model">po_sync_check_wizard</field>
+            <field name="arch" type="xml">
+               <form>
+                   <sheet>
+                       <group>
+                           <group>
+                               <field name="sync_status_ids" style="pointer-events:none;">
+                                    <tree create='false' edit='false' delete='false'>
+                                        <field name="name" string="Reference" readonly="1"/>
+                                        <field name="date_order" readonly="1"/>
+                                        <field name="partner_id" readonly="1"/>
+                                        <field name="company_id" options="{'no_create': True}" readonly="1"/>
+                                        <field name="date_planned" readonly="1"/>
+                                        <field name="origin" readonly="1"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="sync_po" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                       </group>
+                    </sheet>
+                   <footer>
+                        <button string="Sync Now" name="posync_now" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                   </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_posync_check_wizard" model="ir.actions.act_window">
+            <field name="name">PO Sync Check</field>
+            <field name="res_model">po_sync_check_wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="posync_check_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="sosync_check_wizard_view" model="ir.ui.view">
+            <field name="name">SO Sync Check Wizard</field>
+            <field name="model">so_sync_check_wizard</field>
+            <field name="arch" type="xml">
+               <form>
+                   <sheet>
+                       <group>
+                           <group>
+                               <field name="sync_status_ids" style="pointer-events:none;">
+                                    <tree create='false' edit='false' delete='false'>
+                                        <field name="name" string="Quotation Number"/>
+                                        <field name="child_po_id_ref"/>
+                                        <field name="date_order" string="Quotation Date"/>
+                                        <field name="partner_id"/>
+                                        <field name="user_id"/>
+                                        <field name="state"/>
+                                        <field name="ready_for_sync"/>
+                                        <field name="sync_so"/>
+                                    </tree>
+                                </field>
+                            </group>
+                       </group>
+                    </sheet>
+                   <footer>
+                        <button string="Sync Now" name="sosync_now" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                   </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_sosync_check_wizard" model="ir.actions.act_window">
+            <field name="name">SO Sync Check</field>
+            <field name="res_model">so_sync_check_wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sosync_check_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="sale_order_line_froms" model="ir.ui.view">
+            <field name="name">update_sale_order_line.form</field>
+            <field name="model">update_sale_order_line</field>
+            <field name="arch" type="xml">
+               <form string="order line form">
+                    <script>
+                       $(document).ready(function(){$(".modal-footer").show();
+                       $(".modal-title").show();
+                       $(".modal-footer").hide();
+                       $(".o_form_statusbar").hide();});
+                    </script>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="order_line_id" invisible='1'/>
+                                <field name="price_unit"/> 
+                                <field name="tax_ids" widget="many2many_tags"/> 
+                            </group>
+                        </group>
+                        <button class="oe_highlight" name="update_value" 
+                        string="Update" type="object"
+                        />
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sale_order_line" model="ir.actions.act_window">
+            <field name="name">update_sale_order_line action</field>
+            <field name="res_model">update_sale_order_line</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sale_order_line_froms"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>
