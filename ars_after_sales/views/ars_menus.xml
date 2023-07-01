@@ -691,7 +691,7 @@
                   sequence="4"/>
 
 
-        <menuitem name="Customer Invoices"
+        <menuitem name="After-Sales Invoices"
                   action="ars_after_sales.action_invoice_sal_tree1"
                   id="menu_action_aftersales_invoice_tree1"
                   parent="account.menu_finance_receivables_documents"
