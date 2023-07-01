@@ -2855,7 +2855,7 @@
                         </field>
                     </record>
                     <record id="action_invoice_sal_tree1" model="ir.actions.act_window">
-                        <field name="name">Customer Invoices</field>
+                        <field name="name">After-Sales Invoices</field>
                         <field name="res_model">account.invoice</field>
                         <field name="domain">[('type','=','out_invoice'),('team_id.team_type','=','after_sales')]</field>
                         <field name="context">{'type':'out_invoice', 'journal_type': 'sale'}</field>
