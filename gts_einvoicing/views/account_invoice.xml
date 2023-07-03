@@ -24,7 +24,7 @@
                             <p1 style="font-size:22px; color:#247184">E-Invoice Details</p1><br></br>
                             <group>
                                 <field name='sup_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
-                                <field name='doc_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
+                                <field name='invoice_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
                             </group>
                             <group>
                                 <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
@@ -121,7 +121,7 @@
                             <p1 style="font-size:22px; color:#247184">E-Invoice Details</p1><br></br>
                             <group>
                                 <field name='sup_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
-                                <field name='doc_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
+                                <field name='invoice_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
                             </group>
                             <group>
                                 <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>

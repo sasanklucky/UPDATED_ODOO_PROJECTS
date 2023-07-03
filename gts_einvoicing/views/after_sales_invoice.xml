@@ -34,7 +34,7 @@
 <!--                            <group>-->
 <!--                                <field name='sup_type'-->
 <!--                                       attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>-->
-<!--                                <field name='doc_type'-->
+<!--                                <field name='invoice_type'-->
 <!--                                       attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>-->
 <!--                            </group>-->
 <!--                            <group>-->
@@ -153,7 +153,7 @@
                             <group>
                                 <field name='sup_type'
                                        attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
-                                <field name='doc_type'
+                                <field name='invoice_type'
                                        attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
                             </group>
                             <group>

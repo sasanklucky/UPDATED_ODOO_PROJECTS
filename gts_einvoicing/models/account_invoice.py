@@ -25,7 +25,7 @@ class account_invoice(models.Model):
         ('EXPWOP', 'EXPWOP'),
         ('DEXP', 'DEXP'),
     ], string="SUP-TYPE")
-    doc_type = fields.Selection([
+    invoice_type = fields.Selection([
         ('INV', 'INV'),
         ('CRN', 'CRN'),
         ('DBN', 'DBN'),
@@ -107,7 +107,7 @@ class account_invoice(models.Model):
             raise UserError(_('Please Enter User Name in E-Invoicing Configurations.'))
         if not self.sup_type:
             raise UserError(_('Please Select Sub-Type.'))
-        if not self.doc_type:
+        if not self.invoice_type:
             raise UserError(_('Please Select Doc-Type.'))
         if not self.display_name:
             raise UserError(_('Invoice Number is not present.'))
@@ -168,7 +168,7 @@ class account_invoice(models.Model):
                         "SupTyp": self.sup_type,
                     },
                     "DocDtls": {
-                        "Typ": self.doc_type,
+                        "Typ": self.invoice_type,
                         "No": self.origin,
                         "Dt": date1
                     },
@@ -193,7 +193,7 @@ class account_invoice(models.Model):
                         "SupTyp": self.sup_type,
                     },
                     "DocDtls": {
-                        "Typ": self.doc_type,
+                        "Typ": self.invoice_type,
                         "No": self.number,
                         "Dt": date1
                     },
@@ -219,7 +219,7 @@ class account_invoice(models.Model):
                     "SupTyp": self.sup_type,
                 },
                 "DocDtls": {
-                    "Typ": self.doc_type,
+                    "Typ": self.invoice_type,
                     "No": self.reference,
                     "Dt": date1
                 },
@@ -528,7 +528,7 @@ class account_invoice(models.Model):
             raise UserError(_('Please Enter User Name in E-Invoicing Configurations.'))
         if not self.sup_type:
             raise UserError(_('Please Select Sub-Type.'))
-        if not self.doc_type:
+        if not self.invoice_type:
             raise UserError(_('Please Select Doc-Type.'))
         if not self.distance:
             raise UserError(_('Please Enter Distance.'))
