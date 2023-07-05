@@ -37,7 +37,10 @@
                        <field name="test_css" invisible='1'/>
                 </xpath>
                 <xpath expr="//tree" position="attributes">
-                     <attribute name="decoration-danger">"sync_po=='False'"</attribute>
+                     <attribute name="decoration-success">sync_po==True</attribute>
+                     <attribute name="decoration-danger">sync_po==False</attribute>
+                     <!-- <attribute name="decoration-success">apr_action == 'approved' or apr_action == 'approved' and invoice_status == 'to invoice' </attribute> -->
+                    <!-- <attribute name="decoration-danger">apr_action == 'reject' or apr_action  == 'reject' and invoice_status == 'to invoice'</attribute> -->
                 </xpath>
             </field>
         </record>

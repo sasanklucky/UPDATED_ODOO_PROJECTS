@@ -78,7 +78,9 @@ class SaleOrderLineInheritSync(models.Model):
             return self.action_generate_backorder_wizard()
         self.action_done()
         # update sync false in sale order for re sync of shipment if backorder
-        self.sale_id.sync_so = False
+        if self.sale_id:
+            self.sale_id.sync_so = False
+       
         return
 
 
@@ -157,7 +159,7 @@ class SaleOrderInheritSync(models.Model):
             picking_id = self.env['stock.picking'].sudo().search([('sale_id','=',rec.id),('state','=','done'),('sync_picking','=',False)],order='id desc',limit=1)
             param = self.env['ir.config_parameter'].sudo()
             parent = param.get_param('purchase_order_sync_apis.po_company_type')
-            if picking_id or rec.child_po_id_ref ==False or rec.ready_for_sync==False or parent == 'is_parent_company':
+            if picking_id and parent == 'is_parent_company' and rec.child_po_id_ref != False:
                 rec.check_picking_status =True
             else:
                 rec.check_picking_status =False
@@ -324,10 +326,20 @@ class SaleOrderInheritSync(models.Model):
                                     # if 'product_uom' in value_list:
                                     #     product_uom = env['product.uom'].sudo().search([('name','=',line_data.product_uom.name)],order='id desc',limit=1)
                                     #     dic_data['product_uom']=product_uom.id if product_uom else line_data.product_uom.id
+                                    parent_tax_data =False
+                                    if line_data.tax_id:
+                                        tax_data = self.env['account.tax'].sudo().search([('id','in',line_data.tax_id.ids)])
+                                        print("env.user=====",env.user)
+                                        print("env.company_id.id=====",env.user.company_id,tax_data.mapped('name'))
+                                        data_set = env['purchase.order'].sudo().search([],order='id desc', limit=1)
+                                        child_company = data_set.company_id
+                                        print("child_company====",child_company)
+                                        parent_tax_data = env['account.tax'].sudo().search([('name','in',tax_data.mapped('name')),('type_tax_use','=','purchase'),('company_id','=',child_company.id)])
+                                        print("parent_tax_data=====",parent_tax_data)
                                     if 'price_unit' in value_list:
                                         dic_data['price_unit']=line_data.price_unit if line_data.price_unit else 0
                                     if 'tax_id' in value_list:
-                                        dic_data['taxes_id']=line_data.tax_id.ids if line_data.tax_id else ''
+                                        dic_data['taxes_id']=[(6,0,parent_tax_data.ids if parent_tax_data else [])]
                                     if 'price_subtotal' in value_list:
                                         dic_data['price_subtotal']=line_data.price_subtotal if line_data.price_subtotal else ''
                                 print("--------------------Updated-------1---------------------",order_line_datas,dic_data)

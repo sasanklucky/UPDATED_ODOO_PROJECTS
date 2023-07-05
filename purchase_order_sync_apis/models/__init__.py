@@ -3,4 +3,4 @@
 from . import po_sale_sync
 from . import res_config
 from . import sale_po_sync
-
+from . import po_sync_log
