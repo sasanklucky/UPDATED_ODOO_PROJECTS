@@ -9,6 +9,7 @@
     ],
     "data": [
         'security/ir.model.access.csv',
+        'security/ars_report_access.xml',
         'views/repair_report.xml',
         'views/retail_report.xml',
         'views/wholesale_report.xml',
