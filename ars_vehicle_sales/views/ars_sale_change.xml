@@ -44,7 +44,7 @@
                 </field>
                 <field name="payment_term_id" position="after">
                     <field name="user_id" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
-                    <field name="bank_account"  options="{'no_create': True,'no_edit':True,'no_open':True}"/>
+                    <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
 
             </field>
@@ -72,7 +72,7 @@
                 <field name="tag_ids" position="replace"/>
 
                 <field name="phone" position="after">
-                    <field name="mobile"></field>
+                    <field name="mobile" required="True"></field>
                     <field name="is_test_drive"/>
                 </field>
                 <field name="phone" position="attributes">
@@ -122,6 +122,19 @@
                         </div>
                     </button>
                 </xpath>
+                <field name="contact_name" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+                <field name="source_id" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+                <field name="mobile" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+                <field name="email_from" position="attributes">
+                    <attribute name="required">True</attribute>
+                </field>
+
             </field>
         </record>
 

@@ -17,6 +17,7 @@
              'views/res_config.xml',
              'views/po_inherit.xml',
              'views/sale_inherit.xml',
+             'views/sync_log.xml',
              'wizard/sync_check_wizard.xml',
     ],
    'installable': True,

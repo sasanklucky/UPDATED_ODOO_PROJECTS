@@ -1,4 +1,4 @@
-from odoo import api, fields, models, registry, SUPERUSER_ID, sql_db
+from odoo import api, fields, models, registry, SUPERUSER_ID, sql_db, _
 from datetime import datetime
 import time
 import psycopg2
@@ -6,6 +6,47 @@ from psycopg2 import pool
 import contextlib
 from ast import literal_eval
 from odoo.exceptions import ValidationError, UserError, RedirectWarning, except_orm
+
+class StockBackorderConfirmationInherit(models.TransientModel):
+    _inherit = 'stock.backorder.confirmation'
+
+    def process_cancel_backorder(self):
+        #check if parent company has back order against the purchase record
+        # check_val = self.check_parent_back_order(self)
+        # print("check_val===",check_val)
+        # if check_val:
+        param = self.env['ir.config_parameter'].sudo()
+        child = param.get_param('purchase_order_sync_apis.po_company_type')
+        database = param.get_param('purchase_order_sync_apis.parent_db_name')
+        current_picking_id = self._context.get('current_picking_id')
+        print("current_picking_id====",current_picking_id,self._context)
+        if child == 'is_child_company' and database and current_picking_id:
+            print("database=====",database,child)
+            db = sql_db.db_connect(f"{database}")
+            child_database = self._cr.dbname
+            with contextlib.closing(db.cursor()) as cr:
+                cr.autocommit(True)
+                env = api.Environment(cr, SUPERUSER_ID, {})
+                #fetch stock_picking ref
+                pick_id = self.env['stock.picking'].sudo().search([('id','=',int(current_picking_id))],order='id desc',limit=1).origin
+                print("pick_id====",pick_id)
+                purchase_id = self.env['purchase.order'].sudo().search([('name','=',pick_id)],order='id desc',limit=1)
+                print("purchase_id=====",purchase_id)
+                if purchase_id:
+                    sale_in_parent = env['sale.order'].sudo().search([('child_po_id_ref','=',str(purchase_id.id)),('child_db','=',child_database)])
+                    print("sale_in_parent=====",sale_in_parent)
+                    if sale_in_parent:
+                        picking_parent = env['stock.picking'].sudo().search([('sale_id','=',sale_in_parent.id),('state','not in',['done','cancel'])],order='id desc',limit=1)
+                        print("picking_parent=====",picking_parent)
+                        if picking_parent:
+                            raise UserError(_('You cannot Validate as back order has been created in parent.Create a back order to avoid it.'))
+        # return
+        self._process(cancel_backorder=True)
+
+    # def check_parent_back_order(self):
+    #     print("inside check back order---")
+    #                 return True
+        
 
 class PurchaseOrderLineInheritSync(models.Model):
     _inherit = "purchase.order.line"
@@ -113,6 +154,8 @@ class PurchaseOrderInheritSync(models.Model):
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
+                    # import pdb
+                    # pdb.set_trace()
                     #getting child data as sellf represent child db env
                     po_records = False
                     if current_po_record:
@@ -124,12 +167,18 @@ class PurchaseOrderInheritSync(models.Model):
                     # looped child po datas
                     for rec in po_records:
                         print("rec=====",rec)
-
+                        stop_sync = False
+                        sync_log_dict = {
+                            'purchase_record':rec.id,
+                            'purchase_sequence':rec.name,
+                            'status':200,
+                        }
                         # parent record env
                         sale_quotation = env['sale.order'].sudo()
                         exist_in_parent = sale_quotation.search([('child_po_id_ref','=',str(rec.id)),('child_db','=',child_database)],limit=1, order='id desc')
+                        company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
+                        print("purchase order=====",exist_in_parent)
                         if not exist_in_parent:
-                            print("purchase order=====",exist_in_parent)
                             customer = False
                             payment_term_id= False
                             country= False
@@ -140,7 +189,6 @@ class PurchaseOrderInheritSync(models.Model):
                             incoterm_id= False
                             requisition_id= False
                             # # if exist_in_parent:
-                            company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                             print("company===",company,rec.company_id.partner_id.mobile)
                             if rec.company_id.partner_id:
                                 customer = env['res.partner'].sudo().search([('mobile','=',rec.company_id.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
@@ -164,7 +212,12 @@ class PurchaseOrderInheritSync(models.Model):
                                         # 'title':title.id if title else False,
                                         'lang':rec.partner_id.lang if rec.partner_id.lang else '',
                                     }
-                                    customer = env['res.partner'].sudo().create(data_dict)
+                                    # customer = env['res.partner'].sudo().create(data_dict)
+                                    sync_log_dict['sync_message'] = 'Failure.Customer is not present in Parent.'
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
                                                                         
                             print("customer===",customer)
                             if rec.fiscal_position_id:
@@ -182,8 +235,12 @@ class PurchaseOrderInheritSync(models.Model):
                                         'zip_to':rec.fiscal_position_id.zip_to,
                                         'note':rec.fiscal_position_id.note,
                                     }
-                                    fiscal_position_id = env['account.fiscal.position'].sudo().create(data_dict)
-                            
+                                    # fiscal_position_id = env['account.fiscal.position'].sudo().create(data_dict)
+                                    sync_log_dict['sync_message'] = 'Failure.Fiscal position is not present in Parent.'
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
                             
                             # payment terms
                             if rec.payment_term_id:
@@ -196,13 +253,17 @@ class PurchaseOrderInheritSync(models.Model):
                                         'company_id':rec.payment_term_id.company_id.id if rec.payment_term_id.company_id else rec.company_id.id,
                                         'sequence':rec.payment_term_id.sequence.id if rec.payment_term_id.sequence else False,
                                         }
-                                    payment_term_id = env['account.payment.term'].sudo().create(data_dict)
-                            
+                                    # payment_term_id = env['account.payment.term'].sudo().create(data_dict)
+                                    sync_log_dict['sync_message'] = 'Failure.Payment Term is not present in Parent.'
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
                             #-------------------------------------------------------------------------------
                             team_id = env['crm.team'].sudo().search([('name','ilike','Sales')],order='id desc',limit=1)
-                            pricelist_id = env['product.pricelist'].sudo().search([('name','ilike','Warranty')],order='id desc',limit=1)
+                            pricelist_id = env['product.pricelist'].sudo().search([('name','=',customer.property_product_pricelist.name)],order='id desc',limit=1)
                             warehouse = env['stock.warehouse'].sudo().sudo().search([('code','=','VEH')],limit=1)
-                            print("---------------------data--------",team_id,pricelist_id,warehouse,rec.company_id.partner_id,company,env.user.company_id,env.user.company_id)                            # "currency_id"
+                            print("---------------------data--------",customer,team_id,pricelist_id,warehouse,rec.company_id.partner_id,company,env.user.company_id,env.user.company_id)                            # "currency_id"
                             order_line_list = []
                             # import pdb
                             # pdb.set_trace()
@@ -211,42 +272,28 @@ class PurchaseOrderInheritSync(models.Model):
                             code = f"{seq.prefix}" + f"{seq.number_next_actual}"
                             print("seq===================",seq,code)
                             data = {
-                                # ///////////////////////////////////////////////
-                            'name':code,
-                            'partner_id':customer.id if customer else False,
-                            'mobile':customer.mobile if customer.mobile else '',
-                            'email':customer.email if customer.email else '',
-                            'partner_invoice_id':customer.id if customer else False,
-                            'partner_shipping_id':customer.id if customer else False,
-                            # 'validity_date':rec.validity_date if rec.validity_date else '',
-                            'pricelist_id':customer.property_product_pricelist.id if customer.property_product_pricelist else pricelist_id.id,
-                            'user_id':customer.user_id.id if customer.user_id else False,
-                            'payment_term_id':payment_term_id.id if payment_term_id else False,
-                            # 'tag_ids':[(6,0,tag.ids if tag else [])],
-                            'warehouse_id':warehouse.id if warehouse else False,
-                            'user_id':customer.user_id.id if customer.user_id else False,
-                            'picking_policy':'direct',
-                            # 'requested_date':rec.requested_date if rec.requested_date else '',
-                            # 'commitment_date':rec.commitment_date if rec.commitment_date else '',
-                            # 'effective_date':rec.effective_date if rec.effective_date else '',
-                            'team_id':customer.team_id.id if customer.team_id else team_id.id,
-                            # 'safe_type':rec.safe_type if rec.safe_type else False,
-                            # 'client_order_ref':rec.client_order_ref if rec.client_order_ref else '',
-                            # 'company_id':company.id if company else False,--------------------------------
-                            # 'campaign_id':campaign.id if campaign else False,
-                            # 'medium_id':medium.id if medium else False,
-                            # 'source_id':source.id if source else False,
-                            # 'opportunity_id':opportunity_id.id if opportunity_id else False,
-                            # 'origin':rec.origin if rec.origin else '',
-                            'date_order':rec.date_order if rec.date_order else '',
-                            'fiscal_position_id':fiscal_position_id.id if fiscal_position_id else False,
-                            'child_po_id_ref':rec.id,
-                            'child_db':child_database,
-                            "parent_db":database,
-                            'child_po_ref':f"{rec.company_id.name}-{rec.name}",
-                            "note":rec.notes,
-                                
-                            }
+                                    'name':code,
+                                    'partner_id':customer.id if customer else False,
+                                    'mobile':customer.mobile if customer.mobile else '',
+                                    'email':customer.email if customer.email else '',
+                                    'partner_invoice_id':customer.id if customer else False,
+                                    'partner_shipping_id':customer.id if customer else False,
+                                    'pricelist_id':pricelist_id.id if pricelist_id else False,
+                                    'user_id':customer.user_id.id if customer.user_id else False,
+                                    'payment_term_id':payment_term_id.id if payment_term_id else False,
+                                    'warehouse_id':warehouse.id if warehouse else False,
+                                    'user_id':customer.user_id.id if customer.user_id else False,
+                                    'picking_policy':'direct',
+                                    'team_id':customer.team_id.id if customer.team_id else team_id.id,
+                                    'date_order':rec.date_order if rec.date_order else '',
+                                    'fiscal_position_id':fiscal_position_id.id if fiscal_position_id else False,
+                                    'child_po_id_ref':rec.id,
+                                    'child_db':child_database,
+                                    "parent_db":database,
+                                    'child_po_ref':f"{rec.company_id.name}-{rec.name}",
+                                    "note":rec.notes,
+                                    
+                                }
                             for line_data in rec.order_line:
                                 print("line_data=====",line_data)
                                 template_data = env['product.template'].sudo().search([('name','=',line_data.product_id.product_tmpl_id.name)],order='id desc',limit=1)
@@ -277,9 +324,14 @@ class PurchaseOrderInheritSync(models.Model):
                                         'list_price':line_data.product_id.product_tmpl_id.list_price if line_data.product_id.product_tmpl_id.list_price else 0,
 
                                     }
-                                    template_data = env['product.template'].sudo().create(data_dict)
+                                    # template_data = env['product.template'].sudo().create(data_dict)
+                                    sync_log_dict['sync_message'] = 'Failure.Product Template is not present in Parent.'
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
 
-                                if not product_data:
+                                if not product_data or not line_data.product_id.default_code:
                                     data_dict = {
                                         'default_code':line_data.product_id.default_code if line_data.product_id.default_code else '',
                                         'active':line_data.product_id.active if line_data.product_id.active else '',
@@ -289,7 +341,15 @@ class PurchaseOrderInheritSync(models.Model):
                                         'weight':line_data.product_id.weight if line_data.product_id.weight else '',
                                         'activity_date_deadline':line_data.product_id.activity_date_deadline if line_data.product_id.activity_date_deadline else '',
                                     }
-                                    product_data = env['product.product'].sudo().create(data_dict)
+                                    # product_data = env['product.product'].sudo().create(data_dict)
+                                    msg = 'Failure. Product is not present in Parent.'
+                                    if not line_data.product_id.default_code:
+                                        msg = 'Failure. Product code is not set.'
+                                    sync_log_dict['sync_message'] = msg
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
                                 
                                 if not product_uom and line_data.product_uom.name:
                                     data_dict = {
@@ -299,34 +359,84 @@ class PurchaseOrderInheritSync(models.Model):
                                         'active':line_data.product_uom.active if line_data.product_uom.active else '',
                                         'uom_type':line_data.product_uom.uom_type if line_data.product_uom.uom_type else '',
                                     }
-                                    product_uom = env['product.uom'].sudo().create(data_dict)
+                                    # product_uom = env['product.uom'].sudo().create(data_dict)
+                                    sync_log_dict['sync_message'] = 'Failure.Product unit is not present in Parent.'
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                    stop_sync =True
+                                    break
 
-                                order_line_list.append((0,0,{
-                                    'name':line_data.name,
-                                    'product_catalog_id':catalog_data.id if catalog_data else False,
-                                    'product_template_id':template_data.id if template_data else False,
-                                    'product_id':product_data.id if product_data else line_data.product_id.id,
-                                    'order_id':rec.id,
-                                    'product_uom_qty':line_data.product_qty,
-                                    'product_uom':product_uom.id if product_uom else line_data.product_uom.id,
-                                    'price_unit':line_data.price_unit,
-                                    'tax_id':[(6, 0, line_data.taxes_id.ids if line_data.taxes_id else [])],
-                                    'child_po_id_ref':line_data.id,
-                                    'child_db':child_database
-                                }))
+                                parent_tax_data =False
+                                if line_data.taxes_id:
+                                    current_child_tax_data = self.env['account.tax'].sudo().search([('id','in',line_data.taxes_id.ids)])
+                                    print("env.user=====",env.user)
+                                    print("env.company_id.id=====",env.user.company_id,current_child_tax_data.mapped('name'))
+                                    data_set = env['sale.order'].sudo().search([],order='id desc', limit=1)
+                                    parent_company = data_set.company_id
+                                    print("parent_company====",parent_company)
+                                    parent_tax_data = env['account.tax'].sudo().search([('name','in',current_child_tax_data.mapped('name')),('type_tax_use','=','sale'),('company_id','=',parent_company.id)])
+                                    print("parent_tax_data=====",parent_tax_data)
+                                    if not parent_tax_data:
+                                        data_dict = {
+                                            'name':current_child_tax_data.name if current_child_tax_data.name else '',
+                                            'type_tax_use':current_child_tax_data.type_tax_use if current_child_tax_data.type_tax_use else False,
+                                            'company_id':parent_company.id if parent_company else '',
+                                            'active':True,
+                                            'description':current_child_tax_data.name if current_child_tax_data.name else '',
+                                            'python_compute':current_child_tax_data.mapped('python_applicable') if current_child_tax_data else '',
+                                            'python_applicable':current_child_tax_data.name if current_child_tax_data.name else '',
+                                        }
+                                        sync_log_dict['sync_message'] = 'Failure.Tax is not present in Parent.'
+                                        sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                        record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                        stop_sync =True
+                                        break
+
+                                one2many_data ={
+                                                'name':line_data.name,
+                                                'product_catalog_id':catalog_data.id if catalog_data else False,
+                                                'product_template_id':template_data.id if template_data else False,
+                                                'product_id':product_data.id if product_data else line_data.product_id.id,
+                                                'order_id':rec.id,
+                                                'product_uom_qty':line_data.product_qty if line_data.product_qty else False,
+                                                'product_uom':product_uom.id if product_uom else line_data.product_uom.id,
+                                                'price_unit':product_data.lst_price if product_data.lst_price else product_data.standard_price,
+                                                'child_po_id_ref':line_data.id,
+                                                'child_db':child_database
+                                            }
+                                                # 'tax_id':[(6, 0, parent_tax_data.ids if parent_tax_data else False)],
+                                print("line_data.taxes_id====",)
+                                if line_data.taxes_id:
+                                    one2many_data['tax_id'] = [(6, 0, parent_tax_data.ids)]
+                                else:
+                                    one2many_data['tax_id'] = [(6, 0, [])]
+                                order_line_list.append((0,0,one2many_data ))
                             if order_line_list:
                                 data['order_line'] = order_line_list
                             print("----data prepared-------",data)
+                            print("----stop sync-------",stop_sync)
                             """ Insert new records """
-                            if data:
+                            if data and not stop_sync:
                                 print("--------------------Create----------------------------")
                                 new_recordds = env['sale.order'].sudo().create(data)
+                                print("new_recordds===",new_recordds)
                                 seq.number_next_actual = seq.number_next_actual+1
+                                sync_log_dict['sync_message'] = 'Success.Purchase order synced to Parent.'
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data}
+                                print("sync_log_dict====",sync_log_dict)
+                                record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                print("record_set===",record_set)
                                 if new_recordds:
                                     rec.sudo().write({'sync_po':  True,'state':'done'})
                                 print("Created new records-----",new_recordds)
                         else:
                             print("Record already present in parent DB.")
+                            sync_log_dict['status'] = 500
+                            sync_log_dict['sync_message'] = 'Failure.Record already synced to parent.'
+                            sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,}
+                            record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                            stop_sync =True
+                            print("log updated0----",record_set)
                             
         
         except Exception as e:
