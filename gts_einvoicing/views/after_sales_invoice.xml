@@ -143,6 +143,10 @@
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="gen_einvoice" groups="gts_einvoicing.group_ebill_manager"/>
             </xpath>
+            <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                <field name="hsn_code"/>
+                <field name="is_service"/>
+            </xpath>
             <xpath expr="//page[last()]" position="after">
                 <page string="E-Invoicing Bill Details" groups="gts_einvoicing.group_ebill_manager"
                       attrs="{'invisible': [('gen_einvoice', '=', False)]}">

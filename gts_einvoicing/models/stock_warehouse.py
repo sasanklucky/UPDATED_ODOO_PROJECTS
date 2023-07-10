@@ -5,6 +5,7 @@ from odoo.exceptions import UserError
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse'
 
+    configure_einvoice = fields.Boolean('Configure E-invoice', tracking=True)
     gst_no = fields.Char("GSTIN", tracking=2)
     user_name = fields.Char("User Name", tracking=2)
     user_password = fields.Char("Password", tracking=2)
@@ -12,6 +13,3 @@ class StockWarehouse(models.Model):
     expire_date = fields.Datetime('Token Expiry Date', tracking=2)
     expire_date1 = fields.Char('Token Expiry Date1', tracking=2)
 
-
-    # def check_token_valid(self):
-    #     if self.expire_date:
