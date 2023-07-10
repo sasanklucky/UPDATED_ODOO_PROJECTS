@@ -66,6 +66,7 @@ class PurchaseOrderInheritSync(models.Model):
     parent_db = fields.Char()
     test_css = fields.Html(string='CSS', sanitize=False, compute='_compute_css', store=False)
     hide_sync  = fields.Boolean(string='Sync', compute='hide_sync_status')
+    sync_log_details_ids = fields.One2many('po_sync_log','purchase_record', string='Log')
 
     @api.depends('state')
     def hide_sync_status(self):
@@ -92,13 +93,13 @@ class PurchaseOrderInheritSync(models.Model):
                 record.test_css = False
 
 
-    @api.multi
-    def unlink(self):
-        for record in self:
-            param = self.env['ir.config_parameter'].sudo()
-            database = param.get_param('purchase_order_sync_apis.parent_db_name')
-            self.unlink_so_from_parent(database,record.id)
-        return super(PurchaseOrderInheritSync, self).unlink()
+    # @api.multi
+    # def unlink(self):
+    #     for record in self:
+    #         param = self.env['ir.config_parameter'].sudo()
+    #         database = param.get_param('purchase_order_sync_apis.parent_db_name')
+    #         self.unlink_so_from_parent(database,record.id)
+    #     return super(PurchaseOrderInheritSync, self).unlink()
     
     # update False value to sync_po if no value is passed
     @api.multi
@@ -109,27 +110,27 @@ class PurchaseOrderInheritSync(models.Model):
         return res
 
     # Delete Sale order from parent if purchase order is deleted from child
-    @api.multi
-    def unlink_so_from_parent(self,parent_db_name,child_id):
-        # unlink po from parent db
-        try:
-            param = self.env['ir.config_parameter'].sudo()
-            child = param.get_param('purchase_order_sync_apis.po_company_type')
-            check_enable_po_sync = param.get_param('purchase_order_sync_apis.enable_po_sync')
-            if child == 'is_child_company' and check_enable_po_sync == 'yes':
-                # print("database=====",parent_db_name)
-                db = sql_db.db_connect(f"{parent_db_name}")
-                # child_database = param.get_param('purchase_order_sync_apis.child_parent_db_name')
-                child_database = self._cr.dbname
-                with contextlib.closing(db.cursor()) as cr:
-                    cr.autocommit(True)
-                    env = api.Environment(cr, SUPERUSER_ID, {})
-                    exist_in_parent = env['sale.order'].sudo().search([('child_po_id_ref','=',str(child_id)),('child_db','=',child_database)])
-                    print("exist_in_parent=====",exist_in_parent)
-                    if exist_in_parent:
-                        exist_in_parent.unlink()
-        except Exception as e:
-            raise ValidationError(e)
+    # @api.multi
+    # def unlink_so_from_parent(self,parent_db_name,child_id):
+    #     # unlink po from parent db
+    #     try:
+    #         param = self.env['ir.config_parameter'].sudo()
+    #         child = param.get_param('purchase_order_sync_apis.po_company_type')
+    #         check_enable_po_sync = param.get_param('purchase_order_sync_apis.enable_po_sync')
+    #         if child == 'is_child_company' and check_enable_po_sync == 'yes':
+    #             # print("database=====",parent_db_name)
+    #             db = sql_db.db_connect(f"{parent_db_name}")
+    #             # child_database = param.get_param('purchase_order_sync_apis.child_parent_db_name')
+    #             child_database = self._cr.dbname
+    #             with contextlib.closing(db.cursor()) as cr:
+    #                 cr.autocommit(True)
+    #                 env = api.Environment(cr, SUPERUSER_ID, {})
+    #                 exist_in_parent = env['sale.order'].sudo().search([('child_po_id_ref','=',str(child_id)),('child_db','=',child_database)])
+    #                 print("exist_in_parent=====",exist_in_parent)
+    #                 if exist_in_parent:
+    #                     exist_in_parent.unlink()
+    #     except Exception as e:
+    #         raise ValidationError(e)
 
 
 
@@ -176,7 +177,7 @@ class PurchaseOrderInheritSync(models.Model):
                     # parent record env
                     sale_quotation = env['sale.order'].sudo()
                     exist_in_parent = sale_quotation.search([('child_po_id_ref','=',str(rec.id)),('child_db','=',child_database)],limit=1, order='id desc')
-                    company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
+                    # company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                     print("purchase order=====",exist_in_parent)
                     if not exist_in_parent:
                         customer = False
@@ -189,9 +190,9 @@ class PurchaseOrderInheritSync(models.Model):
                         incoterm_id= False
                         requisition_id= False
                         # # if exist_in_parent:
-                        print("company===",company,rec.company_id.partner_id.mobile)
+                        print("company===",rec.company_id.partner_id.mobile)
                         if rec.company_id.partner_id:
-                            customer = env['res.partner'].sudo().search([('mobile','=',rec.company_id.partner_id.mobile),('company_id','=',company.id)],order='id desc',limit=1)
+                            customer = env['res.partner'].sudo().search([('is_dealer','=',True),('dealer_code','=',rec.partner_id.dealer_code)],order='id desc',limit=1)
                         
                             if not customer:
                                 data_dict = {
@@ -214,7 +215,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 }
                                 # customer = env['res.partner'].sudo().create(data_dict)
                                 sync_log_dict['sync_message'] = 'Failure.Customer is not present in Parent.'
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -226,7 +227,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 data_dict = {
                                     'name':rec.fiscal_position_id.name if rec.fiscal_position_id else '',
                                     'active':rec.fiscal_position_id.active,
-                                    'company_id':company.id if company else rec.company_id.id,
+                                    'company_id':rec.company_id.id if rec.company_id else False,
                                     'currency_id':currency.id if currency else False,
                                     'country_id':country.id if country else False,
                                     'auto_apply':rec.fiscal_position_id.auto_apply,
@@ -237,7 +238,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 }
                                 # fiscal_position_id = env['account.fiscal.position'].sudo().create(data_dict)
                                 sync_log_dict['sync_message'] = 'Failure.Fiscal position is not present in Parent.'
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -255,7 +256,7 @@ class PurchaseOrderInheritSync(models.Model):
                                     }
                                 # payment_term_id = env['account.payment.term'].sudo().create(data_dict)
                                 sync_log_dict['sync_message'] = 'Failure.Payment Term is not present in Parent.'
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -263,7 +264,7 @@ class PurchaseOrderInheritSync(models.Model):
                         team_id = env['crm.team'].sudo().search([('name','ilike','Sales')],order='id desc',limit=1)
                         pricelist_id = env['product.pricelist'].sudo().search([('name','=',customer.property_product_pricelist.name)],order='id desc',limit=1)
                         warehouse = env['stock.warehouse'].sudo().sudo().search([('code','=','VEH')],limit=1)
-                        print("---------------------data--------",customer,team_id,pricelist_id,warehouse,rec.company_id.partner_id,company,env.user.company_id,env.user.company_id)                            # "currency_id"
+                        print("---------------------data--------",customer,team_id,pricelist_id,warehouse,rec.company_id.partner_id,env.user.company_id,env.user.company_id)                            # "currency_id"
                         order_line_list = []
                         # import pdb
                         # pdb.set_trace()
@@ -315,7 +316,6 @@ class PurchaseOrderInheritSync(models.Model):
                                     'weight':line_data.product_id.product_tmpl_id.weight if line_data.product_id.product_tmpl_id.weight else '',
                                     'sale_ok':line_data.product_id.product_tmpl_id.sale_ok if line_data.product_id.product_tmpl_id.sale_ok else '',
                                     'purchase_ok':line_data.product_id.product_tmpl_id.purchase_ok if line_data.product_id.product_tmpl_id.purchase_ok else '',
-                                    'company_id':company.id if company else False,
                                     'active':line_data.product_id.product_tmpl_id.active if line_data.product_id.product_tmpl_id.active else '',
                                     'default_code':line_data.product_id.product_tmpl_id.default_code if line_data.product_id.product_tmpl_id.default_code else '',
                                     'activity_date_deadline':line_data.product_id.product_tmpl_id.activity_date_deadline if line_data.product_id.product_tmpl_id.activity_date_deadline else '',
@@ -326,7 +326,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 }
                                 # template_data = env['product.template'].sudo().create(data_dict)
                                 sync_log_dict['sync_message'] = 'Failure.Product Template is not present in Parent.'
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -346,7 +346,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 if not line_data.product_id.default_code:
                                     msg = 'Failure. Product code is not set.'
                                 sync_log_dict['sync_message'] = msg
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -361,7 +361,7 @@ class PurchaseOrderInheritSync(models.Model):
                                 }
                                 # product_uom = env['product.uom'].sudo().create(data_dict)
                                 sync_log_dict['sync_message'] = 'Failure.Product unit is not present in Parent.'
-                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                 stop_sync =True
                                 break
@@ -387,7 +387,7 @@ class PurchaseOrderInheritSync(models.Model):
                                         'python_applicable':current_child_tax_data.name if current_child_tax_data.name else '',
                                     }
                                     sync_log_dict['sync_message'] = 'Failure.Tax is not present in Parent.'
-                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data_dict}
+                                    sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data_dict}
                                     record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                                     stop_sync =True
                                     break
@@ -422,7 +422,7 @@ class PurchaseOrderInheritSync(models.Model):
                             print("new_recordds===",new_recordds)
                             seq.number_next_actual = seq.number_next_actual+1
                             sync_log_dict['sync_message'] = 'Success.Purchase order synced to Parent.'
-                            sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,'values':data}
+                            sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,'values':data}
                             print("sync_log_dict====",sync_log_dict)
                             record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                             print("record_set===",record_set)
@@ -433,7 +433,7 @@ class PurchaseOrderInheritSync(models.Model):
                         print("Record already present in parent DB.")
                         sync_log_dict['status'] = 500
                         sync_log_dict['sync_message'] = 'Failure.Record already synced to parent.'
-                        sync_log_dict['payload'] = {'purchase_sequence':rec.name,'company_id':company.name,'db':child_database,}
+                        sync_log_dict['payload'] = {'purchase_sequence':rec.name,'db':child_database,}
                         record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                         stop_sync =True
                         print("log updated0----",record_set)

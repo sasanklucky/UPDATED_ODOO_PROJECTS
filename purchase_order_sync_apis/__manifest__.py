@@ -18,6 +18,7 @@
              'views/po_inherit.xml',
              'views/sale_inherit.xml',
              'views/sync_log.xml',
+             'views/res_partner_inherited.xml',
              'wizard/sync_check_wizard.xml',
     ],
    'installable': True,
