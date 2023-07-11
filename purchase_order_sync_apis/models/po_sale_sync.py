@@ -192,7 +192,7 @@ class PurchaseOrderInheritSync(models.Model):
                         # # if exist_in_parent:
                         print("company===",rec.company_id.partner_id.mobile)
                         if rec.company_id.partner_id:
-                            customer = env['res.partner'].sudo().search([('is_dealer','=',True),('dealer_code','=',rec.partner_id.dealer_code)],order='id desc',limit=1)
+                            customer = env['res.partner'].sudo().search([('is_dealer','=',True),('dealer_code','=',rec.company_id.partner_id.dealer_code)],order='id desc',limit=1)
                         
                             if not customer:
                                 data_dict = {
