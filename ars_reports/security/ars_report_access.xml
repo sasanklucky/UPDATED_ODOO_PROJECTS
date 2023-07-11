@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record model="ir.rule" id="access_report_parts_purchase_report">
-        <field name="name">Parts Purchase Report Access</field>
-        <field name="model_id" ref="model_parts_purchase_report"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('dealer_id','=',False),('dealer_id','child_of',[user.company_id.id])]
-        </field>
-    </record>
+    <data noupdate="1">
+        <record model="ir.rule" id="access_report_parts_purchase_report">
+            <field name="name">Parts Purchase Report Access</field>
+            <field name="model_id" ref="model_parts_purchase_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('dealer_id','=',False),('dealer_id','child_of',[user.company_id.id])]
+            </field>
+        </record>
 
-    <record model="ir.rule" id="access_retail_report">
-        <field name="name">RetailAccess Report</field>
-        <field name="model_id" ref="model_retail_report"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('outlet','=',False),('outlet','child_of',[user.company_id.id])]
-        </field>
-    </record>
+        <record model="ir.rule" id="access_retail_report">
+            <field name="name">RetailAccess Report</field>
+            <field name="model_id" ref="model_retail_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('outlet','=',False),('outlet','child_of',[user.company_id.id])]
+            </field>
+        </record>
 
-    <record model="ir.rule" id="access_repair_order_report">
-        <field name="name">Repair Order Report Access</field>
-        <field name="model_id" ref="model_repair_order_report"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('dealer_id','=',False),('dealer_id','child_of',[user.company_id.id])]
-        </field>
-    </record>
+        <record model="ir.rule" id="access_repair_order_report">
+            <field name="name">Repair Order Report Access</field>
+            <field name="model_id" ref="model_repair_order_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('dealer_id','=',False),('dealer_id','child_of',[user.company_id.id])]
+            </field>
+        </record>
 
-    <record model="ir.rule" id="access_wholesale_report">
-        <field name="name">Wholesale Report Access</field>
-        <field name="model_id" ref="model_wholesale_report"/>
-        <field name="global" eval="True"/>
-        <field name="domain_force">['|',('outlet','=',False),('outlet','child_of',[user.company_id.id])]
-        </field>
-    </record>
-
+        <record model="ir.rule" id="access_wholesale_report">
+            <field name="name">Wholesale Report Access</field>
+            <field name="model_id" ref="model_wholesale_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('outlet','=',False),('outlet','child_of',[user.company_id.id])]
+            </field>
+        </record>
+    </data>
 </odoo>
