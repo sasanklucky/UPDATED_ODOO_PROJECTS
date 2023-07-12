@@ -96,7 +96,7 @@
                                 </h2>
                                 <label for="license_plate" class="oe_edit_only"/>
                                 <h2>
-                                    <field name="license_plate" class="oe_inline" placeholder="e.g. PAE 326"/>
+                                    <field name="license_plate" class="oe_inline" required="1" placeholder="e.g. PAE 326"/>
                                 </h2>
                                 <label for="tag_ids" class="oe_edit_only"/>
                                 <field name="tag_ids" widget="many2many_tags"
@@ -113,7 +113,7 @@
                                         <field name="categ_id" readonly="1"/>
                                         <field name="fuel_type"/>
                                         <field name="engine_code"/>
-                                        <field name="engine_number" string="Motor Number"/>
+                                        <field name="engine_number" string="Motor Number" required="1"/>
                                         <field name="key_serial_number"/>
                                         <label for="co2"/>
                                         <div class="o_row" name="co2">
@@ -135,7 +135,8 @@
                                         <field name="vehicle_status"
                                                attrs="{'readonly':[('vehicle_status','=','new')]}"/>
                                         <field name="initial_reg_no"/>
-                                        <field name="vin_sn" string="VIN"/>
+                                        <field name="vin_sn" string="VIN" required="1"/>
+                                        <field name="lot_id" groups="base.group_no_one"/>
                                         <label for="model_year"/>
                                         <div class="o_row">
                                             <field name="model_month"/>
