@@ -11,6 +11,21 @@ import logging
 _logger = logging.getLogger("_____")
 
 
+class AccountInvoiceLine(models.Model):
+    _inherit = 'account.invoice.line'
+
+    @api.depends('product_id')
+    def _get_hsn_code(self):
+        for lines in self:
+            if lines.product_id.l10n_in_hsn_code:
+                lines.hsn_code = lines.product_id.l10n_in_hsn_code
+            else:
+                lines.hsn_code = ''
+
+    hsn_code = fields.Char('HSN/SAC Code', compute='_get_hsn_code', store=True)
+    is_service = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Service')
+
+
 class account_invoice(models.Model):
     _inherit = 'account.invoice'
 
@@ -30,7 +45,6 @@ class account_invoice(models.Model):
         ('CRN', 'CRN'),
         ('DBN', 'DBN'),
     ], string="Doc-Type")
-    is_service = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Service')
     ackdt_no = fields.Char('Acknowledge Date', copy=False)
     ack_no = fields.Char('Acknowledge Number', copy=False)
     signed_invoice = fields.Char('Invoice Signed Data')
@@ -71,7 +85,7 @@ class account_invoice(models.Model):
                 so_warehouse = so_delivery.warehouse_id
                 return so_warehouse
             else:
-                warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id)], limit=1)
+                warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id), ('configure_einvoice', '=', True)], limit=1)
                 return warehouse
 
     @api.onchange('transporter_id', 'vehicle_no')
@@ -83,6 +97,7 @@ class account_invoice(models.Model):
 
     @api.multi
     def create_einvoicing(self):
+        print("Create Invoice...")
         print("Create Invoice...")
         item_list = []
         einvoicing = self.env['einvoicing.configuration'].search([], limit=1)
@@ -157,7 +172,6 @@ class account_invoice(models.Model):
             date2 = datetime.strptime(str(self.date_invoice), '%Y-%m-%d').strftime('%d/%m/%Y')
         else:
             date2 = datetime.strptime(str(self.date_due), '%Y-%m-%d').strftime('%d/%m/%Y')
-        # print("-----------display_name---------------display_name----------",self.reference.replace("/",""),self.sequence_number_next)
 
         if not self.reference:
             if self.origin:
@@ -244,21 +258,21 @@ class account_invoice(models.Model):
             "Addr1": self.company_id.street,
             "Loc": self.company_id.city,
             # "TrdNm":'',
-            "State": self.company_id.state_id.stcd,
+            "State": self.company_id.state_id.code,
             "Pin": int(self.company_id.zip),
-            "Stcd": self.company_id.state_id.stcd,
+            "Stcd": self.company_id.state_id.code,
         }
         if self.partner_id.country_id.code != 'IN':
             # _logger.info("=====================tenure==%s=", self.partner_id.country_id.code)
             BuyerDtls = {
                 "Gstin": self.partner_id.vat,
                 "LglNm": self.partner_id.name,
-                "Pos": self.partner_id.state_id.stcd,
+                "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.stcd,
+                "State": self.partner_id.state_id.code,
                 "Pin": self.partner_id.zip,
-                "Stcd": self.partner_id.state_id.stcd,
+                "Stcd": self.partner_id.state_id.code,
             }
         else:
             # if self.sup_type == 'B2COters':
@@ -274,12 +288,12 @@ class account_invoice(models.Model):
             BuyerDtls = {
                 "Gstin": self.partner_id.vat,
                 "LglNm": self.partner_id.name,
-                "Pos": self.partner_id.state_id.stcd,
+                "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.stcd,
+                "State": self.partner_id.state_id.code,
                 "Pin": int(self.partner_id.zip),
-                "Stcd": self.partner_id.state_id.stcd, }
+                "Stcd": self.partner_id.state_id.code, }
             # print("BuyerDtls=================%s===",self.partner_id.state_id.code)
 
         DispDtls = {
@@ -287,7 +301,7 @@ class account_invoice(models.Model):
             "Addr1": warehouse.partner_id.street,
             "Loc": warehouse.partner_id.city,
             "Pin": int(warehouse.partner_id.zip),
-            "Stcd": warehouse.partner_id.state_id.stcd
+            "Stcd": warehouse.partner_id.state_id.code
         }
         # if self.temp:
         #     ShipDtls = {
@@ -309,7 +323,7 @@ class account_invoice(models.Model):
             "Addr1": addr1,
             "Loc": self.partner_id.city,
             "Pin": int(self.partner_id.zip),
-            "Stcd": self.partner_id.state_id.stcd,
+            "Stcd": self.partner_id.state_id.code,
         }
         if self.transaction_type == '1':
             data['SellerDtls'] = SellerDtls
@@ -390,8 +404,8 @@ class account_invoice(models.Model):
                 total_tax = total_igst + total_cgst + total_sgst
                 item_dict = {
                     "SlNo": str(idx + 1),
-                    "IsServc": self.is_service,
-                    "HsnCd": inv_line.product_id.l10n_in_hsn_code,
+                    "IsServc": inv_line.is_service,
+                    "HsnCd": inv_line.hsn_code,
                     "PrdDesc": inv_line.name,
                     "Qty": inv_line.quantity,
                     "UnitPrice": round(inv_line.price_unit, 2),
@@ -608,7 +622,7 @@ class account_invoice(models.Model):
             "Addr1": warehouse.partner_id.street,
             "Loc": warehouse.partner_id.city,
             "Pin": int(warehouse.partner_id.zip),
-            "Stcd": warehouse.partner_id.state_id.stcd
+            "Stcd": warehouse.partner_id.state_id.code
         },
         # if self.temp:
         #     ShipDtls = {
@@ -757,3 +771,4 @@ class ResCountryState(models.Model):
     _inherit = 'res.country.state'
 
     stcd = fields.Char('STCD')
+

@@ -27,7 +27,7 @@
                                 <field name='invoice_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
                             </group>
                             <group>
-                                <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
+<!--                                <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>-->
                                 <field name="transaction_type" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
 <!--                                <field name="cancel_reason"/>-->
 <!--                                attrs="{'invisible': [('irn_no', '=', False)]}"-->
@@ -124,7 +124,7 @@
                                 <field name='invoice_type' attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
                             </group>
                             <group>
-                                <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
+<!--                                <field name="is_service" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>-->
                                 <field name="transaction_type" attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('eway_bill_status', '!=' , 'not generated')]}"/>
 <!--                                <field name="cancel_reason"/>-->
 <!--                                attrs="{'invisible': [('irn_no', '=', False)]}"-->
