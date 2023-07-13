@@ -24,7 +24,8 @@
                     <div class="col-xs-6">
                         <table class="" style="margin-bottom: 2px;">
                             <tr>
-                                <td>Customer Name:</td>
+                                <td>Customer Name</td>
+                                <td>:</td>
                                 <td>
                                     <t t-if="o.partner_id.parent_id">
                                         <span t-field="o.partner_id.parent_id.name"></span>
@@ -35,29 +36,29 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Mobile Number:</td>
+                                <td>Mobile Number</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.mobile"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Email:
-                                    <ID></ID>
-                                </td>
+                                <td>Email</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.email"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>GSTIN:
-                                    <ID></ID>
-                                </td>
+                                <td>GSTIN</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.partner_id.vat"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>Address:</td>
+                                <td>Address</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.partner_id"
                                           t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}'/>
@@ -68,31 +69,37 @@
                     <div class="col-xs-6">
                         <table class="">
                             <tr>
-                                <td>Reg Number :</td>
+                                <td>Reg Number</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.regn_no.license_plate"/>
                                 </td>
+
                             </tr>
                             <tr>
-                                <td>Vehicle Model :</td>
+                                <td>Vehicle Model</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.model"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>VIN Number :</td>
+                                <td>VIN Number</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.vin_no"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>KM IN :</td>
+                                <td>KM IN</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.mileage_in"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>KM OUT :</td>
+                                <td>KM OUT</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.mileage_in"/>
                                 </td>
@@ -110,21 +117,31 @@
                         <table class="" style="margin-bottom: 2px;">
                             <!--							<tr><td>Invoice Date</td><td><span t-field="o.date_invoice"></span></td></tr>-->
                             <tr>
-                                <td>RO Number :</td>
+                                <td>RO Number</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.origin"></span>
                                 </td>
                             </tr>
                             <tr>
-                                <td>RO Date :</td>
+                                <td>RO Date</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.confirmation_date"
                                           t-field-options='{"format": "d MMMM y"}'></span>
                                 </td>
                             </tr>
+                            <tr>
+                                <td>Service Type</td>
+                                <td>:</td>
+                                <td>
+                                    <span t-field="o.service_type.name"></span>
+                                </td>
+                            </tr>
                             <!--<tr><td>Delivery Date&amp;Time</td><td><span t-field="o.order_id.delivery_date"/></td></tr>-->
                             <tr>
-                                <td>Delivery Date&amp;Time :</td>
+                                <td>Delivery Date&amp;Time</td>
+                                <td>:</td>
                                 <td>
                                     <t t-if="o.delivery_date">
                                         <t t-set="delivery_date"
@@ -141,7 +158,8 @@
                     <div class="col-xs-6">
                         <table class="">
                             <tr>
-                                <td>Invoice Number :</td>
+                                <td>Invoice Number</td>
+                                <td>:</td>
                                 <td>
                                     <strong>
                                         <span t-field="o.number"></span>
@@ -149,7 +167,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Invoice Date :</td>
+                                <td>Invoice Date</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.date_invoice"></span>
                                 </td>
@@ -164,13 +183,15 @@
 
                             <!--							</tr>-->
                             <tr>
-                                <td>Service Advisor :</td>
+                                <td>Service Advisor</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.user_id.name"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>SA Mobile No :</td>
+                                <td>SA Mobile No</td>
+                                <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.user_id.mobile"/>
                                 </td>
@@ -182,14 +203,122 @@
             <xpath expr="//div[@class='row mt32 mb32']" position="replace">
             </xpath>
 
-
             <xpath expr="//div[@class='clearfix']" position="after">
                 <t t-if="o.company_id.country_id.code == 'IN'">
                     <p id="total_in_words" class="mb16 text-center">
-                        <strong>Rupee (In Words):</strong>
+                        <strong>Rupees (In Words):</strong>
                         <span t-field="o.amount_total_words"/>
                     </p>
                 </t>
+
+                <div class="col-xs-12">
+                    <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
+                        <span style="font-size:16px;color:black;font-weight:bold;">Taxable Value</span>
+                    </div>
+                    <div class="col-xs-6" style="padding:0px !important;padding-right:3px !important;">
+                        <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
+                            <span style="font-size:12px;color:black;font-weight:bold;">Parts Tax</span>
+                        </div>
+                        <table class="table-bordered" name="invoice_line_taxable_table"
+                               style="margin-bottom: 2px;width:100%;">
+                            <thead>
+                                <tr style="background-color:#F5F5F5;">
+                                    <th>SL</th>
+                                    <th>Tax Name</th>
+                                    <th class="text-right">Base Amount</th>
+                                    <th class="text-center">Tax Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_taxes_tbody">
+                                <t t-set="i" t-value="1"/>
+                                <t t-set="product_tax_amount" t-value="0"></t>
+                                <t t-set="product_list" t-value="tax_datas_by_types['product_list']"/>
+                                <tr t-foreach="tax_datas_by_types['product_list']" t-as="product_tax">
+                                    <td style="background-color:#FFF;">
+                                        <span t-esc="i"/>
+                                        <t t-set="i" t-value="i+1"/>
+                                    </td>
+                                    <td style="background-color:#FFF;">
+                                        <span t-esc="tax_datas_by_types['product'][product_tax]['name']"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="tax.base"/>-->
+                                        <span t-esc="round(tax_datas_by_types['product'][product_tax]['base'],2)"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="tax.amount"/>-->
+                                        <span t-esc="round(tax_datas_by_types['product'][product_tax]['amount'],2)"/>
+                                    </td>
+                                    <t t-set="product_tax_amount"
+                                       t-value="product_tax_amount+tax_datas_by_types['product'][product_tax]['amount']"></t>
+                                </tr>
+                                <tr class="text-right" style="background-color:#F5F5F5;">
+                                    <td colspan="2">
+                                    </td>
+                                    <td>
+                                        <strong>Total:</strong>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(product_tax_amount,2)"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-xs-6" style="padding:0px !important;padding-left:3px !important;">
+                        <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
+                            <span style="font-size:12px;color:black;font-weight:bold;">Labour Tax</span>
+                        </div>
+                        <table class="table-bordered" name="invoice_line_taxable_table"
+                               style="margin-bottom: 2px;width:100%;">
+                            <thead>
+                                <tr style="background-color:#F5F5F5;">
+                                    <th>SL</th>
+                                    <th>Tax Name</th>
+                                    <th class="text-right">Base Amount</th>
+                                    <th class="text-center">Tax Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="invoice_taxes_tbody">
+                                <t t-set="i" t-value="1"/>
+                                <!--                                <t t-set="tax_datas_by_types['service_tax_list']" t-value="service_tax"></t>-->
+                                <t t-set="service_tax_amount" t-value="0"></t>
+                                <tr t-foreach="tax_datas_by_types['service_tax_list']" t-as="service_tax">
+                                    <td style="background-color:#FFF;">
+                                        <span t-esc="i"/>
+                                        <t t-set="i" t-value="i+1"/>
+                                    </td>
+                                    <td style="background-color:#FFF;">
+                                        <!--                                        <span t-field="tax.name"/>-->
+                                        <span t-esc="tax_datas_by_types['service'][service_tax]['name']"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="tax.base"/>-->
+                                        <span t-esc="round(tax_datas_by_types['service'][service_tax]['base'],2)"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="tax.amount"/>-->
+                                        <span t-esc="round(tax_datas_by_types['service'][service_tax]['amount'],2)"/>
+                                    </td>
+                                    <t t-set="service_tax_amount"
+                                       t-value="service_tax_amount+tax_datas_by_types['service'][service_tax]['amount']"></t>
+                                </tr>
+                                <tr class="text-right" style="background-color:#F5F5F5;">
+                                    <td colspan="2">
+                                    </td>
+                                    <td>
+                                        <strong>Total:</strong>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(service_tax_amount,2
+                                        )"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div style="">
                     <label string="Terms &amp; Conditions"/>
                     <b>Terms &amp; Conditions :</b>
@@ -248,12 +377,14 @@
                                 <th>SL</th>
                                 <th>Part Number</th>
                                 <th>Item Name</th>
+                                <th>HSN Code</th>
+                                <th class="text-right">Unit Price</th>
                                 <th class="text-right">Qty</th>
                                 <th class="text-center">UOM</th>
                                 <!--<th class="text-center">Category</th>-->
-                                <th class="text-right">Unit Price</th>
-                                <!--<t t-if="len(o.tax_line_ids) > 0">-->
                                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
+                                <th class="text-right">Amount(Base Price)</th>
+                                <!--<t t-if="len(o.tax_line_ids) > 0">-->
                                 <th class="text-right">Taxes</th>
                                 <!--</t>-->
                                 <!--<t t-esc="tag_cgst_id"/>-->
@@ -276,12 +407,15 @@
                                     <!--<th class="text-right" t-if="is_igst">IGST</th>-->
                                     <!--<th class="text-right" t-if="is_cess">CESS</th>-->
                                 </t>
-                                <th class="text-right">Untaxed Amount</th>
+                                <th class="text-right">GST Amt</th>
+                                <th class="text-right">Total</th>
                                 <!--                                <th class="text-right">Taxed Amount</th>-->
                             </tr>
                         </thead>
                         <tbody class="invoice_tbody">
                             <t t-set="p_product_amt" t-value="0"></t>
+                            <t t-set="p_total_amt" t-value="0"></t>
+                            <t t-set="p_tax_amt" t-value="0"></t>
                             <t t-set="p_product_cgst" t-value="0"></t>
                             <t t-set="p_product_sgst" t-value="0"></t>
                             <t t-set="p_product_igst" t-value="0"></t>
@@ -298,19 +432,17 @@
                                         <span t-field="l.product_id.default_code"/>
                                     </td>
                                     <td style="background-color:#FFF;">
-                                        <div>
-                                            <span t-field="l.product_id.name"/>
-                                        </div>
-                                        <div>
-                                            <span style="font-size:10px;color:black;font-weight:bold;">
-                                                HSN/SAC Code:
-                                            </span>
-                                            <span style="font-size:10px;color:black;"
-                                                  t-field="l.product_id.l10n_in_hsn_code"/>
-                                        </div>
+                                        <span t-field="l.product_id.name"/>
                                     </td>
                                     <td class="text-right" style="background-color:#FFF;">
-                                        <span t-field="l.quantity"/>
+                                        <span t-field="l.product_id.l10n_in_hsn_code"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <span t-field="l.price_unit"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="l.quantity"/>-->
+                                        <span t-esc="round(l.quantity)"/>
                                     </td>
                                     <td style="background-color:#FFF;">
                                         <span t-field="l.uom_id"/>
@@ -322,11 +454,12 @@
                                     <!--</t>-->
                                     <!--</t>-->
                                     <!--</td>-->
-                                    <td class="text-right" style="background-color:#FFF;">
-                                        <span t-field="l.price_unit"/>
-                                    </td>
                                     <td t-if="display_discount" class="text-right">
                                         <span t-field="l.discount"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="l.price_subtotal"/>-->
+                                        <span t-esc="'{:,.2f}'.format(l.price_subtotal)"/>
                                     </td>
                                     <t style="background-color:#FFF;">
                                         <td class="text-right">
@@ -339,8 +472,7 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_cgst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0">-->
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] <= 0">-->
                                                         <!--<t t-esc="0.0" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
@@ -354,11 +486,10 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_sgst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0 ">-->
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] < 0 ">-->
-                                                        <!--<t t-esc="0.0" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                                        <!--<t t-esc="0.0" />-->
                                                         <!--</t>-->
                                                         <t t-set="p_product_sgst"
                                                            t-value="p_product_sgst+tax_data['amount']"></t>
@@ -371,11 +502,10 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_igst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0 ">-->
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] < 0 ">-->
-                                                        <!--<t t-esc="0.0" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                                        <!--<t t-esc="0.0" />-->
                                                         <!--</t>-->
                                                         <t t-set="p_product_igst"
                                                            t-value="p_product_igst+tax_data['amount']"></t>
@@ -406,13 +536,15 @@
                                         <!--</td>-->
                                     </t>
                                     <td class="text-right" id="subtotal" style="background-color:#FFF;">
-                                        <span t-field="l.price_subtotal"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <t t-set="tax_amt" t-value="l.price_total-l.price_subtotal"></t>
+                                        <span t-esc="round(tax_amt,2)"/>
+                                        <t t-set="p_tax_amt" t-value="p_tax_amt+tax_amt"></t>
                                     </td>
-                                    <!--                                    <td class="text-right" id="price_total" style="background-color:#FFF;">-->
-                                    <!--                                        <span t-field="l.price_total"-->
-                                    <!--                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                    <!--                                    </td>-->
+                                    <td class="text-right" id="price_total" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="l.price_total"/>-->
+                                        <span t-esc="'{:,.2f}'.format(l.price_total)"/>
+                                        <t t-set="p_total_amt" t-value="p_total_amt+l.price_total"></t>
+                                    </td>
                                 </t>
                             </tr>
                             <t t-if="not is_igst">
@@ -427,20 +559,27 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_cgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_amt,2)"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="round(p_product_cgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_sgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_sgst,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_product_igst,2)"/>
                                     </td>
                                     <!--                                    <td>-->
                                     <!--                                        <span t-esc="p_product_cess"-->
-                                    <!--                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                    <!--                                             />-->
                                     <!--                                    </td>-->
                                     <td>
-                                        <span t-esc="p_product_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_tax_amt,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_total_amt,2)"/>
                                     </td>
                                 </tr>
                                 <!--                                <tr>-->
@@ -464,24 +603,27 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_cgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_amt,2)"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="round(p_product_cgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_sgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_sgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_igst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_igst,2)"/>
                                     </td>
                                     <!--                                    <td>-->
                                     <!--                                        <span t-esc="p_product_cess"-->
                                     <!--                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
                                     <!--                                    </td>-->
                                     <td>
-                                        <span t-esc="p_product_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_tax_amt,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_total_amt,2)"/>
                                     </td>
                                 </tr>
                                 <!--                                <tr>-->
@@ -505,16 +647,14 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_product_igst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_igst,2)"/>
                                     </td>
                                     <!--                                    <td>-->
                                     <!--                                        <span t-esc="p_product_cess"-->
                                     <!--                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
                                     <!--                                    </td>-->
                                     <td>
-                                        <span t-esc="p_product_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_product_amt,2)"/>
                                     </td>
                                 </tr>
                                 <!--                                <tr>-->
@@ -550,12 +690,14 @@
                             <tr style="background-color:#F5F5F5;">
                                 <th>SL</th>
                                 <th>Item Name</th>
+                                <th>HSN Code</th>
                                 <th class="text-right">Qty</th>
                                 <th class="text-center">UOM</th>
                                 <!--<th class="text-center">Category</th>-->
                                 <th class="text-right">Unit Price</th>
                                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
                                 <!--<t t-if="len(o.tax_line_ids) > 0">-->
+                                <th class="text-right">Amount</th>
                                 <th class="text-right">Taxes</th>
                                 <!--</t>-->
                                 <t t-if="o.company_id.country_id.code == 'IN'">
@@ -574,7 +716,8 @@
                                     <!--<th class="text-right" t-if="is_igst">IGST</th>-->
                                     <!--<th class="text-right" t-if="is_cess">CESS</th>-->
                                 </t>
-                                <th class="text-right">Untaxed Amount</th>
+                                <th class="text-right">Tax Amt</th>
+                                <th class="text-right">Total</th>
                             </tr>
                         </thead>
                         <!--</t>-->
@@ -583,6 +726,8 @@
                         <!--<t t-esc="service_line"/>-->
                         <tbody class="invoice_tbody">
                             <t t-set="p_service_amt" t-value="0"></t>
+                            <t t-set="p_service_tax_amt" t-value="0"></t>
+                            <t t-set="p_service_total_amt" t-value="0"></t>
                             <t t-set="p_service_cgst" t-value="0"></t>
                             <t t-set="p_service_sgst" t-value="0"></t>
                             <t t-set="p_service_igst" t-value="0"></t>
@@ -598,8 +743,15 @@
                                     <td style="background-color:#FFF;">
                                         <span t-field="l.name"/>
                                     </td>
+                                    <td style="background-color:#FFF;">
+                                        <span t-field="l.product_id.l10n_in_hsn_code"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="l.price_unit"/>
+                                    </td>
                                     <td class="text-right" style="background-color:#FFF;">
-                                        <span t-field="l.quantity"/>
+                                        <!--                                        <span t-field="l.quantity"/>-->
+                                        <span t-esc="round(l.quantity)"/>
                                     </td>
                                     <td style="background-color:#FFF;">
                                         <span t-field="l.uom_id"/>
@@ -611,11 +763,12 @@
                                     <!--</t>-->
                                     <!--</t>-->
                                     <!--</td>-->
-                                    <td class="text-right">
-                                        <span t-field="l.price_unit"/>
-                                    </td>
                                     <td t-if="display_discount" class="text-right">
                                         <span t-field="l.discount"/>
+                                    </td>
+                                    <td class="text-right" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="l.price_subtotal"/>-->
+                                        <span t-esc="'{:,.2f}'.format(l.price_subtotal)"/>
                                     </td>
                                     <t style="background-color:#FFF;"> <!-- t-if="len(o.tax_line_ids) > 0" -->
                                         <td class="text-right">
@@ -627,8 +780,7 @@
                                             <td class="text-right" t-if="is_cgst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_cgst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <t t-set="p_service_cgst"
                                                            t-value="p_service_cgst+tax_data['amount']"></t>
                                                     </t>
@@ -637,8 +789,7 @@
                                             <td class="text-right" t-if="is_cgst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_sgst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <t t-set="p_service_sgst"
                                                            t-value="p_service_sgst+tax_data['amount']"></t>
                                                     </t>
@@ -649,8 +800,7 @@
                                             <td class="text-right" t-if="is_igst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_igst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"
-                                                           t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                                        <t t-esc="tax_data['amount']"/>
                                                         <t t-set="p_service_igst"
                                                            t-value="p_service_igst+tax_data['amount']"></t>
                                                     </t>
@@ -680,8 +830,14 @@
                                         <!--</td>-->
                                     </t>
                                     <td class="text-right" id="subtotal" style="background-color:#FFF;">
-                                        <span t-field="l.price_subtotal"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <t t-set="tax_amt" t-value="l.price_total-l.price_subtotal"></t>
+                                        <span t-esc="round(tax_amt,2)"/>
+                                        <t t-set="p_service_tax_amt" t-value="p_service_tax_amt+tax_amt"></t>
+                                    </td>
+                                    <td class="text-right" id="price_total" style="background-color:#FFF;">
+                                        <!--                                        <span t-field="l.price_total"/>-->
+                                        <span t-esc="'{:,.2f}'.format(l.price_total)"/>
+                                        <t t-set="p_service_total_amt" t-value="p_service_total_amt+l.price_total"></t>
                                     </td>
                                 </t>
                             </tr>
@@ -697,16 +853,24 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_cgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_amt"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="p_service_cgst"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="p_service_cgst"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_sgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_sgst"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_service_tax_amt,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_service_total_amt,2)"/>
                                     </td>
                                 </tr>
                             </t>
@@ -722,24 +886,27 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_cgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_amt"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="p_service_cgst"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_sgst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_sgst"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_igst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_igst"/>
                                     </td>
                                     <!--                                    <td>-->
                                     <!--                                        <span t-esc="p_service_cess"-->
                                     <!--                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
                                     <!--                                    </td>-->
                                     <td>
-                                        <span t-esc="p_service_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_service_tax_amt,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_service_total_amt,2)"/>
                                     </td>
                                 </tr>
                             </t>
@@ -755,130 +922,22 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_igst"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="p_service_amt"/>
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <span t-esc="p_service_igst"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_amt"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                        <span t-esc="round(p_service_tax_amt,2)"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="round(p_service_total_amt,2)"/>
                                     </td>
                                 </tr>
                             </t>
                         </tbody>
                     </table>
-                </div>
-
-                <div class="col-xs-12">
-                    <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
-                        <span style="font-size:16px;color:black;font-weight:bold;">Taxable Value</span>
-                    </div>
-                    <div class="col-xs-6" style="padding:0px !important;padding-right:3px !important;">
-                        <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
-                            <span style="font-size:12px;color:black;font-weight:bold;">Parts Tax</span>
-                        </div>
-                        <table class="table-bordered" name="invoice_line_taxable_table"
-                               style="margin-bottom: 2px;width:100%;">
-                            <thead>
-                                <tr style="background-color:#F5F5F5;">
-                                    <th>SL</th>
-                                    <th>Tax Name</th>
-                                    <th class="text-right">Base Amount</th>
-                                    <th class="text-center">Tax Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody class="invoice_taxes_tbody">
-                                <t t-set="i" t-value="1"/>
-                                <t t-set="product_tax_amount" t-value="0"></t>
-                                <t t-set="product_list" t-value="tax_datas_by_types['product_list']"/>
-                                <tr t-foreach="tax_datas_by_types['product_list']" t-as="product_tax">
-                                    <td style="background-color:#FFF;">
-                                        <span t-esc="i"/>
-                                        <t t-set="i" t-value="i+1"/>
-                                    </td>
-                                    <td style="background-color:#FFF;">
-                                        <span t-esc="tax_datas_by_types['product'][product_tax]['name']"/>
-                                    </td>
-                                    <td class="text-right" style="background-color:#FFF;">
-                                        <!--                                        <span t-field="tax.base"/>-->
-                                        <span t-esc="tax_datas_by_types['product'][product_tax]['base']"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                    <td class="text-right" style="background-color:#FFF;">
-                                        <!--                                        <span t-field="tax.amount"/>-->
-                                        <span t-esc="tax_datas_by_types['product'][product_tax]['amount']"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                    <t t-set="product_tax_amount"
-                                       t-value="product_tax_amount+tax_datas_by_types['product'][product_tax]['amount']"></t>
-                                </tr>
-                                <tr class="text-right" style="background-color:#F5F5F5;">
-                                    <td colspan="2">
-                                    </td>
-                                    <td>
-                                        <strong>Total:</strong>
-                                    </td>
-                                    <td>
-                                        <span t-esc="product_tax_amount"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-xs-6" style="padding:0px !important;padding-left:3px !important;">
-                        <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
-                            <span style="font-size:12px;color:black;font-weight:bold;">Labour Tax</span>
-                        </div>
-                        <table class="table-bordered" name="invoice_line_taxable_table"
-                               style="margin-bottom: 2px;width:100%;">
-                            <thead>
-                                <tr style="background-color:#F5F5F5;">
-                                    <th>SL</th>
-                                    <th>Tax Name</th>
-                                    <th class="text-right">Base Amount</th>
-                                    <th class="text-center">Tax Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody class="invoice_taxes_tbody">
-                                <t t-set="i" t-value="1"/>
-                                <!--                                <t t-set="tax_datas_by_types['service_tax_list']" t-value="service_tax"></t>-->
-                                <t t-set="service_tax_amount" t-value="0"></t>
-                                <tr t-foreach="tax_datas_by_types['service_tax_list']" t-as="service_tax">
-                                    <td style="background-color:#FFF;">
-                                        <span t-esc="i"/>
-                                        <t t-set="i" t-value="i+1"/>
-                                    </td>
-                                    <td style="background-color:#FFF;">
-                                        <!--                                        <span t-field="tax.name"/>-->
-                                        <span t-esc="tax_datas_by_types['service'][service_tax]['name']"/>
-                                    </td>
-                                    <td class="text-right" style="background-color:#FFF;">
-                                        <!--                                        <span t-field="tax.base"/>-->
-                                        <span t-esc="tax_datas_by_types['service'][service_tax]['base']"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                    <td class="text-right" style="background-color:#FFF;">
-                                        <!--                                        <span t-field="tax.amount"/>-->
-                                        <span t-esc="tax_datas_by_types['service'][service_tax]['amount']"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                    <t t-set="service_tax_amount"
-                                       t-value="service_tax_amount+tax_datas_by_types['service'][service_tax]['amount']"></t>
-                                </tr>
-                                <tr class="text-right" style="background-color:#F5F5F5;">
-                                    <td colspan="2">
-                                    </td>
-                                    <td>
-                                        <strong>Total:</strong>
-                                    </td>
-                                    <td>
-                                        <span t-esc="service_tax_amount"
-                                              t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
                 </div>
             </xpath>
 
@@ -886,14 +945,14 @@
                 <div id="total" class="row">
                     <div class="col-xs-4 pull-right">
                         <table class="table-condensed"
-                               style="min-width: 250px;max-width: 400px;page-break-inside: avoid;">
+                               style="min-width: 250px;max-width: 400px;page-break-inside: avoid;margin-left: 70px;">
                             <tr class="border-black" style="border-bottom:1px solid #dddddd;">
                                 <td>
                                     <strong>Parts Amount</strong>
                                 </td>
                                 <td class="text-right">
-                                    <span t-esc="p_product_amt"
-                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    <!--                                    <span t-esc="p_product_amt"/>-->
+                                    <span t-esc="round(p_product_amt,2)"/>
                                 </td>
                             </tr>
                             <tr class="border-black" style="border-bottom:1px solid #dddddd;">
@@ -901,8 +960,7 @@
                                     <strong>Labour Amount</strong>
                                 </td>
                                 <td class="text-right">
-                                    <span t-esc="p_service_amt"
-                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    <span t-esc="round(p_service_amt,2)"/>
                                 </td>
                             </tr>
                             <tr class="border-black" style="border-bottom:1px solid #dddddd;">
@@ -910,8 +968,8 @@
                                     <strong>Subtotal</strong>
                                 </td>
                                 <td class="text-right">
-                                    <span t-field="o.amount_untaxed"
-                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    <!--                                    <span t-field="o.amount_untaxed"/>-->
+                                    <span t-esc="'{:,.2f}'.format(o.amount_untaxed)"/>
                                 </td>
                             </tr>
                             <t t-foreach="o._get_tax_amount_by_group()" t-as="amount_by_group">
@@ -919,21 +977,25 @@
                                     <t t-if="len(o.tax_line_ids) == 1 and o.amount_untaxed == amount_by_group[2]">
                                         <td>
                                             <span t-esc="amount_by_group[0]"/>
+                                            <!--                                            <span t-esc="'{:,.2f}'.format(amount_by_group[0])"/>-->
                                         </td>
                                         <td class="text-right">
                                             <span t-esc="amount_by_group[3]"/>
+                                            <!--                                            <span t-esc="'{:,.2f}'.format(amount_by_group[3])"/>-->
                                         </td>
                                     </t>
                                     <t t-else="">
                                         <td>
                                             <span t-esc="amount_by_group[0]"/>
-                                            <span>&amp;nbsp;
-                                                <span>on</span>
-                                                <t t-esc="amount_by_group[4]"/>
-                                            </span>
+                                            <!--                                            <span t-esc="'{:,.2f}'.format(str(amount_by_group[0]))"/>-->
+                                            <!--                                            <span>&amp;nbsp;-->
+                                            <!--                                                <span>on</span>-->
+                                            <!--                                                <t t-esc="amount_by_group[4]"/>-->
+                                            <!--                                            </span>-->
                                         </td>
                                         <td class="text-right">
-                                            <span t-esc="amount_by_group[3]"/>
+                                            <span t-esc="amount_by_group[3].split('₹')[0]"/>
+                                            <!--                                         <span t-esc="'{:,.2f}'.format(amount_by_group[3])"/>-->
                                         </td>
                                     </t>
                                 </tr>
@@ -943,8 +1005,8 @@
                                     <strong>Grand Total</strong>
                                 </td>
                                 <td class="text-right">
-                                    <span t-field="o.amount_total"
-                                          t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    <!--                                    <span t-field="o.amount_total"/>-->
+                                    <span t-esc="'{:,.2f}'.format(o.amount_total)"/>
                                 </td>
                             </tr>
                         </table>
