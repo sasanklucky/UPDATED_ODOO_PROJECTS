@@ -472,7 +472,7 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_cgst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0">-->
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] <= 0">-->
                                                         <!--<t t-esc="0.0" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
@@ -486,7 +486,7 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_sgst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0 ">-->
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] < 0 ">-->
                                                         <!--<t t-esc="0.0" />-->
@@ -502,7 +502,7 @@
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_igst_id in tax_data['tag_ids']">
                                                         <!--<t t-if="tax_data['amount'] > 0 ">-->
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <!--</t>-->
                                                         <!--<t t-if="tax_data['amount'] < 0 ">-->
                                                         <!--<t t-esc="0.0" />-->
@@ -780,7 +780,7 @@
                                             <td class="text-right" t-if="is_cgst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_cgst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <t t-set="p_service_cgst"
                                                            t-value="p_service_cgst+tax_data['amount']"></t>
                                                     </t>
@@ -789,7 +789,7 @@
                                             <td class="text-right" t-if="is_cgst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_sgst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <t t-set="p_service_sgst"
                                                            t-value="p_service_sgst+tax_data['amount']"></t>
                                                     </t>
@@ -800,7 +800,7 @@
                                             <td class="text-right" t-if="is_igst">
                                                 <t t-foreach="tax_datas[l.id]" t-as="tax_data">
                                                     <t t-if="tag_igst_id in tax_data['tag_ids']">
-                                                        <t t-esc="tax_data['amount']"/>
+                                                        <t t-esc="round(tax_data['amount'],2)"/>
                                                         <t t-set="p_service_igst"
                                                            t-value="p_service_igst+tax_data['amount']"></t>
                                                     </t>
@@ -853,18 +853,18 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_amt"/>
+                                        <span t-esc="round(p_service_amt,2)"/>
                                     </td>
                                     <td></td>
                                     <td>
-                                        <span t-esc="p_service_cgst"/>
+                                        <span t-esc="round(p_service_cgst,2)"/>
                                     </td>
                                     <td></td>
                                     <td>
-                                        <span t-esc="p_service_cgst"/>
+                                        <span t-esc="round(p_service_cgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_sgst"/>
+                                        <span t-esc="round(p_service_sgst,2)"/>
                                     </td>
                                     <td>
                                         <span t-esc="round(p_service_tax_amt,2)"/>
@@ -886,17 +886,17 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_amt"/>
+                                        <span t-esc="round(p_service_amt,2)"/>
                                     </td>
                                     <td></td>
                                     <td>
-                                        <span t-esc="p_service_cgst"/>
+                                        <span t-esc="round(p_service_cgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_sgst"/>
+                                        <span t-esc="round(p_service_sgst,2)"/>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_igst"/>
+                                        <span t-esc="round(p_service_igst,2)"/>
                                     </td>
                                     <!--                                    <td>-->
                                     <!--                                        <span t-esc="p_service_cess"-->
@@ -922,11 +922,11 @@
                                         <strong>Total:</strong>
                                     </td>
                                     <td>
-                                        <span t-esc="p_service_amt"/>
+                                        <span t-esc="round(p_service_amt,2)"/>
                                     </td>
                                     <td></td>
                                     <td>
-                                        <span t-esc="p_service_igst"/>
+                                        <span t-esc="round(p_service_igst,2)"/>
                                     </td>
                                     <td>
                                         <span t-esc="round(p_service_tax_amt,2)"/>
