@@ -383,7 +383,7 @@
                                 <th class="text-center">UOM</th>
                                 <!--<th class="text-center">Category</th>-->
                                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
-                                <th class="text-right">Amount(Base Price)</th>
+                                <th class="text-right">Amount</th>
                                 <!--<t t-if="len(o.tax_line_ids) > 0">-->
                                 <th class="text-right">Taxes</th>
                                 <!--</t>-->
