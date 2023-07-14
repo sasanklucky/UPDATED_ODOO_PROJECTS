@@ -176,6 +176,8 @@ class ARS_account_invoice(models.Model):
         tax_datas = {}
         product_tax_list = []
         service_tax_list = []
+        tax_product.clear()
+        tax_service.clear()
         TAX = self.env['account.tax']
         for line in self.mapped('invoice_line_ids'):
             if line.product_id.type in ['product', 'consu']:
@@ -195,7 +197,6 @@ class ARS_account_invoice(models.Model):
                     else:
                         tax_product[tax_line['id']]['amount'] += tax_line['amount']
                         tax_product[tax_line['id']]['base'] += tax_line['base']
-                print(product_tax_list)
             if line.product_id.type in ['service']:
                 price_unit = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
                 tax_lines = \
@@ -212,8 +213,6 @@ class ARS_account_invoice(models.Model):
                     else:
                         tax_service[tax_line['id']]['amount'] += tax_line['amount']
                         tax_service[tax_line['id']]['base'] += tax_line['base']
-                    print(tax_line)
-                print(service_tax_list)
         if not product_tax_list:
             product_tax_list = list(tax_product.keys())
         if not service_tax_list:
@@ -222,5 +221,4 @@ class ARS_account_invoice(models.Model):
         tax_datas['service_tax_list'] = service_tax_list
         tax_datas['product'] = tax_product
         tax_datas['service'] = tax_service
-        print(tax_datas)
         return tax_datas
