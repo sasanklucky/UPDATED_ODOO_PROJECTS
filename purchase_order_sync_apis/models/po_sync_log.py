@@ -7,7 +7,7 @@ class PoSyncLog(models.Model):
     _rec_name = 'purchase_sequence'
     _order = 'id desc'
 
-    purchase_record = fields.Char()
+    purchase_record = fields.Many2one('purchase.order')
     purchase_sequence = fields.Char()
     payload = fields.Char()
     status = fields.Char()

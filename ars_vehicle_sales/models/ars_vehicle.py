@@ -22,7 +22,7 @@ class FleetVehicle(models.Model):
     contact_name = fields.Many2one('res.partner', string='Contact Person')
     vehicle_status = fields.Selection(
         [('demo', 'Demo'), ('customer', 'Customer'), ('own', 'Own'), ('new', 'New Vehicle')], 'Vehicle Status',
-        select=True)
+        select=True, default='customer')
     # kilometer_till = fields.Integer(string='Kilometer Till')
     #     reg_no = fields.Char(string='Regn No.')
     age = fields.Integer(string='Age', compute="_age")
@@ -102,7 +102,7 @@ class FleetVehicle(models.Model):
                 if lot_id:
                     self.lot_id = lot_id.id
                 else:
-                    raise ValueError(_("Lot number %s not found " % self.vin_sn))
+                    print("Lot Number not Present in the lot")
 
     @api.depends('model_id.brand_id.name', 'model_id.name', 'license_plate')
     def _compute_vehicle_name(self):

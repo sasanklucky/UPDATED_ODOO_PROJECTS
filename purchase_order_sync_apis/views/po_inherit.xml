@@ -20,6 +20,21 @@
                         string="Send to NSC" type="object" attrs="{'invisible': [('hide_sync','=',True)]}"
                         />
                 </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string='Log'>
+                        <group>
+                            <field name="sync_log_details_ids" readonly='1' >
+                                <tree string="log_details" readonly='1' >
+                                    <field name="purchase_record" readonly='1' />
+                                    <field name="purchase_sequence" readonly='1' />
+                                    <field name="payload" readonly='1' />
+                                    <field name="status" readonly='1' />
+                                    <field name="sync_message" readonly='1' />
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
 
