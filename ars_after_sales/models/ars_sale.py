@@ -845,8 +845,8 @@ class ars_sale_advance_payment_inv(models.TransientModel):
         for sl in sale_orders:
             warranty_ids = self.env['ars.sale.warranty'].search(
                 [('order_id', '=', sl.id), ('state', 'in', ('draft', 'inprocess'))])
-            if warranty_ids:
-                raise UserError(_('One of the Warranty Claims is in Draft/In-Progress state.'))
+            # if warranty_ids:
+            #     raise UserError(_('One of the Warranty Claims is in Draft/In-Progress state.'))
             for ln in sl.order_line:
                 if not ln.customer_split and sl.sale_aftersales == 'after_sales':
                     raise UserError(
