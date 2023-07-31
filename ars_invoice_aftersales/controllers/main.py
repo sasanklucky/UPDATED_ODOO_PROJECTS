@@ -23,8 +23,8 @@ class Split(http.Controller):
             for partner in partner_obj:
                 if customer_name == partner.name:
                     partners += '<option selected value='+str(partner.id)+'>' + partner.name + '</option>'
-                else:
-                    partners += '<option value='+str(partner.id)+'>' + partner.name + '</option>'
+                elif partner:
+                    partners += '<option value='+str(partner.id)+'>' + partner.name if partner.name else 'Unknown' + '</option>'
             partners += '</select>'
 
         return [{'customers': partners, 'customer_name': customer_name,'price_subtotal':price_subtotal,'line_ids':line_datas_id,'order_id':line_datas[0].order_id.id}]
