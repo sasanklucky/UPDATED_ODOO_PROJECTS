@@ -342,7 +342,7 @@ class ARS_sale_order(models.Model):
     def action_confirm(self):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
         if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
-            if self.mileage_in == 0:
+            if self.mileage_in == 0 and not self.counter_part:
                 raise UserError(_('Please enter the mileage'))
         if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
             if self.company_id:
@@ -350,7 +350,7 @@ class ARS_sale_order(models.Model):
                     'vehicle.sale.order') or _('New')
             else:
                 self.name = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
-        elif sale_team.team_type == 'sales' and self.sale_type == 'parts':
+        elif self.sale_type == 'parts' and self.counter_part:
             if self.company_id:
                 self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
                     'parts.sale.order') or _('New')
