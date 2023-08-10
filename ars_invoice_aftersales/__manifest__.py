@@ -15,13 +15,11 @@
     'depends': ['product', 'crm', 'sale', 'ars_after_sales', 'account'],
     'data': [
 
-
+        'data/account_invoice.xml',
         'views/ars_res_partner_views.xml',
         'views/ars_after_sale_views.xml',
         'views/ars_templates.xml',
         'wizard/ars_split_line_item_views.xml',
-
-
     ],
 
     'qweb': ['static/src/xml/ars_split_template.xml','static/src/xml/template.xml',],
