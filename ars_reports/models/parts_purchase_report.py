@@ -6,25 +6,26 @@ class PartsPurchaseReport(models.Model):
     _auto = False
 
     dealer_code = fields.Char(string="Dealer Code")
-    dealer_id = fields.Many2one('res.company','Dealer Name')
-    dealer_state_id = fields.Many2one('res.country.state',string="State",related="dealer_id.state_id")
-    dealer_city_id = fields.Char(string="City",related="dealer_id.city")
-    invoice_no = fields.Many2one('account.invoice',string='Invoice No')
-    invoice_line_id = fields.Many2one('account.invoice.line',string="Invoice Line")
+    dealer_id = fields.Many2one('res.company', 'Dealer Name')
+    dealer_state_id = fields.Many2one('res.country.state', string="State", related="dealer_id.state_id")
+    dealer_city_id = fields.Char(string="City", related="dealer_id.city")
+    invoice_no = fields.Many2one('account.invoice', string='Invoice No')
+    invoice_line_id = fields.Many2one('account.invoice.line', string="Invoice Line")
     invoice_date = fields.Date(string="Invoice Date")
-    po_id = fields.Many2one('purchase.order',string="PO No")
+    po_id = fields.Many2one('purchase.order', string="PO No")
     po_date = fields.Datetime(string="PO Date")
-    part_id = fields.Many2one('product.product','Part Replace')
+    part_id = fields.Many2one('product.product', 'Part Replace')
     part_description = fields.Text(string="Parts Description")
-    hsn_code = fields.Char(related="part_id.l10n_in_hsn_code",string="HSN Code")
+    hsn_code = fields.Char(related="part_id.l10n_in_hsn_code", string="HSN Code")
+    default_code = fields.Char(related="part_id.default_code", string="Parts Number")
     quantity = fields.Float(string='Quantity')
     unit_price = fields.Float(string="Unit Price")
     discount = fields.Float(string="Discount")
     cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
-    igst_per  = fields.Float(string="IGST %", compute="_compute_tax_percentage")
+    igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
     net_dealer_price = fields.Float(string="Net Dealer Price")
-    
+
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)

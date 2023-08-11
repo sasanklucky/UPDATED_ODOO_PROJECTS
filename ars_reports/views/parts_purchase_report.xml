@@ -22,6 +22,7 @@
                     <field name="po_date" />
                     <field name="part_id" />
                     <field name="part_description" />
+                    <field name="default_code"/>
                     <field name="hsn_code" />
                     <field name="quantity" />
                     <field name="unit_price" />

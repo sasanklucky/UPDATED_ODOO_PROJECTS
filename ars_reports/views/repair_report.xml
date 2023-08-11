@@ -84,8 +84,8 @@
                                         </t>
                                         <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
                                         </t>
-                                        <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name"/>
-                                            ,
+                                        <t t-if="doc.company_id.state_id">
+                                            <span t-field="doc.company_id.state_id.name"/>
                                         </t>
                                         <t t-if="doc.company_id.country_id"><span
                                                 t-field="doc.company_id.country_id.name"/>,
@@ -155,8 +155,8 @@
                                     </t>
                                     <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,
                                     </t>
-                                    <t t-if="doc.partner_id.country_id"><span t-field="doc.partner_id.country_id.name"/>
-                                        ,
+                                    <t t-if="doc.partner_id.country_id">
+                                        <span t-field="doc.partner_id.country_id.name"/>
                                     </t>
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">VIN</td>
@@ -210,17 +210,31 @@
                                     <t t-esc="doc.partner_id.mobile"/>
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Sold By</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                    <t t-if="doc.regn_no._get_ownership_details()">
+                                        <t t-if="doc.regn_no._get_ownership_details().sold_by.name">
+                                            <t t-esc="doc.regn_no._get_ownership_details().sold_by.name"/>
+                                        </t>
+                                    </t>
+                                </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Category</td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
                             </tr>
                             <tr style="font-size: 12px;">
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Booking No</td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Sale Date</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Special Message</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Ownership</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                    <t t-if="doc.regn_no._get_ownership_details()">
+                                        <t t-esc="doc.regn_no._get_ownership_details().date_of_ownership"/>
+                                    </t>
+                                </td>
+<!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Special Message</td>-->
+<!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>-->
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Warranty Expiry</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                    <t t-esc="doc.regn_no.warranty_validation"/>
+                                </td>
                             </tr>
                             <tr style="font-size: 12px;">
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
@@ -229,7 +243,8 @@
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Mileage</td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.mileage_in"/> KM.
+                                    <t t-esc="doc.mileage_in"/>
+                                    KM.
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Ext Wty</td>
                                 <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;">
@@ -238,14 +253,18 @@
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                     <t t-if="doc.regn_no.extented_warranty_no">
-                                        <t t-esc="doc.regn_no.extended_warranty_no"/>
+                                        <t t-esc="doc.regn_no.extented_warranty_no"/>
                                     </t>
                                     <t t-else=""></t>
                                 </td>
                             </tr>
                             <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Visit Type</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Policy Number</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                    <t t-if="doc.regn_no._get_insurance_details()">
+                                        <t t-esc="doc.regn_no._get_insurance_details().insurance_doc_no"/>
+                                    </t>
+                                </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Color</td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                     <t t-set="product"
@@ -259,8 +278,12 @@
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
                             </tr>
                             <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Insurance Expiry Date</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                    <t t-if="doc.regn_no._get_insurance_details()">
+                                        <t t-esc="doc.regn_no._get_insurance_details().insurance_end"/>
+                                    </t>
+                                </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Type</td>
@@ -814,7 +837,8 @@
                                             <td style="text-align:left; padding: 3px 2px; width=4%;" class="lborder">
                                                 &amp;nbsp;
                                             </td>
-                                            <td colspan="2" class="bordertransparent" style="text-align:right;"><br/>
+                                            <td colspan="2" class="bordertransparent" style="text-align:right;">
+                                                <br/>
                                                 Customer Signature
                                             </td>
                                         </tr>
