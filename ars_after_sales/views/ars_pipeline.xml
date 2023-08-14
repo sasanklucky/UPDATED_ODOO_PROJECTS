@@ -1707,7 +1707,7 @@
                         <field name="res_model">sale.order</field>
                         <field name="view_mode">form</field>
                         <field name="domain">[('counter_parts','=', 'parts')]</field>
-                        <field name="context">{'counter_parts': True}</field>
+                        <field name="context">{'default_counter_parts': True,'default_sale_type': 'parts','default_sale_aftersales':'sales'}</field>
                         <field name="view_ids"
                                eval="[(5, 0, 0),
                                       (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
