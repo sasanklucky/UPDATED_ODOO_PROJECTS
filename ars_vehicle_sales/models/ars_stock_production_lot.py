@@ -156,11 +156,13 @@ class Picking(models.Model):
                             existing_lot_numbers.extend([vin_sn])
                             print(existing_lot_numbers)
                         else:
+                            sold_by_id = self.env.user.company_id.partner_id
                             res = self.env['fleet.vehicle'].create(vals)
                             res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                                                         'date_of_ownership': datetime.now(),
                                                         'address': self.partner_id.city,
-                                                        'mobile': self.partner_id.mobile})]
+                                                        'mobile': self.partner_id.mobile,
+                                                        'sold_by': sold_by_id.id})]
                     elif self.origin and 'Return' in self.origin:
                         vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
                         for vehicle in vehicles:

@@ -9,6 +9,7 @@ class customer_history(models.Model):
     date_of_ownership = fields.Date()
     address = fields.Text()
     mobile = fields.Char()
+    sold_by = fields.Many2one('res.partner')
     stock_id1 = fields.Many2one('stock.production.lot','Stock Id')
     vehicle_id = fields.Many2one('fleet.vehicle', 'Fleet Vehicle ID')
 
