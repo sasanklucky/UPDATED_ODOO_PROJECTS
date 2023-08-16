@@ -445,7 +445,8 @@ class AccountInvoice_inherit(models.Model):
             [('order_id.name', '=', self.origin), ('partner_id', '=', self.partner_id.id)])
         for wr in warranty_ids:
             if wr.state in ('draft', 'inprocess'):
-                raise UserError(_('Some of warranty claims are in Draft/In-Process state. Please check and proceed.'))
+                print("Some of warranty claims are in Draft/In-Process state. Please check and proceed.")
+                # raise UserError(_('Some of warranty claims are in Draft/In-Process state. Please check and proceed.'))
             else:
                 self._cr.execute("update ars_sale_warranty set state='done' where id =" + str(wr.id))
         res = super(AccountInvoice_inherit, self).action_invoice_open()
