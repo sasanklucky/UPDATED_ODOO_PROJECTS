@@ -102,7 +102,7 @@
                                         <span t-field="doc.company_id.phone"/>
                                     </t>
                                 </td>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Fax :</td>
+                                <!--                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Fax :</td>-->
                             </tr>
                             <tr>
                                 <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">GST NO. :
@@ -139,9 +139,11 @@
                                 <td style="text-align:left;width:23%;padding: 3px 2px;" class="rborder">
                                     <t t-esc="doc.regn_no.license_plate"/>
                                 </td>
-                                <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Work Type</td>
+                                <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Visit Type</td>
                                 <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-esc="dict(doc.fields_get(allfields=['doc_type'])['doc_type']['selection'])[doc.doc_type]"/>
+                                    <t t-if="doc.doc_type">
+                                        <t t-esc="dict(doc.fields_get(allfields=['doc_type'])['doc_type']['selection'])[doc.doc_type]"/>
+                                    </t>
                                 </td>
                             </tr>
                             <tr style="font-size: 12px;">
@@ -180,7 +182,7 @@
                                         <span t-field="doc.partner_id.zip"/>
                                     </t>
                                 </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Engine No</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Motor No</td>
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                     <t t-esc="doc.regn_no.engine_number"/>
                                 </td>
@@ -198,10 +200,21 @@
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                     <t t-esc="doc.regn_no.model_id.name"/>
                                 </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Printing Time</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Work Type</td>
+
+                                <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
+                                    <t t-if="doc.work_type">
+                                        <t t-esc="dict(doc.fields_get(allfields=['work_type'])['work_type']['selection'])[doc.work_type]"/>
+                                    </t>
                                 </td>
+                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
+                                <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
+                                <!--                                </td>-->
+
+                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Printing Time</td>-->
+                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
+                                <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
+                                <!--                                </td>-->
 
                             </tr>
                             <tr style="font-size: 12px;">
@@ -275,7 +288,10 @@
                                 </td>
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">RSA</td>
                                 <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                    <t t-if="doc.model.product_tmpl_id.rsa == 'yes'">YES</t>
+                                    <t t-else="">NO</t>
+                                </td>
                             </tr>
                             <tr style="font-size: 12px;">
                                 <td style="text-align:left;padding: 3px 2px;" class="lborder">Insurance Expiry Date</td>
@@ -290,6 +306,18 @@
                                 <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
                                     <t t-if="doc.service_type">
                                         <span t-field="doc.service_type.name"/>
+                                    </t>
+                                </td>
+                            </tr>
+                            <tr style="font-size: 12px;">
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Options</td>
+                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                    <t t-if="doc.service_options">
+                                        <span t-field="doc.service_options.name"/>
                                     </t>
                                 </td>
                             </tr>

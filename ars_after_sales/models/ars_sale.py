@@ -70,7 +70,10 @@ class ARS_sale_order(models.Model):
     customer_voice_sale = fields.One2many("customer.voice", 'cust_sale', ondelete='cascade')
     regn_no = fields.Many2one('fleet.vehicle', string="Regn No")
     # doc_no = fields.Char(string='Doc.No')
-    doc_type = fields.Selection([('appointment', 'Appointment'), ('walkin', 'Walkin'), ], string='Type',
+    doc_type = fields.Selection([('appointment', 'Appointment'),
+                                 ('walkin', 'Walkin'),
+                                 ('res_drop', 'RSA Drop'),('p&d','P&D')],
+                                string='Type',
                                 default='appointment')
     vin_no = fields.Char(string="VIN")
     model = fields.Many2one('product.product')
@@ -102,6 +105,8 @@ class ARS_sale_order(models.Model):
                                   ('accessories', 'Accessories'), ('others', 'Others')])
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
+    work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
+
 
     # @api.multi
     # @api.onchange('service_type')

@@ -112,6 +112,7 @@ class ARS_crm_lead(models.Model):
     time_at_gate = fields.Date(string="Gate Time")
     is_estimation = fields.Char(default='No Estimation')
     crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
+    enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
 
     # planned_revenue = fields.Float('Expected Revenue', compute="_get_compute_expected_revenue",
     #                                track_visibility='always', store=True)

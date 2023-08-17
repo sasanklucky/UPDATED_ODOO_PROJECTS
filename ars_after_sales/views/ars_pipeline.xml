@@ -808,7 +808,8 @@
                                     <group>
                                         <separator string="Service Details" colspan="4"/>
                                         <group>
-                                            <field name="doc_type"/>
+                                            <field name="doc_type" string="Visit Type"/>
+                                            <field name="work_type" string="Work Type"/>
                                             <field name="service_type" options="{'no_create': True}"/>
                                             <field name="service_options" options="{'no_create': True}"/>
                                             <!--<field name="resource_id_sale" invisible="1" domain="[('resource_category.code','=','SA')]"/>-->
@@ -1849,7 +1850,8 @@
                                     <group>
                                         <separator colspan="4" string="Service Details"/>
                                         <group>
-                                            <field name="doc_type"/>
+                                            <field name="doc_type" string="Visit Type"/>
+                                            <field name="work_type" string="Work Type"/>
                                             <field name="service_type" options="{'no_create': True}"/>
                                             <field name="service_options" options="{'no_create': True}"/>
                                             <!--<field name="resource_id_sale" domain="[('resource_category.code','=','SA')]"/>-->

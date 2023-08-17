@@ -115,6 +115,8 @@ class ARS_account_invoice(models.Model):
     doc_type = fields.Selection([
         ('appointment', 'Appointment'),
         ('walkin', 'Walkin'),
+        ('res_drop', 'RSA Drop'),
+        ('p&d', 'P&D')
     ], string='Type', default='appointment')
     appointment_date = fields.Datetime(string="Appointment Date")
     delivery_date = fields.Datetime(string="Delivery Date")
