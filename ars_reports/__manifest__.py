@@ -15,5 +15,7 @@
         'views/wholesale_report.xml',
         'views/repair_order_report.xml',
         'views/parts_purchase_report.xml',
+        'views/purchase_order_document.xml',
+        'views/stock_picking.xml',
     ],
 }
