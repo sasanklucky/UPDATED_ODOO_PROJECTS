@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="helpdesk_ticket_view_form_inherited" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.form</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='sla_id']" position="after">
+                    <field name="activity_source_id" />
+                    <field name="source_complaint_id"/>
+                </xpath>
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="category_i_id" />
+                    <field name="category_ii_id" />
+                </xpath>
+
+                <field name="tag_ids" position="attributes">
+                    <attribute name="string">Complaint Type</attribute>
+                </field>
+
+                <xpath expr="//form/sheet/group" position="inside">
+                    <group>
+                        <field name="seller_dealer"/>
+                        <field name="date_of_sale"/>
+                        <field name="model" domain="[('catalog_type','=','Vehicle')]"/>
+                        <field name="milage"/>
+                        <field name="vin_number"/>
+                        <field name="vehicle_no"/>
+                    </group>
+                    <group>
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

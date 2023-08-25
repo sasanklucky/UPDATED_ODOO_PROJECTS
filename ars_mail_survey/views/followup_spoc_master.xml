@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Tree view for "cre_team_configuration" -->
+        <record id="view_cre_team_configuration_tree" model="ir.ui.view">
+            <field name="name">view.cre_team_configuration.tree</field>
+            <field name="model">cre_team_configuration</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <tree string="cre_team_configuration_tree" create="true" delete="true" edit="true">
+                    <field name="name" />
+                    <field name="type"/>
+                    <field name="assign_method" />
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form view for "cre_team_configuration" -->
+        <record id="view_cre_team_configuration_form" model="ir.ui.view">
+            <field name="name">view.cre_team_configuration.form</field>
+            <field name="model">cre_team_configuration</field>
+            <field name="type">form</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <form string="cre_team_configuration_form" create="true" delete="true" edit="true">
+                    <header>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" />
+                            <h1>
+                                <field name="name" class="oe_inline"
+                                    placeholder="Name" />
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="type" />
+                            <field name="assign_method" />
+                            <field name="team_member_ids" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search view for "cre_team_configuration" -->
+        <record id="view_cre_team_configuration_search" model="ir.ui.view">
+            <field name="name">view.cre_team_configuration.search</field>
+            <field name="model">cre_team_configuration</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <search string="cre_team_configuration_search">
+                    <field name="name" />
+
+                </search>
+            </field>
+        </record>
+
+        <!-- Main window action for "cre_team_configuration" -->
+        <record id="action_cre_team_configuration_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Followup Teams Configuration</field>
+            <field name="res_model">cre_team_configuration</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">\{}</field>
+            <field name="search_view_id" ref="view_cre_team_configuration_search" />
+        </record>
+         <menuitem id="menu_cre_team_configuration_mail_activity"
+            name="Followup Teams Configuration"
+            parent="crm.crm_menu_config"
+            action="action_cre_team_configuration_act_window"
+            sequence="6" />
+    </data>                
+</odoo>
