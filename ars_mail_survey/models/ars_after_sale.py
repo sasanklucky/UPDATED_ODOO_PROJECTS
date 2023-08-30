@@ -70,7 +70,7 @@ class AccountInvoice_inherit(models.Model):
                         today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
             })
             # activity._onchange_activity_type_id()
-        elif self and self.team_id.team_type == 'after_sales' and type not in ['in_refund', 'in_invoice']:
+        elif self and self.team_id.team_type == 'after_sales' and self.type not in ['in_refund', 'in_invoice']:
 
             user_id = self._determine_user_to_assign(type='post_service')
             activity = self.env['mail.activity'].sudo().create({
