@@ -183,7 +183,8 @@ class account_invoice(models.Model):
                     },
                     "DocDtls": {
                         "Typ": self.invoice_type,
-                        "No": self.origin,
+                        # "No": self.origin,
+                        "No": self.number,
                         "Dt": date1
                     },
                     "RefDtls": {
@@ -193,7 +194,8 @@ class account_invoice(models.Model):
                         },
                         "PrecDocDtls": [
                             {
-                                "InvNo": self.origin,
+                                # "InvNo": self.origin,
+                                "InvNo": self.number,
                                 "InvDt": date1,
                             }
                         ],
