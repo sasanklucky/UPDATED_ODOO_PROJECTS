@@ -15,6 +15,7 @@
                         <field name="title" placeholder="Title" domain="[]"
                                options="{'no_create': False, 'no_open': False}"/>
                     </div>
+                    <field name="enquiry_date"/>
                     <field name="mobile"/>
                     <field name="email_from" widget="email"/>
                     <field name="phone" widget="phone"/>
@@ -142,6 +143,7 @@
             <field name="arch" type="xml">
                 <field name="create_date" position="replace">
                     <field name="create_date" widget="date"/>
+                    <field name="enquiry_date" widget="date"/>
                 </field>
                 <field name="contact_name" position="before">
                     <field name="company_type"/>
