@@ -698,6 +698,14 @@
                   groups="group_aftersale"
                   sequence="1"/>
 
+        <menuitem name="After-Sales Invoices"
+                  action="ars_after_sales.action_invoice_sal_tree1"
+                  id="menu_action_aftersales_invoice_in_sales"
+                  parent="menu_aftersales_invoicing"
+                  groups="group_aftersale"
+                  sequence="5"/>
+
+
         <!--Inventory Aftersales-->
         <!--<menuitem id="menu_stock_root_aftersales"-->
         <!--name="Inventory AfterSales"-->

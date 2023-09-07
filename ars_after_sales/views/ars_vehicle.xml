@@ -135,7 +135,7 @@
                                         <field name="vehicle_status"
                                                attrs="{'readonly':[('vehicle_status','=','new')]}"/>
                                         <field name="initial_reg_no"/>
-                                        <field name="vin_sn" string="VIN"/>
+                                        <field name="vin_sn" string="VIN" required="1"/>
                                         <label for="model_year"/>
                                         <div class="o_row">
                                             <field name="model_month"/>

@@ -143,7 +143,10 @@ class ARS_MailActivity(models.Model):
             })
             activity_message.attachment_ids = message_attachments
             message |= activity_message
-
+        if self.invoice_type in ['sales','after_sales']:
+            pass
+        else:
+            self.unlink()
         return message.ids and message.ids[0] or False
 
     @api.multi

@@ -787,11 +787,12 @@
                                                 <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
                                                        context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
                                                 <field name="mobile"/>
-                                                <field name="email"/>
+                                                <field name="email" required="1"/>
                                             </group>
                                             <group string="Vehicle Details">
                                                 <field name="regn_no" string="Reg No"/>
-                                                <field name="vin_no" string="VIN"/>
+                                                <field name="vin_no" string="VIN" required="1"/>
+<!--                                                <field name="lot_id" options="{'no_create': True, 'no_open': True}"/>-->
                                                 <field name="model" string="Vehicle Model"/>
                                                 <field name="mileage_in" string="Kilometer"
                                                        attrs="{'required': [('state','!=', 'draft')]}"/>
@@ -1694,12 +1695,12 @@
                         </field>
                     </record>
 
-                    <record model="ir.actions.act_window" id="sale.action_quotations">
-                        <field name="domain">[('sale_aftersales','=', 'sales')]</field>
-                        <field name="context">{ 'default_sale_type': 'vehicle'}
-                        </field>
+<!--                    <record model="ir.actions.act_window" id="sale.action_quotations">-->
+<!--                        <field name="domain">[('sale_aftersales','=', 'sales')]</field>-->
+<!--                        <field name="context">{ 'default_sale_type': 'vehicle'}-->
+<!--                        </field>-->
 
-                    </record>
+<!--                    </record>-->
 
                     <!-- counter sale action-->
 
@@ -2138,10 +2139,10 @@
                     </record>
 
                     <!--Base sale order action inherit for domain -->
-                    <record model="ir.actions.act_window" id="sale.action_orders">
-                        <field name="domain">[('sale_aftersales','=', 'sales')]</field>
-                        <field name="context">{ 'default_sale_type': 'vehicle'}</field>
-                    </record>
+<!--                    <record model="ir.actions.act_window" id="sale.action_orders">-->
+<!--                        <field name="domain">[('sale_aftersales','=', 'sales')]</field>-->
+<!--                        <field name="context">{ 'default_sale_type': 'vehicle'}</field>-->
+<!--                    </record>-->
 
                     <!-- Customers inherited action -->
                     <record id="view_partner_form_inherit" model="ir.ui.view">

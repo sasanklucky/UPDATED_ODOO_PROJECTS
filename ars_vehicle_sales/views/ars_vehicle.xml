@@ -114,7 +114,7 @@
                                         <field name="fuel_type"/>
                                         <field name="engine_code"/>
                                         <field name="engine_number" string="Motor Number" required="1"/>
-                                        <field name="key_serial_number"/>
+                                        <field name="key_serial_number" required="1"/>
                                         <label for="co2"/>
                                         <div class="o_row" name="co2">
                                             <field name="co2"/>
@@ -316,6 +316,9 @@
             <field name="mode">primary</field>
             <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
             <field name="arch" type="xml">
+                <field name="driver_id" position="before">
+                    <field name="vin_sn" filter_domain="[('vin_sn','ilike',self)]" string="Chassis Number"/>
+                </field>
                 <xpath expr="//field[@name='driver_id']" position="attributes">
                     <attribute name="string">Customer</attribute>
                 </xpath>

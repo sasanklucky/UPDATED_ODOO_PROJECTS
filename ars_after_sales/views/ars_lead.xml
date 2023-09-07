@@ -233,6 +233,10 @@
                     <field name="function"/>
                 </xpath>
 
+                <field name="tag_ids" position="after">
+                    <field name="sales_type" groups="base.group_no_one"/>
+                </field>
+
                 <xpath expr="//form/sheet/notebook/page[1]" position="before">
                     <page string="Model Intrested">
                         <field name="vehicle_line">

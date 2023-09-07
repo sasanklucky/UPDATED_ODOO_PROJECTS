@@ -31,15 +31,18 @@ class ARS_sale_order(models.Model):
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'vehicle')], limit=1)
             self.warehouse_id = warehouse_ids.id
+            self.sale_aftersales = 'sale'
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
         elif self.sale_type in ['parts', 'accessories']:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
             self.warehouse_id = warehouse_ids.id
+            self.sale_aftersales = 'after_sales'
         else:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)
             self.warehouse_id = warehouse_ids.id
+            self.sale_aftersales = 'sale'
 
     @api.multi
     def _compute_vehicle_count(self):
@@ -333,7 +336,7 @@ class ARS_sale_order(models.Model):
             if sale_team or 'sale_type' in vals:
                 if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':
                     vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
-                    if self.env.context.get('counter_parts'):
+                    if 'default_counter_parts' in self.env.context and self.env.context.get('default_counter_parts'):
                         vals['counter_parts'] = 'parts'
                     else:
                         vals['sale_aftersales'] = 'after_sales'

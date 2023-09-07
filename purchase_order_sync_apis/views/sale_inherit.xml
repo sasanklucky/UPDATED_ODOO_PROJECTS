@@ -97,17 +97,10 @@
 
 
        <record id="sale.action_quotations" model="ir.actions.act_window">
-            <field name="name">Quotations</field>
-            <field name="res_model">sale.order</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
-            <field name="domain">[('sale_aftersales','=','sales'),('child_po_ref','=', False)]</field>
-            <field name="context">{'default_sale_type':'vehicle'}</field>
-             <field name="view_ids"
-                   eval="[(5, 0, 0),
-                          (0, 0, {'view_mode': 'tree', 'view_id': ref('sale.view_quotation_tree')}),
-                          (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')})]"/>
+            <field name="domain">[('sale_aftersales','=','sales'),
+                                  ('sale_type','=','others'),
+                                  ('child_po_ref','=', False)]</field>
+            <field name="context">{'default_sale_type':'others'}</field>
        </record>
 
        <record id="dealer_order_action_menu" model="ir.actions.act_window">

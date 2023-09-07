@@ -81,6 +81,7 @@ class CustBookingContractMISReport(models.Model):
             p.title as salutation_id, 
             p.id as partner_id, 
             p.phone as phone, 
+            p.mobile as mobile,
             p.address as address,
             so.commitment_date as expected_delivery_date, 
             l.create_date as enquiry_creation_date, 

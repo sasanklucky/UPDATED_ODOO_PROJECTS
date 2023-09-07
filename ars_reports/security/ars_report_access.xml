@@ -32,5 +32,14 @@
             <field name="domain_force">['|',('outlet','=',False),('outlet','child_of',[user.company_id.id])]
             </field>
         </record>
+
+        <record model="ir.rule" id="access_wholesale_report">
+            <field name="name">Stock Ageing Report Access</field>
+            <field name="model_id" ref="model_stock_ageing_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
+            </field>
+        </record>
+
     </data>
 </odoo>

@@ -1,5 +1,19 @@
 <odoo>
     <data>
 
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="name">General Sales</field>
+        </record>
+
+        <record id="sale.action_quotations" model="ir.actions.act_window">
+            <field name="domain">[('sale_aftersales','=','sales'),('sale_type','=','others')]</field>
+            <field name="context">{'default_sale_type':'others'}</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="sale.action_orders">
+            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','others')]</field>
+            <field name="context">{ 'default_sale_type': 'others'}</field>
+        </record>
+
     </data>
 </odoo>
