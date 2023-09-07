@@ -37,6 +37,8 @@ class ars_sale_crm_lead(models.Model):
     age = fields.Integer(compute='_compute_age_from_dob')
     gender = fields.Selection([('male', 'Male'), ('female', 'Female'), ('transgender', 'Transgender')])
     annual_income = fields.Many2one('annual.income', 'Annual Income')
+    sales_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
+                                   ('after_sales', 'After Sales'), ('others', 'Others')])
 
     @api.multi
     def write(self, values):
