@@ -85,7 +85,8 @@ class account_invoice(models.Model):
                 so_warehouse = so_delivery.warehouse_id
                 return so_warehouse
             else:
-                warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.company_id.id), ('configure_einvoice', '=', True)], limit=1)
+                warehouse = self.env['stock.warehouse'].search(
+                    [('company_id', '=', self.company_id.id), ('configure_einvoice', '=', True)], limit=1)
                 return warehouse
 
     @api.onchange('transporter_id', 'vehicle_no')
@@ -128,7 +129,7 @@ class account_invoice(models.Model):
             raise UserError(_('Invoice Number is not present.'))
 
         print("self.company_id.vat=", self.company_id.vat)
-        print("gggg===",self.company_id)
+        print("gggg===", self.company_id)
         if not self.company_id.vat:
             raise UserError(_('GSTIN Number is not present or Enter Registered GSTIN Numnber Only.'))
         if not self.company_id.street:
@@ -384,7 +385,7 @@ class account_invoice(models.Model):
                                     total_cgst = (inv_line.price_unit * inv_line.quantity) * child.amount / 100
                                     total_cgsts += (inv_line.price_unit * inv_line.quantity) * child.amount / 100
                                 assmt = round(inv_line.price_subtotal - (
-                                            (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                        (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
                                 tax_rate += child.amount
                         else:
                             tax_rate = tax.amount
@@ -393,7 +394,7 @@ class account_invoice(models.Model):
                                 total_igst = (inv_line.price_unit * inv_line.quantity) * tax.amount / 100
                                 total_igsts += (inv_line.price_unit * inv_line.quantity) * tax.amount / 100
                                 assmt = round(inv_line.price_subtotal - (
-                                            (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                        (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
                             elif tax.tax_group_id.name == "IGST" and tax.price_include == True:
                                 total_igst = (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
                                 total_igsts += (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
@@ -428,7 +429,7 @@ class account_invoice(models.Model):
 
         data['ItemList'] = item_list
         values = {
-            "AssVal": total,
+            "AssVal": round(total, 2),
             "RndOffAmt": round(total_round, 2),
             "Othchrg": round(tcs_amount, 2),
             "TotInvVal": round(self.amount_total, 2),
@@ -665,7 +666,6 @@ class account_invoice(models.Model):
                 "VehType": self.veh_type,
             }
 
-
         if self.transaction_type == '4':
             data1 = {
                 "Irn": self.irn_no,
@@ -680,7 +680,6 @@ class account_invoice(models.Model):
                 "docDate": self.transporter_docdt,
                 "VehType": self.veh_type,
             }
-
 
         if einvoicing.testing == 't':
             url = 'https://gstsandbox.charteredinfo.com/eiewb/dec/v1.03/ewaybill?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
@@ -773,4 +772,3 @@ class ResCountryState(models.Model):
     _inherit = 'res.country.state'
 
     stcd = fields.Char('STCD')
-
