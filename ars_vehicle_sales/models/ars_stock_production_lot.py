@@ -117,14 +117,6 @@ class Picking(models.Model):
     #     return res
     @api.multi
     def button_validate(self):
-        for stock_production_obj in self.move_line_ids:
-            if stock_production_obj.lot_id:
-                stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
-                                                                    'date_of_ownership': datetime.now(),
-                                                                    'address': self.partner_id.city,
-                                                                    'mobile': self.partner_id.mobile})]
-                if stock_production_obj.move_id.sale_line_id:
-                    stock_production_obj.lot_id.check_new_lotno = True
         res = super(Picking, self).button_validate()
         self._cr.commit()
         picking_type = self.picking_type_id
@@ -143,6 +135,7 @@ class Picking(models.Model):
                                 'model_id': line.product_id.product_tmpl_id.id,
                                 'vin_sn': line.lot_id and line.lot_id.name or line.lot_name,
                                 'license_plate': '/',
+                                'engine_number': line.motor_number,
                                 'company_id': line.move_id.company_id.id,
                                 'vehicle_status': 'new',
                                 'lot_id': line.lot_id and line.lot_id.id,
@@ -156,34 +149,38 @@ class Picking(models.Model):
                             existing_lot_numbers.extend([vin_sn])
                             print(existing_lot_numbers)
                         else:
-                            sold_by_id = self.env.user.company_id.partner_id
                             res = self.env['fleet.vehicle'].create(vals)
-                            res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
-                                                        'date_of_ownership': datetime.now(),
-                                                        'address': self.partner_id.city,
-                                                        'mobile': self.partner_id.mobile,
-                                                        'sold_by': sold_by_id.id})]
                     elif self.origin and 'Return' in self.origin:
                         vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
                         for vehicle in vehicles:
                             if vehicle.vehicle_status == 'new':
                                 vehicle.unlink()
                 elif self.location_dest_id and self.location_dest_id.usage == 'customer':
-                    vals = {
-                        'vin_no': line.lot_id.id,
-                    }
-                    line.move_id.sale_line_id.write(vals)
-                    vehicle_card = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
-                    if not vehicle_card:
-                        vehicle_card = self.env['fleet.vehicle'].search([('vin_sn', '=', line.lot_id.name)])
-                    customer = line.move_id.partner_id if line.move_id.partner_id else self.partner_id
-                    if vehicle_card:
-                        vehicle_card.write(
-                            {'driver_id': customer.id, 'vehicle_status': 'customer', 'lot_id': line.lot_id.id,
-                             'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
-                                                      'date_of_ownership': datetime.now(),
-                                                      'address': self.partner_id.city,
-                                                      'mobile': self.partner_id.mobile})]})
+                    for stock_production_obj in self.move_line_ids:
+                        if stock_production_obj.lot_id and 'Vehicle' in stock_production_obj.lot_id.product_catalog:
+                            stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+                                                                                'date_of_ownership': datetime.now(),
+                                                                                'address': self.partner_id.city,
+                                                                                'mobile': self.partner_id.mobile})]
+
+                            vals = {'vin_no': line.lot_id.id}
+                            line.move_id.sale_line_id.write(vals)
+                            vehicle_card = self.env['fleet.vehicle'].search(
+                                [('lot_id', '=', stock_production_obj.lot_id.id)])
+                            if not vehicle_card:
+                                vehicle_card = self.env['fleet.vehicle'].search(
+                                    [('vin_sn', '=', stock_production_obj.lot_id.name)])
+                            else:
+                                stock_production_obj.lot_id.check_new_lotno = True
+                            customer = line.move_id.partner_id if line.move_id.partner_id else self.partner_id
+                            if vehicle_card:
+                                vehicle_card.write(
+                                    {'driver_id': customer.id, 'vehicle_status': 'customer',
+                                     'lot_id': stock_production_obj.lot_id.id,
+                                     'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
+                                                              'date_of_ownership': datetime.now(),
+                                                              'address': self.partner_id.city,
+                                                              'mobile': self.partner_id.mobile})]})
         return res
 
 
