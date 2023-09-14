@@ -69,6 +69,14 @@
                     <div class="col-xs-6">
                         <table class="">
                             <tr>
+                                <td>Vehicle Owner</td>
+                                <td>:</td>
+                                <td>
+                                    <span t-field="o.order_id.partner_id.name"/>
+                                </td>
+
+                            </tr>
+                            <tr>
                                 <td>Reg Number</td>
                                 <td>:</td>
                                 <td>
@@ -91,17 +99,17 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>KM IN</td>
+                                <td>Date of Vehicle Sale</td>
                                 <td>:</td>
                                 <td>
-                                    <span t-field="o.order_id.mileage_in"/>
+                                    <span t-esc="o.reg_no.customer_ids.mapped('date_of_ownership')[0]"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td>KM OUT</td>
+                                <td>KM</td>
                                 <td>:</td>
                                 <td>
-                                    <span t-field="o.order_id.mileage_in"/>
+                                    <span t-field="o.kilometer"/>
                                 </td>
                             </tr>
                         </table>
@@ -113,6 +121,8 @@
                             Service Info
                         </span>
                     </div>
+                    <t t-set="odoo_meter"
+                       t-value="request.env['fleet.vehicle.odometer'].search([('vehicle_id', '=', o.reg_no.id)], order='id desc', limit=2)"/>
                     <div class="col-xs-6">
                         <table class="" style="margin-bottom: 2px;">
                             <!--							<tr><td>Invoice Date</td><td><span t-field="o.date_invoice"></span></td></tr>-->
@@ -150,6 +160,15 @@
                                     </t>
                                 </td>
 
+                            </tr>
+                            <tr>
+                                <td>KM In</td>
+                                <td>:</td>
+                                <td>
+                                    <t t-if="odoo_meter">
+                                        <span t-esc="odoo_meter.mapped('value')[0]"></span>
+                                    </t>
+                                </td>
                             </tr>
                             <!--							<tr><td>Service Advisor</td><td><span t-field="o.order_id.user_id.name"/></td></tr>-->
                             <!--							<tr><td>S A Mobile No.</td><td><span t-field="o.order_id.user_id.mobile"/></td></tr>-->
@@ -194,6 +213,15 @@
                                 <td>:</td>
                                 <td>
                                     <span t-field="o.order_id.user_id.mobile"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>KM Out</td>
+                                <td>:</td>
+                                <td>
+                                    <t t-if="odoo_meter">
+                                        <span t-esc="odoo_meter.mapped('value')[-1]"></span>
+                                    </t>
                                 </td>
                             </tr>
                         </table>
@@ -319,6 +347,13 @@
                     </div>
                 </div>
 
+                <div style="padding-bottom: 24px">
+                    <label string="Remarks"/>
+                    <b>Remarks:</b>
+                    <br></br>
+                    <span t-field="o.comment"/>
+                </div>
+
                 <div style="">
                     <label string="Terms &amp; Conditions"/>
                     <b>Terms &amp; Conditions :</b>
@@ -337,10 +372,12 @@
                 </div>
                 <div class="row text-center">
                     <div class="pull-left">
-                        <h4 style="margin: 87px 0px 10px 36px; text-decoration: overline;">Authorized Signature</h4>
+                        <h4 style="margin: 87px 0px 10px 36px; text-decoration: overline;">Authorized Signature with
+                            Date
+                        </h4>
                     </div>
                     <div class="pull-right">
-                        <h4 style="margin: 87px 37px 10px 36px; text-decoration: overline;">Customer Signature</h4>
+                        <h4 style="margin: 87px 37px 10px 36px; text-decoration: overline;">Customer Signature Date</h4>
                     </div>
                 </div>
             </xpath>
@@ -689,12 +726,12 @@
                         <thead>
                             <tr style="background-color:#F5F5F5;">
                                 <th>SL</th>
-                                <th>Item Name</th>
+                                <th>Description</th>
                                 <th>HSN Code</th>
-                                <th class="text-right">Qty</th>
-                                <th class="text-center">UOM</th>
-                                <!--<th class="text-center">Category</th>-->
                                 <th class="text-right">Unit Price</th>
+                                <th class="text-center">Qty</th>
+                                <!--<th class="text-center">Category</th>-->
+                                <th class="text-right">UOM</th>
                                 <th t-if="display_discount" class="text-right">Disc.(%)</th>
                                 <!--<t t-if="len(o.tax_line_ids) > 0">-->
                                 <th class="text-right">Amount</th>
