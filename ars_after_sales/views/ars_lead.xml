@@ -368,6 +368,7 @@
                     <field name="team_id" options="{'no_create': True,'no_open': True}"/>
                     <field name="counter_parts" invisible="1"/>
                     <field name="sale_type" groups="base.group_no_one"/>
+                    <field name="sale_aftersales" groups="base.group_no_one"/>
                     <field name="product_catalog_id" invisible="1"/>
                 </xpath>
             </field>

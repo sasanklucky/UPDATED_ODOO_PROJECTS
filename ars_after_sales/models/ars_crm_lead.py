@@ -154,6 +154,13 @@ class ARS_crm_lead(models.Model):
     def resource_map(self):
         self.user_id = self.resource_id_lead.user_id.id
 
+    @api.multi
+    def check_valid_sales_channel(self, sales_team):
+        if not sales_team:
+            raise ValidationError(_("You are not belongs to any channel, Please select any channel and try again"))
+        else:
+            return True
+
     # Crm Menu - On Click Of New Qutation Button In Opportunity Form View
     @api.multi
     def get_prod_action(self):
@@ -163,6 +170,7 @@ class ARS_crm_lead(models.Model):
         orderline = self.env['sale.order.line']
         action_rec = self.env.ref('sale_crm.sale_action_quotations_new')
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        self.check_valid_sales_channel(sale_team)
         if sale_team.team_type == 'sales':
             sale_type = 'vehicle'
         elif sale_team.team_type == 'after_sales':
@@ -288,6 +296,10 @@ class ARS_crm_lead(models.Model):
                 model_sn = customer_details.mvariant_id.id
                 vals.update({'vehicle_model': model_sn})
         res = super(ARS_crm_lead, self).create(vals)
+        if res.type == 'opportunity':
+            if not any([res.mobile, res.email_from, res.source_id, res.city]):
+                raise UserError(_("The following fields are mandatory please fill it to continue\n"
+                                  " Mobile,Email,Source,City"))
         if res.vehicle_line:
             if res.type == 'opportunity' and res.team_id.team_type == 'sales':
                 res.planned_revenue = sum(res.vehicle_line.mapped('product_template_id.list_price'))
@@ -369,7 +381,7 @@ class ARS_crm_lead(models.Model):
                     # self.vehicle_model = False
                     for cus in customer_details:
                         vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)])
-                        lot_pro_id.append(vin_no_details.id)
+                        lot_pro_id.append(vin_no_details.ids)
                     self.partner_id = self.partner_id.id
                     self.phone = self.partner_id.phone or False
                     # if self.regn_no == False:
@@ -744,6 +756,12 @@ class Lead2OpportunityPartner(models.TransientModel):
         values = {
             'team_id': self.team_id.id,
         }
+
+        leads = self.env['crm.lead'].browse(self._context.get('active_ids', []))
+        for lead in leads:
+            if not any([lead.mobile, lead.email_from, lead.source_id, lead.city]):
+                raise UserError(_("The following fields are mandatory please fill it to continue\n"
+                                  " Mobile,Email,Source,City"))
 
         if self.partner_id:
             values['partner_id'] = self.partner_id.id

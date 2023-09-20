@@ -37,7 +37,7 @@ class FleetVehicle(models.Model):
                                     (5, 'May'), (6, 'June'), (7, 'July'), (8, 'August'),
                                     (9, 'September'), (10, 'October'), (11, 'November'), (12, 'December'), ],
                                    string='Month', )
-    model_year = fields.Selection('get_years', string='Model Year')
+    model_year = fields.Selection('get_years', string='Model Year', store=1)
     initial_reg_no = fields.Char(string='Initial Reg.No')
     service_due = fields.Char(string='Service Due')
     engine_code = fields.Char(string='Engine Code')

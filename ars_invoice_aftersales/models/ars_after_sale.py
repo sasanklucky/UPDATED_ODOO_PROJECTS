@@ -96,6 +96,7 @@ class ARS_After_sale_order(models.Model):
             # all_data = self.env.cr.dictfetchall()
             # for data in all_data:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
+            warranty_invoice, customer_invoice = None, None
             if order.sale_aftersales == 'after_sales':
                 # print("--------after sales-----------")
                 # for data in all_data:
@@ -105,12 +106,18 @@ class ARS_After_sale_order(models.Model):
                     # if float_is_zero(line.qty_to_invoice, precision_digits=precision):
                     #     continue
                     # if line.customer_split.id == data.get('customer_split'):
+
                     invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],
                                              limit=1)
                     inv_data = order.with_context(
                         {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
                     count += 1
                     if invoice:
+                        invoice_ref = inv_obj.search([('origin', '=', order.name),
+                                                      ('cust_invoice_type', '!=', invoice.cust_invoice_type)])
+                        if invoice_ref:
+                            invoice.write({'invoice_reference': invoice_ref.id})
+                            invoice_ref.write({'invoice_reference': invoice.id})
                         products = invoice.invoice_line_ids.mapped('product_id').ids
                         if line.product_id.id not in products:
                             line.invoice_line_create(invoice.id, line.qty_to_invoice)
@@ -130,6 +137,12 @@ class ARS_After_sale_order(models.Model):
                         invoices[invoice.id] = invoice
                     else:
                         print("invoice created----")
+                        if line.category.name.lower() == 'warranty':
+                            inv_data.update({'cust_invoice_type': 'warranty'})
+                        elif line.category.name.lower() == 'customer':
+                            inv_data.update({'cust_invoice_type': 'customer'})
+                        elif line.category.name.lower() == 'insurance':
+                            inv_data.update({'cust_invoice_type': 'insurance'})
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
                         #                         references[invoice] = order
@@ -362,7 +375,8 @@ class ARS_sale_order_line(models.Model):
     @api.multi
     def _prepare_invoice_line(self, qty):
         res = super(ARS_sale_order_line, self)._prepare_invoice_line(qty)
-        res.update({'vin_no': self.vin_no.id})
+        res.update({'vin_no': self.vin_no.id, 'product_template_id': self.product_template_id.id,
+                    'product_catalog_id': self.product_catalog_id.id})
         return res
 
 
@@ -437,6 +451,11 @@ class ARS_split_invoice(models.Model):
 
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
+
+    invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
+    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
+                                          ('customer', 'Customer Invoice'),
+                                          ('insurance', 'Insurance Invoice')], string='Type')
 
     @api.multi
     def action_invoice_open(self):

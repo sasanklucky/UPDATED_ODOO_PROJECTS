@@ -410,6 +410,12 @@
                   parent="crm.crm_menu_report"
                   sequence="0"/>
 
+        <menuitem id="menu_sales_report_format"
+                  name="Sales Report"
+                  action="sales_report_format_action"
+                  parent="ars_after_sales.menu_aftersales_reporting"
+                  sequence="99"/>
+
         <menuitem id="menu_aftersales_employee_mis_report"
                   name="Employee MIS Report"
                   action="action_employee_mis_report"

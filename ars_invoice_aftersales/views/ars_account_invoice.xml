@@ -1,0 +1,19 @@
+<odoo>
+    <data>
+        <record id="invoice_form_warranty_invoice_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='other_info']/group" position="inside">
+                    <group>
+                        <field name="invoice_reference"/>
+                        <field name="cust_invoice_type"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

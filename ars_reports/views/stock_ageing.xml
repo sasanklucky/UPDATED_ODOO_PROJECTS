@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- model.name tree view -->
+        <record id="stock_ageing_tree" model="ir.ui.view">
+            <field name="name">stock_ageing_report</field>
+            <field name="model">stock_ageing_report</field>
+            <field name="arch" type="xml">
+                <tree string="Stock Ageing Report" create="false" import="false" delete="false">
+                    <field name="default_code"/>
+                    <field name="template_id"/>
+                    <field name="parts_category"/>
+                    <field name="name" invisible="1"/>
+                    <field name="product_id" invisible="1"/>
+                    <field name="location_id"/>
+                    <field name="company_id" string="Dealer Name"/>
+                    <field name="computed_quantity" invisible="1"/>
+                    <field name="mrp_price"/>
+                    <field name="list_price"/>
+                    <field name="quantity"/>
+                    <field name="stock_value"/>
+                    <field name="days_90" invisible="1"/>
+                    <field name="days_180" invisible="1"/>
+                    <field name="days_365" invisible="1"/>
+                    <field name="days_730" invisible="1"/>
+                    <field name="greater_730" invisible="1"/>
+                    <field name="compute_days_90"/>
+                    <field name="days_90_value"/>
+                    <field name="compute_days_180"/>
+                    <field name="days_180_value"/>
+                    <field name="compute_days_365"/>
+                    <field name="days_365_value"/>
+                    <field name="compute_days_730"/>
+                    <field name="days_730_value"/>
+                    <field name="compute_greater_730"/>
+                    <field name="greater_730_value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="stock_ageing_report_action" model="ir.actions.act_window">
+            <field name="name">Stock Ageing Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">stock_ageing_report</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+        </record>
+
+        <menuitem id="menu_stock_ageing_report"
+                  name="Stock Ageing Report"
+                  action="stock_ageing_report_action"
+                  parent="ars_after_sales.menu_aftersales_reporting"
+                  sequence="99"/>
+
+
+    </data>
+</odoo>
+

@@ -17,6 +17,7 @@ class ARSPartner(models.Model):
     gender = fields.Selection([('male', 'Male'), ('female', 'Female'), ('transgender', 'Transgender')])
     dob = fields.Date('DOB')
     age = fields.Integer(compute='_compute_age_from_dob')
+    add_as_seller = fields.Boolean('Add Seller')
 
     @api.multi
     @api.depends('dob')

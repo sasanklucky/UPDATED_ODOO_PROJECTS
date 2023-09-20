@@ -5,5 +5,5 @@ access_wholesale_report,wholesale_report,model_wholesale_report,,1,1,1,0
 access_repair_order_report,repair_order_report,model_repair_order_report,,1,1,1,0
 access_parts_purchase_report,parts_purchase_report,model_parts_purchase_report,,1,1,1,0
 access_after_sales_retail_report,retail_report_after_sales,model_retail_report_after_sales,,1,1,1,0
-
+access_stock_ageing_report,stock_ageing_report,model_stock_ageing_report,,1,1,1,1
 

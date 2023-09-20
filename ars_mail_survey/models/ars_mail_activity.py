@@ -106,11 +106,21 @@ class ARS_MailActivity(models.Model):
             'target': 'self'
         }
 
+    def update_res_partner(self):
+        for activity in self:
+            if activity.date_deadline <= fields.Date.today():
+                self.env['bus.bus'].sendone(
+                    (self._cr.dbname, 'res.partner', activity.user_id.partner_id.id),
+                    {'type': 'activity_updated', 'activity_deleted': False})
+
     def action_feedback(self, feedback=False):
         message = self.env['mail.message']
         if feedback:
             self.write(dict(feedback=feedback))
-
+            log = self.env['activity_log_report'].sudo().search([('activity_id', '=', self.id)])
+            if log:
+                log.write(dict(feedback=self.feedback))
+            self.write(dict(feedback=feedback))
         # Search for all attachments linked to the activities we are about to unlink. This way, we
         # can link them to the message posted and prevent their deletion.
         attachments = self.env['ir.attachment'].search_read([

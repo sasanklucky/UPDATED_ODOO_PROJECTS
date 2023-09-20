@@ -18,7 +18,7 @@
         'views/after_sales_retail_report.xml',
         'views/stock_picking.xml',
         'views/purchase_order_document.xml',
-        #'views/stock_ageing.xml',
+        'views/stock_ageing.xml',
         'menu/report_menus.xml',
     ],
 }

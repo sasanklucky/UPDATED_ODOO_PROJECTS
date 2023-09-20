@@ -329,9 +329,25 @@ class ARS_sale_order(models.Model):
                     ol.price_unit = ol.ars_warranty_price
         return True
 
+    @api.multi
+    def check_valid_sales_channel(self, sales_team, sales_type):
+        counter_sales = self.env.context.get('default_counter_parts')
+        if sales_team and sales_type and not counter_sales:
+            if sales_team.team_type == 'after_sales' and sales_type not in ['parts']:
+                raise ValidationError(_("You are not belongs to Sales Channel, "
+                                        "Please change channel and try again"))
+            elif sales_team.team_type == 'sales' and sales_type not in ['vehicle', 'others']:
+                raise ValidationError(_("You are not belongs to After Sales Channel,"
+                                        "Please change channel and try again"))
+        elif not sales_team:
+            raise ValidationError(_("You are not belongs to any channel, Please select any channel and try again"))
+        else:
+            return True
+
     @api.model
     def create(self, vals):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        self.check_valid_sales_channel(sale_team, vals['sale_type'])
         if vals.get('name', _('New')) == _('New'):
             if sale_team or 'sale_type' in vals:
                 if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':

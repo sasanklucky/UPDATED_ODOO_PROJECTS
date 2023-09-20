@@ -48,6 +48,6 @@ class WholesaleReport(models.Model):
             left join account_invoice ai on ai.id = ail.invoice_id
             left join res_company rc on rc.id = ai.company_id
             left join sale_order so on so.id = ai.order_id
-            where ai.type = 'in_invoice'
+            where ai.type = 'in_invoice' and ai.ars_invoice_type = 'vehicle'
            
         )""" % (self._table))

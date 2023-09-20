@@ -26,6 +26,9 @@
                     <xpath expr="//group/group/field[@name='vat']" position="before">
                         <field name="pan_no" string="PAN No"/>
                     </xpath>
+                    <group name="purchase" position="inside">
+                        <field name="add_as_seller"/>
+                    </group>
                     <field name="function" position="after">
                         <field name="dob" placeholder="Date of birth"
                                attrs="{'invisible': [('is_company','=', True)]}"/>
@@ -33,10 +36,18 @@
                         <field name="gender" attrs="{'invisible': [('is_company','=', True)]}"/>
                         <field name="annual_income" options="{'no_create': True, 'no_open': True}"/>
                     </field>
+                    <field name="mobile" position="attributes">
+                        <attribute name="required">1</attribute>
+                    </field>
+                    <field name="email" position="attributes">
+                        <attribute name="required">1</attribute>
+                    </field>
+                    <field name="city" position="attributes">
+                        <attribute name="required">1</attribute>
+                    </field>
                 </data>
             </field>
         </record>
-
 
     </data>
 </odoo>

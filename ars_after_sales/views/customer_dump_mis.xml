@@ -38,6 +38,12 @@
                     <field name="lost_reason" string="Lost Sales Reason"/>
                     <field name="existing_customer" string="Existing BYD Customer"/>
                     <field name="referred" string="BYD Referral"/>
+                    <field name="note_1"/>
+                    <field name="feedback_1"/>
+                    <field name="note_2"/>
+                    <field name="feedback_2"/>
+                    <field name="note_3"/>
+                    <field name="feedback_3"/>
                 </tree>
             </field>
         </record>

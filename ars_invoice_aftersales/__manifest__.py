@@ -18,6 +18,7 @@
         # 'data/account_invoice.xml',
         'views/ars_res_partner_views.xml',
         'views/ars_after_sale_views.xml',
+        'views/ars_account_invoice.xml',
         'views/ars_templates.xml',
         'wizard/ars_split_line_item_views.xml',
     ],

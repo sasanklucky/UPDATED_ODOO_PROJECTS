@@ -75,7 +75,7 @@ class AccountInvoice_inherit(models.Model):
             user_id = self._determine_user_to_assign(type='post_service')
             activity = self.env['mail.activity'].sudo().create({
                 'activity_type_id': self.env.ref('mail.mail_activity_data_call').id,
-                'summary': _('PSF Service/' + self.vin),
+                'summary': _('PSF Service/' + (self.vin if self.vin else '')),
                 'res_id': self.partner_id.id,
                 'res_model_id': self.env.ref('mail.model_res_partner').id,
                 'invoice_type': 'after_sales',
