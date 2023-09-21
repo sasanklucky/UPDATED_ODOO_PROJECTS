@@ -75,7 +75,7 @@ class ARS_sale_order(models.Model):
     # doc_no = fields.Char(string='Doc.No')
     doc_type = fields.Selection([('appointment', 'Appointment'),
                                  ('walkin', 'Walkin'),
-                                 ('res_drop', 'RSA Drop'),('p&d','P&D')],
+                                 ('res_drop', 'RSA Drop'), ('p&d', 'P&D')],
                                 string='Type',
                                 default='appointment')
     vin_no = fields.Char(string="VIN")
@@ -109,7 +109,6 @@ class ARS_sale_order(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
-
 
     # @api.multi
     # @api.onchange('service_type')
@@ -164,8 +163,8 @@ class ARS_sale_order(models.Model):
                 else:
                     lot_pro_id = []
                     for cus in customer_details:
-                        vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)])
-                        lot_pro_id.append(vin_no_details.id)
+                        vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)], limit=1)
+                        lot_pro_id.append(vin_no_details.ids)
                     self.env.cr.execute('delete from customer_regn')
                     self.partner_id = self.partner_id.id
                     self.phone = self.partner_id.phone
@@ -361,7 +360,6 @@ class ARS_sale_order(models.Model):
             res = super(ARS_sale_order, self).create(vals)
         return res
 
-
     @api.multi
     def action_confirm(self):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
@@ -381,7 +379,8 @@ class ARS_sale_order(models.Model):
             else:
                 self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
         elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
-            self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code('aftersale_so')
+            self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                'aftersale_so')
         else:
             self.name = self.env['ir.sequence'].next_by_code('sale.order')
         result = super(ARS_sale_order, self).action_confirm()
