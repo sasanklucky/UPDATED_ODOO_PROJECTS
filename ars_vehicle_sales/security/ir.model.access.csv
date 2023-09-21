@@ -11,3 +11,4 @@ access_officer_sales_approval,sales_approval,model_sales_approval,hr.group_hr_us
 access_website_page,website_page,website.model_website_page,base.group_portal,1,1,1,0
 access_view,ir_ui_view,website.model_ir_ui_view,base.group_portal,1,1,1,0
 access_test_drive,test_drive,model_ars_test_drive,base.group_user,1,1,1,0
+access_activity_log_report,activity_log_report,model_activity_log_report,base.group_user,1,1,1,1
