@@ -415,7 +415,7 @@ class account_invoice(models.Model):
                     "Unit": 'UNT',
                     "TotAmt": round(inv_line.price_subtotal, 2),
                     # "Discount": (inv_line.price_unit * inv_line.quantity),
-                    "Discount": discount,
+                    "Discount": round(discount,2),
                     "AssAmt": assmt,
                     "SgstAmt": round(total_sgst, 2),
                     "CgstAmt": round(total_cgst, 2),
