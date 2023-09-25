@@ -385,8 +385,9 @@ class account_invoice(models.Model):
                                 if child.tax_group_id.name == "CGST":
                                     total_cgst = (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
                                     total_cgsts += (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
-                                assmt = round(inv_line.price_subtotal - (
-                                        (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                # assmt = round(inv_line.price_subtotal - (
+                                #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                assmt = inv_line.price_subtotal
                                 tax_rate += child.amount
                         else:
                             tax_rate = tax.amount
@@ -396,6 +397,7 @@ class account_invoice(models.Model):
                                 total_igsts += (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
                                 assmt = round(inv_line.price_subtotal - (
                                         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                # assmt = inv_line.price_subtotal
                             elif tax.tax_group_id.name == "IGST" and tax.price_include == True:
                                 total_igst = (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
                                 total_igsts += (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
