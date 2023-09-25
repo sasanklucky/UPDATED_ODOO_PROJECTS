@@ -483,7 +483,7 @@ class AccountInvoiceInheritSync(models.Model):
                                 if not line_vin_no:
                                     data_dict = {
                                         'name':line_data.vin_no.name if line_data.vin_no else '',
-                                        'active':line_data.vin_no.active if line_data.vin_no else False,
+                                        # 'active':line_data.vin_no.active if line_data.vin_no else False,
                                         }
                                     sync_log_dict['sync_message'] = 'Failure.Vin is not present in Parent.'
                                     sync_log_dict['payload'] = {'invoice_sequence':rec.name,'db':child_database,'values':data_dict}
