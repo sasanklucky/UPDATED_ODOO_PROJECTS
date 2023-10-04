@@ -2854,7 +2854,8 @@
                         <field name="reg_no" string="Reg No"/>
                         <field name="vin" context="{'lotno':'lot'}"/>
                         <field name="model" readonly="1"/>
-                        <field name="kilometer"/>
+                        <field name="kilometer" string="Kilometer In"/>
+                        <field name="kilometer_out"/>
                     </group>
                     <separator string="Service Details" colspan="4"/>
                 </xpath>

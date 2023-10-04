@@ -1,73 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="gts_report_invoice_document" inherit_id="account.report_invoice_document">
+        <template id="gts_report_invoice_document" inherit_id="ars_after_sales.report_invoice_inherit">
 
-    <xpath expr="//div[@class='page']" position="attributes">
-        <attribute name="t-att-style">'font-size:12.5px;font-family:sans-serif;'</attribute>
-    </xpath>
-   <!--  <xpath expr="//div[@class='page']/div/div[@class='col-xs-8']" position="attributes">
-        <attribute name="t-att-style">'font-size:21px;font-family:sans-serif;color:red;'</attribute>
-    </xpath> -->
-     <xpath expr="//div[@class='page']/div[2]" position="after">
-        <t t-if="o.irn_no">
-                <table style="width:86%; padding-left:0px" class="table">
-                    <tr width="100%" style="margin-left:0px; padding-left:0px">
-                        <td width="95%" style="background-color:#fff; padding-left:0px" >
-                        <table width="100%" class="table" style="background-color:#fff;margin-left:0px;padding-left:0px">
-                        <tr t-if ="o.ackdt_no" width="100%" style="margin-left:0px;padding-left:0px">
-                            <td width="50%" style="margin-left:0px;padding-left:0px">
-                                <strong>Acknowledge Date:</strong>
-                            </td>
-                            <td width="50%" >
-                            <t t-if ="o.ackdt_no">
-                                <span t-field="o.ackdt_no"/>
-                            </t>
-                            </td>
-                        </tr>
-                        <tr t-if ="o.ack_no" width="100%">
-                        <td width="50%" style="font-size:12px;margin-left:0px;padding-left:0px">
-                            <strong>Acknowledge No.:</strong>
-                        </td>
-                        <td width="50%">
-                            <t t-if ="o.ack_no">
-                            <span t-field="o.ack_no"/>
-                            </t>
-                        </td>
-                        </tr>
-                        <tr t-if ="o.irn_no" width="100%">
-                            <td width="35%" style="font-size:12px;margin-left:0px;padding-left:0px">
-                                <strong style="text-align:left">IRN Number:</strong>
-                            </td>
-                            <td width="65%">
-                            <t t-if ="o.irn_no">
-                                <span t-field="o.irn_no"/>
-                            </t>
-                            </td>
-                        </tr>
-
-                        </table>
-                        </td>
-                        <td width="5%" style="background-color:#fff; margin-top:0px; margin-bottom:0px">
-                            <table width="100%" class="table" style="background-color:#fff;margin-top:0px;margin-bottom:0px">
-                                <tr style="margin-top:-50px">
-                                  <td style="background-color:#fff; margin-top:0px" >
-                         <t t-if='o.qr_image' style="border:none; text-align: right;">
-                            <img t-att-src="'data:image/png;base64,%s' % to_text(o.qr_image)" style="width:135px;height:135px;padding-left:1px"/>
-                        </t>
-                            </td>
-                        </tr>
-                            </table>
-                        </td>
-                    </tr>
-             </table>
-         </t>
+            <xpath expr="//div[@class='page']" position="attributes">
+                <attribute name="t-att-style">'font-size:12.5px;font-family:sans-serif;'</attribute>
             </xpath>
-           <!--  <xpath expr="//div[@class='page']/div[5]" position="attributes">
-                <attribute name="t-att-style">'margin-top:-190px' if o.irn_no else 'margin-top:0px'
-                </attribute>
-               
-            </xpath> -->
-      </template>
+            <!--  <xpath expr="//div[@class='page']/div/div[@class='col-xs-8']" position="attributes">
+                 <attribute name="t-att-style">'font-size:21px;font-family:sans-serif;color:red;'</attribute>
+             </xpath> -->
+            <xpath expr="//div[@name='service_info']" position="after">
+                <t t-if="o.irn_no">
+                    <div class="col-xs-12">
+                        <table style="width:100%;border-top:none !important;margin-bottom:0px;" class="table">
+                            <tr width="100%" style="margin-left:0px; padding-left:0px">
+                                <td width="95%" style="background-color:#fff; padding-left:0px">
+                                    <table width="100%" class="table"
+                                           style="background-color:#fff;margin-left:0px;padding-left:0px">
+                                        <tr t-if="o.ackdt_no" width="100%" style="margin-left:0px;padding-left:0px">
+                                            <td width="50%" style="margin-left:0px;padding-left:0px">
+                                                <strong>Acknowledge Date:</strong>
+                                            </td>
+                                            <td width="50%">
+                                                <t t-if="o.ackdt_no">
+                                                    <span t-field="o.ackdt_no"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.ack_no" width="100%">
+                                            <td width="50%" style="font-size:12px;margin-left:0px;padding-left:0px">
+                                                <strong>Acknowledge No.:</strong>
+                                            </td>
+                                            <td width="50%">
+                                                <t t-if="o.ack_no">
+                                                    <span t-field="o.ack_no"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                        <tr t-if="o.irn_no" width="100%">
+                                            <td width="35%" style="font-size:12px;margin-left:0px;padding-left:0px">
+                                                <strong style="text-align:left">IRN Number:</strong>
+                                            </td>
+                                            <td width="65%">
+                                                <t t-if="o.irn_no">
+                                                    <span t-field="o.irn_no"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                </td>
+                                <td width="5%" style="background-color:#fff; margin-top:0px; margin-bottom:0px">
+                                    <table width="100%" class="table"
+                                           style="background-color:#fff;margin-top:0px;margin-bottom:0px">
+                                        <tr style="margin-top:-50px">
+                                            <td style="background-color:#fff; margin-top:0px">
+                                                <t t-if='o.qr_image' style="border:none; text-align: right;">
+                                                    <img t-att-src="'data:image/png;base64,%s' % to_text(o.qr_image)"
+                                                         style="width:135px;height:135px;padding-left:1px"/>
+                                                </t>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </xpath>
+            <!--  <xpath expr="//div[@class='page']/div[5]" position="attributes">
+                 <attribute name="t-att-style">'margin-top:-190px' if o.irn_no else 'margin-top:0px'
+                 </attribute>
+
+             </xpath> -->
+        </template>
     </data>
 </odoo>
