@@ -7,6 +7,7 @@ class VehicleSalePsfReport(models.Model):
     _auto = False
 
     month = fields.Char(string="Month")
+    year = fields.Char(string="Year")
     dealer_name_id = fields.Many2one('res.company', string="Dealer Name")
     invoice_date = fields.Date(string="Invoice Date")
     invoice_number = fields.Char(string="Invoice Number")
@@ -40,7 +41,8 @@ class VehicleSalePsfReport(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
         select row_number() over(order by inv.id desc) as id,
-        initcap(to_char(inv.date_invoice, 'month')) as month,
+        initcap(to_char(inv.date_invoice, 'month'))  as month,
+        CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
         inv.company_id as dealer_name_id,
         inv.number as invoice_number, 
         inv.date_invoice as invoice_date,
@@ -49,20 +51,19 @@ class VehicleSalePsfReport(models.Model):
         rp.city as city,
         rp.phone as phone,
         rp.pan_no as pan_no,
-        spi.name as vin,
+        invl.vin_no as vin_no,
+        lot.name as vin,
         inv.amount_untaxed as amount_untaxed,
         inv.amount_tax as amount_tax,
         inv.amount_total as amount_total,
-        ail.name as model,
+        invl.name as model,
         inv.gate_pass_date as delivery_date,
         rp.street as delivery_address1,
         rp.street2 as delivery_address2
-        from account_invoice inv left join sale_order so on so.name = inv.origin
+        from  account_invoice inv
+        left join account_invoice_line invl on invl.invoice_id = inv.id
+        left join sale_order so on inv.order_id=so.id
         left join res_partner rp on rp.id = so.partner_id
-        left join stock_picking sp on sp.origin = so.name
-        left join stock_move sm on sm.picking_id = sp.id
-        left join stock_move_line sml on sml.move_id = sm.id
-        left join stock_production_lot spi on spi.id = sml.lot_id
-        left join account_invoice_line ail on ail.invoice_id = inv.id
-        left join product_catalog pc on pc.id = ail.product_catalog_id
-        where inv.state not in ('draft', 'cancelled') and so.sale_type = 'vehicle' and ail.name not in ('Round Off'))""" % (self._table))
+        left join stock_production_lot lot on invl.vin_no = lot.id
+        where inv.type='out_invoice'  and inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
+        """ % (self._table))

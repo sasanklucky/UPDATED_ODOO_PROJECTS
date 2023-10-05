@@ -12,6 +12,7 @@
             <field name="arch" type="xml">
                 <tree string="vehicle_sale_report_tree" create="false" delete="false" edit="false" default_order='invoice_number asc'>
                     <field name="month" string="Month" />
+                    <field name="year" string="Year" />
                     <field name="dealer_name_id" string="Dealer Name" />
                     <field name="invoice_date" string="Invoice Date" />
                     <field name="invoice_number" string="Invoice Number" />
