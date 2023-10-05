@@ -22,6 +22,7 @@
         'views/views.xml',
         'views/vehicle_purchase.xml',
         'views/vehicle_sales_action.xml',
+        'views/vehicle_sale_psf_report.xml',
         'menu/ac_vehicle_sales_menus.xml',
         'menu/ac_vehicle_menus.xml',
     ],

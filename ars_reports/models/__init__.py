@@ -5,3 +5,4 @@ from . import repair_order_report
 from . import parts_purchase_report
 from . import after_sales_retail_report
 from . import stock_ageing
+from . import after_sale_psf_report

@@ -16,6 +16,7 @@
         'views/repair_order_report.xml',
         'views/parts_purchase_report.xml',
         'views/after_sales_retail_report.xml',
+        'views/after_sale_report.xml',
         'views/stock_picking.xml',
         'views/purchase_order_document.xml',
         'views/stock_ageing.xml',

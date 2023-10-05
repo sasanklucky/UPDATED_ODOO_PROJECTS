@@ -76,5 +76,18 @@
                   parent="menu_ac_vehicle_management_sale_report"
                   sequence="1"/>
 
+        <record id="menu_vehicle_sales_psf_report" model="ir.ui.menu">
+            <field name="name">Vehicle Sales PSF Report</field>
+            <field name="sequence" eval="2"/>
+            <field name="action" ref="action_vehicle_sale_psf_report_act_window"/>
+            <field name="parent_id" ref="ac_vehicle_management.menu_ac_vehicle_management_sale_report"/>
+        </record>
+
+<!--        <menuitem id="menu_ac_vehicle_management_report_psf"-->
+<!--                  name="Vehicle Sale PSF Report"-->
+<!--                  action="action_vehicle_sale_psf_report_act_window"-->
+<!--                  parent="vehicle_sale_menu_root"-->
+<!--                  sequence="2"/>-->
+
     </data>
 </odoo>
