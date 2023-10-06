@@ -11,6 +11,7 @@ class VehicleSalePsfReport(models.Model):
     dealer_name_id = fields.Many2one('res.company', string="Dealer Name")
     invoice_date = fields.Date(string="Invoice Date")
     invoice_number = fields.Char(string="Invoice Number")
+    user_id = fields.Many2one('res.users', 'Sales Person')
     # ro_open_date = fields.Date(string="ro_opendate")
     # ro_number = fields.Char(string="RO Number")
     # ro_close_date = fields.Date(string="RO Close Date")
@@ -47,6 +48,7 @@ class VehicleSalePsfReport(models.Model):
         inv.number as invoice_number, 
         inv.date_invoice as invoice_date,
         so.partner_id as partner_id,
+        so.user_id as user_id,
         rp.mobile as mobile,
         rp.city as city,
         rp.phone as phone,
@@ -65,5 +67,6 @@ class VehicleSalePsfReport(models.Model):
         left join sale_order so on inv.order_id=so.id
         left join res_partner rp on rp.id = so.partner_id
         left join stock_production_lot lot on invl.vin_no = lot.id
-        where inv.type='out_invoice'  and inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
+        where inv.type='out_invoice'  and inv.state not in ('draft', 'cancelled')and 
+        inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
         """ % (self._table))

@@ -19,7 +19,7 @@
 <!--                    <field name="ro_open_date" string="RO Open Date" />-->
 <!--                    <field name="ro_number" string="RO Number" />-->
 <!--                    <field name="ro_close_date" string="RO Close Date" />-->
-
+                    <field name="user_id" string="Sales Person"/>
                     <field name="partner_id" string="Customer Name" />
                     <field name="mobile" string="Customer Mobile" />
                     <field name="city" string="Customer City" />
