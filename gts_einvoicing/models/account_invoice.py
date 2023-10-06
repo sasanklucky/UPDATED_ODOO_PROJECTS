@@ -387,11 +387,11 @@ class account_invoice(models.Model):
                             for child in tax.children_tax_ids:
                                 if child.tax_group_id.name == "SGST":
                                     # Change price_unit to price_subtotal from the line items on 23/sep/2023
-                                    total_sgst = (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
-                                    total_sgsts += (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
+                                    total_sgst = inv_line.price_subtotal * child.amount / 100
+                                    total_sgsts += inv_line.price_subtotal * child.amount / 100
                                 if child.tax_group_id.name == "CGST":
-                                    total_cgst = (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
-                                    total_cgsts += (inv_line.price_subtotal * inv_line.quantity) * child.amount / 100
+                                    total_cgst = inv_line.price_subtotal * child.amount / 100
+                                    total_cgsts += inv_line.price_subtotal * child.amount / 100
                                 # assmt = round(inv_line.price_subtotal - (
                                 #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
                                 assmt = inv_line.price_subtotal
@@ -400,14 +400,15 @@ class account_invoice(models.Model):
                             tax_rate = tax.amount
                         if tax.amount_type != 'group':
                             if tax.tax_group_id.name == "IGST" and tax.price_include == False:
-                                total_igst = (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
-                                total_igsts += (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
-                                assmt = round(inv_line.price_subtotal - (
-                                        (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                total_igst = inv_line.price_subtotal * tax.amount / 100
+                                total_igsts += inv_line.price_subtotal * tax.amount / 100
+                                assmt = inv_line.price_subtotal
+                                # assmt = round(inv_line.price_subtotal - (
+                                #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
                                 # assmt = inv_line.price_subtotal
                             elif tax.tax_group_id.name == "IGST" and tax.price_include == True:
-                                total_igst = (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
-                                total_igsts += (inv_line.price_subtotal * inv_line.quantity) * tax.amount / 100
+                                total_igst = inv_line.price_subtotal * tax.amount / 100
+                                total_igsts += inv_line.price_subtotal * tax.amount / 100
                                 assmt = inv_line.price_subtotal
                 else:
                     tax_rate = 0.0
@@ -423,7 +424,7 @@ class account_invoice(models.Model):
                     "Qty": inv_line.quantity,
                     "UnitPrice": round(inv_line.price_unit, 2),
                     "Unit": 'UNT',
-                    "TotAmt": round(inv_line.price_unit*inv_line.quantity, 2),
+                    "TotAmt": round(inv_line.price_unit * inv_line.quantity, 2),
                     # "Discount": (inv_line.price_unit * inv_line.quantity),
                     "Discount": round(discount, 2),
                     "AssAmt": assmt,
@@ -732,7 +733,7 @@ class account_invoice(models.Model):
                 self.eway_bill_status = 'cancel'
 
             if not self.eway_bill_no:
-                    self.eway_bill_status = 'not generated'
+                self.eway_bill_status = 'not generated'
 
     @api.multi
     def print_eway_bill(self):
