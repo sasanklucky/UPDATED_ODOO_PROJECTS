@@ -74,6 +74,13 @@ class account_invoice(models.Model):
                                          ('4', 'Combination of 2 and 3')], string="Transaction Type", copy=False,
                                         tracking=2, default='1')
 
+    e_invoice_status = fields.Selection([('generated', 'Generated'), ('not generated', 'Not Generated'),
+                                         ('cancel', 'Cancelled'), ('exception', 'Exception')],
+                                        string='E Invoice Status',
+                                        default='not generated', copy=False)
+    exception_reason = fields.Text('Exception Reason')
+    e_invoice_data = fields.Text('E-Invoice Data')
+
     def generate_einvoice(self):
         delivery = self.env['stock.picking'].search([('origin', '=', self.origin)], limit=1)
         if delivery:
@@ -494,6 +501,7 @@ class account_invoice(models.Model):
         # _logger.info("=====================tenure==%s=",  res)
         res_dict = json.loads(res)
         print("res_dict===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", res_dict)
+        self.e_invoice_data = data
         if res_dict.get('Status') == '1':
             a = res_dict['Data']
             n = json.loads(a)
@@ -509,6 +517,7 @@ class account_invoice(models.Model):
             self.ackdt_no = ackdt_no
             self.ack_no = ack_no
             self.invoice_number = ack_no
+            self.e_invoice_status = 'generated'
             # self.signed_invoice = qr_code
             self.inv_barcode = qr_code
             self.eway_bill_no = ewbno
@@ -518,6 +527,8 @@ class account_invoice(models.Model):
                 self.env.user.notify_info(message='IRN Number and Eway Bill Created Successfully !')
             self.env.user.notify_info(message='IRN Number Created Successfully !')
         if res_dict.get('Status') == '0':
+            self.exception_reason = res_dict
+            self.e_invoice_status = 'exception'
             raise UserError(_(res_dict.get('ErrorDetails')))
 
     def num_to_word_convert(self):
