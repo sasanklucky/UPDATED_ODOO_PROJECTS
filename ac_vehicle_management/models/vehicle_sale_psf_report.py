@@ -67,6 +67,6 @@ class VehicleSalePsfReport(models.Model):
         left join sale_order so on inv.order_id=so.id
         left join res_partner rp on rp.id = so.partner_id
         left join stock_production_lot lot on invl.vin_no = lot.id
-        where inv.type='out_invoice'  and inv.state not in ('draft', 'cancelled')and 
+        where inv.type='out_invoice'  and inv.state not in ('draft', 'cancel')and 
         inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
         """ % (self._table))
