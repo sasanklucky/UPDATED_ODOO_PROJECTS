@@ -78,7 +78,7 @@ class account_invoice(models.Model):
                                          ('cancel', 'Cancelled'), ('exception', 'Exception')],
                                         string='E Invoice Status',
                                         default='not generated', copy=False)
-    exception_reason = fields.Text('Exception Reason')
+    exception_reason = fields.Text('Response')
     e_invoice_data = fields.Text('E-Invoice Data')
 
     def generate_einvoice(self):
@@ -502,6 +502,7 @@ class account_invoice(models.Model):
         res_dict = json.loads(res)
         print("res_dict===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", res_dict)
         self.e_invoice_data = data
+        self.exception_reason = res_dict
         if res_dict.get('Status') == '1':
             a = res_dict['Data']
             n = json.loads(a)
@@ -530,6 +531,9 @@ class account_invoice(models.Model):
             self.exception_reason = res_dict
             self.e_invoice_status = 'exception'
             raise UserError(_(res_dict.get('ErrorDetails')))
+        elif 'error' in res_dict:
+            self.exception_reason = res_dict
+            self.e_invoice_status = 'exception'
 
     def num_to_word_convert(self):
         number = int(self.amount_total)
@@ -728,7 +732,7 @@ class account_invoice(models.Model):
                 self.eway_bill_status = 'cancel'
 
             if not self.eway_bill_no:
-                self.eway_bill_status = 'not generated'
+                    self.eway_bill_status = 'not generated'
 
     @api.multi
     def print_eway_bill(self):
