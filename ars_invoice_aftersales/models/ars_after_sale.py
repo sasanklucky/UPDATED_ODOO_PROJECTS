@@ -206,7 +206,9 @@ class ARS_After_sale_order(models.Model):
 
                 for order_line in order.order_line:
                     invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
-                    invoice.product_template_id = order_line.product_template_id.id
+                    # invoice.product_template_id = order_line.product_template_id.id
+                    for inv_s in invoice:
+                        inv_s.product_template_id = order_line.product_template_id.id
                 return [inv.id for inv in invoices.values()]
 
                 # 'product_template_id':order.order_line.product_template_id.id
