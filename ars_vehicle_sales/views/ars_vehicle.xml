@@ -238,8 +238,8 @@
                                     </field>
                                 </page>
                                 <page string="Ownership History">
-                                    <field name="customer_ids" readonly="True">
-                                        <tree editable="bottom">
+                                    <field name="customer_ids" readonly="False">
+                                        <tree editable="top">
                                             <field name="custmer_name" string="Customer Name"/>
                                             <field name="date_of_ownership" string="Date of Ownership"/>
                                             <field name="address" string="Address"/>
