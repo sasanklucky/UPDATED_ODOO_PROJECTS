@@ -42,7 +42,7 @@ class FleetVehicle(models.Model):
     service_due = fields.Char(string='Service Due')
     engine_code = fields.Char(string='Engine Code')
     engine_number = fields.Char(string='Engine Number')
-    key_serial_number = fields.Char(string='Key Serial Number')
+    key_serial_number = fields.Char(string='Battery Serial Number')
     categ_id = fields.Many2one('product.category', 'Vehicle Category', related="mvariant_id.product_tmpl_id.categ_id")
     emission_test_category = fields.Char(string='Emission Test Category')
     warranty_validation = fields.Datetime(string='Warranty Validation')
@@ -164,12 +164,13 @@ class FleetVehicle(models.Model):
 
     @api.multi
     def write(self, vals):
-        res = self.env['res.partner'].browse(vals.get('driver_id'))
-        # self.contact_name = res.name
-        vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
-                                              'date_of_ownership': datetime.now(),
-                                              'address': res.street,
-                                              'mobile': res.mobile})]})
+        if 'driver_id' in vals:
+            res = self.env['res.partner'].browse(vals.get('driver_id'))
+            vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
+                                                  'date_of_ownership': datetime.now(),
+                                                  'address': res.street,
+                                                  'sold_by': self.env.user.company_id.partner_id.id,
+                                                  'mobile': res.mobile})]})
         return super(FleetVehicle, self).write(vals)
 
     @api.model

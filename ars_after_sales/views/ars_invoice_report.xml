@@ -60,14 +60,14 @@
                                     <td>Mobile Number</td>
                                     <td>:</td>
                                     <td>
-                                        <span t-field="o.order_id.mobile"/>
+                                        <span t-field="o.partner_id.mobile"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>Email</td>
                                     <td>:</td>
                                     <td>
-                                        <span t-field="o.order_id.email"/>
+                                        <span t-field="o.partner_id.email"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -115,7 +115,9 @@
                                     <td>Date of Vehicle Sale</td>
                                     <td>:</td>
                                     <td>
-                                        <span t-esc="o.reg_no.customer_ids.mapped('date_of_ownership')[0]"/>
+                                        <t t-if="o.reg_no">
+                                            <span t-esc="o.reg_no.customer_ids.mapped('date_of_ownership')[0]"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr>
