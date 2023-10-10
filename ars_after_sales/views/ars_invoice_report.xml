@@ -115,7 +115,7 @@
                                     <td>Date of Vehicle Sale</td>
                                     <td>:</td>
                                     <td>
-                                        <t t-if="o.reg_no">
+                                        <t t-if="o.reg_no.customer_ids">
                                             <span t-esc="o.reg_no.customer_ids.mapped('date_of_ownership')[0]"/>
                                         </t>
                                     </td>
