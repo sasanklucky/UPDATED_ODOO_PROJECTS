@@ -112,7 +112,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>Date of Vehicle Sale</td>
+                                    <td>Date of Sale</td>
                                     <td>:</td>
                                     <td>
                                         <t t-if="o.reg_no.customer_ids">
@@ -152,7 +152,7 @@
                                     <td>RO Date</td>
                                     <td>:</td>
                                     <td>
-                                        <span t-field="o.order_id.confirmation_date"
+                                        <span t-field="o.order_id.appointment_date"
                                               t-field-options='{"format": "d MMMM y"}'></span>
                                     </td>
                                 </tr>
@@ -168,9 +168,9 @@
                                     <td>Delivery Date&amp;Time</td>
                                     <td>:</td>
                                     <td>
-                                        <t t-if="o.delivery_date">
+                                        <t t-if="o.order_id.delivery_date">
                                             <t t-set="delivery_date"
-                                               t-value="datetime.datetime.strptime(o.delivery_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                               t-value="datetime.datetime.strptime(o.order_id.delivery_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
                                             <span t-esc="delivery_date.strftime('%d/%m/%Y %H:%M:%S')"/>
                                         </t>
                                     </td>
@@ -400,7 +400,7 @@
                         <label string="Remarks"/>
                         <b>Remarks:</b>
                         <br></br>
-                        <span style="padding: 20px" t-field="o.comment"/>
+                        <span t-field="o.order_id.note"/>
                     </div>
 
                     <div style="">
@@ -574,7 +574,7 @@
                                         </td>
                                         <td class="text-right" style="background-color:#FFF;">
                                             <!--                                        <span t-field="l.quantity"/>-->
-                                            <span t-esc="round(l.quantity)"/>
+                                            <span t-esc="l.quantity"/>
                                         </td>
                                         <td style="background-color:#FFF;">
                                             <span t-field="l.uom_id"/>

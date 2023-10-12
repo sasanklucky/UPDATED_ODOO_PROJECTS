@@ -61,6 +61,7 @@
                                 <field name="user_id" string="Service Advisor"
                                        domain="[('share', '=', False),('serviceadvisor', '=', True)]"
                                        options="{'no_create': True}"
+                                       required="1"
                                        context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
                                 <!--<field name="resource_id_lead" domain="[('resource_category.code','=','SA')]" />-->
                                 <field name="team_id" widget="selection" readonly="True" invisible="1"/>
@@ -669,10 +670,10 @@
                       decoration-muted="state=='cancel'">
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Quotation Number"/>
-                    <field name="regn_no" string="Reg No"/>
+                    <field name="regn_no" required="1" string="Reg No"/>
                     <field name="date_order" string="Quotation Date"/>
                     <field name="partner_id"/>
-                    <field name="user_id" string="Service Advisor"/>
+                    <field name="user_id" required="1" string="Service Advisor"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="state"/>
@@ -809,12 +810,12 @@
                         <group>
                             <separator string="Service Details" colspan="4"/>
                             <group>
-                                <field name="doc_type" string="Visit Type"/>
+                                <field name="doc_type" string="Visit Type" required="1"/>
                                 <field name="work_type" string="Work Type"/>
-                                <field name="service_type" options="{'no_create': True}"/>
-                                <field name="service_options" options="{'no_create': True}"/>
+                                <field name="service_type" required="1" options="{'no_create': True}"/>
+                                <field name="service_options" required="1" options="{'no_create': True}"/>
                                 <!--<field name="resource_id_sale" invisible="1" domain="[('resource_category.code','=','SA')]"/>-->
-                                <field name="user_id" string="Service Advisor" options="{'no_create': True}"
+                                <field name="user_id" required="1" string="Service Advisor" options="{'no_create': True}"
                                        domain="[('serviceadvisor','=',True)]"/>
                                 <field name="appointment_date"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
@@ -1834,7 +1835,7 @@
                                 <field name="email"/>
                             </group>
                             <group string="Vehicle Details">
-                                <field name="regn_no" string="Reg No"/>
+                                <field name="regn_no" required="1" string="Reg No"/>
                                 <!--<field name="doc_no" />-->
 
                                 <field name="vin_no"/>
@@ -1855,12 +1856,12 @@
                         <group>
                             <separator colspan="4" string="Service Details"/>
                             <group>
-                                <field name="doc_type" string="Visit Type"/>
+                                <field name="doc_type" string="Visit Type" required="1"/>
                                 <field name="work_type" string="Work Type"/>
-                                <field name="service_type" options="{'no_create': True}"/>
-                                <field name="service_options" options="{'no_create': True}"/>
+                                <field name="service_type" required="1" options="{'no_create': True}"/>
+                                <field name="service_options" required="1" options="{'no_create': True}"/>
                                 <!--<field name="resource_id_sale" domain="[('resource_category.code','=','SA')]"/>-->
-                                <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]"/>
+                                <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]" required="1"/>
                                 <field name="appointment_date"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
                                        domain="[('serviceadvisor','=',True)]"/>
@@ -2632,7 +2633,7 @@
                                 <field name="cash_rounding_id" groups="account.group_cash_rounding"/>
                             </group>
                             <group>
-                                <field name="date_invoice"/>
+                                <field name="date_invoice" required="1"/>
                                 <field name="date_due"
                                        attrs="{'readonly': ['|',('payment_term_id','!=',False), ('state','=','paid')]}"
                                        force_save="1"/>
@@ -2650,7 +2651,8 @@
                         <notebook colspan="4">
                             <page string="Invoice Lines">
                                 <field name="invoice_line_ids" nolabel="1" widget="one2many_list" mode="tree,kanban"
-                                       context="{'type': type, 'journal_id': journal_id, 'default_invoice_id': id}">
+                                       context="{'type': type, 'journal_id': journal_id, 'default_invoice_id': id}"
+                                        attrs="{'required': True}">
                                     <tree string="Invoice Lines" editable="bottom">
                                         <field name="sequence" widget="handle"/>
                                         <field name="product_id" domain="[('sale_ok','=',True)]"/>
@@ -2786,7 +2788,7 @@
                            options="{'no_create': True, 'no_open': True}"/>
                 </field>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="after">
-                    <field name="gate_pass_date"/>
+                    <field name="gate_pass_date" required="1"/>
                 </xpath>
             </field>
         </record>
@@ -2797,10 +2799,10 @@
             <field name="inherit_id" ref="account.invoice_supplier_form"/>
             <field name="arch" type="xml">
                 <field name="journal_id" position="before">
-                    <field name="service_type"
+                    <field name="service_type" required="1"
                            attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
                            options="{'no_create': True, 'no_open': True}"/>
-                    <field name="service_options"
+                    <field name="service_options" required="1"
                            attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
                            options="{'no_create': True, 'no_open': True}"/>
                 </field>
@@ -2820,13 +2822,13 @@
                     <field name="payment_term_id" invisible="1"/>
                 </xpath>
                 <field name='payment_term_id' position="before">
-                    <field name="mobile"/>
-                    <field name="email"/>
+                    <field name="mobile" required="1"/>
+                    <field name="email" required="1"/>
                 </field>
 
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="before">
                     <field name="origin" groups="base.group_user" string="Order No"/>
-                    <field name="gate_pass_date"/>
+                    <field name="gate_pass_date" required="1"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='user_id']" position="replace">
                     <field name="user_id" groups="base.group_user" invisible="1"/>
@@ -2837,8 +2839,8 @@
 
                 <xpath expr="//form/sheet/group/group[2]" position="before">
                     <group string="">
-                        <field name="doc_type"/>
-                        <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]"/>
+                        <field name="doc_type" required="1"/>
+                        <field name="user_id" string="Service Advisor" required="1" domain="[('serviceadvisor','=',True)]"/>
                         <field name="appointment_date"/>
                         <field name="delivery_service_advisor" string="Advisor for Delivery" readonly="0"
                                domain="[('serviceadvisor','=',True)]"/>
@@ -2851,7 +2853,7 @@
 
                     <group string="Vehicle Details">
                         <!--<field name="regno"/>-->
-                        <field name="reg_no" string="Reg No"/>
+                        <field name="reg_no" required="1" string="Reg No"/>
                         <field name="vin" context="{'lotno':'lot'}"/>
                         <field name="model" readonly="1"/>
                         <field name="kilometer" string="Kilometer In"/>

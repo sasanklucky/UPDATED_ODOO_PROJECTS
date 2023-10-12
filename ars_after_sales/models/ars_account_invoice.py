@@ -110,8 +110,8 @@ class ARS_account_invoice(models.Model):
     reg_no = fields.Many2one('fleet.vehicle', string="Regn No")
     vin = fields.Char(string="VIN")
     model = fields.Many2one('product.product')
-    kilometer = fields.Float(string="Kilometer")
-    kilometer_out = fields.Float(string="Kilometer Out")
+    kilometer = fields.Float(string="Kilometer",required=True)
+    kilometer_out = fields.Float(string="Kilometer Out",required=True)
     delivery_service_advisor = fields.Many2one('res.users')
     doc_type = fields.Selection([
         ('appointment', 'Appointment'),
@@ -172,6 +172,16 @@ class ARS_account_invoice(models.Model):
                 product_name = self.env['product.product'].search(
                     [('product_tmpl_id', '=', customer_details.model_id.id)])
                 self.model = product_name.id
+
+    @api.onchange('kilometer_out')
+    def UpdateKilometerOut(self):
+        if self.reg_no and self.kilometer_out != 0 and self.kilometer != 0:
+            if self.kilometer < self.kilometer_out:
+                self.reg_no.write({'odometer': self.kilometer_out})
+            else:
+                raise UserError(_("Kilometer Out is lesser than Kilometer In"))
+        elif self.kilometer and self.kilometer_out == 0:
+            raise UserError(_("Please Enter the Kilometer Out"))
 
     @api.multi
     def _invoice_line_tax_values_by_type(self, tax_product={}, tax_service={}):

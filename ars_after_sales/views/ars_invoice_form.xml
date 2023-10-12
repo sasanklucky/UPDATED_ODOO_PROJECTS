@@ -6,8 +6,8 @@
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
                 <xpath expr="field[@name='journal_id']" position="before">
-                    <field name="service_type" options="{'no_create': True, 'no_open': True}"/>
-                    <field name="service_options" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="service_type" required="1" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="service_options" required="1" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
                     <field name="vin_no"/>

@@ -114,7 +114,7 @@
                                         <field name="fuel_type"/>
                                         <field name="engine_code"/>
                                         <field name="engine_number"/>
-                                        <field name="key_serial_number"/>
+                                        <field name="key_serial_number" string="Battery Serial Number"/>
                                         <label for="co2"/>
                                         <div class="o_row" name="co2">
                                             <field name="co2"/>
@@ -134,7 +134,7 @@
                                     <group colspan="4" string="Vehicle Information">
                                         <field name="vehicle_status"
                                                attrs="{'readonly':[('vehicle_status','=','new')]}"/>
-                                        <field name="initial_reg_no"/>
+                                        <field name="initial_reg_no" required="1"/>
                                         <field name="vin_sn" string="VIN" required="1"/>
                                         <label for="model_year"/>
                                         <div class="o_row">

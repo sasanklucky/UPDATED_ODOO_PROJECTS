@@ -6,6 +6,7 @@ import time
 from odoo.exceptions import UserError
 from lxml import etree
 from openerp.osv.orm import setup_modifiers
+from odoo.exceptions import ValidationError, UserError, RedirectWarning, except_orm
 import json
 
 
@@ -14,7 +15,6 @@ class ARS_sale_order(models.Model):
 
     @api.model
     def _ars_default_warehouse_id(self):
-
         userid = self.env.user
         company = self.env.user.company_id.id
         if userid.sale_team_id.team_type == 'sales' or self.sale_type == 'vehicle':
@@ -109,6 +109,15 @@ class ARS_sale_order(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
+
+
+    @api.onchange('order_line')
+    def onchange_identity_ids(self):
+        for order in self.order_line:
+            line = self.order_line.filtered(lambda l: l.product_id == order.product_id)
+            if len(line) > 1:
+                raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
+                break
 
     # @api.multi
     # @api.onchange('service_type')
@@ -871,7 +880,7 @@ class ars_sale_advance_payment_inv(models.TransientModel):
             # if warranty_ids:
             #     raise UserError(_('One of the Warranty Claims is in Draft/In-Progress state.'))
             for ln in sl.order_line:
-                if not ln.customer_split and sl.sale_aftersales == 'after_sales':
+                if not ln.customer_split and sl.sale_aftersales == 'after_sales' and not sl.counter_parts:
                     raise UserError(
                         _('For one of the lines customer is not selected. Please add customer before proceeding.'))
         super(ars_sale_advance_payment_inv, self).create_invoices()

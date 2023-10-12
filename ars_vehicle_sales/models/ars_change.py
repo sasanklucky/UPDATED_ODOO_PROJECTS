@@ -82,6 +82,7 @@ class ars_sale_crm_sale(models.Model):
     _inherit = 'sale.order'
 
     bank_account = fields.Many2one('res.bank', string="Financer")
+    sale_aftersales = fields.Char('Team Type')
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
@@ -314,6 +315,9 @@ class ars_sale_crm_sale(models.Model):
                     self.write({'state': 'to_approve', 'user_id': self._uid})
                     return True
         # if self.team_id.team_type == 'sales' and
+        if not self.order_line:
+            raise UserError(_(
+                'Not allowed to confirm an order without order lines'))
         result = super(ars_sale_crm_sale, self).action_confirm()
         return result
 

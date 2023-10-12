@@ -129,7 +129,7 @@ class ARS_Product_Product(models.Model):
             variable_attributes = product.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped(
                 'attribute_id')
             variant = product.attribute_value_ids._variant_name(variable_attributes)
-            print('variant=====================', variant, variable_attributes)
+            # print('variant=====================', variant, variable_attributes)
             active_model = self.env.context.get('active_model')
             if variant != '' and active_model in ['crm.lead', 'sale.order', 'purchase.order']:
                 name = variant and "(%s)" % (variant)

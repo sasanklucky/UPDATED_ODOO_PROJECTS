@@ -17,1032 +17,1059 @@
             <field name="dpi">80</field>
         </record>
 
+        <!--        <report file="Repair Order Report"-->
+        <!--                id="repair_order_report_download"-->
+        <!--                model="sale.order"-->
+        <!--                menu="True"-->
+        <!--                name="ars_reports.repair_order_report"-->
+        <!--                report_type="qweb-pdf"-->
+        <!--                string="Repair Order Report"-->
+        <!--                paperformat="ars_reports.repair_order_report_download_paperformat"-->
+        <!--                print_report_name="'Repair Order - %s' % (object.name)"-->
+        <!--        />-->
+
         <report file="Repair Order Report"
                 id="repair_order_report_download"
                 model="sale.order"
                 menu="True"
-                name="ars_reports.repair_order_report"
+                name="ars_reports.ars_repair_order_report"
                 report_type="qweb-pdf"
                 string="Repair Order Report"
                 paperformat="ars_reports.repair_order_report_download_paperformat"
                 print_report_name="'Repair Order - %s' % (object.name)"
         />
 
+        <template id="ars_repair_order_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="ars_after_sales.report_estimate_order" t-lang="doc.partner_id.lang"/>
+                    <t t-call="ars_reports.repair_order_report" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </template>
+
 
         <template id="repair_order_report">
             <t t-call="web.basic_layout">
                 <div class="page">
-                    <t t-foreach="docs" t-as="doc">
-                        <style>
-                            table { font-family: arial, sans-serif; border-collapse: collapse; width: 100%; }
-                            td, th { border: 1px solid #000; text-align: left;}
-                            td.lborder {border-left:1px solid #000; border-right:1px solid transparent; border-top:1px
-                            solid transparent; border-bottom:1px solid transparent; }
-                            td.rborder {border-left:1px solid transparent; border-right:1px solid #000; border-top:1px
-                            solid transparent; border-bottom:1px solid transparent; }
-                            td.bordertransparent {border:1px solid transparent;}
-                            .rotatespan { -ms-writing-mode: tb-rl;
-                            -webkit-writing-mode: vertical-rl;
-                            writing-mode: vertical-rl;
-                            white-space: unset;
-                            -webkit-transform: rotate(180deg);
-                            -ms-transform: rotate(180deg);
-                            transform: rotate(180deg);
-                            }
-                        </style>
-                        <table style="width:100%;border:0; border-collapse: collapse;margin-bottom:0px; font-size:13px;">
-                            <tr>
-                                <td colspan="4" style="text-align: center; font-weight: bold; padding: 5px 3px;">Repair
-                                    Order
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="bordertransparent" style="padding: 5px 3px; vertical-align:top" rowspan="3"
-                                    width="20%">
-                                    <img t-if="doc.company_id.logo"
-                                         t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)"
-                                         style="max-height: 65px; margin-top:0px"/>
-                                </td>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent" rowspan="3"
-                                    width="20%">
-                                    <!-- <div class="col-xs-14 text-uppercase"> -->
-                                    <div t-if="doc.company_id.name" class="col-xs-14 text-center">
-                                        <span style="font-weight: bold; font-size: 13px;"
-                                              t-field="doc.company_id.name"/>
-                                        <t t-if="doc.company_id.dealer_code">(<t t-esc="doc.company_id.dealer_code"/>)
-                                        </t>
-                                    </div>
-                                    <!-- </div> -->
-                                    <!-- </div> -->
-                                </td>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent" colspan="2"
-                                    width="60%">
-                                    <span>
-                                        <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
-                                        </t>
-                                        <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
-                                        </t>
-                                        <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
-                                        </t>
-                                        <t t-if="doc.company_id.state_id">
-                                            <span t-field="doc.company_id.state_id.name"/>
-                                        </t>
-                                        <t t-if="doc.company_id.country_id"><span
-                                                t-field="doc.company_id.country_id.name"/>,
-                                        </t>
-                                        <t t-if="doc.company_id.zip">
-                                            <span t-field="doc.company_id.zip"/>
-                                        </t>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Tel :
-                                    <t t-if="doc.company_id.phone">
-                                        <span t-field="doc.company_id.phone"/>
-                                    </t>
-                                </td>
-                                <!--                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Fax :</td>-->
-                            </tr>
-                            <tr>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">GST NO. :
-                                    <t t-if="doc.company_id.vat">
-                                        <span t-field="doc.company_id.vat"/>
-                                    </t>
-                                </td>
-                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Email :
-                                    <t t-if="doc.company_id.email">
-                                        <span t-field="doc.company_id.email"/>
-                                    </t>
-                                </td>
-                            </tr>
-                        </table>
-                        <table cellpadding="0" cellspacing="0"
-                               style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size:12px">
-                            <tr>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
-                                    colspan="2">Customer Information
-                                </th>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
-                                    colspan="2">Vehicle Information
-                                </th>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
-                                    colspan="3">Service Information
-                                </th>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Name</td>
-                                <td style="text-align:left;width:23%;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.partner_id.name"/>
-                                </td>
-                                <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Reg. No</td>
-                                <td style="text-align:left;width:23%;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.regn_no.license_plate"/>
-                                </td>
-                                <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Visit Type</td>
-                                <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-if="doc.doc_type">
-                                        <t t-esc="dict(doc.fields_get(allfields=['doc_type'])['doc_type']['selection'])[doc.doc_type]"/>
-                                    </t>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Address</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,
-                                    </t>
-                                    <t t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/>,
-                                    </t>
-                                    <t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/>,
-                                    </t>
-                                    <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,
-                                    </t>
-                                    <t t-if="doc.partner_id.country_id">
-                                        <span t-field="doc.partner_id.country_id.name"/>
-                                    </t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">VIN</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.vin_no"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">RO Date</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-if="doc.appointment_date">
-                                        <span t-esc="((datetime.datetime.strptime(doc.appointment_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
-                                    </t>
-                                    <t t-else="">
-                                        &amp;nbsp;
-                                    </t>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Pin Code</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.partner_id.zip">
-                                        <span t-field="doc.partner_id.zip"/>
-                                    </t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Motor No</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.regn_no.engine_number"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">RO Number</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-esc="doc.name"/>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Email</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.partner_id.email"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Model</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.regn_no.model_id.name"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Work Type</td>
-
-                                <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-if="doc.work_type">
-                                        <t t-esc="dict(doc.fields_get(allfields=['work_type'])['work_type']['selection'])[doc.work_type]"/>
-                                    </t>
-                                </td>
-                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
-                                <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
-                                <!--                                </td>-->
-
-                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Printing Time</td>-->
-                                <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
-                                <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
-                                <!--                                </td>-->
-
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Contact No</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.partner_id.mobile"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Sold By</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.regn_no._get_ownership_details()">
-                                        <t t-if="doc.regn_no._get_ownership_details().sold_by.name">
-                                            <t t-esc="doc.regn_no._get_ownership_details().sold_by.name"/>
-                                        </t>
-                                    </t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Category</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Booking No</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Ownership</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.regn_no._get_ownership_details()">
-                                        <t t-esc="doc.regn_no._get_ownership_details().date_of_ownership"/>
-                                    </t>
-                                </td>
-<!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Special Message</td>-->
-<!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>-->
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Warranty Expiry</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-esc="doc.regn_no.warranty_validation"/>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.partner_id.vat"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Mileage</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-esc="doc.mileage_in"/>
-                                    KM.
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Ext Wty</td>
-                                <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;">
-                                    <t t-if="doc.regn_no.extented_warranty_no">Yes</t>
-                                    <t t-else="">No</t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.regn_no.extented_warranty_no">
-                                        <t t-esc="doc.regn_no.extented_warranty_no"/>
-                                    </t>
-                                    <t t-else=""></t>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Policy Number</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.regn_no._get_insurance_details()">
-                                        <t t-esc="doc.regn_no._get_insurance_details().insurance_doc_no"/>
-                                    </t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Color</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-set="product"
-                                       t-value="doc.regn_no.mvariant_id.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')"/>
-                                    <t t-set="color"
-                                       t-value="', '.join(map(lambda x: (x.name), doc.regn_no.mvariant_id.attribute_value_ids))"/>
-                                    <t t-esc="doc.regn_no.mvariant_id.attribute_value_ids._variant_color_name(product)"/>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">RSA</td>
-                                <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.model.product_tmpl_id.rsa == 'yes'">YES</t>
-                                    <t t-else="">NO</t>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Insurance Expiry Date</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                    <t t-if="doc.regn_no._get_insurance_details()">
-                                        <t t-esc="doc.regn_no._get_insurance_details().insurance_end"/>
-                                    </t>
-                                </td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Type</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-if="doc.service_type">
-                                        <span t-field="doc.service_type.name"/>
-                                    </t>
-                                </td>
-                            </tr>
-                            <tr style="font-size: 12px;">
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Options</td>
-                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                    <t t-if="doc.service_options">
-                                        <span t-field="doc.service_options.name"/>
-                                    </t>
-                                </td>
-                            </tr>
-                        </table>
-                        <table cellpadding="0" cellspacing="0"
-                               style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; border:1px solid #000; font-size:12px">
-                            <tr>
-                                <td style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:50%">
-                                    Customer Request
-                                </td>
-                                <td style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:50%">
-                                    Service Adviser Remarks to shop Floor : Primary Job
-                                </td>
-                            </tr>
-                            <t t-foreach="doc.customer_voice_sale" t-as="customer">
-                                <tr>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px soild #000;">
-                                        <t t-esc="customer.name"/>
-                                    </td>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px soild #000;">
-                                        <t t-esc="customer.instructions.name  "/>
-                                    </td>
-                                </tr>
-
-                            </t>
-                            <!-- <tr>
-                              <td>
-                                <table cellpadding="0" cellspacing="0" style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px">
-                                  <tr>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Description</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Narration</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Type</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:40%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                    <td style="text-align:left;width:30%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
-                                  </tr>
-                                </table>
-                              </td>
-                              <td>
-                                <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px" cellpadding="5" cellspacing="0">
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Primary Job: </td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2"> &amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Secondary Job: </td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Additonal Jobs: </td>
-                                  </tr><tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Customer Confirmation for Add Job : </td>
-                                  </tr><tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Customer/Representative Name: </td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000; display:none;" colspan="2" ></td>
-                                  </tr>
-                                  <tr>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Time: </td>
-                                    <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Date: </td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr> -->
-                            <tr>
-                                <td colspan="2" style="padding: 3px 2px; font-size: 12px">
-                                    <span t-field="doc.note"/>
-                                </td>
-                            </tr>
-                        </table>
-                        <table cellpadding="0" cellspacing="0"
-                               style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 12px">
-                            <tr>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
-                                    Promise Time
-                                </th>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
-                                    Body Paint Damages
-                                </th>
-                                <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
-                                    Inventory Check
-                                </th>
-                            </tr>
-                            <tr>
-                                <td style="vertical-align: top;">
-                                    <table cellpadding="0" cellspacing="0"
-                                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 12px ">
-                                        <tr>
-                                            <td style="text-align:left; width:30%; padding: 3px 2px;"
-                                                class="bordertransparent">Promise &amp; Delivery Date
-                                            </td>
-                                            <td style="text-align:left; width:70%; padding: 3px 2px;"
-                                                class="bordertransparent">
-                                                <t t-if="doc.delivery_date">
-                                                    <span t-esc="((datetime.datetime.strptime(doc.delivery_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
-                                                </t>
-                                                <t t-else="">
-                                                    &amp;nbsp;
-                                                </t>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left; width:30%; padding: 3px 2px;"
-                                                class="bordertransparent">Service Advisor
-                                            </td>
-                                            <td style="text-align:left; width:70%; padding: 3px 2px;"
-                                                class="bordertransparent">
-                                                <t t-esc="doc.user_id.name"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left; width:30%; padding: 3px 2px;"
-                                                class="bordertransparent">Mobile No
-                                            </td>
-                                            <td style="text-align:left; width:70%; padding: 3px 2px;"
-                                                class="bordertransparent">
-                                                <t t-esc="doc.user_id.mobile"/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left; width:30%; padding: 3px 2px;"
-                                                class="bordertransparent">Est. Amount
-                                            </td>
-                                            <td style="text-align:left; width:70%; padding: 3px 2px;"
-                                                class="bordertransparent">
-                                                <span t-esc="doc.amount_total"
-                                                      t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left; width:60%; padding: 3px 2px;"
-                                                class="bordertransparent">Preferred Mode of Contact
-                                            </td>
-                                            <td style="text-align:right; width:40%; padding: 3px 2px;"
-                                                class="bordertransparent">
-                                                <p>
-                                                    <span>Call</span>
-                                                    <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
-                                                    </span>
-                                                </p>
-                                                <p>
-                                                    <span>SMS</span>
-                                                    <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
-                                                    </span>
-                                                </p>
-                                                <p>
-                                                    <span>E-Mail</span>
-                                                    <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
-                                                    </span>
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" class="bordertransparent"
-                                                style="width:100%;padding: 3px 2px;">
-                                                I hearby authorize for the Repair to be executed using necessary
-                                                materials and I am affixing my signature below in evidence of agreeing
-                                                terms &amp; condition given in the
-                                                Annexture A of the repair order absolutely &amp; unconditionally.
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" class="bordertransparent"
-                                                style="text-align:right;padding: 3px 2px;">
-                                                <br/>
-                                                <b>Customer Signature</b>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                                <td style="padding:0px 10px; vertical-align:top;">
-                                    <p>
-                                        <img src="/ars_reports/static/src/img/car_damage.jpeg" height="150px"
-                                             width="100%"/>
-                                    </p>
-                                    <br/>
-                                    <span style="text-align:center">C-Crack P-Peeling, D-Dent/Damage, S-Sratch/Spot,
-                                        R-Rust
-                                    </span>
-                                </td>
-                                <td rowspan="3">
-                                    <table cellpadding="0" cellspacing="0"
-                                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 10px; margin-bottom:0">
-                                        <tr>
-                                            <td style="padding: 5px 2px; vertical-align:middle; border-bottom: 1px solid #000;"
-                                                class="bordertransparent">
-                                                Battery Level
-                                            </td>
-                                            <td colspan="4" class="bordertransparent"
-                                                style="border-bottom: 1px solid #000;">
-                                                <p>
-                                                    <img src="/ars_reports/static/src/img/battery_gauge.jpeg"
-                                                         height="50px" width="100%"/>
-                                                </p>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="text-align:left;  width=24%; border-bottom:1px solid #000;"
-                                                class="rborder">Service Book
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
-                                                class="lborder">Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
-                                                class="rborder">Rear View Mirror
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
-                                                class="lborder">Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Tool Kit
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 3px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                IDO
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Spare Wheel
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Wheel Cover
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Jack
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Mud Flaps
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Jack Handle
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Mats
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Car Perfume
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Dicky Mat
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Clock
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Speaker FR
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Stereo
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Speaker FR
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                CD Player
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Tweeters
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Mouth Piece
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                SD Card
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Cigrate Lighter
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Antenna
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
-                                                Yes/No
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Battery Name
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                Battery S.no:
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
-                                                &amp;nbsp;
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="rborder"
-                                                style="text-align:left;width=24%; border-bottom: 1px solid #000 !important;padding: 5px 2px;">
-                                                Tyre Maker
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; border-bottom: 1px solid #000 !important;padding: 5px 2px;">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td style="text-align:left; padding: 5px 2px; width=4%;border-bottom: 1px solid #000 !important;"
-                                                class="lborder">&amp;nbsp;
-                                            </td>
-                                            <td class="rborder"
-                                                style="border-bottom: 1px solid #000 !important;text-align:left;width=24%; padding: 5px 2px;">
-                                                Tyre No:
-                                            </td>
-                                            <td class="lborder"
-                                                style="text-align:left;width=24%; padding: 5px 2px; border-bottom: 1px solid #000 !important;">
-                                                &amp;nbsp;
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5" class="bordertransparent"
-                                                style="padding:5px 2px; border-top:1px solid #000; !important">
-                                                I hereby certify that the repair's have been carried out to my entire
-                                                satisfaction.
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" class="bordertransparent"><br/>Date: ____________
-                                            </td>
-                                            <td style="text-align:left; padding: 3px 2px; width=4%;" class="lborder">
-                                                &amp;nbsp;
-                                            </td>
-                                            <td colspan="2" class="bordertransparent" style="text-align:right;">
-                                                <br/>
-                                                Customer Signature
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="padding:3px 2px;">Remarks and advise for customer, if any</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="padding:10px 10px;">
-                                    <table cellpadding="0" cellspacing="0"
-                                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 13px;margin-bottom:0">
-                                        <tr>
-                                            <td colspan="2" style="padding:3px 2px; width:50%;">
-                                                <b>Delivered By</b>
-                                            </td>
-                                            <td style="padding:3px 2px;width:50%;">
-                                                <b>Final Inspection: OK/NOT OK</b>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2" style="padding:3px 2px;">Name</td>
-                                            <td style="padding:3px 2px;">Name</td>
-                                        </tr>
-                                        <tr>
-                                            <td style="padding:3px 2px;">Time</td>
-                                            <td style="padding:3px 2px;">Date</td>
-                                            <td style="padding:3px 2px;">Signature</td>
-                                        </tr>
-                                    </table>
-                                </td>
-
-                            </tr>
-                        </table>
-                        <table cellpadding="0" cellspacing="0"
-                               style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px ">
-                            <tr>
-                                <t t-set="service_history"
-                                   t-value="request.env['service.history'].search([('order','=',doc.id),('vehicle_id','=',doc.regn_no.id)], order='id desc', limit=1)"/>
-                                <td class="lborder" style="padding:3px 2px; width:40%">Last Visit</td>
-                                <td class="bordertransparent" style="padding:3px 2px; width:12%">
-                                    <t t-if="service_history.date">
-                                        <t t-esc="(datetime.datetime.strptime(service_history.date,'%Y-%m-%d')).strftime('%d-%m-%Y')"/>
-                                    </t>
-                                    <t t-else="">
-                                        &amp;nbsp;
-                                    </t>
-                                </td>
-                                <td class="bordertransparent" style="padding:3px 2px; width:12%"><t
-                                        t-esc="service_history.mileage"/>KM.
-                                </td>
-                                <td class="bordertransparent" style="padding:3px 2px; width:12%">
-                                    <t t-esc="service_history.order.company_id.dealer_code"/>
-                                </td>
-                                <td class="bordertransparent" style="padding:3px 2px; width:12%">
-                                    <t t-esc="service_history.order.name"/>
-                                </td>
-                                <td class="rborder" style="padding:3px 2px; width:12%">
-                                    <t t-esc="service_history.order.amount_total"
-                                       t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="lborder" style="padding:3px 2px; width:40%">Last Visit 3rd Day PSF Rating
-                                </td>
-                                <td class="rborder" style="padding:3px 2px; width:60%" colspan="5">&amp;nbsp;</td>
-                            </tr>
-                            <tr>
-                                <td style="padding:3px 2px; width:40%; border-bottom:1px solid #000;" class="lborder">
-                                    Deferred Job (Last Visit)
-                                </td>
-                                <td style="padding:3px 2px; width:60%; border-bottom:1px solid #000;" colspan="5"
-                                    class="rborder">&amp;nbsp;
-                                </td>
-                            </tr>
-                        </table>
-                        <!-- <p style="page-break-before:always;"></p> -->
-                        <!-- <table cellpadding="0" cellspacing="0" style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
-                          <tr><td colspan="7" style="text-align:center;">Job Description</td></tr>
-                          <tr>
-                            <td rowspan="4" style="text-align: center; vertical-align:middle;padding:5px 2px;width:5%">1</td>
-                            <td rowspan="4" style="text-align: center; vertical-align:middle; width:5%"><span class="rotatespan">Free/Paid Service Jobs</span></td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">1. Engine Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">2. Oil Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">3. Transmission Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:32%" colspan="2">Tech: ABHIJITH S</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px; width:16%">4. Spark Plug &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">5. Air Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">6. Brake Fuel &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">7. A/T Transmission Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">8. Clutch Fluid &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">9. Coolant &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">10. Fuel Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px;">11. Timing Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">12. A/C Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">13. Coolant Pump Belt &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">14. Power Steering Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">15. Check All hoscs &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span> </td>
-                            <td style="text-align:left; padding:5px 2px;">16. Thorttle Body Clean &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                            <td style="text-align:left; padding:5px 2px;">17. Check Brake &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                            <td style="text-align:left; padding:5px 2px;">18. Brake Pedal Play &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                          </tr>
-
-                          <tr>
-                            <td rowspan="7" style="text-align: center; vertical-align:middle;padding:5px 2px;width:5%">2</td>
-                            <td rowspan="7" style="text-align: center; vertical-align:middle;padding:5px 2px; width:5%"><span class="rotatespan">Misc. Jobs</span></td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">1. Wheel Balancing &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">2. Tyre Rotation &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">3. Check Tyre Pressure &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">4. Check Any Leakage &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;width:16%">5. Hi Scan &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px; width:16%">6. Check Headlight &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">7. Check Traillight &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">8. Check Dashboard light/comebination switch &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">9. Check other lights &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px; width:16%">10. Check Drive Shaft/Steering boot &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">11. Check Under body &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">12. Check struts/Shock absorbers for leakage &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
-                            <td style="text-align:left; padding:5px 2px;">13. Battery terminal fluid level and tightness &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">14. Fuel Injector  &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">15. Check wiper &amp; w/z washer operation &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">16. Check W/S washer nozzle spray &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">17. Check water in W/S washer bottle &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span> </td>
-                            <td style="text-align:left; padding:5px 2px;">18. Next Service due/ERS sticker &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                            <td style="text-align:left; padding:5px 2px;">19. Service Book Entry &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                            <td style="text-align:left; padding:5px 2px;">20. Wheel not check &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">21. Check W/S washer nozzle spray &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">&amp;nbsp;</td>
-                            <td style="text-align:left; padding:5px 2px;">&amp;nbsp;</td>
-                            <td style="text-align:left; padding:5px 2px;" colspan="2">Tech: Abhijith S</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">22. Check A/C Operation &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">Cut in Temp:</td>
-                            <td style="text-align:left; padding:5px 2px;">Cut in Temp:</td>
-                            <td style="text-align:left; padding:5px 2px;" colspan="2">Tech: Abhijith S</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align:left; padding:5px 2px;">A/C Gas recovery done &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
-                            <td style="text-align:left; padding:5px 2px;">A/C Gas Charging done</td>
-                            <td style="text-align:left; padding:5px 2px;" colspan="3">Remarks:</td>
-                          </tr>
-                          <tr>
-                            <td style="text-align: center; vertical-align:middle;padding:5px 2px;width:5% !important">3</td>
-                            <td style="text-align: center; vertical-align:middle;padding:5px 2px; width:5% !important"><span class="rotatespan">Tyres and Brakes</span></td>
-                            <td colspan="2" style="width:40% !important">
-                              <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
-
-                              </table>
+                    <!--                    <t t-foreach="docs" t-as="doc">-->
+                    <style>
+                        table { font-family: arial, sans-serif; border-collapse: collapse; width: 100%; }
+                        td, th { border: 1px solid #000; text-align: left;}
+                        td.lborder {border-left:1px solid #000; border-right:1px solid transparent; border-top:1px
+                        solid transparent; border-bottom:1px solid transparent; }
+                        td.rborder {border-left:1px solid transparent; border-right:1px solid #000; border-top:1px
+                        solid transparent; border-bottom:1px solid transparent; }
+                        td.bordertransparent {border:1px solid transparent;}
+                        .rotatespan { -ms-writing-mode: tb-rl;
+                        -webkit-writing-mode: vertical-rl;
+                        writing-mode: vertical-rl;
+                        white-space: unset;
+                        -webkit-transform: rotate(180deg);
+                        -ms-transform: rotate(180deg);
+                        transform: rotate(180deg);
+                        }
+                    </style>
+                    <table style="width:100%;border:0; border-collapse: collapse;margin-bottom:0px; font-size:13px;">
+                        <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold; padding: 5px 3px;">Repair
+                                Order
                             </td>
-                            <td width="10% !important;"></td>
-                            <td colspan="2" style="width:40% !important">
-                              <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
-
-                              </table>
+                        </tr>
+                        <tr>
+                            <td class="bordertransparent" style="padding: 5px 3px; vertical-align:top" rowspan="3"
+                                width="20%">
+                                <img t-if="doc.company_id.logo"
+                                     t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)"
+                                     style="max-height: 65px; margin-top:0px"/>
                             </td>
-                          </tr>
+                            <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent" rowspan="3"
+                                width="20%">
+                                <!-- <div class="col-xs-14 text-uppercase"> -->
+                                <div t-if="doc.company_id.name" class="col-xs-14 text-center">
+                                    <span style="font-weight: bold; font-size: 13px;"
+                                          t-field="doc.company_id.name"/>
+                                    <t t-if="doc.company_id.dealer_code">(<t t-esc="doc.company_id.dealer_code"/>)
+                                    </t>
+                                </div>
+                                <!-- </div> -->
+                                <!-- </div> -->
+                            </td>
+                            <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent" colspan="2"
+                                width="60%">
+                                <span>
+                                    <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
+                                    </t>
+                                    <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
+                                    </t>
+                                    <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
+                                    </t>
+                                    <t t-if="doc.company_id.state_id">
+                                        <span t-field="doc.company_id.state_id.name"/>
+                                    </t>
+                                    <t t-if="doc.company_id.country_id"><span
+                                            t-field="doc.company_id.country_id.name"/>,
+                                    </t>
+                                    <t t-if="doc.company_id.zip">
+                                        <span t-field="doc.company_id.zip"/>
+                                    </t>
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Tel :
+                                <t t-if="doc.company_id.phone">
+                                    <span t-field="doc.company_id.phone"/>
+                                </t>
+                            </td>
+                            <!--                                <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Fax :</td>-->
+                        </tr>
+                        <tr>
+                            <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">GST NO. :
+                                <t t-if="doc.company_id.vat">
+                                    <span t-field="doc.company_id.vat"/>
+                                </t>
+                            </td>
+                            <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent">Email :
+                                <t t-if="doc.company_id.email">
+                                    <span t-field="doc.company_id.email"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                    <table cellpadding="0" cellspacing="0"
+                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size:12px">
+                        <tr>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
+                                colspan="2">Customer Information
+                            </th>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
+                                colspan="2">Vehicle Information
+                            </th>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000;"
+                                colspan="3">Service Information
+                            </th>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Name</td>
+                            <td style="text-align:left;width:23%;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.partner_id.name"/>
+                            </td>
+                            <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Reg. No</td>
+                            <td style="text-align:left;width:23%;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.regn_no.license_plate"/>
+                            </td>
+                            <td style="text-align:left;width:10%;padding: 3px 2px;" class="lborder">Visit Type</td>
+                            <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-if="doc.doc_type">
+                                    <t t-esc="dict(doc.fields_get(allfields=['doc_type'])['doc_type']['selection'])[doc.doc_type]"/>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Address</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,
+                                </t>
+                                <t t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/>,
+                                </t>
+                                <t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,
+                                </t>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>
+                                </t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">VIN</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.vin_no"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">RO Date</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-if="doc.appointment_date">
+                                    <span t-esc="((datetime.datetime.strptime(doc.appointment_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                </t>
+                                <t t-else="">
+                                    &amp;nbsp;
+                                </t>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Pin Code</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                </t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Motor No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.regn_no.engine_number"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">RO Number</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-esc="doc.name"/>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Email</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.partner_id.email"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Model</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.regn_no.model_id.name"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Work Type</td>
+
+                            <td style="text-align:left;width:24%;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-if="doc.work_type">
+                                    <t t-esc="dict(doc.fields_get(allfields=['work_type'])['work_type']['selection'])[doc.work_type]"/>
+                                </t>
+                            </td>
+                            <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
+                            <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
+                            <!--                                </td>-->
+
+                            <!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Printing Time</td>-->
+                            <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">-->
+                            <!--                                    <t t-esc="(context_timestamp(datetime.datetime.now())+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>-->
+                            <!--                                </td>-->
+
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Contact No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.partner_id.mobile"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Sold By</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.regn_no._get_ownership_details()">
+                                    <t t-if="doc.regn_no._get_ownership_details().sold_by.name">
+                                        <t t-esc="doc.regn_no._get_ownership_details().sold_by.name"/>
+                                    </t>
+                                </t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Category</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Booking No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Ownership</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.regn_no._get_ownership_details()">
+                                    <t t-esc="doc.regn_no._get_ownership_details().date_of_ownership"/>
+                                </t>
+                            </td>
+                            <!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Special Message</td>-->
+                            <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>-->
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Warranty Expiry</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-esc="doc.regn_no.warranty_validation"/>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.partner_id.vat"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Mileage</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.mileage_in"/>
+                                KM.
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Ext Wty</td>
+                            <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;">
+                                <t t-if="doc.regn_no.extented_warranty_no">Yes</t>
+                                <t t-else="">No</t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.regn_no.extented_warranty_no">
+                                    <t t-esc="doc.regn_no.extented_warranty_no"/>
+                                </t>
+                                <t t-else=""></t>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Policy Number</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.regn_no._get_insurance_details()">
+                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_doc_no"/>
+                                </t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Color</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-set="product"
+                                   t-value="doc.regn_no.mvariant_id.attribute_line_ids.filtered(lambda l: len(l.value_ids) > 1).mapped('attribute_id')"/>
+                                <t t-set="color"
+                                   t-value="', '.join(map(lambda x: (x.name), doc.regn_no.mvariant_id.attribute_value_ids))"/>
+                                <t t-esc="doc.regn_no.mvariant_id.attribute_value_ids._variant_color_name(product)"/>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">RSA</td>
+                            <td style="text-align:left;padding: 3px 2px; border:1px solid transparent;"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.model.product_tmpl_id.rsa == 'yes'">YES</t>
+                                <t t-else="">NO</t>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Insurance Expiry Date</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-if="doc.regn_no._get_insurance_details()">
+                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_end"/>
+                                </t>
+                            </td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Type</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-if="doc.service_type">
+                                    <span t-field="doc.service_type.name"/>
+                                </t>
+                            </td>
+                        </tr>
+                        <tr style="font-size: 12px;">
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Service Options</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
+                                <t t-if="doc.service_options">
+                                    <span t-field="doc.service_options.name"/>
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+                    <table cellpadding="0" cellspacing="0"
+                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; border:1px solid #000; font-size:12px">
+                        <tr>
+                            <td style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:50%">
+                                Customer Request
+                            </td>
+                            <td style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:50%">
+                                Service Adviser Remarks to shop Floor : Primary Job
+                            </td>
+                        </tr>
+                        <t t-foreach="doc.customer_voice_sale" t-as="customer">
+                            <tr>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px soild #000;">
+                                    <t t-esc="customer.name"/>
+                                </td>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid #000 !important; border-right:1px solid #000 !important; border-bottom:1px soild #000;">
+                                    <t t-esc="customer.instructions.name  "/>
+                                </td>
+                            </tr>
+
+                        </t>
+                        <!-- <tr>
+                          <td>
+                            <table cellpadding="0" cellspacing="0" style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px">
+                              <tr>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Description</td>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Narration</td>
+                                <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Type</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;padding: 3px 2px;width:40%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;padding: 3px 2px;width:30%;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important;  border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:40%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                                <td style="text-align:left;width:30%; padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px solid #000;">&amp;nbsp;</td>
+                              </tr>
+                            </table>
+                          </td>
+                          <td>
+                            <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px" cellpadding="5" cellspacing="0">
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Primary Job: </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2"> &amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Secondary Job: </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Additonal Jobs: </td>
+                              </tr><tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">&amp;nbsp;</td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Customer Confirmation for Add Job : </td>
+                              </tr><tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;" colspan="2">Customer/Representative Name: </td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000; display:none;" colspan="2" ></td>
+                              </tr>
+                              <tr>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Time: </td>
+                                <td style="text-align:left;width:40%;padding: 3px 2px;border-left:1px solid transparent !important; border-right:1px solid transparent !important; border-bottom:1px soild #000;">Date: </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr> -->
+                        <tr>
+                            <td colspan="2" style="padding: 3px 2px; font-size: 12px">
+                                <!--                                <span t-field="doc.note"/>-->
+                            </td>
+                        </tr>
+                    </table>
+                    <table cellpadding="0" cellspacing="0"
+                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 12px">
+                        <tr>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
+                                Promise Time
+                            </th>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
+                                Body Paint Damages
+                            </th>
+                            <th style="text-align:center; background: #245953; color: #fff; font-weight: bold; padding:4px;border: 1px solid #000; width:33%">
+                                Inventory Check
+                            </th>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top;">
+                                <table cellpadding="0" cellspacing="0"
+                                       style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 12px ">
+                                    <tr>
+                                        <td style="text-align:left; width:30%; padding: 3px 2px;"
+                                            class="bordertransparent">Promise &amp; Delivery Date
+                                        </td>
+                                        <td style="text-align:left; width:70%; padding: 3px 2px;"
+                                            class="bordertransparent">
+                                            <t t-if="doc.delivery_date">
+                                                <span t-esc="((datetime.datetime.strptime(doc.delivery_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                            </t>
+                                            <t t-else="">
+                                                &amp;nbsp;
+                                            </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; width:30%; padding: 3px 2px;"
+                                            class="bordertransparent">Service Advisor
+                                        </td>
+                                        <td style="text-align:left; width:70%; padding: 3px 2px;"
+                                            class="bordertransparent">
+                                            <t t-esc="doc.user_id.name"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; width:30%; padding: 3px 2px;"
+                                            class="bordertransparent">Mobile No
+                                        </td>
+                                        <td style="text-align:left; width:70%; padding: 3px 2px;"
+                                            class="bordertransparent">
+                                            <t t-esc="doc.user_id.mobile"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; width:30%; padding: 3px 2px;"
+                                            class="bordertransparent">Est. Amount
+                                        </td>
+                                        <td style="text-align:left; width:70%; padding: 3px 2px;"
+                                            class="bordertransparent">
+                                            <span t-esc="doc.amount_total"
+                                                  t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left; width:60%; padding: 3px 2px;"
+                                            class="bordertransparent">Preferred Mode of Contact
+                                        </td>
+                                        <td style="text-align:right; width:40%; padding: 3px 2px;"
+                                            class="bordertransparent">
+                                            <p>
+                                                <span>Call</span>
+                                                <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <span>SMS</span>
+                                                <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
+                                                </span>
+                                            </p>
+                                            <p>
+                                                <span>E-Mail</span>
+                                                <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;
+                                                </span>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="bordertransparent"
+                                            style="width:100%;padding: 3px 2px;">
+                                            I hearby authorize for the Repair to be executed using necessary
+                                            materials and I am affixing my signature below in evidence of agreeing
+                                            terms &amp; condition given in the
+                                            Annexture A of the repair order absolutely &amp; unconditionally.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="bordertransparent"
+                                            style="text-align:right;padding: 3px 2px;">
+                                            <br/>
+                                            <b>Customer Signature</b>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="padding:0px 10px; vertical-align:top;">
+                                <p>
+                                    <img src="/ars_reports/static/src/img/car_damage.jpeg" height="150px"
+                                         width="100%"/>
+                                </p>
+                                <br/>
+                                <span style="text-align:center">C-Crack P-Peeling, D-Dent/Damage, S-Sratch/Spot,
+                                    R-Rust
+                                </span>
+                            </td>
+                            <td rowspan="3">
+                                <table cellpadding="0" cellspacing="0"
+                                       style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 10px; margin-bottom:0">
+                                    <tr>
+                                        <td style="padding: 5px 2px; vertical-align:middle; border-bottom: 1px solid #000;"
+                                            class="bordertransparent">
+                                            Battery Level
+                                        </td>
+                                        <td colspan="4" class="bordertransparent"
+                                            style="border-bottom: 1px solid #000;">
+                                            <p>
+                                                <img src="/ars_reports/static/src/img/battery_gauge.jpeg"
+                                                     height="50px" width="100%"/>
+                                            </p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left;  width=24%; border-bottom:1px solid #000;"
+                                            class="rborder">Service Book
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
+                                            class="lborder">Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
+                                            class="rborder">Rear View Mirror
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=24%; border-bottom:1px solid #000;"
+                                            class="lborder">Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Tool Kit
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 3px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            IDO
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Spare Wheel
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Wheel Cover
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Jack
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Mud Flaps
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Jack Handle
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Mats
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Car Perfume
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Dicky Mat
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Clock
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Speaker FR
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Stereo
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Speaker FR
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            CD Player
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Tweeters
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Mouth Piece
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            SD Card
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Cigrate Lighter
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Antenna
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left; width=24%;border-bottom:1px solid #000;padding: 5px 2px;">
+                                            Yes/No
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Battery Name
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            Battery S.no:
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%;border-bottom:1px solid #000; padding: 5px 2px;">
+                                            &amp;nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="rborder"
+                                            style="text-align:left;width=24%; border-bottom: 1px solid #000 !important;padding: 5px 2px;">
+                                            Tyre Maker
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; border-bottom: 1px solid #000 !important;padding: 5px 2px;">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td style="text-align:left; padding: 5px 2px; width=4%;border-bottom: 1px solid #000 !important;"
+                                            class="lborder">&amp;nbsp;
+                                        </td>
+                                        <td class="rborder"
+                                            style="border-bottom: 1px solid #000 !important;text-align:left;width=24%; padding: 5px 2px;">
+                                            Tyre No:
+                                        </td>
+                                        <td class="lborder"
+                                            style="text-align:left;width=24%; padding: 5px 2px; border-bottom: 1px solid #000 !important;">
+                                            &amp;nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="bordertransparent"
+                                            style="padding:5px 2px; border-top:1px solid #000; !important">
+                                            I hereby certify that the repair's have been carried out to my entire
+                                            satisfaction.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" class="bordertransparent"><br/>Date: ____________
+                                        </td>
+                                        <td style="text-align:left; padding: 3px 2px; width=4%;" class="lborder">
+                                            &amp;nbsp;
+                                        </td>
+                                        <td colspan="2" class="bordertransparent" style="text-align:right;">
+                                            <br/>
+                                            Customer Signature
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding:3px 2px;">
+                                <div>
+                                    Remarks and advise for customer, if any
+                                </div>
+                                <div>
+                                    <t t-esc="doc.note"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding:10px 10px;">
+                                <table cellpadding="0" cellspacing="0"
+                                       style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%;font-size: 13px;margin-bottom:0">
+                                    <tr>
+                                        <td colspan="2" style="padding:3px 2px; width:50%;">
+                                            <b>Delivered By</b>
+                                        </td>
+                                        <td style="padding:3px 2px;width:50%;">
+                                            <b>Final Inspection: OK/NOT OK</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="padding:3px 2px;">Name</td>
+                                        <td style="padding:3px 2px;">Name</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:3px 2px;">Time</td>
+                                        <td style="padding:3px 2px;">Date</td>
+                                        <td style="padding:3px 2px;">Signature</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                        </tr>
+                    </table>
+                    <table cellpadding="0" cellspacing="0"
+                           style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px ">
+                        <tr>
+                            <t t-set="service_history"
+                               t-value="request.env['service.history'].search([('order','=',doc.id),('vehicle_id','=',doc.regn_no.id)], order='id desc', limit=1)"/>
+                            <td class="lborder" style="padding:3px 2px; width:40%">Last Visit</td>
+                            <td class="bordertransparent" style="padding:3px 2px; width:12%">
+                                <t t-if="service_history.date">
+                                    <t t-esc="(datetime.datetime.strptime(service_history.date,'%Y-%m-%d')).strftime('%d-%m-%Y')"/>
+                                </t>
+                                <t t-else="">
+                                    &amp;nbsp;
+                                </t>
+                            </td>
+                            <td class="bordertransparent" style="padding:3px 2px; width:12%"><t
+                                    t-esc="service_history.mileage"/>KM.
+                            </td>
+                            <td class="bordertransparent" style="padding:3px 2px; width:12%">
+                                <t t-esc="service_history.order.company_id.dealer_code"/>
+                            </td>
+                            <td class="bordertransparent" style="padding:3px 2px; width:12%">
+                                <t t-esc="service_history.order.name"/>
+                            </td>
+                            <td class="rborder" style="padding:3px 2px; width:12%">
+                                <t t-esc="service_history.order.amount_total"
+                                   t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="lborder" style="padding:3px 2px; width:40%">Last Visit 3rd Day PSF Rating
+                            </td>
+                            <td class="rborder" style="padding:3px 2px; width:60%" colspan="5">&amp;nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td style="padding:3px 2px; width:40%; border-bottom:1px solid #000;" class="lborder">
+                                Deferred Job (Last Visit)
+                            </td>
+                            <td style="padding:3px 2px; width:60%; border-bottom:1px solid #000;" colspan="5"
+                                class="rborder">&amp;nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- <p style="page-break-before:always;"></p> -->
+                    <!-- <table cellpadding="0" cellspacing="0" style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
+                      <tr><td colspan="7" style="text-align:center;">Job Description</td></tr>
+                      <tr>
+                        <td rowspan="4" style="text-align: center; vertical-align:middle;padding:5px 2px;width:5%">1</td>
+                        <td rowspan="4" style="text-align: center; vertical-align:middle; width:5%"><span class="rotatespan">Free/Paid Service Jobs</span></td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">1. Engine Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">2. Oil Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">3. Transmission Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:32%" colspan="2">Tech: ABHIJITH S</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px; width:16%">4. Spark Plug &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">5. Air Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">6. Brake Fuel &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">7. A/T Transmission Oil &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">8. Clutch Fluid &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">9. Coolant &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">10. Fuel Filter &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px;">11. Timing Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">12. A/C Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">13. Coolant Pump Belt &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">14. Power Steering Belt &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">15. Check All hoscs &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span> </td>
+                        <td style="text-align:left; padding:5px 2px;">16. Thorttle Body Clean &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                        <td style="text-align:left; padding:5px 2px;">17. Check Brake &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                        <td style="text-align:left; padding:5px 2px;">18. Brake Pedal Play &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                      </tr>
+
+                      <tr>
+                        <td rowspan="7" style="text-align: center; vertical-align:middle;padding:5px 2px;width:5%">2</td>
+                        <td rowspan="7" style="text-align: center; vertical-align:middle;padding:5px 2px; width:5%"><span class="rotatespan">Misc. Jobs</span></td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">1. Wheel Balancing &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">2. Tyre Rotation &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">3. Check Tyre Pressure &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">4. Check Any Leakage &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;width:16%">5. Hi Scan &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px; width:16%">6. Check Headlight &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">7. Check Traillight &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">8. Check Dashboard light/comebination switch &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">9. Check other lights &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px; width:16%">10. Check Drive Shaft/Steering boot &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">11. Check Under body &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">12. Check struts/Shock absorbers for leakage &amp;emsp;&amp;emsp;&amp;emsp; R/C</td>
+                        <td style="text-align:left; padding:5px 2px;">13. Battery terminal fluid level and tightness &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">14. Fuel Injector  &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">15. Check wiper &amp; w/z washer operation &amp;emsp;&amp;emsp;&amp;emsp; R/C/A</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">16. Check W/S washer nozzle spray &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">17. Check water in W/S washer bottle &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span> </td>
+                        <td style="text-align:left; padding:5px 2px;">18. Next Service due/ERS sticker &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                        <td style="text-align:left; padding:5px 2px;">19. Service Book Entry &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                        <td style="text-align:left; padding:5px 2px;">20. Wheel not check &amp;emsp;&amp;emsp;&amp;emsp; <span style="border: 2px solid #000;padding: 2px 10px;">&amp;nbsp;</span></td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">21. Check W/S washer nozzle spray &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">&amp;nbsp;</td>
+                        <td style="text-align:left; padding:5px 2px;">&amp;nbsp;</td>
+                        <td style="text-align:left; padding:5px 2px;" colspan="2">Tech: Abhijith S</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">22. Check A/C Operation &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">Cut in Temp:</td>
+                        <td style="text-align:left; padding:5px 2px;">Cut in Temp:</td>
+                        <td style="text-align:left; padding:5px 2px;" colspan="2">Tech: Abhijith S</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align:left; padding:5px 2px;">A/C Gas recovery done &amp;emsp;&amp;emsp;&amp;emsp; R/T/C</td>
+                        <td style="text-align:left; padding:5px 2px;">A/C Gas Charging done</td>
+                        <td style="text-align:left; padding:5px 2px;" colspan="3">Remarks:</td>
+                      </tr>
+                      <tr>
+                        <td style="text-align: center; vertical-align:middle;padding:5px 2px;width:5% !important">3</td>
+                        <td style="text-align: center; vertical-align:middle;padding:5px 2px; width:5% !important"><span class="rotatespan">Tyres and Brakes</span></td>
+                        <td colspan="2" style="width:40% !important">
+                          <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
+
+                          </table>
+                        </td>
+                        <td width="10% !important;"></td>
+                        <td colspan="2" style="width:40% !important">
+                          <table style="font-family: arial, sans-serif; border-collapse: collapse; width: 100%; font-size: 13px;">
+
+                          </table>
+                        </td>
+                      </tr>
 
 
-                        </table> -->
-                    </t>
+                    </table> -->
+                    <!--                    </t>-->
                 </div>
             </t>
         </template>

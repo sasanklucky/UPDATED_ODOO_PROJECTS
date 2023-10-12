@@ -549,15 +549,16 @@
             </field>
         </record>
 
-        <!--<record id="product_template_stu_form_view_inherit" model="ir.ui.view">-->
-        <!--<field name="name">Models</field>-->
-        <!--<field name="model">product.template</field>-->
-        <!--<field name="inherit_id" ref="product.product_template_only_form_view"/>-->
-        <!--<field name="arch" type="xml">-->
-
-        <!--&lt;!&ndash;<xpath expr="//form/sheet/notebook/page[1]/group/group[1]/field[@name='categ_id']" position="after">&ndash;&gt;-->
-        <!--&lt;!&ndash;<field name="category_code_desc" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;</xpath>&ndash;&gt;-->
+        <record id="product_template_stu_form_view_inherit_new" model="ir.ui.view">
+        <field name="name">Models</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='general_information']//field[@name='list_price']" position="after">
+                <field name="mrp"/>
+            </xpath>
+        </field>
+        </record>
 
         <!--<xpath expr="//form/sheet/notebook/page[1]/group/group[2]/field[@name='uom_po_id']" position="after">-->
         <!--<field name="standard_time"/>-->

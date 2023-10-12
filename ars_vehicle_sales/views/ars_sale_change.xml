@@ -13,13 +13,13 @@
                     <field name="company_type" required="True"/>
                 </field>
                 <field name='phone' position="before">
-                    <field name="mobile" string="Mobile"/>
+                    <!--                    <field name="mobile" string="Mobile"/>-->
                 </field>
                 <field name="email_from" position="replace">
-                    <field name="email_from"/>
+                    <!--                    <field name="email_from"/>-->
                 </field>
                 <field name='phone' position="after">
-                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
+                    <!--                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>-->
                 </field>
                 <field name='planned_revenue' position="replace">
                     <field name="planned_revenue" invisible="1"/>
@@ -30,6 +30,14 @@
                 <field name="name" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
+
+                <field name="priority" position="before">
+                    <field name="email_from" required="1"/>
+                    <field name="mobile" required="1" string="Mobile"/>
+                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
+                    <field name="source_id" string="Source"/>
+                    <field name="city" required="1" string="City"/>
+                </field>
             </field>
         </record>
 
@@ -39,11 +47,11 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <field name='partner_id' position="after">
-                    <field name="mobile" string="Mobile"/>
-                    <field name="email"/>
+                    <field name="mobile" required="1" string="Mobile"/>
+                    <field name="email" required="1"/>
                 </field>
                 <field name="payment_term_id" position="after">
-                    <field name="user_id" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
+                    <field name="user_id" required="1" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
                     <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
 

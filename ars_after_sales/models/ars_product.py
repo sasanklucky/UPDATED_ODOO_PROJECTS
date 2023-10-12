@@ -9,16 +9,23 @@ class WmsProduct(models.Model):
     standard_time = fields.Float(help='Standard time for service product in minuets')
     prod_cat = fields.Many2one('product.category')
     category_code_desc = fields.Char(related='prod_cat.category_code', readonly=True)
+    mrp = fields.Float(string='MRP')
 
     @api.multi
     def create_supplier_info(self):
+        suppliers = self.env['res.partner'].search([('supplier', '=', True), ('add_as_seller', '=', True)])
         for record in self:
             seller = record.seller_ids.mapped('name')
-            for supplier in self.env['res.partner'].search([('supplier', '=', True)]):
+            for supplier in suppliers:
                 if supplier not in seller:
                     record.seller_ids.create({'name': supplier.id, 'product_tmpl_id': record.id,
                                               'price': record.standard_price
                                               })
+            for seller_id in record.seller_ids:
+                if seller_id.name not in suppliers:
+                    seller_id.unlink()
+                else:
+                    seller_id.write({'price': record.standard_price})
 
 
 class WmsProductCategory(models.Model):

@@ -106,15 +106,15 @@
                             <group>
                                 <group>
                                     <group colspan="4" string="Customer Details">
-                                        <field name="driver_id" string="Customer"/>
-                                        <field name="contact_name" string="Contact Person"/>
+                                        <field name="driver_id" required="1" string="Customer"/>
+                                        <field name="contact_name" required="1" string="Contact Person"/>
                                     </group>
                                     <group colspan="4" string="Vehicle Specification">
                                         <field name="categ_id" readonly="1"/>
                                         <field name="fuel_type"/>
                                         <field name="engine_code"/>
                                         <field name="engine_number" string="Motor Number" required="1"/>
-                                        <field name="key_serial_number" required="1"/>
+                                        <field name="key_serial_number" string="Battery Serial Number" required="1"/>
                                         <label for="co2"/>
                                         <div class="o_row" name="co2">
                                             <field name="co2"/>
