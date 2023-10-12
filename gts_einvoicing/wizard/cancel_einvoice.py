@@ -14,6 +14,23 @@ class EbillCancel(models.TransientModel):
         string='Cancel Reason')
     desc = fields.Text('Description')
 
+    def generate_einvoice(self):
+        active_id = self.env.context.get('active_id')
+        order = self.env['account.invoice'].browse(active_id)
+        delivery = self.env['stock.picking'].search([('origin', '=', order.origin)], limit=1)
+        if delivery:
+            warehouse = delivery.picking_type_id.warehouse_id
+            return warehouse
+        if not delivery:
+            so_delivery = self.env['sale.order'].search([('name', '=', order.origin)], limit=1)
+            if so_delivery:
+                so_warehouse = so_delivery.warehouse_id
+                return so_warehouse
+            else:
+                warehouse = self.env['stock.warehouse'].search(
+                    [('company_id', '=', order.company_id.id), ('configure_einvoice', '=', True)], limit=1)
+                return warehouse
+
     @api.multi
     def cancel_einvoicing(self):
         active_id = self.env.context.get('active_id')
@@ -25,7 +42,8 @@ class EbillCancel(models.TransientModel):
         einvoicing = self.env['einvoicing.configuration'].search([],limit=1)
         delivery = self.env['stock.picking'].search([('origin', '=', order.origin)], limit=1)
         warehouses = delivery.picking_type_id.warehouse_id
-        warehouse = self.env['stock.warehouse'].search([],limit=1)
+        # warehouse = self.env['stock.warehouse'].search([],limit=1)
+        warehouse = self.generate_einvoice()
         data = einvoicing.handle_einvoicing_auth_token()
         print('data', data)
 
