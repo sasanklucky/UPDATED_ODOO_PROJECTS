@@ -39,7 +39,7 @@
                                     <field name="street2" placeholder="Street 2..." class="o_address_street"/>
                                     <field name="city" placeholder="City" class="o_address_city"/>
                                     <field name="state_id" class="o_address_state" placeholder="State"
-                                           options='{"no_open": True}'/>
+                                           options='{"no_open": True,"no_create": True}'/>
                                     <field name="zip" placeholder="ZIP" class="o_address_zip"/>
                                     <field name="country_id" placeholder="Country" class="o_address_country"
                                            options='{"no_open": True, "no_create": True}'/>
@@ -1357,7 +1357,7 @@
                                     </group>
                                     <group string="Marketing">
                                         <field name="campaign_id"/>
-                                        <field name="medium_id"/>
+                                        <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="source_id"/>
                                     </group>
                                     <group string="Misc" name="Misc">
@@ -2799,10 +2799,10 @@
             <field name="inherit_id" ref="account.invoice_supplier_form"/>
             <field name="arch" type="xml">
                 <field name="journal_id" position="before">
-                    <field name="service_type" required="1"
+                    <field name="service_type"
                            attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
                            options="{'no_create': True, 'no_open': True}"/>
-                    <field name="service_options" required="1"
+                    <field name="service_options"
                            attrs="{'invisible':[('ars_type', '!=', 'after_sales')]}"
                            options="{'no_create': True, 'no_open': True}"/>
                 </field>
