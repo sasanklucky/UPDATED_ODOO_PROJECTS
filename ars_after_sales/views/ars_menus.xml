@@ -410,6 +410,12 @@
                   parent="crm.crm_menu_report"
                   sequence="0"/>
 
+        <menuitem id="menu_aftersales_crm_summary_report"
+                  name="CRM Summary Report"
+                  action="crm_summary_report_action"
+                  parent="crm.crm_menu_report"
+                  sequence="1"/>
+
         <menuitem id="menu_sales_report_format"
                   name="Sales Report"
                   action="sales_report_format_action"

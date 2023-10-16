@@ -9,7 +9,7 @@
     'website': "www.autochip.in",
     'category': 'Uncategorized',
     'version': '0.1',
-    'depends': ['product', 'crm', 'sale', 'ars_after_sales', 'account','survey','helpdesk'],
+    'depends': ['product', 'crm','mail', 'sale', 'ars_after_sales', 'account','survey','helpdesk'],
     'data': [
         'security/ir.model.access.csv',
         # 'views/ars_res_partner_views.xml',

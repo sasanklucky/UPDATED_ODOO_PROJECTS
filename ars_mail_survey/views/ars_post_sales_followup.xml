@@ -22,18 +22,22 @@
 
 
         <menuitem id="menu_post_sales_followup_mail_activity"
-            name="Post Service Follow-up"
-            parent="crm.crm_menu_root"
-            action="post_sales_followup_mail_activity_action"
-            sequence="6" />
+                  name="Post Service Follow-up"
+                  parent="crm.crm_menu_root"
+                  action="post_sales_followup_mail_activity_action"
+                  sequence="6"/>
 
         <template id="survey.back" name="Back">
             <div groups="website.group_website_publisher" t-ignore="true" class="pull-right">
                 <t t-if="request.session.get('type') == 'activity'">
-                    <a t-attf-href="/web#view_type=form&amp;model=mail.activity&amp;id=#{request.session.get('type_id')}&amp;action=#{request.session.get('action')}" class="btn btn-default">Back to Survey</a>
+                    <a t-attf-href="/web#view_type=form&amp;model=mail.activity&amp;id=#{request.session.get('type_id')}&amp;action=#{request.session.get('action')}"
+                       class="btn btn-default">Back to Survey
+                    </a>
                 </t>
                 <t t-else="">
-                    <a t-attf-href="/web#view_type=form&amp;model=survey.survey&amp;id=#{survey.id}&amp;action=survey.action_survey_form" class="btn btn-default">Back to Survey</a>
+                    <a t-attf-href="/web#view_type=form&amp;model=survey.survey&amp;id=#{survey.id}&amp;action=survey.action_survey_form"
+                       class="btn btn-default">Back to Survey
+                    </a>
                 </t>
             </div>
         </template>

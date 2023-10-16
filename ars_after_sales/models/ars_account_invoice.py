@@ -123,6 +123,16 @@ class ARS_account_invoice(models.Model):
     delivery_date = fields.Datetime(string="Delivery Date")
     count_vehicle = fields.Integer()
 
+    def action_invoice_open(self):
+        if self.ars_invoice_type == 'after_sales' and self.kilometer_out == 0.00:
+            raise UserError('Please Enter Kilometer Out ')
+        if self.ars_invoice_type == 'after_sales' and self.kilometer == 0.00:
+            raise UserError('Please Enter Kilometer IN')
+        if self.ars_invoice_type == 'after_sales' and self.kilometer_out < self.kilometer:
+            raise UserError(_("Kilometer Out is lesser than Kilometer In"))
+        res = super(ARS_account_invoice,self).action_invoice_open()
+        return res
+
     @api.onchange('partner_id')
     def change_invoice(self):
         # obj = self.env['res.partner'].browse(self.partner_id)

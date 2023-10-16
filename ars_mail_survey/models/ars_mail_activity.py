@@ -8,7 +8,8 @@ from odoo import models, fields, api, _
 
 
 class ARS_MailActivity(models.Model):
-    _inherit = "mail.activity"
+    _name = 'mail.activity'
+    _inherit = ['mail.activity', 'mail.thread']
 
     @api.multi
     @api.depends('response_id', 'survey_percentage')
@@ -27,15 +28,17 @@ class ARS_MailActivity(models.Model):
                 #     rec.survey_percentage = 0
 
     invoice_type = fields.Selection([('sales', 'Sales'), ('after_sales', 'After Sales')], string="Invoice Type")
-    invoice_id = fields.Many2one('account.invoice', string="Customer Invoice")
-    cre_id = fields.Many2one('cre_team_configuration', string="CRE Team")
-    stages = fields.Selection(
-        [('pending', 'Pending'), ('survey_done', 'Survey Done'), ('ticket_created', 'Ticket Created'),
-         ('completed', 'Completed')], string="Status", default="pending", store=True)
+    invoice_id = fields.Many2one('account.invoice', string="Customer Invoice", track_visibility='onchange')
+    cre_id = fields.Many2one('cre_team_configuration', string="CRE Team", track_visibility='onchange')
+    stages = fields.Selection([('pending', 'Pending'), ('survey_done', 'Survey Done'),
+                               ('ticket_created', 'Ticket Created'),
+                               ('completed', 'Completed')],
+                              string="Status", default="pending", store=True, track_visibility='onchange')
     # compute_stages = fields.Char(string="Compute Stages",compute="_get_compute_stages")
     survey_percentage = fields.Float(string="Survey %", compute="get_survey_percentage")
     survey_marks = fields.Float(string="Survey Marks")
-    response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null", oldname="response")
+    response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null",
+                                  oldname="response",track_visibility='onchange')
     ticket_count = fields.Integer(string="Ticket Count", compute="_get_ticket_count")
 
     @api.multi
@@ -153,7 +156,7 @@ class ARS_MailActivity(models.Model):
             })
             activity_message.attachment_ids = message_attachments
             message |= activity_message
-        if self.invoice_type in ['sales','after_sales']:
+        if self.invoice_type in ['sales', 'after_sales']:
             pass
         else:
             self.unlink()

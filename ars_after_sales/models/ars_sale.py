@@ -375,6 +375,8 @@ class ARS_sale_order(models.Model):
         if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
             if self.mileage_in == 0 and not self.counter_parts:
                 raise UserError(_('Please enter the mileage'))
+            else:
+                self.regn_no.write({'odometer': self.mileage_in})
         if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
             if self.company_id:
                 self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
@@ -388,8 +390,10 @@ class ARS_sale_order(models.Model):
             else:
                 self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
         elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
-            self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
-                'aftersale_so')
+            if self.service_options.warranty_ir_seq:
+                self.name = self.service_options.warranty_ir_seq._next()
+            else:
+                raise ValidationError('Please Configure the Sequence for Company')
         else:
             self.name = self.env['ir.sequence'].next_by_code('sale.order')
         result = super(ARS_sale_order, self).action_confirm()

@@ -17,6 +17,7 @@
                 <tree editable="top">
                     <field name="name"/>
                     <field name="service_type"/>
+                    <field name="warranty_ir_seq" required="1" options="{'no_create': True}"/>
                 </tree>
             </field>
         </record>

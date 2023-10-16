@@ -9,38 +9,43 @@
                 <xpath expr="//sheet" position="before">
                     <header>
                         <!-- <field name="compute_stages" invisible="1" /> -->
-                        <field name="stages" invisible="1" />
-                        <field name="stages" widget="statusbar" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+                        <field name="stages" invisible="1"/>
+                        <field name="stages" widget="statusbar"
+                               attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
 
                     </header>
                 </xpath>
                 <xpath expr="//sheet/group" position="before">
-                    <field name="invoice_type" invisible="1" />
-                    <div class="oe_button_box" name="button_box" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}">
+                    <field name="invoice_type" invisible="1"/>
+                    <div class="oe_button_box" name="button_box"
+                         attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}">
                         <button name="action_start_survey" type="object" icon="fa-pencil-square-o" string="Survey">
                         </button>
                         <button name="get_invoice_form" type="object" icon="fa-pencil-square-o" string="Invoice">
                         </button>
-                         <button name="customer_details" type="object" icon="fa-user" string="Customer">
+                        <button name="customer_details" type="object" icon="fa-user" string="Customer">
                         </button>
-                        <button name="ticket_details" type="object" class="oe_stat_button" icon="fa-ticket" attrs="{'invisible': [('stages','not in',('ticket_created','completed'))]}">
+                        <button name="ticket_details" type="object" class="oe_stat_button" icon="fa-ticket"
+                                attrs="{'invisible': [('stages','not in',('ticket_created','completed'))]}">
                             <field name="ticket_count" widget="statinfo" string="Tickets "/>
                         </button>
                     </div>
                 </xpath>
                 <field name="activity_type_id" position="before">
-                    <field name="res_name" string="Customer Name" />
+                    <field name="res_name" string="Customer Name"/>
                 </field>
                 <field name="summary" position="after">
-                    <field name="mobile"  attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+                    <field name="mobile" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
                 </field>
                 <field name="user_id" position="after">
-                    <separator colspan="4" />
-                    <field name="response_id" invisible="1" />
-                    <field name="survey_percentage" nolabel="1" widget='percentpie' style="cursor:pointer;" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}">            
-                    EntryProgress
+                    <separator colspan="4"/>
+                    <field name="response_id" invisible="1"/>
+                    <field name="survey_percentage" nolabel="1" widget='percentpie' style="cursor:pointer;"
+                           attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}">
+                        EntryProgress
                     </field>
-                    <button name="create_helpdesk_ticket" type="object" icon="fa-ticket" string="Create Ticket" attrs="{'invisible': ['|',('invoice_type','not in',('sales','after_sales')),('stages','in',('draft','ticket_created','completed'))]}">
+                    <button name="create_helpdesk_ticket" type="object" icon="fa-ticket" string="Create Ticket"
+                            attrs="{'invisible': ['|',('invoice_type','not in',('sales','after_sales')),('stages','in',('draft','ticket_created','completed'))]}">
                     </button>
                 </field>
 
@@ -48,11 +53,13 @@
                     <attribute name="invisible">[('invoice_type','not in',('sales','after_sales'))]</attribute>
                 </xpath>
                 <field name="note" position="after">
-                    <button string="Schedule" name="action_close_dialog" attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','in',('survey_done','ticket_created','completed'))]}"
+                    <button string="Schedule" name="action_close_dialog"
+                            attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','in',('survey_done','ticket_created','completed'))]}"
                             type="object" class="btn-primary"/>
-                        <button string="Mark as Done" name="action_done" attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','=','completed')]}"
+                    <button string="Mark as Done" name="action_done"
+                            attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','=','completed')]}"
                             type="object" class="btn-primary"/>
-                        <button string="Discard" class="btn-default" special="cancel" />
+                    <button string="Discard" class="btn-default" special="cancel"/>
                 </field>
                 <!-- <field name="stages"  invisible="1"/>
                 <xpath expr="//footer/button[@name='action_close_dialog']" position="attributes">
@@ -61,6 +68,10 @@
                 <!-- <button name="action_done" position="attributes">
                     <attribute name="invisible">[('stages','in',['completed'])]</attribute>
                 </button>  -->
+                <xpath expr="//form/sheet" position="after">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </xpath>
             </field>
         </record>
 
@@ -72,9 +83,9 @@
             <field name="domain">[('invoice_type','=','sales')]</field>
         </record>
         <menuitem id="menu_sales_followup_mail_activity"
-            name="Post Sales Follow-up"
-            parent="crm.crm_menu_root"
-            action="sales_followup_mail_activity_action"
-            sequence="5" />
+                  name="Post Sales Follow-up"
+                  parent="crm.crm_menu_root"
+                  action="sales_followup_mail_activity_action"
+                  sequence="5"/>
     </data>
 </odoo>

@@ -99,5 +99,7 @@ access_employee_mis_report_report,employee_mis_report,model_employee_mis_report,
 ,,,,,,,
 access_service_type,service.type,model_service_type,base.group_user,1,1,1,0
 access_service_options,service.options,model_service_options,base.group_user,1,1,1,0
+access_crm_summary_report,access_crm_summary_report,model_crm_summary_report,base.group_user,1,1,1,0
+access_crm_summary_source_report,access_crm_summary_source_report,model_crm_summary_source_report,base.group_user,1,1,1,0
 
 access_activity_log_report,activity_log_report,model_activity_log_report,base.group_user,1,1,1,1

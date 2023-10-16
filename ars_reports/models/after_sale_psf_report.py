@@ -41,7 +41,7 @@ class AfterSaleReport(models.Model):
         so.create_date as ro_open_date, 
         inv.origin as ro_number,
         inv.date_invoice as invoice_date,
-        inv.date_invoice as ro_close_date,
+        inv.create_date as ro_close_date,
         inv.vin as vin,
         so.partner_id as partner_id,
         rp.mobile as mobile,

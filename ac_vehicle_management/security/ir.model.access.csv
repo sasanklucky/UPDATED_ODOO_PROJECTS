@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_ac_vehicle_management_ac_vehicle_management,ac_vehicle_management.ac_vehicle_management,model_ac_vehicle_management_ac_vehicle_management,,1,0,0,0
+access_ac_vehicle_sale_report,access_ac_vehicle_sale_report,model_vehicle_sale_psf_report,,1,0,0,0

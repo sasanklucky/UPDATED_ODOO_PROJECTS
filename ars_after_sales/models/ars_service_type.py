@@ -17,3 +17,6 @@ class ARSServiceOptions(models.Model):
 
     name = fields.Char('Service Options')
     service_type = fields.Many2one('service.type', 'Service Type')
+    warranty_ir_seq = fields.Many2one('ir.sequence',
+                                      string='Sequence',company_dependent=True,
+                                      domain=lambda self: [('company_id', '=', self.env.user.company_id.id)])

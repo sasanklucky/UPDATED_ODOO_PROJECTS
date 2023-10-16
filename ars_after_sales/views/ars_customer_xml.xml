@@ -45,6 +45,9 @@
                     <field name="city" position="attributes">
                         <attribute name="required">1</attribute>
                     </field>
+                    <field name="state_id" position="attributes">
+                        <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
+                    </field>
                 </data>
             </field>
         </record>
