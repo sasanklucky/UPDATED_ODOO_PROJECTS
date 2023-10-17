@@ -401,6 +401,8 @@ class ARS_sale_order(models.Model):
 
     @api.multi
     def action_cancel(self):
+        if self.invoice_count > 0:
+            raise UserError(_("You cannot unreserve after create invoice"))
         result = super(ARS_sale_order, self).action_cancel()
         for order in self:
             for wr in order.warranty_ids:

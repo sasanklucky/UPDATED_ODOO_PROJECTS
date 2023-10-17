@@ -788,7 +788,7 @@
                                     <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
                                            context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
                                     <field name="mobile" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
-                                    <field name="email" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                    <field name="email" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                 </group>
                                 <group string="Vehicle Details">
                                     <field name="regn_no" string="Reg No" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
