@@ -787,16 +787,16 @@
                                            context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
                                     <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
                                            context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
-                                    <field name="mobile" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                    <field name="mobile" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                     <field name="email" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                 </group>
                                 <group string="Vehicle Details">
-                                    <field name="regn_no" string="Reg No" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
-                                    <field name="vin_no" string="VIN" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                    <field name="regn_no" string="Reg No" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="vin_no" string="VIN" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                     <!--                                                <field name="lot_id" options="{'no_create': True, 'no_open': True}"/>-->
-                                    <field name="model" string="Vehicle Model" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                    <field name="model" string="Vehicle Model" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                     <field name="mileage_in" string="Kilometer"
-                                           attrs="{'required': [('state','!=', 'draft')], 'readonly': [('state','not in', ('draft', 'so'))]}"
+                                           attrs="{'required': [('state','!=', 'draft')], 'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"
                                             />
                                 </group>
                             </group>
