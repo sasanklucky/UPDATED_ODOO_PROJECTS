@@ -32,6 +32,7 @@ class AfterSaleReport(models.Model):
 
     @api.model_cr
     def init(self):
+        user_company_id = self.env.user.company_id.id
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
         select row_number() over(order by so.id desc) as id,
@@ -59,6 +60,7 @@ class AfterSaleReport(models.Model):
         inv.model as model,
         inv.gate_pass_date as delivery_date
         from account_invoice inv left join sale_order so on so.name = inv.origin
-        left join res_partner rp on rp.id = so.partner_id
+        left join res_partner rp on rp.id = so.partner_id 
         left join res_users ru on ru.id = so.user_id 
-        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales')""" % (self._table))
+        left join res_company rc on ru.company_id = rc.id
+        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales' and rc.id = {user_company_id})""" % (self._table))
