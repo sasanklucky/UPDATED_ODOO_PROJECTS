@@ -339,9 +339,13 @@ class ARS_sale_order_line(models.Model):
         for line in self:
             if line.category and line.category.name.lower() == 'warranty':
                 line.cust_filter_ids = [sl.name.id for sl in self.product_id.seller_ids]
-
             elif self.category and self.category.name.lower() == 'customer':
                 line.cust_filter_ids = self.env['res.partner'].search([('customer', '=', True)])
+            elif self.category and self.category.name.lower() == 'insurance':
+                line.cust_filter_ids = self.env['res.partner'].search([('customer', '=', True)])
+            else:
+                line.cust_filter_ids = self.env['res.partner'].search([])
+
 
     customer_split = fields.Many2one('res.partner', string="Customer", readonly=False)
     split_type = fields.Integer(compute='_get_customer_invoice_count', default=1)
