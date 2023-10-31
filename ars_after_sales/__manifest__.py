@@ -42,6 +42,7 @@
         'views/crm_summary_report.xml',
         'views/sales_report_format.xml',
         'views/client_files.xml',
+        'views/after_sale_proforma_template.xml',
         'views/planner_view.xml',
         'views/ars_email_aftersales_invoice.xml',
         'views/role_center.xml',

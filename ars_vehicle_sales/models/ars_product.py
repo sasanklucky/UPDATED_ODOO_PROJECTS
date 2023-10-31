@@ -252,6 +252,14 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     annual_income = fields.Many2one('annual.income', 'Annual Income')
+    type = fields.Selection(selection_add=[('workshop', 'Workshop')])
+
+    @api.multi
+    def get_workshop_address(self):
+        if 'workshop' in self.child_ids.mapped('type'):
+            workshop = [x for x in self.child_ids if x.type == 'workshop']
+            return workshop[0]
+        return False
 
 
 class ARS_ProductChangeQuantity(models.TransientModel):

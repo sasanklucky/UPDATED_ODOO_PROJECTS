@@ -2,116 +2,189 @@
     <template id="external_layout_inherited_web" inherit_id="web.external_layout_standard">
         <xpath expr="//div[@class='header']" position="replace">
             <div class="header">
+
+                <t t-if="not o and doc">
+                    <t t-set="o" t-value="doc"/>
+                </t>
+                <t t-if="o and 'company_id' in o">
+                    <t t-set="company" t-value="o.company_id.sudo()"/>
+                    <t t-if="o and 'sale_type' in o">
+                        <t t-set="type" t-value="o.sale_type"/>
+                    </t>
+                    <t t-if="o and 'ars_invoice_type' in o">
+                        <t t-set="type" t-value="o.ars_invoice_type"/>
+                    </t>
+                </t>
+                <t t-if="not o or not 'company_id' in o">
+                    <t t-if="o and 'sale_type' in o">
+                        <t t-set="type" t-value="o.sale_type"/>
+                    </t>
+                    <t t-if="o and 'ars_invoice_type' in o">
+                        <t t-set="type" t-value="o.ars_invoice_type"/>
+                    </t>
+                    <t t-set="company" t-value="res_company"/>
+                </t>
+                <t t-if="type in ['after_sales','parts']">
+                    <t t-set="workshop" t-value="company.partner_id.get_workshop_address()"/>
+                </t>
                 <div class="row">
                     <div class="col-xs-4">
-                        <img t-if="company.make_id" t-att-src="'data:image/png;base64,%s' % to_text(company.make_id.image_medium)" style="max-height: 65px;" />
+                        <img t-if="company.make_id"
+                             t-att-src="'data:image/png;base64,%s' % to_text(company.make_id.image_medium)"
+                             style="max-height: 65px;"/>
                     </div>
                     <div class="col-xs-8 text-right">
-                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)" style="max-height: 65px;" />
+                        <img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % to_text(company.logo)"
+                             style="max-height: 65px;"/>
                     </div>
                 </div>
                 <div t-if="company.logo or company.report_header" class="row zero_min_height">
                     <div class="col-xs-12">
-                        <div style="margin-top:22px;" t-field="company.report_header" name="moto" />
+                        <div style="margin-top:22px;" t-field="company.report_header" name="moto"/>
                         <!--  <div style="border-bottom: 1px solid black;"/>  -->
                     </div>
                 </div>
                 <div class="row">
                     <div t-if="company.name" class="col-xs-12 text-center">
-                        <span style="font-weight: bold; font-size:18px;" t-field="company.name" />
+                        <span style="font-weight: bold; font-size:18px;" t-field="company.name"/>
+                        <!--                        <span style="font-weight: bold; font-size:18px;" t-field="o.name" />-->
                     </div>
                     <div class="col-xs-12 text-center">
                         <t t-if="company.partner_id.pan_no">
-                            <b>PAN: </b>
-                            <span t-field="company.partner_id.pan_no" />
+                            <b>PAN:</b>
+                            <span t-field="company.partner_id.pan_no"/>
                         </t>
                         <t t-if="company.partner_id.vat">
-                            <b>GSTIN: </b>
-                            <span t-field="company.vat" />
+                            <b>GSTIN:</b>
+                            <span t-field="company.vat"/>
                         </t>
                     </div>
-                    <div class="col-xs-12 text-center">
-                        <b>Add: </b>
-                        <t t-if="company.street">
-                            <span t-field="company.street" />
-                            ,
-                        </t>
-                        <t t-if="company.street2">
-                            <span t-field="company.street2" />
-                            ,
-                        </t>
-                        <t t-if="company.city">
-                            <span t-field="company.city" />
-                            ,
-                        </t>
-                        <t t-if="company.state_id">
-                            <span t-field="company.state_id.name" />
-                            ,
-                        </t>
-                        <t t-if="company.country_id">
-                            <span t-field="company.country_id.name" />
-                            ,
-                        </t>
-                        <t t-if="company.zip">
-                            <span t-field="company.zip" />
-                        </t>
-                    </div>
-                    <div class="col-xs-12 text-center">
-                        <t t-if="company.email">
-                            <b>Email ID:</b>
-                            <span t-field="company.email" />
-                        </t>
-                        <t t-if="company.website">
-                            <b>URL: </b>
-                            <span t-field="company.website" />
-                        </t>
-                        <t t-if="company.phone">
-                            <b>Phone: </b>
-                            <span t-field="company.phone" />
-                        </t>
-                    </div>
+                    <t t-if="not workshop">
+                        <div class="col-xs-12 text-center">
+                            <b>Add:</b>
+                            <t t-if="company.street">
+                                <span t-field="company.street"/>
+                                ,
+                            </t>
+                            <t t-if="company.street2">
+                                <span t-field="company.street2"/>
+                                ,
+                            </t>
+                            <t t-if="company.city">
+                                <span t-field="company.city"/>
+                                ,
+                            </t>
+                            <t t-if="company.state_id">
+                                <span t-field="company.state_id.name"/>
+                                ,
+                            </t>
+                            <t t-if="company.country_id">
+                                <span t-field="company.country_id.name"/>
+                                ,
+                            </t>
+                            <t t-if="company.zip">
+                                <span t-field="company.zip"/>
+                            </t>
+                        </div>
+                        <div class="col-xs-12 text-center">
+                            <t t-if="company.email">
+                                <b>Email ID:</b>
+                                <span t-field="company.email"/>
+                            </t>
+                            <t t-if="company.website">
+                                <b>URL:</b>
+                                <span t-field="company.website"/>
+                            </t>
+                            <t t-if="company.phone">
+                                <b>Phone:</b>
+                                <span t-field="company.phone"/>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-if="workshop">
+                        <div class="col-xs-12 text-center">
+                            <b>Add:</b>
+                            <t t-if="workshop.street">
+                                <span t-field="workshop.street"/>
+                                ,
+                            </t>
+                            <t t-if="workshop.street2">
+                                <span t-field="workshop.street2"/>
+                                ,
+                            </t>
+                            <t t-if="workshop.city">
+                                <span t-field="workshop.city"/>
+                                ,
+                            </t>
+                            <t t-if="workshop.state_id">
+                                <span t-field="workshop.state_id.name"/>
+                                ,
+                            </t>
+                            <t t-if="workshop.country_id">
+                                <span t-field="workshop.country_id.name"/>
+                                ,
+                            </t>
+                            <t t-if="workshop.zip">
+                                <span t-field="workshop.zip"/>
+                            </t>
+                        </div>
+                        <div class="col-xs-12 text-center">
+                            <t t-if="workshop.email">
+                                <b>Email ID:</b>
+                                <span t-field="workshop.email"/>
+                            </t>
+                            <t t-if="workshop.website">
+                                <b>URL:</b>
+                                <span t-field="workshop.website"/>
+                            </t>
+                            <t t-if="workshop.phone">
+                                <b>Phone:</b>
+                                <span t-field="workshop.phone"/>
+                            </t>
+                        </div>
+                    </t>
                 </div>
             </div>
         </xpath>
         <xpath expr="div[@class='article o_report_layout_standard']" position="replace">
             <div class="article o_report_layout_standard mt-3">
-                <t t-raw="0" />
+                <t t-raw="0"/>
             </div>
         </xpath>
         <xpath expr="//div[@class='footer']" position="replace">
             <div class="footer">
                 <div t-if="company.name" class="col-xs-12 text-left">
                     <b>
-                        <i>Registered Name: </i>
+                        <i>Registered Name:</i>
                     </b>
-                    <span t-field="company.name" />
+                    <span t-field="company.name"/>
                 </div>
                 <div class="col-xs-12 text-left">
                     <b>
-                        <i>Registered Office Add: </i>
+                        <i>Registered Office Add:</i>
                     </b>
                     <t t-if="company.street">
-                        <span t-field="company.street" />
+                        <span t-field="company.street"/>
                         ,
                     </t>
                     <t t-if="company.street2">
-                        <span t-field="company.street2" />
+                        <span t-field="company.street2"/>
                         ,
                     </t>
                     <t t-if="company.city">
-                        <span t-field="company.city" />
+                        <span t-field="company.city"/>
                         ,
                     </t>
                     <t t-if="company.state_id">
-                        <span t-field="company.state_id.name" />
+                        <span t-field="company.state_id.name"/>
                         ,
                     </t>
                     <t t-if="company.country_id">
-                        <span t-field="company.country_id.name" />
+                        <span t-field="company.country_id.name"/>
                         ,
                     </t>
                     <t t-if="company.zip">
-                        <span t-field="company.zip" />
+                        <span t-field="company.zip"/>
                     </t>
                 </div>
                 <div name="financial_infos" class="text-left">
@@ -151,12 +224,18 @@
     <record id="res_company_inherited_form" model="ir.ui.view">
         <field name="name">res.company.form</field>
         <field name="model">res.company</field>
-        <field name="inherit_id" ref="base.view_company_form" />
+        <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <field name="partner_id" position="after">
                 <field name="dealer_zone"/>
-                <field name="dealer_code" />
-                <field name="make_id" />
+                <field name="dealer_code"/>
+                <field name="make_id"/>
+            </field>
+            <field name="state_id" position="attributes">
+                <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
+            </field>
+            <field name="country_id" position="attributes">
+                <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
             </field>
         </field>
     </record>

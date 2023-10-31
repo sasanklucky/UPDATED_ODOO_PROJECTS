@@ -244,7 +244,7 @@
                                             <field name="date_of_ownership" string="Date of Ownership"/>
                                             <field name="address" string="Address"/>
                                             <field name="mobile" string="Mobile"/>
-                                            <field name="sold_by" string="Sold By"/>
+                                            <field name="sold_by" string="Selling Dealer"/>
                                         </tree>
                                     </field>
                                 </page>

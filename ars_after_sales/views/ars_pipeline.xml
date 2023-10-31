@@ -798,6 +798,7 @@
                                     <field name="mileage_in" string="Kilometer"
                                            attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"
                                             />
+                                    <field name="sold_by" string="Selling Dealer" readonly="1" force_save="1"/>
                                 </group>
                             </group>
                             <group attrs="{'invisible':[('warranty_cnt','&lt;=',0)]}">

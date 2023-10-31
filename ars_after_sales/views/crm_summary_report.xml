@@ -14,7 +14,7 @@
                     <field name="lost_enquiries_for_month"  string="Lost Enquiries for the Month"/>
                     <field name="hot_prospect"  string="Hot Prospect"/>
                     <field name="td"  string="TD"/>
-                    <field name="td_ratio"  string="TD Ratio"/>
+                    <field name="td_ratio"  string="TD Ratio (%)"/>
                     <field name="fresh_bookings"  string="Fresh Bookings"/>
                     <field name="td_to_booking_ratio"  string="TD to Booking Ratio"/>
                     <field name="open_bookings"  string="Open Bookings"/>

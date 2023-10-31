@@ -39,7 +39,7 @@ class EbillCancel(models.TransientModel):
         order = self.env['account.invoice'].browse(active_id)
         print('order', order)
         date1 = datetime.strptime(str(order.date_invoice), '%Y-%m-%d').strftime('%d/%m/%Y')
-        einvoicing = self.env['einvoicing.configuration'].search([],limit=1)
+        einvoicing = self.env['einvoicing.configuration'].search([], limit=1)
         delivery = self.env['stock.picking'].search([('origin', '=', order.origin)], limit=1)
         warehouses = delivery.picking_type_id.warehouse_id
         # warehouse = self.env['stock.warehouse'].search([],limit=1)
@@ -72,23 +72,31 @@ class EbillCancel(models.TransientModel):
             "CnlRsn": self.cancel_reason,
             "CnlRem": self.desc
         }
-
-        if einvoicing.testing == 't':
-            url = 'https://gstsandbox.charteredinfo.com/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
-            url = str(url)
-        if einvoicing.testing == 'p':
-            url = 'https://api.taxprogsp.co.in/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
-            url = str(url)
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        response = requests.post(url, data=json.dumps(data), headers=headers)
-        res = response.content
-        res_dict = json.loads(res.decode('utf-8'))
-        if res_dict.get('Status') == '1':
-            a = res_dict['Data']
-            n = json.loads(a)
-            dt = n['CancelDate']
-            order.write({'irn_cancel_date': dt})
-            order.write({'eway_bill_status': 'cancel'})
-            self.env.user.notify_info(message='IRN Number Cancel Successfully !')
-        if res_dict.get('Status') == '0':
-            raise UserError(_(res_dict.get('ErrorDetails')))
+        try:
+            if einvoicing.testing == 't':
+                url = 'https://gstsandbox.charteredinfo.com/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
+                url = str(url)
+            if einvoicing.testing == 'p':
+                url = 'https://api.taxprogsp.co.in/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
+                url = str(url)
+            headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+            response = requests.post(url, data=json.dumps(data), headers=headers)
+            res = response.content
+            print(res)
+            order.write({'exception_reason': res})
+            res_dict = json.loads(res.decode('utf-8'))
+            if res_dict.get('Status') == '1':
+                a = res_dict['Data']
+                n = json.loads(a)
+                dt = n['CancelDate']
+                order.write({'irn_cancel_date': dt})
+                order.write({'way_bill_status': 'cancel'})
+                self.env.user.notify_info(message='IRN Number Cancel Successfully !')
+            if res_dict.get('Status') == '0':
+                order.write({'exception_reason': res_dict})
+                order.write({'e_invoice_status': 'exception'})
+                raise UserError(_(res_dict.get('ErrorDetails')))
+        except Exception as e:
+            print(e)
+            order.write({'exception_reason': e})
+            order.write({'e_invoice_status': 'exception'})
