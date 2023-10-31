@@ -25,10 +25,10 @@ class CrmSummaryReport(models.Model):
 
     def _compute_td_ratio(self):
         for data in self:
-            if data.mtd_enquiries == 0:
+            if data.td == 0:
                 data.td_ratio = 0
             else:
-                data.td_ratio = data.td/data.mtd_enquiries
+                data.td_ratio = (data.td/data.total_open_enquiries)*100
 
     def _compute_booking_ratio(self):
         for data in self:

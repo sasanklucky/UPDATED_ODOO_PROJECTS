@@ -109,6 +109,7 @@ class ARS_sale_order(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
+    sold_by = fields.Many2one('res.partner')
 
 
     @api.onchange('order_line')
@@ -130,6 +131,15 @@ class ARS_sale_order(models.Model):
     #     else:
     #         return {'domain': {'product_id': [('id', 'in', False)]}}
 
+    @api.onchange('regn_no')
+    def update_vin_number(self):
+        if self.regn_no:
+            history_items = self.regn_no.customer_ids
+            try:
+                target = history_items[-1]
+                self.sold_by = target.sold_by
+            except:
+                pass
     @api.multi
     @api.depends('sale_type')
     def _get_product_sale_catalog(self):
