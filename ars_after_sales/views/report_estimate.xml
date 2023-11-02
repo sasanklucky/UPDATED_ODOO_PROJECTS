@@ -93,7 +93,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Variant</td>
+                                            <td>Color</td>
                                             <td>:</td>
                                             <td>
                                                 <t t-foreach="doc.model.attribute_value_ids" t-as="o">

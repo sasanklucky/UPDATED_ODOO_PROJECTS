@@ -44,7 +44,7 @@
                         <td>Reg Number</td>
                         <td>:</td>
                         <td>
-                            <span t-field="doc.fleet_regn_no"/>
+                            <span t-field="doc.regn_no"/>
                         </td>
 
                     </tr>
@@ -59,15 +59,15 @@
                         <td>VIN Number</td>
                         <td>:</td>
                         <td>
-                            <span t-field="doc.fleet_vin_no.vin_sn"/>
+                            <span t-field="doc.vin_no"/>
                         </td>
                     </tr>
                     <tr>
                         <td>Date of Sale</td>
                         <td>:</td>
                         <td>
-                            <t t-if="doc.fleet_vin_no">
-                                <span t-esc="doc.fleet_vin_no.customer_ids.mapped('date_of_ownership')[0]"/>
+                            <t t-if="doc.regn_no">
+                                <span t-esc="doc.regn_no.customer_ids.mapped('date_of_ownership')[0]"/>
                             </t>
                         </td>
                     </tr>

@@ -108,6 +108,7 @@ class customer_dump_mis_report(models.Model):
     medium_id = fields.Many2one('utm.medium', 'First Enquiry Mode')
     invoice = fields.Char(compute="get_invoice")
     stage_id = fields.Many2one('crm.stage')
+    test_drive = fields.Char()
     lost_reason = fields.Many2one('crm.lost.reason')
     existing_customer = fields.Char(compute="get_existing_customer")
     referred = fields.Char()
@@ -134,6 +135,7 @@ class customer_dump_mis_report(models.Model):
             end as enquiry_category,a.user_id,a.partner_id,a.title,a.contact_name,
             a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
             a.referred as referred,
+            case when a.is_test_drive = True then 'YES' else 'NO' end as test_drive,
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 0) as note_1,
 			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 0) as feedback_1,
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 1) as note_2,

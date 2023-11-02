@@ -32,7 +32,7 @@
                     <field name="product_id"/>
                     <field name="color" string="Color"/>
                     <field name="source_id"/>
-                    <field name="medium_id"/>
+                    <field name="test_drive" string="Test Drive" />
                     <field name="invoice" string="Proforma Invoice"/>
                     <field name="stage_id" string="Enquiry Status"/>
                     <field name="lost_reason" string="Lost Sales Reason"/>
