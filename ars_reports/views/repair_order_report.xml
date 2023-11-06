@@ -37,7 +37,9 @@
                     <field name="ro_close_date" />
                     <field name="service_type" />
                     <field name="odoometer" />
-                    <field name="part_id" />
+<!--                    <field name="part_id" />-->
+                    <field name="product_catalog" />
+                    <field name="part_ref" />
                     <field name="part_description" />
                     <field name="part_price" />
                     <field name="cgst_per" />
