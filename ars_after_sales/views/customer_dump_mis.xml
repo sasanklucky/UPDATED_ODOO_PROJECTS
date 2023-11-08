@@ -32,6 +32,7 @@
                     <field name="product_id"/>
                     <field name="color" string="Color"/>
                     <field name="source_id"/>
+                    <field name="medium" string="First Enquiry Mode"/>
                     <field name="test_drive" string="Test Drive" />
                     <field name="invoice" string="Proforma Invoice"/>
                     <field name="stage_id" string="Enquiry Status"/>

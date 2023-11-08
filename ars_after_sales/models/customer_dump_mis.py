@@ -84,6 +84,7 @@ class customer_dump_mis_report(models.Model):
     record_id = fields.Integer()
     company_id = fields.Many2one('res.company', 'Dealer Name')
     dealer_zone = fields.Selection(related="company_id.dealer_zone")
+    medium = fields.Char(string="Medium")
     dealer_code = fields.Char(related="company_id.dealer_code")
     enquiry_date = fields.Char('Enquiry Creation Date')
     purchase_date = fields.Char('Expected Purchase Date')
@@ -105,7 +106,7 @@ class customer_dump_mis_report(models.Model):
     model = fields.Char(related="product_id.product_tmpl_id.name")
     color = fields.Char(compute="get_color")
     source_id = fields.Many2one('utm.source', 'Source')
-    medium_id = fields.Many2one('utm.medium', 'First Enquiry Mode')
+    # medium_id = fields.Many2one('utm.medium', 'First Enquiry Mode')
     invoice = fields.Char(compute="get_invoice")
     stage_id = fields.Many2one('crm.stage')
     test_drive = fields.Char()
@@ -133,7 +134,7 @@ class customer_dump_mis_report(models.Model):
             when a.date_deadline - a.create_date::Date > 60 then 'COLD'
             else ''
             end as enquiry_category,a.user_id,a.partner_id,a.title,a.contact_name,
-            a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
+            a.phone,a.mobile,a.email_from as email,a.source_id,utm.name as medium,a.stage_id,a.lost_reason,b.product_id,
             a.referred as referred,
             case when a.is_test_drive = True then 'YES' else 'NO' end as test_drive,
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 0) as note_1,
@@ -143,6 +144,7 @@ class customer_dump_mis_report(models.Model):
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as note_3,
 			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as feedback_3
             from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
+            left join utm_medium utm on a.medium_id = utm.id
             where a.type = 'opportunity'
             
            
