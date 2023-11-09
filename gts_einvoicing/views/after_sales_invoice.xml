@@ -146,7 +146,7 @@
             <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']"
                    position="after">
                 <!-- attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('state', '!=' , 'draft')], 'invisible': [('gen_einvoice', '!=', True)]}"/>-->
-                <field name="hsn_code"/>
+                <field name="hsn_code" force_save="1"/>
                 <field name="is_service"/>
             </xpath>
             <xpath expr="//page[last()]" position="after">

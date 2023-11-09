@@ -220,6 +220,27 @@ class ARS_product_product(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    @api.model
+    def create(self, vals):
+        # Change create access for groups
+        context = self.env.context
+        action = self.env.context['params']['action']
+        action_name = self.env['ir.actions.act_window'].browse(int(action)).name
+        if action_name == 'Model Variants' or action_name == 'Models':
+            if self.env.user.has_group('ac_vehicle_management.ac_vehicle_sale_manager'):
+                pass
+            else:
+                raise UserError(_('You are not allowed to create this record'))
+
+        if action_name == 'Parts' or action_name == 'Accessories' or action_name == 'Labors':
+            if self.env.user.has_group('ac_parts_management.ac_parts_sale_manager'):
+                pass
+            else:
+                raise UserError(_('You are not allowed to create this record'))
+        res = super(ARS_product_product, self).create(vals)
+        return res
+
+
 
 # class ARS_product_Catalog(models.Model):
 #     _inherit = 'product.catalog'

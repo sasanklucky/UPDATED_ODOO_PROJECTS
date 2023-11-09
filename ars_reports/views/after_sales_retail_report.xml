@@ -14,11 +14,16 @@
                     <field name="id" string="Sl. No." />
                     <field name="dealer_code" />
                     <field name="dealer_id" />
+                    <field name="dealer_gst" />
                     <field name="dealer_state_id" />
                     <field name="dealer_city_id" />
-                     <field name="order_id" />
+<!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
                     <!-- <field name="line_item_id" /> -->
-                    <field name="customer_name" />
+                    <field name="customer_name" string="Customer Name" />
+                    <field name="customer_gst" />
+                    <field name="customer_ph" />
+                    <field name="customer_city" />
+                    <field name="customer_state" />
                     <field name="vin" />
                     <field name="registration_no" />
                     <field name="model" />
@@ -28,18 +33,22 @@
                     <field name="ro_open_date" />
                     <field name="ro_close_date" />
                     <field name="invoice_id"/>
+                    <field name="invoice_date"/>
                     <field name="service_type" />
                     <field name="ro_type" />
                     <field name="last_ro_close_date" />
                     <field name="odoometer" />
-                    <field name="part_id" />
-                    <field name="part_description" />
+<!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
                     <field name="default_code"/>
+                    <field name="part_description" />
                     <field name="l10n_in_hsn_code"/>
                     <field name="part_price" />
                     <field name="cgst_per" />
+                    <field name="cgst_amt" />
                     <field name="sgst_per" />
+                    <field name="sgst_amt" />
                     <field name="igst_per" />
+                    <field name="igst_amt" />
                     <field name="total_part_price" />
                     <field name="customer_voc" />
                 </tree>
