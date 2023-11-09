@@ -4,10 +4,8 @@ from odoo.tools.translate import _
 class ARSResPartner(models.Model):
     _inherit = 'res.partner'
     _sql_constraints = [
-        ('mobile_uniq', 'unique (mobile)', 'The name of the Degree of Recruitment must be unique!')
+        ('mobile_uniq', 'unique (mobile)', 'The mobile number must be unique!')
     ]
-
-
 
     @api.multi
     def _compute_estimate_count(self):

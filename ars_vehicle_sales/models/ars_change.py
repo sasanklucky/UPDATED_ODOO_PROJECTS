@@ -466,7 +466,7 @@ class Menu(models.Model):
     @api.one
     def _compute_visible(self):
         visible = True
-        print('group portal', self.user_has_groups('base.group_portal'))
+        # print('group portal', self.user_has_groups('base.group_portal'))
         if self.page_id and not self.page_id.sudo().is_visible and (
                 not self.user_has_groups('base.group_user') and not self.user_has_groups('base.group_portal')):
             visible = False

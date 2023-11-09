@@ -17,7 +17,7 @@
             </field>
         </record>
 
-        <record model="ir.rule" id="access_repair_order_report">
+        <record model="ir.rule" id="access_byd_repair_order_report">
             <field name="name">Repair Order Report Access</field>
             <field name="model_id" ref="model_repair_order_report"/>
             <field name="global" eval="True"/>
@@ -40,6 +40,15 @@
             <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
             </field>
         </record>
+
+        <record model="ir.rule" id="access_retail_report_after_sales">
+            <field name="name">After Sales Retail Report Access</field>
+            <field name="model_id" ref="model_retail_report_after_sales"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|',('dealer_id','=',False),('dealer_id','child_of',[user.company_id.id])]
+            </field>
+        </record>
+
 
     </data>
 </odoo>

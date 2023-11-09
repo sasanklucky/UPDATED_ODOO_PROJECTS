@@ -1,4 +1,14 @@
+import io
+import base64
+import datetime
 from odoo import models, fields, api, tools, _
+from datetime import datetime, timedelta
+
+
+try:
+    from odoo.tools.misc import xlsxwriter
+except ImportError:
+    import xlsxwriter
 
 
 class AfterSaleReport(models.Model):
@@ -33,7 +43,7 @@ class AfterSaleReport(models.Model):
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(""" CREATE or REPLACE VIEW %s as (
+        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
         select row_number() over(order by so.id desc) as id,
         initcap(to_char(inv.date_invoice, 'month')) as month,
         inv.company_id as dealer_name_id,
@@ -41,7 +51,7 @@ class AfterSaleReport(models.Model):
         so.create_date as ro_open_date, 
         inv.origin as ro_number,
         inv.date_invoice as invoice_date,
-        inv.create_date as ro_close_date,
+        inv.date_invoice as ro_close_date,
         inv.vin as vin,
         so.partner_id as partner_id,
         rp.mobile as mobile,
@@ -62,4 +72,5 @@ class AfterSaleReport(models.Model):
         left join res_partner rp on rp.id = so.partner_id 
         left join res_users ru on ru.id = so.user_id 
         left join res_company rc on ru.company_id = rc.id
-        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales')""" % (self._table))
+	where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales')""" % (
+        self._table))       

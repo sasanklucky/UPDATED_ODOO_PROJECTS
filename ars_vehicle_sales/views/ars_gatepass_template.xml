@@ -61,16 +61,17 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3"></td>
+<!--                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>-->
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
-                                <t t-esc="doc.partner_id.name"/>,
+<!--                                <t t-esc="doc.partner_id.name"/>,-->
                                 <br></br>
-                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,
+<!--                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,-->
                                 <br></br>
-                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,
+<!--                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,-->
                                 <br></br>
-                                <t t-esc="doc.partner_id.state_id.name"/>,
-                                <t t-esc="doc.partner_id.country_id.name"/>
+<!--                                <t t-esc="doc.partner_id.state_id.name"/>,-->
+<!--                                <t t-esc="doc.partner_id.country_id.name"/>-->
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
@@ -134,9 +135,10 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
+<!--                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>-->
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <span t-field="doc.partner_id.mobile"/>
+<!--                                <span t-field="doc.partner_id.mobile"/>-->
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
@@ -166,33 +168,33 @@
                         <tr>
                             <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <span t-field="doc.partner_id.email"/>
+<!--                                <span t-field="doc.partner_id.email"/>-->
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-if="doc.reg_no">
-                                    <t t-esc="doc.reg_no.key_serial_number"/>
-                                </t>
-                                <t t-else="">
-                                    <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])"
-                                       t-as="relation">
-                                        <!-- <t t-if="len(relation.key_serial_number) > 1">
-                                            <t t-esc="'/'.join(relation.key_serial_number)"/>
-                                        </t> -->
-                                        <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
-                                        <t t-if="relation.key_serial_number">
-                                            <t t-if="len(relation.key_serial_number) == 1">
-                                                <t t-esc="relation.key_serial_number"/>
-                                            </t>
-                                            <t t-else="">
-                                                <!-- <t t-esc=""/> -->
-                                                <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
-                                            </t>
-                                        </t>
-                                    </t>
-                                </t>
+<!--                                <t t-if="doc.reg_no">-->
+<!--                                    <t t-esc="doc.reg_no.key_serial_number"/>-->
+<!--                                </t>-->
+<!--                                <t t-else="">-->
+<!--                                    <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])"-->
+<!--                                       t-as="relation">-->
+<!--                                        &lt;!&ndash; <t t-if="len(relation.key_serial_number) > 1">-->
+<!--                                            <t t-esc="'/'.join(relation.key_serial_number)"/>-->
+<!--                                        </t> &ndash;&gt;-->
+<!--                                        &lt;!&ndash; <t t-elif="len(relation.key_serial_number) == 1"> &ndash;&gt;-->
+<!--                                        <t t-if="relation.key_serial_number">-->
+<!--                                            <t t-if="len(relation.key_serial_number) == 1">-->
+<!--                                                <t t-esc="relation.key_serial_number"/>-->
+<!--                                            </t>-->
+<!--                                            <t t-else="">-->
+<!--                                                &lt;!&ndash; <t t-esc=""/> &ndash;&gt;-->
+<!--                                                <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>-->
+<!--                                            </t>-->
+<!--                                        </t>-->
+<!--                                    </t>-->
+<!--                                </t>-->
                             </td>
                         </tr>
 
@@ -213,9 +215,9 @@
                                        t-options="{'widget':'date'}"/>
                                 </t>
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Consultant</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Km In</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-esc="doc.user_id.name"/>
+                                <t t-esc="doc.kilometer"/>
                             </td>
                         </tr>
                         <tr>
@@ -223,9 +225,9 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <span t-field="doc.number"/>
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Cons. Mob</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Km Out</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-esc="doc.user_id.mobile"/>
+                                <t t-esc="doc.kilometer_out"/>
                             </td>
                         </tr>
                         <tr>
@@ -268,39 +270,43 @@
                         </tr>
                     </table>
                 </div>
-                <div class="col-xs-12" style="margin-top:1px;">
-                    <div t-if="doc.company_id.name" class="col-xs-12 text-left">
-                        <b>
-                            <i>Registered Name:</i>
-                        </b>
-                        <span t-field="doc.company_id.name"/>
-                    </div>
-                    <div class="col-xs-12 text-left">
-                        <b>
-                            <i>Registered Office Add:</i>
-                        </b>
-                        <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
-                        </t>
-                        <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
-                        </t>
-                        <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
-                        </t>
-                        <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name"/>,
-                        </t>
-                        <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name"/>,
-                        </t>
-                        <t t-if="doc.company_id.zip">
-                            <span t-field="doc.company_id.zip"/>
-                        </t>
-                    </div>
-                </div>
+<!--                <div class="col-xs-12" style="margin-top:1px;">-->
+<!--                    <div t-if="doc.company_id.name" class="col-xs-12 text-left">-->
+<!--                        <b>-->
+<!--                            <i>Registered Name:</i>-->
+<!--                        </b>-->
+<!--                        <span t-field="doc.company_id.name"/>-->
+<!--                    </div>-->
+<!--                    <div class="col-xs-12 text-left">-->
+<!--                        <b>-->
+<!--                            <i>Registered Office Add:</i>-->
+<!--                        </b>-->
+<!--                        <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,-->
+<!--                        </t>-->
+<!--                        <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,-->
+<!--                        </t>-->
+<!--                        <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,-->
+<!--                        </t>-->
+<!--                        <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name"/>,-->
+<!--                        </t>-->
+<!--                        <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name"/>,-->
+<!--                        </t>-->
+<!--                        <t t-if="doc.company_id.zip">-->
+<!--                            <span t-field="doc.company_id.zip"/>-->
+<!--                        </t>-->
+<!--                    </div>-->
+<!--                </div>-->
+            </div>
+
+            <div style="page-break-after:always;"> </div>
+
+            <div class="page">
                 <div class="col-xs-12">
                     <table class="table table-sm"
                            tyle="border: none;border-collapse: collapse;margin-top:2px; margin-bottom:0px;">
                         <tr>
                             <td colspan="4" class="text-center" style="border:none; padding: 0px 2px;">
-                                --------------------------------------------------------Cut here
-                                --------------------------------------------------------
+
                             </td>
                         </tr>
                     </table>
@@ -319,51 +325,51 @@
                                  style="max-height: 65px;"/>
                         </div>
                     </div>
-                    <div class="row">
-                        <div t-if="doc.company_id.name" class="col-xs-12 text-center">
-                            <span style="font-weight: bold; font-size:18px;" t-field="doc.company_id.name"/>
-                        </div>
-                        <div class="col-xs-12 text-center">
-                            <t t-if="doc.company_id.partner_id.pan_no">
-                                <b>PAN:</b>
-                                <span t-field="doc.company_id.partner_id.pan_no"/>
-                            </t>
-                            <t t-if="doc.company_id.partner_id.vat">
-                                <b>GSTIN:</b>
-                                <span t-field="doc.company_id.vat"/>
-                            </t>
-                        </div>
-                        <div class="col-xs-12 text-center">
-                            <b>Add:</b>
-                            <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
-                            </t>
-                            <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
-                            </t>
-                            <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
-                            </t>
-                            <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name"/>,
-                            </t>
-                            <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name"/>,
-                            </t>
-                            <t t-if="doc.company_id.zip">
-                                <span t-field="doc.company_id.zip"/>
-                            </t>
-                        </div>
-                        <div class="col-xs-12 text-center">
-                            <t t-if="doc.company_id.email">
-                                <b>Email ID:</b>
-                                <span t-field="doc.company_id.email"/>
-                            </t>
-                            <t t-if="doc.company_id.website">
-                                <b>URL:</b>
-                                <span t-field="doc.company_id.website"/>
-                            </t>
-                            <t t-if="doc.company_id.phone">
-                                <b>Phone:</b>
-                                <span t-field="doc.company_id.phone"/>
-                            </t>
-                        </div>
-                    </div>
+<!--                    <div class="row">-->
+<!--                        <div t-if="doc.company_id.name" class="col-xs-12 text-center">-->
+<!--                            <span style="font-weight: bold; font-size:18px;" t-field="doc.company_id.name"/>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-12 text-center">-->
+<!--                            <t t-if="doc.company_id.partner_id.pan_no">-->
+<!--                                <b>PAN:</b>-->
+<!--                                <span t-field="doc.company_id.partner_id.pan_no"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.partner_id.vat">-->
+<!--                                <b>GSTIN:</b>-->
+<!--                                <span t-field="doc.company_id.vat"/>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-12 text-center">-->
+<!--                            <b>Add:</b>-->
+<!--                            <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.state_id"><span t-field="doc.company_id.state_id.name"/>,-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.country_id"><span t-field="doc.company_id.country_id.name"/>,-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.zip">-->
+<!--                                <span t-field="doc.company_id.zip"/>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                        <div class="col-xs-12 text-center">-->
+<!--                            <t t-if="doc.company_id.email">-->
+<!--                                <b>Email ID:</b>-->
+<!--                                <span t-field="doc.company_id.email"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.website">-->
+<!--                                <b>URL:</b>-->
+<!--                                <span t-field="doc.company_id.website"/>-->
+<!--                            </t>-->
+<!--                            <t t-if="doc.company_id.phone">-->
+<!--                                <b>Phone:</b>-->
+<!--                                <span t-field="doc.company_id.phone"/>-->
+<!--                            </t>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
                 <div class="col-xs-12">
                     <table class="table table-sm"
@@ -400,16 +406,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">Address</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px" rowspan="3">
-                                <t t-esc="doc.partner_id.name"/>,
-                                <br></br>
-                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,
-                                <br></br>
-                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,
-                                <br></br>
-                                <t t-esc="doc.partner_id.state_id.name"/>,
-                                <t t-esc="doc.partner_id.country_id.name"/>
+<!--                                <t t-esc="doc.partner_id.name"/>,-->
+<!--                                <br></br>-->
+<!--                                <t t-esc="doc.partner_id.street"/>,<t t-esc="doc.partner_id.street2"/>,-->
+<!--                                <br></br>-->
+<!--                                <t t-esc="doc.partner_id.zip"/>,<t t-esc="doc.partner_id.city"/>,-->
+<!--                                <br></br>-->
+<!--                                <t t-esc="doc.partner_id.state_id.name"/>,-->
+<!--                                <t t-esc="doc.partner_id.country_id.name"/>-->
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Color</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
@@ -473,9 +479,9 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Phone</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <span t-field="doc.partner_id.mobile"/>
+<!--                                <span t-field="doc.partner_id.mobile"/>-->
                             </td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Edrive</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
@@ -505,28 +511,28 @@
                         <tr>
                             <!-- <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">Customer ID</td> -->
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Email</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <span t-field="doc.partner_id.email"/>
+<!--                                <span t-field="doc.partner_id.email"/>-->
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Key No</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px"></td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])"
-                                   t-as="relation">
-                                    <!-- <t t-if="len(relation.key_serial_number) > 1">
-                                        <t t-esc="'/'.join(relation.key_serial_number)"/>
-                                    </t> -->
-                                    <!-- <t t-elif="len(relation.key_serial_number) == 1"> -->
-                                    <t t-if="relation.key_serial_number">
-                                        <t t-if="len(relation.key_serial_number) == 1">
-                                            <t t-esc="relation.key_serial_number"/>
-                                        </t>
-                                        <t t-else="">
-                                            <!-- <t t-esc=""/> -->
-                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>
-                                        </t>
-                                    </t>
-                                </t>
+<!--                                <t t-foreach="request.env['fleet.vehicle'].sudo().search([('mvariant_id','in',doc.invoice_line_ids.mapped('product_id.id')),('driver_id','=',doc.partner_id.id),('vin_sn','in',doc.invoice_line_ids.mapped('vin_no.name'))])"-->
+<!--                                   t-as="relation">-->
+<!--                                    &lt;!&ndash; <t t-if="len(relation.key_serial_number) > 1">-->
+<!--                                        <t t-esc="'/'.join(relation.key_serial_number)"/>-->
+<!--                                    </t> &ndash;&gt;-->
+<!--                                    &lt;!&ndash; <t t-elif="len(relation.key_serial_number) == 1"> &ndash;&gt;-->
+<!--                                    <t t-if="relation.key_serial_number">-->
+<!--                                        <t t-if="len(relation.key_serial_number) == 1">-->
+<!--                                            <t t-esc="relation.key_serial_number"/>-->
+<!--                                        </t>-->
+<!--                                        <t t-else="">-->
+<!--                                            &lt;!&ndash; <t t-esc=""/> &ndash;&gt;-->
+<!--                                            <t t-esc="'/'.join(relation.mapped('key_serial_number'))"/>-->
+<!--                                        </t>-->
+<!--                                    </t>-->
+<!--                                </t>-->
                             </td>
                         </tr>
 
@@ -547,9 +553,9 @@
                                        t-options="{'widget':'date'}"/>
                                 </t>
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Consultant</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Km In</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-esc="doc.user_id.name"/>
+                                <t t-esc="doc.kilometer"/>
                             </td>
                         </tr>
                         <tr>
@@ -557,9 +563,9 @@
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
                                 <span t-field="doc.number"/>
                             </td>
-                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Sales Cons. Mob</td>
+                            <td style="border:1px solid #e0e0e0;padding: 0px 2px">Km Out</td>
                             <td style="border:1px solid #e0e0e0;padding: 0px 2px">
-                                <t t-esc="doc.user_id.mobile"/>
+                                <t t-esc="doc.kilometer_out"/>
                             </td>
                         </tr>
                         <tr>

@@ -22,6 +22,7 @@ class AfterSlaesRetailReport(models.Model):
     ro_open_date = fields.Datetime(string="RO Open Date")
     ro_close_date = fields.Datetime(string="RO Close Date")
     invoice_id = fields.Many2one('account.invoice', string="Invoice Number")
+    invoice_date = fields.Date(string="Invoice Date", related="invoice_id.date_invoice")
     service_type = fields.Many2one('service.type', string="Service Type")
     ro_type = fields.Char(string="RO Type")
     last_ro_close_date = fields.Datetime(string="Last RO Close Date")
@@ -38,7 +39,14 @@ class AfterSlaesRetailReport(models.Model):
     cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
-
+    dealer_gst = fields.Char(string='Dealer GST Number',related='dealer_id.vat')
+    customer_gst = fields.Char('Customer GST Number',related='customer_name.vat')
+    customer_ph = fields.Char(string='Customer Mobile No',related='customer_name.mobile')
+    customer_city = fields.Char(string='Customer City',related='customer_name.city')
+    customer_state = fields.Many2one(string='Customer State',related='customer_name.state_id')
+    cgst_amt = fields.Float('CGST Amount',compute='_compute_tax_percentage')
+    sgst_amt = fields.Float(string='SGST Amount',compute='_compute_tax_percentage')
+    igst_amt = fields.Float(string='IGST Amount',compute='_compute_tax_percentage')
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -93,9 +101,12 @@ class AfterSlaesRetailReport(models.Model):
             for t in taxes.get('taxes', []):
                 tax_id = self.env['account.tax'].browse(t.get('id', False))
                 if tax_id:
-                    if 'cgst' in tax_id.name.lower():
+                    if 'cgst' in tax_id['name'].lower() and t['amount']:
                         rec.cgst_per = round(tax_id.amount, 1)
-                    if 'sgst' in tax_id.name.lower():
+                        rec.cgst_amt = t['amount']
+                    if 'sgst' in tax_id['name'].lower():
                         rec.sgst_per = round(tax_id.amount, 1)
-                    if 'igst' in tax_id.name.lower():
+                        rec.sgst_amt = t['amount']
+                    if 'igst' in tax_id['name'].lower():
                         rec.igst_per = round(tax_id.amount, 1)
+                        rec.igst_amt = t['amount']
