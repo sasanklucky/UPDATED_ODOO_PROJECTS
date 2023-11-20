@@ -178,15 +178,15 @@ class Picking(models.Model):
                                     [('vin_sn', '=', stock_production_obj.lot_id.name)])
                             else:
                                 stock_production_obj.lot_id.check_new_lotno = True
-                            customer = line.move_id.partner_id if line.move_id.partner_id else self.partner_id
-                            if vehicle_card:
-                                vehicle_card.write(
-                                    {'driver_id': customer.id, 'vehicle_status': 'customer',
-                                     'lot_id': stock_production_obj.lot_id.id,
-                                     'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
-                                                              'date_of_ownership': datetime.now(),
-                                                              'address': self.partner_id.city,
-                                                              'mobile': self.partner_id.mobile})]})
+                            # customer = line.move_id.partner_id if line.move_id.partner_id else self.partner_id
+                            # if vehicle_card:
+                            #     vehicle_card.write(
+                            #         {'driver_id': customer.id, 'vehicle_status': 'customer',
+                            #          'lot_id': stock_production_obj.lot_id.id,
+                            #          'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
+                            #                                   'date_of_ownership': datetime.now(),
+                            #                                   'address': self.partner_id.city,
+                            #                                   'mobile': self.partner_id.mobile})]})
         return res
 
 

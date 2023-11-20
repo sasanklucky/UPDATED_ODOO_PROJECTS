@@ -669,6 +669,7 @@ class SaleOrderCategory(models.Model):
 
     name = fields.Char()
     order_line = fields.Many2one('sale.order.line', readonly=1)
+    type = fields.Char('Issue Type')
 
 
 class ARS_aftersale_lead2opportunity(models.TransientModel):
@@ -759,7 +760,7 @@ class Lead2OpportunityPartner(models.TransientModel):
 
         leads = self.env['crm.lead'].browse(self._context.get('active_ids', []))
         for lead in leads:
-            if not any([lead.mobile, lead.email_from, lead.source_id, lead.city]):
+            if not all([lead.mobile, lead.email_from, lead.source_id, lead.city]):
                 raise UserError(_("The following fields are mandatory please fill it to continue\n"
                                   " Mobile,Email,Source,City"))
 

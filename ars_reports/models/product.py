@@ -33,3 +33,11 @@ class FleetVehicle(models.Model):
             owner_id.sort() if len(owner_id) > 1 else owner_id
             res = self.customer_ids.search([('id', '=', owner_id[-1])])
         return res
+
+    def _get_service_history(self):
+        service_id = self.service_ids.ids
+        res = False
+        if self.service_ids:
+            service_id.sort() if len(service_id) > 1 else service_id
+            res = self.service_ids.search([('id', '=', service_id[-1])])
+        return res

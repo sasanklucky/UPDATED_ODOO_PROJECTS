@@ -137,12 +137,14 @@ class ARS_After_sale_order(models.Model):
                         invoices[invoice.id] = invoice
                     else:
                         print("invoice created----")
-                        if line.category.name.lower() == 'warranty':
-                            inv_data.update({'cust_invoice_type': 'warranty'})
-                        elif line.category.name.lower() == 'customer':
-                            inv_data.update({'cust_invoice_type': 'customer'})
-                        elif line.category.name.lower() == 'insurance':
-                            inv_data.update({'cust_invoice_type': 'insurance'})
+                        if order.counter_parts == False:
+                            if line.category.name.lower() == 'warranty':
+                                inv_data.update({'cust_invoice_type': 'warranty'})
+                                print('warranty check')
+                            elif line.category.name.lower() == 'customer':
+                                inv_data.update({'cust_invoice_type': 'customer'})
+                            elif line.category.name.lower() == 'insurance':
+                                inv_data.update({'cust_invoice_type': 'insurance'})
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
                         #                         references[invoice] = order
@@ -476,6 +478,23 @@ class AccountInvoice_inherit(models.Model):
         if not self.invoice_line_ids:
             raise UserError(_(
                 'Not allowed to confirm an order without invoice lines'))
+
+
+        # inv_obj = self.env['account.invoice']
+        # rest = inv_obj.browse(res)
+        for order in self:
+            for vin in order.invoice_line_ids.mapped('vin_no'):
+                vehicle_card = self.env['fleet.vehicle'].search([('lot_id', '=', vin.id)])
+                if not vehicle_card:
+                    vehicle_card = self.env['fleet.vehicle'].search([('vin_sn', '=', vin.name)])
+                if vehicle_card:
+                    vehicle_card.write(
+                        {'driver_id': order.partner_id.id, 'vehicle_status': 'customer',
+                         'lot_id': vin.id,
+                         'customer_ids': [(0, 0, {'custmer_name': order.partner_id.id,
+                                                  'date_of_ownership': order.date_invoice,
+                                                  'address': order.partner_id.city,
+                                                  'mobile': order.partner_id.mobile})]})
         res = super(AccountInvoice_inherit, self).action_invoice_open()
         return res
 

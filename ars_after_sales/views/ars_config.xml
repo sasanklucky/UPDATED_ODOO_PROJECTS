@@ -140,6 +140,17 @@
             </field>
         </record>
 
+    <record id="view_category_config_tree" model="ir.ui.view">
+        <field name="name">view_labour_group_tree</field>
+        <field name="model">order.line.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" required="1"/>
+                <field name="type" required="1"/>
+            </tree>
+        </field>
+    </record>
+
         <record id="action_landing_page" model="ir.actions.act_window">
             <field name="name">Landing Settings</field>
             <field name="type">ir.actions.act_window</field>
@@ -148,6 +159,18 @@
             <field name="view_id" ref="view_landing_tree"/>
         </record>
 
+    <record id="action_category_config" model="ir.actions.act_window">
+        <field name="name">Category Config</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">order.line.category</field>
+        <field name="view_type">form</field>
+
+    </record>
+
+        <menuitem id="category_config"
+              action="ars_after_sales.action_category_config"
+              parent="menu_aftersales_config"
+              name="Category Order Line" sequence="4"/>
         <menuitem id="landing_page"
                   action="ars_after_sales.action_landing_page"
                   parent="menu_aftersales_config"

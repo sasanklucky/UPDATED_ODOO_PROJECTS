@@ -15,7 +15,8 @@ class PartsPurchaseReport(models.Model):
     po_id = fields.Many2one('purchase.order', string="PO No")
     po_date = fields.Datetime(string="PO Date")
     part_id = fields.Many2one('product.product', 'Part Replace')
-    part_description = fields.Text(string="Parts Description")
+    part_description = fields.Char(string="Parts Description",related='part_id.name')
+    part_category = fields.Many2one(string="Parts Category", related='part_id.categ_id')
     hsn_code = fields.Char(related="part_id.l10n_in_hsn_code", string="HSN Code")
     default_code = fields.Char(related="part_id.default_code", string="Parts Number")
     quantity = fields.Float(string='Quantity')
@@ -39,7 +40,6 @@ class PartsPurchaseReport(models.Model):
             po.id as po_id,
             po.date_order as po_date,
             ail.product_id as part_id,
-            ail.name as part_description,
             ail.quantity as quantity,
             ail.price_unit as unit_price,
             ail.discount as discount,
@@ -56,14 +56,16 @@ class PartsPurchaseReport(models.Model):
     def _compute_tax_percentage(self):
         for rec in self:
             price = rec.unit_price * (1 - (rec.discount or 0.0) / 100.0)
-            taxes = rec.invoice_line_id.invoice_line_tax_ids.compute_all(price, rec.invoice_no.currency_id, rec.invoice_line_id.quantity, product=rec.invoice_line_id.product_id, partner=rec.invoice_no.partner_id)
+            taxes = rec.invoice_line_id.invoice_line_tax_ids.compute_all(price, rec.invoice_no.currency_id,
+                                                                         rec.invoice_line_id.quantity,
+                                                                         product=rec.invoice_line_id.product_id,
+                                                                         partner=rec.invoice_no.partner_id)
             for t in taxes.get('taxes', []):
-                tax_id = self.env['account.tax'].browse(t.get('id',False))
+                tax_id = self.env['account.tax'].browse(t.get('id', False))
                 if tax_id:
                     if 'cgst' in tax_id.name.lower():
-                        rec.cgst_per = round(tax_id.amount,1)
+                        rec.cgst_per = round(tax_id.amount, 1)
                     if 'sgst' in tax_id.name.lower():
-                        rec.sgst_per = round(tax_id.amount,1)
+                        rec.sgst_per = round(tax_id.amount, 1)
                     if 'igst' in tax_id.name.lower():
-                        rec.igst_per = round(tax_id.amount,1)
-    
+                        rec.igst_per = round(tax_id.amount, 1)

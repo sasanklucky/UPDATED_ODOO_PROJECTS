@@ -134,11 +134,11 @@ class sales_report_format(models.Model):
         print("table name", self._table);
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
                     select row_number() over() as id,a.id as invoice_id,a.company_id,
-                    (select warehouse_id from sale_order where name = a.origin) as warehouse_id,al.product_id,
-                    (select appointment_date::Date from sale_order where name = a.origin) as repair_date,
-                    (select doc_type from sale_order where name = a.origin) as doc_type,a.delivery_date::Date as issue_date,
+                    (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
+                    (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
+                    (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
                     al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id
                     from account_invoice a join account_invoice_line al on a.id = al.invoice_id
                     where a.type = 'out_invoice' 
-                    and a.team_id in (select id from crm_team where team_type = 'after_sales')
+                    and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc limit 1 OFFSET 0)
         )""" % (self._table))

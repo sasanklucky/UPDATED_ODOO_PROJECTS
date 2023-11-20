@@ -164,7 +164,7 @@ class FleetVehicle(models.Model):
 
     @api.multi
     def write(self, vals):
-        if 'driver_id' in vals:
+        if 'driver_id' in vals and 'customer_ids' not in vals and 'date_of_ownership' not in vals:
             res = self.env['res.partner'].browse(vals.get('driver_id'))
             vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
                                                   'date_of_ownership': datetime.now(),

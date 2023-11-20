@@ -111,7 +111,6 @@ class ARS_sale_order(models.Model):
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
     sold_by = fields.Many2one('res.partner')
 
-
     @api.onchange('order_line')
     def onchange_identity_ids(self):
         for order in self.order_line:
@@ -140,6 +139,7 @@ class ARS_sale_order(models.Model):
                 self.sold_by = target.sold_by
             except:
                 pass
+
     @api.multi
     @api.depends('sale_type')
     def _get_product_sale_catalog(self):
@@ -646,7 +646,7 @@ class ARS_sale_order(models.Model):
         if self.env.context.get('count_line') == 0:
             self.env['service.history'].create({
                 'order': self.id,
-                'servicetype': 'First Free Service',
+                'servicetype': self.service_type.name,
                 'date': date.today(),
                 'next_service_due': next_service_due,
                 'set_reminder': set_reminder,

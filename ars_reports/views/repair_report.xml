@@ -95,25 +95,49 @@
                                 <!-- </div> -->
                                 <!-- </div> -->
                             </td>
+                            <t t-set="workshop" t-value="doc.company_id.partner_id.get_workshop_address()"/>
                             <td style="padding: 5px 3px;vertical-align:top" class="bordertransparent" colspan="2"
                                 width="60%">
-                                <span>
-                                    <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
-                                    </t>
-                                    <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
-                                    </t>
-                                    <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
-                                    </t>
-                                    <t t-if="doc.company_id.state_id">
-                                        <span t-field="doc.company_id.state_id.name"/>
-                                    </t>
-                                    <t t-if="doc.company_id.country_id"><span
-                                            t-field="doc.company_id.country_id.name"/>,
-                                    </t>
-                                    <t t-if="doc.company_id.zip">
-                                        <span t-field="doc.company_id.zip"/>
-                                    </t>
-                                </span>
+                                <t t-if="not workshop">
+                                    <span>
+                                        <t t-if="doc.company_id.street"><span t-field="doc.company_id.street"/>,
+                                        </t>
+                                        <t t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/>,
+                                        </t>
+                                        <t t-if="doc.company_id.city"><span t-field="doc.company_id.city"/>,
+                                        </t>
+                                        <t t-if="doc.company_id.state_id">
+                                            <span t-field="doc.company_id.state_id.name"/>
+                                        </t>
+                                        <t t-if="doc.company_id.country_id"><span
+                                                t-field="doc.company_id.country_id.name"/>,
+                                        </t>
+                                        <t t-if="doc.company_id.zip">
+                                            <span t-field="doc.company_id.zip"/>
+                                        </t>
+
+                                    </span>
+                                </t>
+                                <t t-if="workshop">
+                                    <span>
+                                        <t t-if="workshop.street"><span t-field="workshop.street"/>,
+                                        </t>
+                                        <t t-if="workshop.street2"><span t-field="workshop.street2"/>,
+                                        </t>
+                                        <t t-if="workshop.city"><span t-field="workshop.city"/>,
+                                        </t>
+                                        <t t-if="workshop.state_id">
+                                            <span t-field="workshop.state_id.name"/>
+                                        </t>
+                                        <t t-if="workshop.country_id"><span
+                                                t-field="workshop.country_id.name"/>,
+                                        </t>
+                                        <t t-if="workshop.zip">
+                                            <span t-field="workshop.zip"/>
+                                        </t>
+
+                                    </span>
+                                </t>
                             </td>
                         </tr>
                         <tr>
@@ -167,20 +191,22 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Address</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,
-                                </t>
-                                <t t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/>,
-                                </t>
-                                <t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/>,
-                                </t>
-                                <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,
-                                </t>
-                                <t t-if="doc.partner_id.country_id">
-                                    <span t-field="doc.partner_id.country_id.name"/>
-                                </t>
+                                <t t-esc="doc.partner_id.vat"/>
                             </td>
+                            <!--                                <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,-->
+                            <!--                                </t>-->
+                            <!--                                <t t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/>,-->
+                            <!--                                </t>-->
+                            <!--                                <t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/>,-->
+                            <!--                                </t>-->
+                            <!--                                <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,-->
+                            <!--                                </t>-->
+                            <!--                                <t t-if="doc.partner_id.country_id">-->
+                            <!--                                    <span t-field="doc.partner_id.country_id.name"/>-->
+                            <!--                                </t>-->
+
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">VIN</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-esc="doc.vin_no"/>
@@ -196,11 +222,11 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Pin Code</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-if="doc.partner_id.zip">
-                                    <span t-field="doc.partner_id.zip"/>
-                                </t>
+                                <!--                                <t t-if="doc.partner_id.zip">-->
+                                <!--                                    <span t-field="doc.partner_id.zip"/>-->
+                                <!--                                </t>-->
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Motor No</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
@@ -212,9 +238,9 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Email</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-esc="doc.partner_id.email"/>
+                                <!--                                <t t-esc="doc.partner_id.email"/>-->
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Model</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
@@ -238,25 +264,23 @@
 
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Contact No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-esc="doc.partner_id.mobile"/>
+                                <!--                                <t t-esc="doc.partner_id.mobile"/>-->
                             </td>
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Sold By</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Selling Dealer</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-if="doc.regn_no._get_ownership_details()">
-                                    <t t-if="doc.regn_no._get_ownership_details().sold_by.name">
-                                        <t t-esc="doc.regn_no._get_ownership_details().sold_by.name"/>
-                                    </t>
+                                <t t-foreach="doc.regn_no.customer_ids" t-as="o">
+                                    <span t-field="o.sold_by"/>
                                 </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Category</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Booking No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Ownership</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Sale</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-if="doc.regn_no._get_ownership_details()">
                                     <t t-esc="doc.regn_no._get_ownership_details().date_of_ownership"/>
@@ -264,17 +288,17 @@
                             </td>
                             <!--                                <td style="text-align:left;padding: 3px 2px;" class="lborder">Special Message</td>-->
                             <!--                                <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>-->
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Warranty Expiry</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                <t t-esc="doc.regn_no.warranty_validation"/>
+                                <!--                                <t t-esc="doc.regn_no.warranty_validation"/>-->
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-esc="doc.partner_id.vat"/>
+                                <!--                                <t t-esc="doc.partner_id.vat"/>-->
                             </td>
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Mileage</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Km Reading</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-esc="doc.mileage_in"/>
                                 KM.
@@ -292,10 +316,10 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Policy Number</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-if="doc.regn_no._get_insurance_details()">
-                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_doc_no"/>
+                                    <!--                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_doc_no"/>-->
                                 </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Color</td>
@@ -314,10 +338,10 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Insurance Expiry Date</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-if="doc.regn_no._get_insurance_details()">
-                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_end"/>
+                                    <!--                                    <t t-esc="doc.regn_no._get_insurance_details().insurance_end"/>-->
                                 </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>

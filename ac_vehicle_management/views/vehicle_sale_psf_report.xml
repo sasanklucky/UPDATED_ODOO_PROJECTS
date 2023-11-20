@@ -26,6 +26,7 @@
                     <field name="phone" string="Customer Phone" />
                     <field name="pan_no" string="Customer Pan No." />
                     <field name="vin" string="VIN" />
+                    <field name="product_template_id" string="product_template_id" />
                     <field name="model" string="Model" />
                     <field name="amount_untaxed" string="Untaxed Amount" />
                     <field name="amount_tax" string="Tax" />

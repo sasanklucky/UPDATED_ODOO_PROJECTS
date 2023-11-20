@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="vehicle_service_history_template" name="Pro-Forma After Sales">
+        <t t-call="web.external_layout">
+            <div class="page" style="">
+                <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:20px;color:black;font-weight:bold;">Vehicle Service History</span>
+                </div>
+                <br></br>
+                <div style="font-weight:bold;width:100%;background-color:#e0e0e0;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:16px;color:black;font-weight:bold;">VEHICLE INFO</span>
+                </div>
+                <table class="table table-sm"
+                       style="border:1px solid black;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
+                    <tr>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Model &amp; Color</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <span t-field="doc.model_id.name"/>
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Selling Date</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().date_of_ownership">
+                                    <t t-esc="doc._get_ownership_details().date_of_ownership"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Registration Num</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <span t-field="doc.license_plate"/>
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Selling Dealer</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().sold_by">
+                                    <t t-esc="doc._get_ownership_details().sold_by.name"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">VIN Number</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <span t-field="doc.vin_sn"/>
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Last Service Date</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_service_history()">
+                                <t t-if="doc._get_service_history().date">
+                                    <t t-esc="doc._get_service_history().date"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Engine Number</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <span t-field="doc.engine_code"/>
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Last Service Dealer</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_service_history()">
+                                <t t-if="doc._get_service_history().order">
+                                    <t t-esc="doc._get_service_history().order.company_id.name"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Owner Name</td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().custmer_name">
+                                    <span t-field="doc._get_ownership_details().custmer_name.name"/>
+                                </t>
+                            </t>
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">Penultimate Service
+                            Dealer
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px">
+                            <t t-if="doc._get_service_history()">
+                                <t t-if="doc._get_service_history().order">
+                                    <t t-esc="doc._get_service_history().order.company_id.name"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                </br>
+                <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:16px;color:black;font-weight:bold;">
+                        <u>SUMMARY OF SERVICE HISTORY FOR THIS VEHICLE</u>
+                    </span>
+                </div>
+                <span style="font-weight:bold">Total Number of Services Done:</span>
+                <t t-esc="len(doc.service_ids)"/>
+            </div>
+            <br></br>
+            <table class="table-bordered" name="service_line_table"
+                   style="border:1px solid black;margin-bottom: 2px;width: 100%;">
+                <thead>
+                    <tr style="background-color:#e0e0e0">
+                        <th class="text-center" style="border:1px solid black;">SR Num</th>
+                        <th class="text-center" style="border:1px solid black;">Open Date</th>
+                        <th class="text-center" style="border:1px solid black;">Closed Date</th>
+                        <th class="text-center" style="border:1px solid black;">SR Type</th>
+                        <th class="text-center" style="border:1px solid black;">Odometer Reading</th>
+                        <th class="text-center" style="border:1px solid black;">Servicing Dealer</th>
+                    </tr>
+                </thead>
+                <tbody class="service_line_body">
+                    <tr t-foreach="doc.service_ids" t-as="l">
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-field="l.order"/>
+                        </td>
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-field="l.order.date_order" tz="IST"/>
+                        </td>
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-esc="l.order.invoice_ids.mapped('create_date')[-1]"/>
+                        </td>
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-field="l.servicetype"/>
+                        </td>
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-field="l.mileage"/>
+                        </td>
+                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
+                            <span t-field="l.order.company_id.name"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </t>
+    </template>
+    <!--    Detail Service History Tempalate -->
+    <template id="detailed_service_history_template" name="Detailed Service History">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:20px;color:black;font-weight:bold;">
+                        <u>Detailed Service History</u>
+                    </span>
+                </div>
+                <t t-foreach="doc.service_ids" t-as="o">
+                    <div>
+                        <div>
+                            <br></br>
+                            <table class="table table-sm"
+                                   style="border-collapse: collapse;margin-top:2px; margin-bottom:1px;background-color:E1D0D9">
+                                <tr>
+                                    <td style="padding: 0px 2px;font-weight:bold;">SR NUM</td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-field="o.order"/>
+                                    </td>
+                                    <td style="padding: 0px 2px;font-weight:bold;">SR Open Date
+                                    </td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-field="o.order.date_order" t-options='{"widget": "date"}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style=";padding: 0px 2px;font-weight:bold;">SR Type</td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-field="o.servicetype"/>
+                                    </td>
+                                    <td style="padding: 0px 2px;font-weight:bold;">SR Close Date
+                                    </td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-esc="o.order.invoice_ids.mapped('create_date')[-1]"
+                                              t-options='{"widget": "date"}'/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 0px 2px;font-weight:bold;">SR Status</td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-field="o.servicetype"/>
+                                    </td>
+                                    <td style="padding: 0px 2px;font-weight:bold;">Odometer
+                                        reading
+                                    </td>
+                                    <td style="padding: 0px 2px">
+                                        <span t-field="o.mileage"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <br></br>
+                        <table class="table table-sm"
+                               style="border:1px solid black;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
+                            <tr>
+                                <td style="border:0px solid black;padding: 0px 2px;font-weight:bold;">RO NUM</td>
+                                <td style="border:0px solid black;padding: 0px 2px">
+                                    <span t-field="o.order"/>
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">RO Open Date
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px">
+                                    <span t-field="o.order.date_order" t-options='{"widget": "date"}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:0px solid black;padding: 0px 2px;font-weight:bold;">RO Type</td>
+                                <td style="border:0px solid black;padding: 0px 2px">
+                                    <span t-field="o.servicetype"/>
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">RO Close Date
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px">
+                                    <span t-esc="o.order.invoice_ids.mapped('create_date')[-1]"
+                                          t-options='{"widget": "date"}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:0px solid black;padding: 0px 2px;font-weight:bold;">RO Sub Type</td>
+                                <td style="border:0px solid black;padding: 0px 2px">
+                                    <span t-field="o.servicetype"/>
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">RO Status
+                                </td>
+                                <td style="border:1px solid black;padding: 0px 2px">
+                                    <span t-field="o.mileage"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br></br>
+                        <table class="table-bordered" style="width: 100%;">
+                            <thead>
+                                <tr style="background-color:#e0e0e0">
+                                    <th class="text-center" style="border:1px solid black;">Compalints</th>
+                                    <th class="text-center" style="border:1px solid black;">Instruction</th>
+                                </tr>
+                            </thead>
+                            <tr t-foreach="o.order.customer_voice_sale" t-as="l">
+                                <td style="background-color:#FFF;border:1px solid black">
+                                    <span t-field="l.name"/>
+                                </td>
+                                <td style="background-color:#FFF;border:1px solid black">
+                                    <span t-field="l.instructions"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br></br>
+                        <table class="table-bordered" name="service_line_table"
+                               style="border:1px solid black;margin-bottom: 2px;width: 100%;">
+                            <thead>
+                                <tr style="background-color:#e0e0e0">
+                                    <th class="text-center" style="border:1px solid black;">P/L</th>
+                                    <th class="text-center" style="border:1px solid black;">Labor Code/Part#</th>
+                                    <th class="text-center" style="border:1px solid black;">Description</th>
+                                    <th class="text-center" style="border:1px solid black;">Issue Type</th>
+                                    <th class="text-center" style="border:1px solid black;">QTY</th>
+                                </tr>
+                            </thead>
+                            <tbody class="service_tbody">
+
+                                <!--                                <t t-if="o.order.customer_voice_sale">-->
+                                <!--                                    <tr t-foreach="o.order.customer_voice_sale" t-as="cvs">-->
+                                <!--                                        <td class="" style="background-color:#FFF;">-->
+                                <!--                                            Complaint Code<span t-field="cvs.name"/>-->
+                                <!--                                        </td>-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="cvs.instructions.name"/>-->
+                                <!--                                        </td>-->
+                                <!--                                    </tr>-->
+                                <!--                                    <tr t-foreach="o.order.order_line" t-as="sol">-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="sol.product_catalog_id.name"/>-->
+                                <!--                                        </td>-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="sol.product_id.default_code"/>-->
+                                <!--                                        </td>-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="sol.name"/>-->
+                                <!--                                        </td>-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="sol.category.type"/>-->
+                                <!--                                        </td>-->
+                                <!--                                        <td class="text-center" style="background-color:#FFF;">-->
+                                <!--                                            <span t-field="sol.product_uom_qty"/>-->
+                                <!--                                        </td>-->
+                                <!--                                    </tr>-->
+                                <!--                                </t>-->
+                                <tr t-foreach="o.order.order_line" t-as="sol">
+                                    <td class="text-center" style="background-color:#FFF;">
+                                        <span t-field="sol.product_catalog_id.name"/>
+                                    </td>
+                                    <td class="text-center" style="background-color:#FFF;">
+                                        <span t-field="sol.product_id.default_code"/>
+                                    </td>
+                                    <td class="text-center" style="background-color:#FFF;">
+                                        <span t-field="sol.name"/>
+                                    </td>
+                                    <td class="text-center" style="background-color:#FFF;">
+                                        <t t-if="sol.category.type">
+                                            <span t-field="sol.category.type"/>
+                                        </t>
+                                        <t t-else="">
+                                            <span t-field="sol.category.name"/>
+                                        </t>
+                                    </td>
+                                    <td class="text-center" style="background-color:#FFF;">
+                                        <span t-field="sol.product_uom_qty"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

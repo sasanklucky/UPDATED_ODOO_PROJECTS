@@ -30,13 +30,35 @@
                 <field name="name" position="attributes">
                     <attribute name="invisible">1</attribute>
                 </field>
+                <field name="partner_id" position="attributes">
+                    <attribute name="required">1</attribute>
+                </field>
+                <!--                <field name="stage_id" position="attributes">-->
+                <!--                    <attribute name="options">{"no_create": True}</attribute>-->
+                <!--                </field>-->
 
                 <field name="priority" position="before">
                     <field name="email_from" required="1"/>
                     <field name="mobile" required="1" string="Mobile"/>
-                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]"/>
-                    <field name="source_id" string="Source"/>
+                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]" options="{'no_create':True,'no_open':True}"
+                           required="1"/>
+                    <field name="source_id" string="Source" required="1" options="{'no_create':True,'no_open':True}"/>
                     <field name="city" required="1" string="City"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="sale_view_inherit124" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.sale.hide</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale_crm.sale_view_inherit123"/>
+            <field name="arch" type="xml">
+                <field name="source_id" position="attributes">
+                    <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
+                </field>
+                <field name="medium_id" position="attributes">
+                    <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
                 </field>
             </field>
         </record>
