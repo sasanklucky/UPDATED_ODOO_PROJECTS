@@ -10,25 +10,25 @@ import re
 class ARSPartner(models.Model):
     _inherit = 'res.partner'
 
-    def isValidMobileNumber(self, number):
-        Pattern = re.compile("(0|91)?[6-9][0-9]{9}")
-        return Pattern.match(number)
-
-    @api.onchange('mobile')
-    def validate_mobile_number(self):
-        if self.mobile:
-            re.compile("(0|91)?[6-9][0-9]{9}")
-            number = self.mobile
-            country = self.country_id if self.country_id else self.env.user.company_id.country_id
-            result = phone_validation.phone_format(
-                number,
-                country.code if country else None,
-                self.env.user.company_id if self.env.user.company_id else None
-            )
-            if self.isValidMobileNumber(result):
-                print(result)
-            else:
-                raise ValidationError("Please Add correct Aadhar No.")
+    # def isValidMobileNumber(self, number):
+    #     Pattern = re.compile("(0|91)?[6-9][0-9]{9}")
+    #     return Pattern.match(number)
+    #
+    # @api.onchange('mobile')
+    # def validate_mobile_number(self):
+    #     if self.mobile:
+    #         re.compile("(0|91)?[6-9][0-9]{9}")
+    #         number = self.mobile
+    #         country = self.country_id if self.country_id else self.env.user.company_id.country_id
+    #         result = phone_validation.phone_format(
+    #             number,
+    #             country.code if country else None,
+    #             self.env.user.company_id if self.env.user.company_id else None
+    #         )
+    #         if self.isValidMobileNumber(result):
+    #             print(result)
+    #         else:
+    #             raise ValidationError("Please Add correct Aadhar No.")
 
     @api.multi
     def _compute_vehicle_count(self):
