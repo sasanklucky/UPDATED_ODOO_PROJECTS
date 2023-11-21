@@ -140,5 +140,5 @@ class sales_report_format(models.Model):
                     al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id
                     from account_invoice a join account_invoice_line al on a.id = al.invoice_id
                     where a.type = 'out_invoice' 
-                    and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc limit 1 OFFSET 0)
+                    and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc OFFSET 0)
         )""" % (self._table))
