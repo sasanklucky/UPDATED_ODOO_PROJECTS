@@ -37,6 +37,7 @@
         'views/ars_resource_resource_views.xml',
         'views/ars_csstemplates.xml',
         'wizard/ars_check_regn.xml',
+        'wizard/stock_closing_view.xml',
         # 'wizard/ars_time_line.xml',
         'views/customer_dump_mis.xml',
         'views/crm_summary_report.xml',

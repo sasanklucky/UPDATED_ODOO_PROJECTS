@@ -1,60 +1,47 @@
 from odoo import models, fields, tools, api, _
 
 
-class sales_report_format(models.Model):
-    _name = 'sales_report_format'
+class SalesReportFormat(models.Model):
+    _name = 'sales.report.format'
     _description = 'Sales Report Format'
     _auto = False
 
     def get_gst(self):
-        for record in self:
-            record.gst = 18
+        for rec in self:
+            total_tax_percent = 0
+            for tax_id in rec.invoice_line_id.invoice_line_tax_ids:
+                if tax_id.tax_group_id.name == 'Taxes':
+                    for tax_groups in tax_id.children_tax_ids:
+                        total_tax_percent += tax_groups.amount
+                else:
+                    total_tax_percent = tax_id.amount
+            rec.gst = total_tax_percent
 
     def get_gst_amount(self):
         for record in self:
-            record.gst_amount = round((record.amount / 100) * 18)
+            record.gst_amount = round((record.amount / 100) * record.gst)
 
     def get_cgst_amount(self):
         for record in self:
-            tax_group = self.env['account.tax.group'].sudo().search([('name', '=', 'CGST')], limit=1)
-            list_tax = record.invoice_line_id.invoice_line_tax_ids.mapped('id')
-            tax_records = self.env['account.tax'].sudo().search(
-                [('id', 'in', list_tax), ('tax_group_id', '=', tax_group.id)])
-            if tax_records:
-                percent = 0
-                for rec in tax_records:
-                    percent += rec.amount
-                record.cgst_amount = round((record.amount / 100) * percent)
-            else:
-                record.cgst_amount = 0
+            for tax_id in record.invoice_line_id.invoice_line_tax_ids:
+                if tax_id.tax_group_id.name == 'Taxes':
+                    for tax_groups in tax_id.children_tax_ids:
+                        if tax_groups.tax_group_id.name == 'CGST':
+                            record.cgst_amount = round((record.amount / 100) * tax_groups.amount)
 
     def get_sgst_amount(self):
         for record in self:
-            tax_group = self.env['account.tax.group'].sudo().search([('name', '=', 'SGST')], limit=1)
-            list_tax = record.invoice_line_id.invoice_line_tax_ids.mapped('id')
-            tax_records = self.env['account.tax'].sudo().search(
-                [('id', 'in', list_tax), ('tax_group_id', '=', tax_group.id)])
-            if tax_records:
-                percent = 0
-                for rec in tax_records:
-                    percent += rec.amount
-                record.sgst_amount = round((record.amount / 100) * percent)
-            else:
-                record.sgst_amount = 0
+            for tax_id in record.invoice_line_id.invoice_line_tax_ids:
+                if tax_id.tax_group_id.name == 'Taxes':
+                    for tax_groups in tax_id.children_tax_ids:
+                        if tax_groups.tax_group_id.name == 'SGST':
+                            record.sgst_amount = round((record.amount / 100) * tax_groups.amount)
 
     def get_igst_amount(self):
         for record in self:
-            tax_group = self.env['account.tax.group'].sudo().search([('name', '=', 'IGST')], limit=1)
-            list_tax = record.invoice_line_id.invoice_line_tax_ids.mapped('id')
-            tax_records = self.env['account.tax'].sudo().search(
-                [('id', 'in', list_tax), ('tax_group_id', '=', tax_group.id)])
-            if tax_records:
-                percent = 0
-                for rec in tax_records:
-                    percent += rec.amount
-                record.igst_amount = round((record.amount / 100) * percent)
-            else:
-                record.igst_amount = 0
+            for tax_id in record.invoice_line_id.invoice_line_tax_ids:
+                if tax_id.tax_group_id.name == 'IGST':
+                    record.igst_amount = round((record.amount / 100) * tax_id.amount)
 
     def get_utgst_amount(self):
         for record in self:
@@ -122,6 +109,7 @@ class sales_report_format(models.Model):
     utgst_amount = fields.Float(compute="get_utgst_amount", string='UTGST')
     vat_amount = fields.Float(compute="get_vat_amount", string='VAT')
     total_amount = fields.Float(compute="get_total_amount", string='Total')
+
     repair_date = fields.Date('Repair Order Date')
     doc_type = fields.Selection([
         ('appointment', 'Appointment'),
@@ -132,7 +120,7 @@ class sales_report_format(models.Model):
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         print("table name", self._table);
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
+        self.env.cr.execute(f"""  CREATE or REPLACE VIEW %s as (
                     select row_number() over() as id,a.id as invoice_id,a.company_id,
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
                     (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,

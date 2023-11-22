@@ -506,8 +506,7 @@ class ARS_sale_order(models.Model):
     @api.multi
     def action_view_invoice(self):
         userid = self.env.user
-        res = super(ARS_sale_order, self).action_view_invoice()
-        if userid.sale_team_id.team_type == 'after_sales':
+        if userid.sale_team_id.team_type == 'after_sales' or self.sale_type == 'after_sales':
             invoices = self.mapped('invoice_ids')
             action = self.env.ref('account.action_invoice_tree1').read()[0]
             if len(invoices) > 1:
@@ -517,7 +516,9 @@ class ARS_sale_order(models.Model):
                 action['res_id'] = invoices.ids[0]
             else:
                 action = {'type': 'ir.actions.act_window_close'}
+            action['context'] = {'default_ars_invoice_type':'after_sales'}
             return action
+        res = super(ARS_sale_order, self).action_view_invoice()
         return res
 
     @api.multi

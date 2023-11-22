@@ -814,9 +814,9 @@
                             <group>
                                 <field name="doc_type" string="Visit Type" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                 <field name="work_type" string="Work Type" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
-                                <field name="service_type" required="1" options="{'no_create': True}"
+                                <field name="service_type" required="1" options="{'no_create': True}" force_save="1"
                                     attrs="{'readonly': [('state','not in', ('draft', 'so')),('service_type','!=',False)]}"/>
-                                <field name="service_options" required="1" options="{'no_create': True}"
+                                <field name="service_options" required="1" options="{'no_create': True}" force_save="1"
                                     attrs="{'readonly': [('state','not in', ('draft', 'so')),('service_options','!=',False)]}"/>
                                 <!--<field name="resource_id_sale" invisible="1" domain="[('resource_category.code','=','SA')]"/>-->
                                 <field name="user_id" required="1" string="Service Advisor" options="{'no_create': True}"
