@@ -16,8 +16,9 @@
             <field name="header_spacing">20</field>
             <field name="dpi">90</field>
         </record>
+
     <report
-            id="sale.action_report_pro_forma_invoice"
+            id="sale_action_service_history_invoice"
             string="Service History Report"
             model="fleet.vehicle"
             report_type="qweb-pdf"
