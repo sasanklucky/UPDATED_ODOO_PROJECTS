@@ -13,7 +13,7 @@ class SaleOrderInherit(models.Model):
         sale_report4 = self.env.ref('ars_after_sales.estimate_order')
         if 'default_sale_aftersales' in con and con.get('default_sale_aftersales') == 'after_sales':
             sale_report1.unlink_action()
-            # sale_report2.unlink_action()
+            sale_report2.create_action()
             sale_report3.create_action()
             sale_report4.create_action()
         elif 'default_sale_aftersales' in con and con.get('default_sale_aftersales') == 'sales':
