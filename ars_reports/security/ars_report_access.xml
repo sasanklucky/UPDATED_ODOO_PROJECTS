@@ -49,13 +49,13 @@
             </field>
         </record>
 
-        <record model="ir.rule" id="access_sales_report_format_after_sales">
-            <field name="name">Sales Report Access</field>
-            <field name="model_id" ref="ars_after_sales.model_sales_report_format"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]
-            </field>
-        </record>
+<!--        <record model="ir.rule" id="access_sales_report_format_after_sales">-->
+<!--            <field name="name">Sales Report Access</field>-->
+<!--            <field name="model_id" ref="ars_after_sales.model_sales_report_format"/>sales.report.format-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">['|',('company_id','=',False),('company_id','child_of',[user.company_id.id])]-->
+<!--            </field>-->
+<!--        </record>-->
 
 
     </data>
