@@ -83,7 +83,7 @@ class ARS_sale_order(models.Model):
     service_advisor = fields.Many2one('res.users', string="Service Advisor")
     delivery_service_advisor = fields.Many2one('res.users')
     appointment_date = fields.Datetime(string="Appointment Date")
-    delivery_date = fields.Datetime(string="Delivery Date & Time")
+    delivery_date = fields.Datetime(string="Expected Date & Time")
     mileage_in = fields.Integer(string="Kilometer In")
     mileage_out = fields.Integer(string="Kilometer Out")
     show_cal = fields.Boolean(default=False)
