@@ -12,7 +12,7 @@ except ImportError:
 
 class VehicleSalePsfReport(models.Model):
     _name = 'vehicle.sale.psf.report'
-    _description = 'After Sale Report'
+    _description = 'Vehicle Sale Report'
     _auto = False
 
     month = fields.Char(string="Month")
@@ -41,14 +41,13 @@ class VehicleSalePsfReport(models.Model):
     # doc_type = fields.Char(string="Type")
     # user_id = fields.Many2one('res.users', string="Service Advisor", track_visibility='onchange')
     # reg_no = fields.Many2one('fleet.vehicle', string="Reg No.")
-
+    # create_date = fields.Datetime()
     delivery_date = fields.Date(string="Delivery Date")
     delivery_address1 = fields.Char(string="Delivery Address 1")
     delivery_address2 = fields.Char(string="Delivery Address 2")
 
     @api.model_cr
     def init(self):
-        print(self)
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
         select row_number() over(order by inv.id desc) as id,
@@ -285,6 +284,125 @@ class VehicleSalePsfReport(models.Model):
             data = base64.encodebytes(data)
             doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'Vehicle_sale_psf_report_' + str(datetime.now().date()) + '.xls',
                                                        'datas_fname': 'Vehicle_sale_psf_report_' + str(datetime.now().date()) + '.xls',
+                                                       })
+            if param is not None:
+                return doc_id
+            else:
+                return {
+                    'type': 'ir.actions.act_url',
+                    'url': '/web/content/?id=%s&download=true' % doc_id.id,
+                    'target': 'current',
+                }
+        else:
+            False
+
+    def send_ecb_mail(self):
+        rsa_attachment, template = False, False
+        records = self.env['automation.email.conf'].search([])
+        for record in records:
+            if record.ecb_report:
+                if record.report_template_id:
+                    template = record.report_template_id
+                    template.attachment_ids = [(5,)]
+                    rsa_attachment = self.export_xls_ecb(param=True)
+                    users = record.mail_list_ids
+                    template.attachment_ids = [(4, rsa_attachment.id)] if rsa_attachment else False
+                    template.send_mail(self.id, email_values={'recipient_ids': [(4, user.id) for user in users],
+                                                              }, force_send=True)
+                else:
+                    mail_values = {
+                        'subject': record.mail_subject,
+                        'body_html': record.mail_template,
+                        'recipient_ids': [(4, user.id) for user in record.mail_list_ids]
+                    }
+                    mail_obj = self.env['mail.mail'].create(mail_values)
+                    if record.ecb_report:
+                        rsa_attachment = self.export_xls_ecb(param=True)
+                    mail_obj.write({'attachment_ids': [(4, rsa_attachment.id)] if rsa_attachment else False})
+                    mail_obj.send()
+
+    def export_xls_ecb(self, param=None):
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+        sheets = workbook.add_worksheet('ECB Report')
+        sheets.set_column('D:R', 30)
+        sheets.set_column('H:H', 35)
+        sheets.set_column('S:T', 38)
+        format0 = workbook.add_format({'font_size': 20, 'align': 'center', 'bold': True, 'bg_color': '#8f8f8f'})
+        format1 = workbook.add_format({'font_size': 14, 'align': 'vcenter', 'bold': True})
+        format11 = workbook.add_format({'font_size': 10, 'align': 'center'})
+        format12 = workbook.add_format({'font_size': 10, 'align': 'center', 'text_wrap': True})
+        format21 = workbook.add_format({'font_size': 10, 'align': 'center', 'bold': True})
+        format3 = workbook.add_format({'bottom': True, 'top': True, 'font_size': 12})
+        red_mark = workbook.add_format({'font_size': 8, 'bg_color': 'red'})
+        justify = workbook.add_format({'font_size': 12})
+        format3.set_align('center')
+        justify.set_align('justify')
+        format1.set_align('center')
+        red_mark.set_align('center')
+        sheets.merge_range(0, 0, 2, 23, 'ECB Report ', format0)
+        sheets.write(3, 0, 'Sl No', format21)
+        sheets.write(3, 1, 'Month', format21)
+        sheets.write(3, 2, 'Year', format21)
+        sheets.write(3, 3, 'Dealer Name', format21)
+        sheets.write(3, 4, 'Invoice Date', format21)
+        sheets.write(3, 5, 'Invoice Number', format21)
+        sheets.write(3, 6, 'Sales Person', format21)
+        sheets.write(3, 7, 'Customer Name', format21)
+        sheets.write(3, 8, 'Customer Mobile', format21)
+        sheets.write(3, 9, 'Customer City', format21)
+        sheets.write(3, 10, 'Customer Phone', format21)
+        sheets.write(3, 11, 'Customer Pan No.', format21)
+        sheets.write(3, 12, 'VIN', format21)
+        sheets.write(3, 13, 'Model', format21)
+        sheets.write(3, 14, 'Untaxed Amount', format21)
+        sheets.write(3, 15, 'Tax', format21)
+        sheets.write(3, 16, 'Total', format21)
+        sheets.write(3, 17, 'Delivery Date', format21)
+        sheets.write(3, 18, 'Delivery Address 1', format21)
+        sheets.write(3, 19, 'Delivery Address 2', format21)
+
+        date = str(datetime.now().date())
+        dateval = datetime.strptime(date, "%Y-%m-%d")
+        datetimes = datetime.strftime(dateval, "%Y-%m-%d")
+        records = self.env['vehicle.sale.psf.report'].search([('invoice_date', '=', datetimes),
+                                                              ('product_template_id.ecb', '=', 'yes'),])
+
+        row = 4
+        column = 0
+        sl = 0
+        for record in records:
+            sheets.write(row, column, sl + 1, format11)
+            sheets.write(row, column + 1, record.month, format11)
+            sheets.write(row, column + 2, record.year, format11)
+            sheets.write(row, column + 3, record.dealer_name_id.name, format12)
+            sheets.write(row, column + 4, record.invoice_date, format11)
+            sheets.write(row, column + 5, record.invoice_number, format11)
+            sheets.write(row, column + 6, record.user_id.name, format12)
+            sheets.write(row, column + 7, record.partner_id.name, format11)
+            sheets.write(row, column + 8, record.mobile, format11)
+            sheets.write(row, column + 9, record.city, format11)
+            sheets.write(row, column + 10, record.phone, format11)
+            sheets.write(row, column + 11, record.pan_no, format11)
+            sheets.write(row, column + 12, record.vin, format11)
+            sheets.write(row, column + 13, record.product_template_id.name, format11)
+            sheets.write(row, column + 14, record.amount_untaxed, format11)
+            sheets.write(row, column + 15, record.amount_tax, format11)
+            sheets.write(row, column + 16, record.amount_total, format11)
+            sheets.write(row, column + 17, record.delivery_date, format11)
+            sheets.write(row, column + 18, record.delivery_address1, format12)
+            sheets.write(row, column + 19, record.delivery_address2, format12)
+
+            sl = sl + 1
+            row = row + 1
+        workbook.close()
+        output.seek(0)
+        if records:
+            data = output.read()
+            output.close()
+            data = base64.encodebytes(data)
+            doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'ECB_report_' + str(datetime.now().date()) + '.xls',
+                                                       'datas_fname': 'ECB_report_' + str(datetime.now().date()) + '.xls',
                                                        })
             if param is not None:
                 return doc_id

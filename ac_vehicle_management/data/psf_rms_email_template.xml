@@ -32,7 +32,7 @@
 
         <record id="mail_template_send_ecb_report" model="mail.template">
             <field name="name">ECB Report</field>
-            <field name="model_id" ref="ars_reports.model_after_sale_report"/>
+            <field name="model_id" ref="ac_vehicle_management.model_vehicle_sale_psf_report"/>
             <field name="auto_delete" eval="True"/>
             <field name="subject">ECB Report</field>
             <field name="lang"></field>
