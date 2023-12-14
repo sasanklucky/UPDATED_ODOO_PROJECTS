@@ -72,7 +72,9 @@ class EbillCancel(models.TransientModel):
             "CnlRsn": self.cancel_reason,
             "CnlRem": self.desc
         }
+        print("json for cancel",json.dumps(data))
         try:
+            url = ''
             if einvoicing.testing == 't':
                 url = 'https://gstsandbox.charteredinfo.com/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
                 url = str(url)
