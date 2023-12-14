@@ -361,6 +361,7 @@
                                 <field name="engine_type_code"/>
                                 <field name="awd"/>
                                 <field name="rsa" string="RSA"/>
+                                <field name="ecb" string="ECB"/>
                                 <!--<field name="transmission_type_code"/>-->
                             </group>
                             <group string="Weight &amp; Loads">

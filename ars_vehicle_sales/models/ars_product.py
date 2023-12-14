@@ -121,6 +121,7 @@ class ARS_product_vehicle(models.Model):
     catalog_type_name = fields.Char(related='catalog_type.name')
     labor_unit = fields.Float()
     rsa = fields.Selection([('yes', 'YES'), ('no', 'NO')])
+    ecb = fields.Selection([('yes', 'YES'), ('no', 'NO')])
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
