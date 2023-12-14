@@ -11,6 +11,8 @@ class ARS_MailActivity(models.Model):
     _name = 'mail.activity'
     _inherit = ['mail.activity', 'mail.thread']
 
+    company_id = fields.Many2one('res.company', related="user_id.company_id", store=True)
+
     @api.multi
     @api.depends('response_id', 'survey_percentage')
     def get_survey_percentage(self):
@@ -19,27 +21,25 @@ class ARS_MailActivity(models.Model):
             if rec.response_id.state == 'done':
                 # try:
                 questions = rec.response_id.user_input_line_ids.mapped('question_id')
-                question_marks = questions.mapped('labels_ids.quizz_mark')
-                score = rec.response_id.quizz_score / sum(question_marks) * 100
-                # print(rec.response_id.quizz_score, sum(question_marks))
+                # question_marks = questions.mapped('labels_ids.quizz_mark')
+                score = rec.response_id.quizz_score / (len(questions) * 100) * 100
                 rec.survey_percentage = float("%.2f" % score)
                 rec.write({'survey_marks': float("%.2f" % score)})
                 # except ZeroDivisionError:
                 #     rec.survey_percentage = 0
 
     invoice_type = fields.Selection([('sales', 'Sales'), ('after_sales', 'After Sales')], string="Invoice Type")
-    invoice_id = fields.Many2one('account.invoice', string="Customer Invoice", track_visibility='onchange')
-    cre_id = fields.Many2one('cre_team_configuration', string="CRE Team", track_visibility='onchange')
-    stages = fields.Selection([('pending', 'Pending'), ('survey_done', 'Survey Done'),
-                               ('ticket_created', 'Ticket Created'),
-                               ('completed', 'Completed')],
-                              string="Status", default="pending", store=True, track_visibility='onchange')
+    invoice_id = fields.Many2one('account.invoice', string="Customer Invoice")
+    cre_id = fields.Many2one('cre_team_configuration', string="CRE Team")
+    stages = fields.Selection(
+        [('pending', 'Pending'), ('survey_done', 'Survey Done'), ('ticket_created', 'Ticket Created'),
+         ('completed', 'Completed')], string="Status", default="pending", store=True)
     # compute_stages = fields.Char(string="Compute Stages",compute="_get_compute_stages")
     survey_percentage = fields.Float(string="Survey %", compute="get_survey_percentage")
     survey_marks = fields.Float(string="Survey Marks")
-    response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null",
-                                  oldname="response",track_visibility='onchange')
+    response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null", oldname="response")
     ticket_count = fields.Integer(string="Ticket Count", compute="_get_ticket_count")
+    psf_order_id = fields.Many2one('sale.order', 'Order ID', index=True)
 
     @api.multi
     def _get_ticket_count(self):

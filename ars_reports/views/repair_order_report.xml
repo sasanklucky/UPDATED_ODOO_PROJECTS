@@ -16,6 +16,7 @@
                     <field name="dealer_id" />
                     <field name="dealer_state_id" />
                     <field name="dealer_city_id" />
+                    <field name="ro_number"/>
                     <field name="customer_id" />
                     <field name="customer_contact" />
                     <field name="customer_state_id" />
@@ -24,23 +25,24 @@
                     <!-- <field name="line_item_id" /> -->
                     <field name="vin" />
                     <field name="registration_no" />
-                    <field name="model" />
-<!--                    <field name="product_varient_id" />-->
-<!--                    <field name="vehiclesale_dt" />-->
+                    <field name="product_varient_id" />
+                    <field name="model" string="Product Varient"/>
+                    <field name="vehiclesale_dt" />
                     <field name="last_service_dealer" />
                     <field name="last_service_date" />
                     <field name="last_service_km" />
                     <field name="stages" />
                     <field name="last_ro_close_date" />
-                    <field name="ro_number" />
-                    <field name="ro_open_date" />
-                    <field name="ro_close_date" />
-                    <field name="service_type" />
-                    <field name="odoometer" />
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
+                    <field name="ro_ageing"/>
+                    <field name="service_type"/>
+                    <field name="odoometer"/>
 <!--                    <field name="part_id" />-->
                     <field name="product_catalog" />
                     <field name="part_ref" />
                     <field name="part_description" />
+                    <field name="product_uom_qty" />
                     <field name="part_price" />
                     <field name="cgst_per" />
                     <field name="sgst_per" />
@@ -62,6 +64,9 @@
             <field name="arch" type="xml">
                 <search string="repair_order_report_search">
                     <field name="dealer_code" />
+                    <field name="part_description" />
+                    <filter string="Part/ Labour Description" name="groupby_part_description" domain="[]"
+                                context="{'group_by':'part_description'}"/>
                 </search>
             </field>
         </record>

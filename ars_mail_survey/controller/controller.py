@@ -3,11 +3,14 @@ import logging
 from odoo import http
 from odoo.http import request
 from odoo import fields, http, SUPERUSER_ID
+
 _logger = logging.getLogger(__name__)
 import odoo.addons.survey.controllers.main as main
 
+
 class WebsiteSurvey(main.WebsiteSurvey):
-    @http.route(['/survey/submit/<model("survey.survey"):survey>'], type='http', methods=['POST'], auth='public', website=True)
+    @http.route(['/survey/submit/<model("survey.survey"):survey>'], type='http', methods=['POST'], auth='public',
+                website=True)
     def submit(self, survey, **post):
         _logger.debug('Incoming data: %s', post)
         page_id = int(post['page_id'])
@@ -33,7 +36,8 @@ class WebsiteSurvey(main.WebsiteSurvey):
 
             for question in questions:
                 answer_tag = "%s_%s_%s" % (survey.id, page_id, question.id)
-                request.env['survey.user_input_line'].sudo(user=user_id).save_lines(user_input.id, question, post, answer_tag)
+                request.env['survey.user_input_line'].sudo(user=user_id).save_lines(user_input.id, question, post,
+                                                                                    answer_tag)
 
             go_back = post['button_submit'] == 'previous'
             next_page, _, last = request.env['survey.survey'].next_page(user_input, page_id, go_back=go_back)
@@ -41,11 +45,12 @@ class WebsiteSurvey(main.WebsiteSurvey):
             if next_page is None and not go_back:
                 vals.update({'state': 'done'})
                 mail_activity_model = request.env['mail.activity']
-                activity_id = mail_activity_model.search([('response_id','=',user_input.id)])
+                activity_id = mail_activity_model.search([('response_id', '=', user_input.id)])
                 if activity_id:
                     questions = activity_id.response_id.user_input_line_ids.mapped('question_id')
-                    question_marks = questions.mapped('labels_ids.quizz_mark')
-                    score = activity_id.response_id.quizz_score / sum(question_marks) * 100
+                    # question_marks = questions.mapped('labels_ids.quizz_mark')
+                    # score = activity_id.response_id.quizz_score / sum(question_marks) * 100
+                    score = activity_id.response_id.quizz_score / (len(questions) * 100) * 100
                     param = request.env['ir.config_parameter'].sudo()
                     survey_percentage = param.get_param('ars_mail_survey.survey_percentage')
 
@@ -61,7 +66,7 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     #     request.env['helpdesk.ticket'].sudo().create(vals)
                     #     activity_id.write({'stages':'ticket_created'})
                     else:
-                        activity_id.write({'stages':'survey_done'})
+                        activity_id.write({'stages': 'survey_done'})
             else:
                 vals.update({'state': 'skip'})
             user_input.sudo(user=user_id).write(vals)
