@@ -1,4 +1,6 @@
 from odoo import models, fields, api, tools, _
+from odoo.tools import datetime
+
 
 class RepairOrderReport(models.Model):
     _name = 'repair.order.report'
@@ -15,7 +17,7 @@ class RepairOrderReport(models.Model):
     line_item_id = fields.Many2one('sale.order.line',string="Order Line")
     vin = fields.Char(string="VIN")
     registration_no = fields.Many2one('fleet.vehicle',string="Registration No")
-    model = fields.Many2one('product.product',string="Model")
+    model = fields.Many2one('product.product',string="Product Varient")
     last_service_dealer = fields.Char(string="Last Service Dealer")
     last_service_date = fields.Date(string="Last Service Date")
     ro_number = fields.Char(string="RO Number")
@@ -36,7 +38,7 @@ class RepairOrderReport(models.Model):
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per  = fields.Float(string="IGST %", compute="_compute_tax_percentage")
     dealer_gst = fields.Char(string='Dealer Gst',related='dealer_id.vat')
-    product_varient_id = fields.Many2one(string='Product Variant',related='registration_no.mvariant_id')
+    product_varient_id = fields.Many2one(string='Product Name',related='registration_no.model_id')
     vehiclesale_dt = fields.Date(string='Vehicle Sale Date')
     last_service_km = fields.Integer(string='Last Odometer Reading')
     repair_type = fields.Many2one('service.type',string='Repair Type')
@@ -47,7 +49,21 @@ class RepairOrderReport(models.Model):
     stages = fields.Selection(
         [('pending', 'Pending'), ('survey_done', 'Survey Done'), ('ticket_created', 'Ticket Created'),
          ('completed', 'Completed')], string="PSF Status",compute='psf_status_crm')
+    product_uom_qty = fields.Float(string='Ordered Quantity')
+    ro_ageing = fields.Integer('Ro Ageing',compute='ro_ageing_compute')
 
+    @api.depends('ro_close_date', 'ro_open_date')
+    def ro_ageing_compute(self):
+        for record in self:
+            if record.ro_open_date and record.ro_close_date:
+                start_date = fields.Datetime.from_string(record.ro_open_date)
+                end_date = fields.Datetime.from_string(record.ro_close_date)
+
+                # Calculate the difference in days
+                delta = end_date - start_date
+                record.ro_ageing = delta.days
+            else:
+                record.ro_ageing = 0
     def psf_status_crm(self):
         for record in self:
             # print('record',record)
@@ -80,7 +96,7 @@ class RepairOrderReport(models.Model):
             (select mileage from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_km,
             (select date_of_ownership from ownership_history where vehicle_id = so.regn_no order by id desc  limit 1) as vehiclesale_dt,
             (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
-            (select so.create_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
+            (select so.appointment_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
             (select so.confirmation_date from service_history sh where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
             so.service_type as service_type,
             (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
@@ -90,6 +106,7 @@ class RepairOrderReport(models.Model):
             sol.name as part_description,
             sol.price_unit as price_unit,
             sol.discount as discount,
+            sol.product_uom_qty as product_uom_qty,
             sol.price_subtotal as part_price,
             sol.price_total as total_part_price,
             sol.product_catalog_id as product_catalog
