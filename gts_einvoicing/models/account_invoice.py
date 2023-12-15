@@ -418,7 +418,8 @@ class account_invoice(models.Model):
                 total_tax = total_igst + total_cgst + total_sgst
                 item_dict = {
                     "SlNo": str(idx + 1),
-                    "IsServc": 'N', #       # "IsServc": inv_line.is_service,
+                    # "IsServc": 'N',
+                    "IsServc": inv_line.is_service,
                     "HsnCd": inv_line.hsn_code,
                     "PrdDesc": inv_line.name,
                     "Qty": inv_line.quantity,
