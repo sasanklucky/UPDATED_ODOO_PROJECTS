@@ -81,6 +81,7 @@ class EbillCancel(models.TransientModel):
             if einvoicing.testing == 'p':
                 url = 'https://api.taxprogsp.co.in/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
                 url = str(url)
+            print("url",url)
             headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
             response = requests.post(url, data=json.dumps(data), headers=headers)
             res = response.content

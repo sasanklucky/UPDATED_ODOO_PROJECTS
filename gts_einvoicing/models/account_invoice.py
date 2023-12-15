@@ -147,13 +147,13 @@ class account_invoice(models.Model):
             raise UserError(_('Company Pincode is not present.'))
         if not self.company_id.city:
             raise UserError(_('Company City is not present.'))
-        if not self.company_id.state_id.port_code:
+        if not self.company_id.state_id.code:
             raise UserError(_('Company State Code is not present.'))
         if not self.date_invoice:
             raise UserError(_('Please Enter Invoice Date'))
         if not self.partner_id.name:
             raise UserError(_('Please Enter Buyer Name'))
-        if not self.partner_id.state_id.port_code:
+        if not self.partner_id.state_id.code:
             raise UserError(_('Please Enter Buyer State Code'))
         if not self.partner_id.city:
             raise UserError(_('Please Enter Buyer City'))
@@ -165,7 +165,7 @@ class account_invoice(models.Model):
             raise UserError(_('Please Enter Invoice Date'))
         if not self.partner_id.name:
             raise UserError(_('Please Enter warehouse Name'))
-        # if not self.partner_id.state_id.port_code:
+        # if not self.partner_id.state_id.code:
         #     raise UserError(_('Please Enter warehouse State Code'))
         if not self.partner_id.city:
             raise UserError(_('Please Enter warehouse City'))
@@ -268,50 +268,50 @@ class account_invoice(models.Model):
             "Addr1": self.company_id.street,
             "Loc": self.company_id.city,
             # "TrdNm":'',
-            "State": self.company_id.state_id.port_code,
+            "State": self.company_id.state_id.code,
             "Pin": int(self.company_id.zip),
-            "Stcd": self.company_id.state_id.port_code,
+            "Stcd": self.company_id.state_id.code,
         }
         if self.partner_id.country_id.code != 'IN':
             # _logger.info("=====================tenure==%s=", self.partner_id.country_id.code)
             BuyerDtls = {
                 "Gstin": self.partner_id.vat,
                 "LglNm": self.partner_id.name,
-                "Pos": self.partner_id.state_id.port_code,
+                "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.port_code,
+                "State": self.partner_id.state_id.code,
                 "Pin": self.partner_id.zip,
-                "Stcd": self.partner_id.state_id.port_code,
+                "Stcd": self.partner_id.state_id.code,
             }
         else:
             # if self.sup_type == 'B2COters':
             #     BuyerDtls = {
             #         "Gstin": 'URP',
             #         "LglNm": self.partner_id.name,
-            #         "Pos": self.partner_id.state_id.port_code,
+            #         "Pos": self.partner_id.state_id.code,
             #         "Addr1": self.partner_id.street,
             #         "Loc": self.partner_id.city,
             #         "Pin": int(self.partner_id.zip),
-            #         "Stcd": self.partner_id.state_id.port_code, }
+            #         "Stcd": self.partner_id.state_id.code, }
             # else:
             BuyerDtls = {
                 "Gstin": self.partner_id.vat,
                 "LglNm": self.partner_id.name,
-                "Pos": self.partner_id.state_id.port_code,
+                "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.port_code,
+                "State": self.partner_id.state_id.code,
                 "Pin": int(self.partner_id.zip),
-                "Stcd": self.partner_id.state_id.port_code, }
-            # print("BuyerDtls=================%s===",self.partner_id.state_id.port_code)
+                "Stcd": self.partner_id.state_id.code, }
+            # print("BuyerDtls=================%s===",self.partner_id.state_id.code)
 
         DispDtls = {
             "Nm": warehouse.partner_id.name,
             "Addr1": warehouse.partner_id.street,
             "Loc": warehouse.partner_id.city,
             "Pin": int(warehouse.partner_id.zip),
-            "Stcd": warehouse.partner_id.state_id.port_code
+            "Stcd": warehouse.partner_id.state_id.code
         }
         # if self.temp:
         #     ShipDtls = {
@@ -319,7 +319,7 @@ class account_invoice(models.Model):
         #         "Addr1": self.street,
         #         "Loc": self.city,
         #         "Pin": int(self.zip),
-        #         "Stcd": self.state_id.port_code
+        #         "Stcd": self.state_id.code
         #     }
         # else:
         addr1 = ''
@@ -333,7 +333,7 @@ class account_invoice(models.Model):
             "Addr1": addr1,
             "Loc": self.partner_id.city,
             "Pin": int(self.partner_id.zip),
-            "Stcd": self.partner_id.state_id.port_code,
+            "Stcd": self.partner_id.state_id.code,
         }
         if self.transaction_type == '1':
             data['SellerDtls'] = SellerDtls
@@ -586,7 +586,7 @@ class account_invoice(models.Model):
 
         if not self.partner_id.name:
             raise UserError(_('Please Enter Buyer Name'))
-        # if not self.partner_id.state_id.port_code:
+        # if not self.partner_id.state_id.code:
         #     raise UserError(_('Please Enter Buyer State Code'))
         if not self.partner_id.city:
             raise UserError(_('Please Enter Buyer City'))
@@ -618,7 +618,7 @@ class account_invoice(models.Model):
             "Loc": self.company_id.city,
             # "TrdNm":'',
             "Pin": int(self.company_id.zip),
-            "Stcd": self.company_id.state_id.port_code,
+            "Stcd": self.company_id.state_id.code,
         }
         if self.partner_id.country_id.code != 'IN':
             BuyerDtls = {
@@ -634,18 +634,18 @@ class account_invoice(models.Model):
             BuyerDtls = {
                 "Gstin": self.partner_id.vat,
                 "LglNm": self.partner_id.name,
-                "Pos": self.partner_id.state_id.port_code,
+                "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
                 "Pin": int(self.partner_id.zip),
-                "Stcd": self.partner_id.state_id.port_code, }
+                "Stcd": self.partner_id.state_id.code, }
 
         DispDtls = {
             "Nm": warehouse.partner_id.name,
             "Addr1": warehouse.partner_id.street,
             "Loc": warehouse.partner_id.city,
             "Pin": int(warehouse.partner_id.zip),
-            "Stcd": warehouse.partner_id.state_id.port_code
+            "Stcd": warehouse.partner_id.state_id.code
         },
         # if self.temp:
         #     ShipDtls = {
@@ -653,7 +653,7 @@ class account_invoice(models.Model):
         #         "Addr1": self.street,
         #         "Loc": self.city,
         #         "Pin": int(self.zip),
-        #         "Stcd": self.state_id.port_code
+        #         "Stcd": self.state_id.code
         #     }
         # else:
         ShipDtls = {
@@ -661,7 +661,7 @@ class account_invoice(models.Model):
             "Addr1": self.partner_shipping_id.street or '' + ',' + self.partner_shipping_id.street2 or '',
             "Loc": self.partner_shipping_id.city,
             "Pin": int(self.partner_shipping_id.zip),
-            "Stcd": self.partner_shipping_id.state_id.port_code
+            "Stcd": self.partner_shipping_id.state_id.code
         }
         if self.transaction_type == '1':
             data1['SellerDtls'] = SellerDtls
