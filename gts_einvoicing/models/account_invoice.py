@@ -319,7 +319,7 @@ class account_invoice(models.Model):
         #         "Addr1": self.street,
         #         "Loc": self.city,
         #         "Pin": int(self.zip),
-        #         "Stcd": self.state_id.code
+        #         "Stcd": self.state_id.port_code
         #     }
         # else:
         addr1 = ''
@@ -491,19 +491,20 @@ class account_invoice(models.Model):
 
         headers = {'Content-Type': 'application/json;charset=utf-8'}
 
-        _logger.info("==url===%s", url)
-        _logger.info("==Data===%s", data)
-        print("API Data====", data)
-        print("dump data",json.dumps(data))
+        _logger.info("==API Url===%s", url)
+        _logger.info("==API Data===%s", json.dumps(data))
+        print("API Url====", url)
+        print("API data",json.dumps(data))
         response = requests.post(url, data=json.dumps(data), headers=headers)
 
         res = response.content
         _logger.info("==Res Cont===%s", res)
-        print('data==================================>>>>>', response)
+        # print('data==================================>>>>>', response)
 
         # _logger.info("=====================tenure==%s=",  res)
         res_dict = json.loads(res)
-        print("res_dict===>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", res_dict)
+        _logger.info("==API  Response===%s", res_dict)
+        print("API Response", res_dict)
         self.e_invoice_data = data
         self.exception_reason = res_dict
         if res_dict.get('Status') == '1':
@@ -530,6 +531,10 @@ class account_invoice(models.Model):
             if self.eway_bill_no:
                 self.env.user.notify_info(message='IRN Number and Eway Bill Created Successfully !')
             self.env.user.notify_info(message='IRN Number Created Successfully !')
+        if res_dict.get('error') and  res_dict.get('error'):
+            if res_dict.get('error').get('error_cd') == 'GSP752' or res_dict.get('error').get(
+                    'message') == 'Error: eInvoice AuthToken not found or expired. Please call Authenticate API on IRP:1':
+                einvoicing.handle_einvoicing_auth_token()
         if res_dict.get('Status') == '0':
             self.exception_reason = res_dict
             self.e_invoice_status = 'exception'
