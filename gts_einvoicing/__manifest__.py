@@ -21,7 +21,7 @@
     'data': [
         'security/ir.model.access.csv',
         'security/e_invoice_group.xml',
-        # 'reports/invoice_report.xml',
+        'reports/invoice_report.xml',
         'data/uom_data.xml',
 	    'data/res_country_state_data.xml',
         'wizard/cancel_einvoice.xml',
