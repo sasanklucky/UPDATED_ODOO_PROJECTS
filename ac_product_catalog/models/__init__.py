@@ -5,3 +5,4 @@ from . import ars_operational_type
 from . import ars_account_invoice
 from . import ars_stock_warehouse
 # from . import ars_sale_order
+from . import shell_location

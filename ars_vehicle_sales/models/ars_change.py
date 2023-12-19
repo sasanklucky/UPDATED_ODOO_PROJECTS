@@ -23,6 +23,8 @@ class arsCompany(models.Model):
         ('north', 'NORTH'),
         ('south', 'SOUTH')
     ], 'Dealer Zone')
+    display_name_short = fields.Char(string="Display Name", track_visibility='always')
+
 
 
 class ars_sale_crm_lead(models.Model):

@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <record model="ir.rule" id="access_ars_mail_activity">
+        <field name="name">Mail Activity Access</field>
+        <field name="model_id" ref="model_mail_activity"/>
+        <field name="global" eval="True"/>
+        <field name="domain_force">[('company_id','=',[user.company_id.id])]
+        </field>
+    </record>
+
+    <record id="mail.mail_activity_rule_user" model="ir.rule">
+        <field name="name">mail.activity: user: own only</field>
+        <field name="model_id" ref="model_mail_activity"/>
+        <field name="domain_force">[('company_id','=',[user.company_id.id])]</field>
+        <field name="active" eval="False"/>
+    </record>
+
+</odoo>

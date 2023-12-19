@@ -96,7 +96,16 @@
                                 <field name="labor_warranty_rate"/>
                             </div>
                         </div>
-                     </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_sale_setting">
+                        <div class="o_setting_right_pane">
+                            <label string="Sale Text Message"/>
+                            <div class="text-muted">
+                                Sale Text
+                            </div>
+                            <field name="sale_text"/>
+                        </div>
+                    </div>
                 </div>
             </xpath>
         </field>

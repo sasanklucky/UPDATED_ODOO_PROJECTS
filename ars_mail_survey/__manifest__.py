@@ -12,11 +12,13 @@
     'depends': ['product', 'crm','mail', 'sale', 'ars_after_sales', 'account','survey','helpdesk'],
     'data': [
         'security/ir.model.access.csv',
+        'security/mail_activity_security.xml',
         # 'views/ars_res_partner_views.xml',
         # 'views/ars_after_sale_views.xml',
         # 'views/ars_templates.xml',
         'views/ars_sales_followup.xml',
         'views/ars_post_sales_followup.xml',
+        'views/ars_mail_activity_type_views.xml',
         # 'wizard/ars_split_line_item_views.xml',
         'views/res_config_settings.xml',
         'views/followup_spoc_master.xml',

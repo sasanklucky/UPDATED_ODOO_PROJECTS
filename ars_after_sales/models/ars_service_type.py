@@ -10,6 +10,7 @@ class ARSServiceType(models.Model):
     _name = 'service.type'
 
     name = fields.Char('Sale Type')
+    service_option_id = fields.Many2one('service.options')
 
 
 class ARSServiceOptions(models.Model):

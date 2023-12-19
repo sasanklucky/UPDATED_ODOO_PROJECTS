@@ -89,8 +89,8 @@
                                                groups="base.group_multi_company"
                                                options="{'no_create': True}"/>
                                         <field name="campaign_id"/>
-                                        <field name="medium_id"/>
-                                        <field name="source_id"/>
+                                        <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="referred"/>
                                     </group>
                                     <group string="Analysis" groups="base.group_no_one">
@@ -814,10 +814,10 @@
                             <group>
                                 <field name="doc_type" string="Visit Type" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                 <field name="work_type" string="Work Type" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
-                                <field name="service_type" required="1" options="{'no_create': True}" force_save="1"
-                                    attrs="{'readonly': [('state','not in', ('draft', 'so')),('service_type','!=',False)]}"/>
-                                <field name="service_options" required="1" options="{'no_create': True}" force_save="1"
-                                    attrs="{'readonly': [('state','not in', ('draft', 'so')),('service_options','!=',False)]}"/>
+                                <field name="service_options" required="1" options="{'no_create': True}"
+                                    attrs="{'readonly': [('state','not in', ('draft'))]}"/>
+                                <field name="service_type" required="1" options="{'no_create': True}"
+                                    attrs="{'readonly': [('state','not in', ('draft'))]}" domain="[('service_option_id', '=',service_options)]"/>
                                 <!--<field name="resource_id_sale" invisible="1" domain="[('resource_category.code','=','SA')]"/>-->
                                 <field name="user_id" required="1" string="Service Advisor" options="{'no_create': True}"
                                        domain="[('serviceadvisor','=',True)]" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
@@ -1362,7 +1362,7 @@
                                     <group string="Marketing">
                                         <field name="campaign_id"/>
                                         <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="source_id"/>
+                                        <field name="source_id" options="{'no_create': True, 'no_open': True}"/>
                                     </group>
                                     <group string="Misc" name="Misc">
                                         <field name="day_open" groups="base.group_no_one"/>

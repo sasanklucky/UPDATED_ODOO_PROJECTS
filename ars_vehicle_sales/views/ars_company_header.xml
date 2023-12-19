@@ -188,14 +188,14 @@
                     </t>
                 </div>
                 <div name="financial_infos" class="text-left">
-                    <span t-field="company.report_footer" />
+                    <span t-field="company.report_footer"/>
                 </div>
                 <div class="text-center">
                     <div class="text-muted">
                         Page:
-                        <span class="page" />
+                        <span class="page"/>
                         /
-                        <span class="topage" />
+                        <span class="topage"/>
                     </div>
                 </div>
             </div>
@@ -230,6 +230,14 @@
                 <field name="dealer_zone"/>
                 <field name="dealer_code"/>
                 <field name="make_id"/>
+            </field>
+            <field name="name" position="after">
+                <div class="oe_title">
+                    <label for="display_name_short" string="Display Name" class="oe_edit_only"/>
+                    <h5>
+                        <field name="display_name_short"/>
+                    </h5>
+                </div>
             </field>
             <field name="state_id" position="attributes">
                 <attribute name="options">{'no_create':True,'no_edit':True}</attribute>

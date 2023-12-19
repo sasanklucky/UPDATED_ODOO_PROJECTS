@@ -10,6 +10,7 @@ class ARS_account_invoice(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
 
+
     @api.multi
     def invoice_print(self):
         res = super(ARS_account_invoice, self).invoice_print()

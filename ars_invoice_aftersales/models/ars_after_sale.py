@@ -2,7 +2,7 @@ from odoo import models, fields, api, _
 from datetime import datetime, timedelta
 from datetime import date
 from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.exceptions import UserError, AccessError
+from odoo.exceptions import UserError, AccessError, ValidationError
 
 
 class ARS_After_sale_order(models.Model):
@@ -23,6 +23,38 @@ class ARS_After_sale_order(models.Model):
         self.write({'state': 'so'})
         if self.sale_aftersales == 'after_sales':
             self.create_warranty_order()
+            if self.mileage_in == 0:
+                raise ValidationError('Please enter the Kilometer')
+            vehicle = self.env['service.setup.manual'].search([('model_id','=',self.regn_no.model_id.id),
+                                                               ('service_type','=',self.service_type.id)])
+            if vehicle:
+                if self.fleet_vin_no.customer_ids:
+                    customer_ids_fleet = self.fleet_vin_no.customer_ids[-1]  # selecting the last record of one2many field customer_ids
+                    if customer_ids_fleet.date_of_ownership:
+                        date_ownership = fields.Date.from_string(customer_ids_fleet.date_of_ownership)  # assigning the value of date of ownership to a varaible
+                        current_date = date.today()
+                        days_diff = (current_date - date_ownership).days
+                        if days_diff > vehicle.days:
+                            raise ValidationError(f'{vehicle.service_type.name} Days Have Already Exhausted')
+                        if self.mileage_in > vehicle.kms:
+                            raise ValidationError(f'{vehicle.service_type.name} Kilometers Have Already Exhausted')
+                    else:
+                        raise ValidationError('Date Of Ownership is not Present')
+                else:
+                    raise ValidationError('Date of Ownership is not Present')
+        return {
+            'name': _('Sale Message'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sale.message',
+            'view_id': self.env.ref('ars_after_sales.view_sale_message').id,
+            'target': 'new',
+        }
+        # param = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.sale_text')
+        # self.call_sale_message(param)
+        # print(f'self.call_sale_message{param}', self.call_sale_message(param))
+
 
     def create_warranty_order(self):
         for od in self:

@@ -38,6 +38,8 @@ class ars_configure_settings(models.TransientModel):
     labor_warranty_rate = fields.Float(related="company_id.labor_warranty_rate")
     sale_report_format = fields.Selection([('format1', 'Format1'), ('format2', 'Format2'), ('format3', 'Format3')],
                                           related="company_id.sale_report_format")
+    sale_text = fields.Text()
+
 
 
 #     @api.multi

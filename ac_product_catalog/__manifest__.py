@@ -20,8 +20,9 @@
         'views/sale_order.xml',
         'views/account_invoice.xml',
         'views/ars_stock_warehouse_views.xml',
+        'views/shell_location.xml',
         # 'views/stock_picking.xml',
-        # 'views/templates.xml',
+        'views/templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
