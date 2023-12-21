@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="service_manual_setup_view_form" model="ir.ui.view">
+        <field name="name">Service Setup Form</field>
+        <field name="model">service.setup.manual</field>
+        <field name="arch" type="xml">
+            <form string="Service Manual">
+                <sheet>
+                    <group>
+                        <field name="model_id" domain="[('catalog_type.name', '=', 'Vehicle')]" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="service_type" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="days"/>
+                        <field name="kms"/>
+                        <field name="labor_hrs"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="service_manual_setup_view_tree" model="ir.ui.view">
+        <field name="name">Service Setup Tree</field>
+        <field name="model">service.setup.manual</field>
+        <field name="arch" type="xml">
+            <tree string="Service Manual">
+                <field name="model_id" domain="[('catalog_type.name', '=', 'Vehicle')]" options="{'no_create': True, 'no_open': True}"/>
+                <field name="service_type" options="{'no_create': True, 'no_open': True}"/>
+                <field name="days"/>
+                <field name="kms"/>
+                <field name="labor_hrs"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_service_manual" model="ir.actions.act_window">
+        <field name="name">Service Manual</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">service.setup.manual</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="service_manual_setup_view_tree"/>
+    </record>
+
+    <menuitem id="service_manual_menu" name="Service Manual"
+              parent="ars_after_sales.menu_aftersales_config" action="action_service_manual"
+              sequence="3"/>
+</odoo>
