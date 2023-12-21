@@ -28,7 +28,7 @@ class ARS_After_sale_order(models.Model):
             vehicle = self.env['service.setup.manual'].search([('model_id','=',self.regn_no.model_id.id),
                                                                ('service_type','=',self.service_type.id)])
             if vehicle:
-                if self.fleet_vin_no.customer_ids:
+                if self.regn_no.customer_ids:
                     customer_ids_fleet = self.fleet_vin_no.customer_ids[-1]  # selecting the last record of one2many field customer_ids
                     if customer_ids_fleet.date_of_ownership:
                         date_ownership = fields.Date.from_string(customer_ids_fleet.date_of_ownership)  # assigning the value of date of ownership to a varaible
