@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="crm_lost_reason_child_view_form" model="ir.ui.view">
+        <field name="name">crm.lost.reason.child.form</field>
+        <field name="model">crm.lost.reason.child</field>
+        <field name="arch" type="xml">
+            <form string="Channel">
+                <group>
+                    <field name="name" required="1"/>
+                    <field name="parent_lost_reason" options="{'no_open':True,'no_create':True}" required="1"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="crm_lost_reason_child_view_tree" model="ir.ui.view">
+        <field name="name">crm.lost.reason.child.form</field>
+        <field name="model">crm.lost.reason.child</field>
+        <field name="arch" type="xml">
+            <tree string="Lost Reason Child">
+                <field name="name"/>
+                <field name="parent_lost_reason"/>
+            </tree>
+        </field>
+    </record>
+
+<!--        <record id="crm_case_form_view_leads_inherit_lost_child" model="ir.ui.view">-->
+<!--            <field name="name">crm.lead.form.lead.inherit.child</field>-->
+<!--            <field name="model">crm.lead</field>-->
+<!--            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='partner_id']" position="before">-->
+<!--                    <field name="lost_reason"/>-->
+<!--                    <field name="child_lost_reason"/>-->
+<!--                </xpath>-->
+<!--            </field>-->
+<!--        </record>-->
+
+     <record id="crm_lost_reason_action_main" model="ir.actions.act_window">
+            <field name="name">Lost Reasons Child</field>
+            <field name="res_model">crm.lost.reason.child</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to define a new lost reason.
+              </p><p>
+                Use lost reasons to explain why an opportunity is lost.
+              </p><p>
+                Some examples of lost reasons: "We don't have people/skill", "Price too high"
+              </p>
+            </field>
+        </record>
+
+    <record id="ars_crm_lead_lost_view_form_child" model="ir.ui.view">
+        <field name="name">crm.lead.lost.form</field>
+        <field name="model">crm.lead.lost</field>
+        <field name="inherit_id" ref="crm.crm_lead_lost_view_form"/>
+        <field name="arch" type="xml">
+            <field name="lost_reason_id" position="after">
+                <field name="child_lost_reason" domain="[('parent_lost_reason','=',lost_reason_id )]"
+                       options="{'no_create': True, 'no_open': True}" required="1" string="Sub Lost Reason"/>
+            </field>
+            <xpath expr="//field[@name='lost_reason_id']" position="attributes">
+                <attribute name="options">{'no_create':True,'no_edit':True}</attribute>
+                <attribute name="required">1</attribute>
+                <attribute name="string">Main Lost Reason</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <menuitem
+            id="menu_crm_lost_reason_main"
+            action="crm_lost_reason_action_main"
+            parent="crm.menu_crm_config_lead"
+            sequence="6"
+            groups="base.group_system"/>
+
+</odoo>

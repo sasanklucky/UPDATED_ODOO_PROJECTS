@@ -34,6 +34,7 @@
         'views/ars_invoice_form.xml',
         'views/ars_sales_invoice_report.xml',
         'views/ars_vehicle.xml',
+        'views/crm_lost_reason.xml',
         'views/ars_employee_view.xml',
         'views/ars_activitylist.xml',
         'views/ars_email_sales_quotation.xml',

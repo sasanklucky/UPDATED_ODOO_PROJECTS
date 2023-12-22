@@ -216,7 +216,7 @@ class CrmLeadLost(models.TransientModel):
     def action_lost_reason_apply(self):
         for rec in self:
             leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
-            leads.write({'lost_reason': rec.lost_reason_id.id})
+            leads.write({'lost_reason': rec.lost_reason_id.id, 'child_lost_reason': rec.child_lost_reason.id})
             return leads.action_set_lost()
 
     # @api.depends('lead_id')

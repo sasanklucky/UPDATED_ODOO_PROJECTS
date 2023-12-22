@@ -9,4 +9,4 @@ from . import ars_change
 from . import ars_account_invoice_line_sale
 from . import ars_vehicle
 from . import test_drive
-
+from . import crm_lost_reason
