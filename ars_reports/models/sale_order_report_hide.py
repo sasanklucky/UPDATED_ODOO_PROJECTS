@@ -39,14 +39,24 @@ class AccountInvoice(models.Model):
         invoice_report1 = self.env.ref('account.account_invoices')
         invoice_report2 = self.env.ref('account.account_invoices_without_payment')
         invoice_report3 = self.env.ref('ars_vehicle_sales.before_sales_invoice')
+        invoice_report4 = self.env.ref('ars_vehicle_sales.ars_credit_note')
+        gate_pass_report = self.env.ref('ars_vehicle_sales.gatepass_report')
         if 'default_ars_invoice_type' in con and con.get('default_ars_invoice_type') == 'vehicle':
             invoice_report1.unlink_action()
             invoice_report2.unlink_action()
             invoice_report3.create_action()
+            invoice_report4.unlink_action()
         elif 'default_ars_invoice_type' in con and con.get('default_ars_invoice_type') == 'after_sales':
             invoice_report3.unlink_action()
             invoice_report1.create_action()
             invoice_report2.create_action()
+            invoice_report4.unlink_action()
+        elif 'default_type' in con and con.get('default_type') == 'out_refund':
+            invoice_report4.create_action()
+            invoice_report3.unlink_action()
+            invoice_report1.unlink_action()
+            invoice_report2.unlink_action()
+            gate_pass_report.unlink_action()
         else:
             invoice_report3.create_action()
         res = super(AccountInvoice, self).fields_view_get(view_id, view_type, toolbar, submenu)
