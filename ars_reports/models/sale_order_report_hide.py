@@ -46,11 +46,13 @@ class AccountInvoice(models.Model):
             invoice_report2.unlink_action()
             invoice_report3.create_action()
             invoice_report4.unlink_action()
+            gate_pass_report.create_action()
         elif 'default_ars_invoice_type' in con and con.get('default_ars_invoice_type') == 'after_sales':
             invoice_report3.unlink_action()
             invoice_report1.create_action()
             invoice_report2.create_action()
             invoice_report4.unlink_action()
+            gate_pass_report.create_action()
         elif 'default_type' in con and con.get('default_type') == 'out_refund':
             invoice_report4.create_action()
             invoice_report3.unlink_action()
