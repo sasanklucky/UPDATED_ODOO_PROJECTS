@@ -11,7 +11,7 @@ class ARS_MailActivity(models.Model):
     _name = 'mail.activity'
     _inherit = ['mail.activity', 'mail.thread']
 
-    company_id = fields.Many2one('res.company', related="invoice_id.company_id", store=False)
+    company_id = fields.Many2one('res.company', related="invoice_id.company_id", store=True)
 
     @api.multi
     @api.depends('response_id', 'survey_percentage')
