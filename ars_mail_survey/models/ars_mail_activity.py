@@ -11,7 +11,7 @@ class ARS_MailActivity(models.Model):
     _name = 'mail.activity'
     _inherit = ['mail.activity', 'mail.thread']
 
-    company_id = fields.Many2one('res.company', related="user_id.company_id", store=True)
+    company_id = fields.Many2one('res.company', compute="get_company", store=True)
 
     @api.multi
     @api.depends('response_id', 'survey_percentage')
@@ -40,6 +40,15 @@ class ARS_MailActivity(models.Model):
     response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null", oldname="response")
     ticket_count = fields.Integer(string="Ticket Count", compute="_get_ticket_count")
     psf_order_id = fields.Many2one('sale.order', 'Order ID', index=True)
+
+    @api.multi
+    def get_company(self):
+        for rec in self:
+            if rec.invoice_id:
+                rec.company_id = rec.invoice_id.company_id
+            else:
+                company = self.env.user.company_id.id
+                rec.company_id = company.id
 
     @api.multi
     def _get_ticket_count(self):
