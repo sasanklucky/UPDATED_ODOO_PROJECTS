@@ -246,6 +246,8 @@ class ARS_MailActivity(models.Model):
 
     @api.model
     def create_helpdesk_ticket(self, activity_id):
+        if (type(activity_id).__name__) == 'list':
+            activity_id = self.env['mail.activity'].search([('id', 'in', activity_id)])
         if activity_id.invoice_type == 'sales':
             seller = activity_id.env.user.company_id.partner_id.id
             vin_no = activity_id.env['account.invoice.line'].sudo().search(
