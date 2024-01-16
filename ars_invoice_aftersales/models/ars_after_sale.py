@@ -148,8 +148,9 @@ class ARS_After_sale_order(models.Model):
                         invoice_ref = inv_obj.search([('origin', '=', order.name),
                                                       ('cust_invoice_type', '!=', invoice.cust_invoice_type)])
                         if invoice_ref:
-                            invoice.write({'invoice_reference': invoice_ref.id})
-                            invoice_ref.write({'invoice_reference': invoice.id})
+                            for ref_inv in invoice_ref:
+                                invoice.write({'invoice_reference': ref_inv.id})
+                                ref_inv.write({'invoice_reference': invoice.id})
                         products = invoice.invoice_line_ids.mapped('product_id').ids
                         if line.product_id.id not in products:
                             line.invoice_line_create(invoice.id, line.qty_to_invoice)
