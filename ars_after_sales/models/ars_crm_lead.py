@@ -636,7 +636,7 @@ class ARS_instructions(models.Model):
     order_id = fields.Many2one('sale.order', 'Order', ondelete='cascade')
     name = fields.Char()
     description = fields.Char()
-    order_line = fields.One2many('sale.order.line', 'instruction_id', ondelete='cascade')
+    order_line = fields.One2many('sale.order.line', 'instruction_id', ondelete='cascade', copy=True)
 
     # @api.multi
     # def unlink(self):
