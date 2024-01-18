@@ -1053,6 +1053,7 @@
                                     </group>
                                     <group string="Sales Information" name="sales_person">
                                         <!--<field name="user_id" invisible="1"/>-->
+                                        <field name="sale_order_number" groups="base.group_no_one" readonly="1"/>
                                         <field name="sale_type" groups="base.group_no_one"/>
                                         <field name="team_id" options="{'no_create': True}" invisible="1"/>
                                         <field name="client_order_ref"/>

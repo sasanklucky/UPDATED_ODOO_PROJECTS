@@ -110,6 +110,7 @@ class ARS_sale_order(models.Model):
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
     sold_by = fields.Many2one('res.partner')
+    sale_order_number = fields.Char('SO Number', copy=False)
 
     @api.onchange('order_line')
     def onchange_identity_ids(self):
@@ -388,24 +389,37 @@ class ARS_sale_order(models.Model):
             else:
                 self.regn_no.write({'odometer': self.mileage_in})
         if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
-            if self.company_id:
-                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+            if self.company_id and not self.sale_order_number:
+                seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
                     'vehicle.sale.order') or _('New')
+                self.name = seq_number
+                self.sale_order_number = seq_number
             else:
-                self.name = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
-        elif self.sale_type == 'parts' and self.counter_parts:
+                seq_number = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
+                self.name = seq_number
+                self.sale_order_number = seq_number
+        elif self.sale_type == 'parts' and self.counter_parts and not self.sale_order_number:
             if self.company_id:
-                self.name = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
                     'parts.sale.order') or _('New')
+                self.name = seq_number
+                self.sale_order_number = seq_number
             else:
-                self.name = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
-        elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
+                seq_number = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
+                self.name = seq_number
+                self.sale_order_number = seq_number
+        elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts',
+                                                                         'accessories'] and not self.sale_order_number:
             if self.service_options.warranty_ir_seq:
-                self.name = self.service_options.warranty_ir_seq._next()
+                seq_number = self.service_options.warranty_ir_seq._next()
+                self.name = seq_number
+                self.sale_order_number = seq_number
             else:
                 raise ValidationError('Please Configure the Sequence for Company')
-        else:
-            self.name = self.env['ir.sequence'].next_by_code('sale.order')
+        elif not self.sale_order_number:
+            seq_number = self.env['ir.sequence'].next_by_code('sale.order')
+            self.name = seq_number
+            self.sale_order_number = seq_number
         result = super(ARS_sale_order, self).action_confirm()
         return result
 
@@ -414,6 +428,7 @@ class ARS_sale_order(models.Model):
         if self.invoice_count > 0:
             raise ValidationError(_("You cannot unreserved after create invoice"))
         result = super(ARS_sale_order, self).action_cancel()
+        self.sale_order_number = self.name
         for order in self:
             for wr in order.warranty_ids:
                 wr.state = 'draft'
@@ -516,7 +531,7 @@ class ARS_sale_order(models.Model):
                 action['res_id'] = invoices.ids[0]
             else:
                 action = {'type': 'ir.actions.act_window_close'}
-            action['context'] = {'default_ars_invoice_type':'after_sales'}
+            action['context'] = {'default_ars_invoice_type': 'after_sales'}
             return action
         res = super(ARS_sale_order, self).action_view_invoice()
         return res
@@ -670,6 +685,7 @@ class ARSPurchaseOrderLine(models.Model):
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
     product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
     sl_no = fields.Integer(compute="onchange_order_line")
+
     @api.multi
     @api.depends('product_catalog_id')
     def _compute_product_id_domain(self):
