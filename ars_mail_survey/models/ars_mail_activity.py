@@ -12,6 +12,7 @@ class ARS_MailActivity(models.Model):
     _inherit = ['mail.activity', 'mail.thread']
 
     company_id = fields.Many2one('res.company', compute="get_company", store=False)
+    dealer_id = fields.Many2one('res.company', 'Company')
 
     @api.multi
     @api.depends('response_id', 'survey_percentage')
@@ -46,9 +47,11 @@ class ARS_MailActivity(models.Model):
         for rec in self:
             if rec.invoice_id:
                 rec.company_id = rec.invoice_id.company_id
+                rec.dealer_id = rec.invoice_id.company_id
             else:
                 company = self.env.user.company_id.id
                 rec.company_id = company.id
+                rec.dealer_id = company.id
 
     @api.multi
     def _get_ticket_count(self):
