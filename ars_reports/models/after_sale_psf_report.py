@@ -4,7 +4,6 @@ import datetime
 from odoo import models, fields, api, tools, _
 from datetime import datetime, timedelta
 
-
 try:
     from odoo.tools.misc import xlsxwriter
 except ImportError:
@@ -84,7 +83,8 @@ class AfterSaleReport(models.Model):
         left join res_partner rp on rp.id = so.partner_id 
         left join res_users ru on ru.id = so.user_id 
         left join res_company rc on ru.company_id = rc.id
-        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales')""" % (
+        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales'
+        and rp.opt_out = 'False' )""" % (
             self._table))
 
     def export_xls(self, param=None):
@@ -137,7 +137,7 @@ class AfterSaleReport(models.Model):
         date2 = dateval + timedelta(days=-5)
         datetimes = datetime.strftime(dateval, "%Y-%m-%d")
         datetimes2 = datetime.strftime(date2, "%Y-%m-%d")
-        records = self.env['after.sale.report'].search([('invoice_date', '>=', datetimes2), ('invoice_date', '<', datetimes)])
+        records = self.env['after.sale.report'].search([('delivery_date', '>=', datetimes2), ('delivery_date', '<', datetimes)])
 
         row = 4
         column = 0
@@ -146,11 +146,19 @@ class AfterSaleReport(models.Model):
             sheets.write(row, column, sl + 1, format11)
             sheets.write(row, column + 1, record.month, format11)
             sheets.write(row, column + 2, record.dealer_name_id.name, format11)
-            sheets.write(row, column + 3, record.invoice_date, format11)
+            inv_date = datetime.strptime(record.invoice_date, '%Y-%m-%d')
+            invoice_date = inv_date.strftime('%d-%m-%Y')
+            sheets.write(row, column + 3, invoice_date, format11)
             sheets.write(row, column + 4, record.invoice_number, format11)
-            sheets.write(row, column + 5, record.ro_open_date, format11)
+            if record.ro_open_date:
+                ro_o_date = datetime.strptime(record.ro_open_date, '%Y-%m-%d')
+                ro_open_date = ro_o_date.strftime('%d-%m-%Y')
+                sheets.write(row, column + 5, ro_open_date, format11)
             sheets.write(row, column + 6, record.ro_number, format11)
-            sheets.write(row, column + 7, record.ro_close_date, format11)
+            if record.ro_close_date:
+                ro_co_date = datetime.strptime(record.ro_close_date, '%Y-%m-%d')
+                ro_close_date = ro_co_date.strftime('%d-%m-%Y')
+                sheets.write(row, column + 7, ro_close_date, format11)
             sheets.write(row, column + 8, record.vin, format11)
             sheets.write(row, column + 9, record.partner_id.name, format11)
             sheets.write(row, column + 10, record.mobile, format11)
@@ -164,29 +172,29 @@ class AfterSaleReport(models.Model):
             sheets.write(row, column + 18, record.service_type_id.name, format11)
             sheets.write(row, column + 19, record.doc_type, format11)
             sheets.write(row, column + 20, record.user_id.name, format11)
-            sheets.write(row, column + 21, record.reg_no.name, format11)
+            sheets.write(row, column + 21, record.reg_no.license_plate, format11)
             sheets.write(row, column + 22, record.model.display_name, format11)
-            sheets.write(row, column + 23, record.delivery_date, format11)
+            if record.delivery_date:
+                del_date = datetime.strptime(record.delivery_date, '%Y-%m-%d')
+                delivery_date = del_date.strftime('%d-%m-%Y')
+                sheets.write(row, column + 23, delivery_date, format11)
             sl = sl + 1
             row = row + 1
         workbook.close()
         output.seek(0)
-        if records:
-            data = output.read()
-            output.close()
-            data = base64.encodebytes(data)
-            doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
-                                                       'datas_fname': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
-                                                       })
-            print('doc_id', doc_id.datas_fname, doc_id.res_name)
-            if param is not None:
-                return doc_id
-            else:
-                return {
-                    'type': 'ir.actions.act_url',
-                    'url': '/web/content/?id=%s&download=true' % doc_id.id,
-                    'target': 'current',
-                }
+        data = output.read()
+        output.close()
+        data = base64.encodebytes(data)
+        doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
+                                                   'datas_fname': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
+                                                   })
+        print('doc_id', doc_id.datas_fname, doc_id.res_name)
+        if param is not None:
+            return doc_id
         else:
-            False
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content/?id=%s&download=true' % doc_id.id,
+                'target': 'current',
+            }
 
