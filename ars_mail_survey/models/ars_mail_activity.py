@@ -44,10 +44,10 @@ class ARS_MailActivity(models.Model):
     @api.multi
     def get_company(self):
         for rec in self:
-            if rec.invoice_id:
+            if rec.invoice_id and not rec.company_id:
                 rec.company_id = rec.invoice_id.company_id
             else:
-                company = self.env.user.company_id.id
+                company = self.user_id.company_id.id
                 rec.company_id = company.id
 
     @api.multi

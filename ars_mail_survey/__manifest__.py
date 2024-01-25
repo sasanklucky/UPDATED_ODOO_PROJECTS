@@ -16,6 +16,7 @@
         # 'views/ars_res_partner_views.xml',
         # 'views/ars_after_sale_views.xml',
         # 'views/ars_templates.xml',
+        'data/mail_activity_server_action.xml',
         'views/ars_sales_followup.xml',
         'views/ars_post_sales_followup.xml',
         'views/ars_mail_activity_type_views.xml',
