@@ -21,3 +21,4 @@ class ARSServiceOptions(models.Model):
     warranty_ir_seq = fields.Many2one('ir.sequence',
                                       string='Sequence',company_dependent=True,
                                       domain=lambda self: [('company_id', '=', self.env.user.company_id.id)])
+    psf_restrict = fields.Boolean('Restrict PSF for Service')

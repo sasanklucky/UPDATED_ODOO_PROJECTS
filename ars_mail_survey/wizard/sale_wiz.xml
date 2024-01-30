@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_sale_psf_report" model="ir.ui.view">
+        <field name="name">sale.psf.report</field>
+        <field name="model">sale.excel.wiz</field>
+        <field name="arch" type="xml">
+            <form string="PSF Sale Report">
+                <group>
+                    <field name='start_date'/>
+                    <field name='end_date'/>
+                </group>
+                <footer>
+                    <button name="action_psf_sale" string="Print Sale Report" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sale_psf_report_wizard" model="ir.actions.act_window">
+        <field name="name">Create Sale Order Message</field>
+        <field name="res_model">sale.excel.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="ars_mail_survey.view_sale_psf_report"/>
+        <field name="view_type">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_ars_mail_survey_sale_psf"
+                  name="PSF Sale Report"
+                  action="action_sale_psf_report_wizard"
+                  parent="crm.crm_menu_report"
+                  sequence="1"/>
+
+
+</odoo>

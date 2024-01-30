@@ -813,6 +813,7 @@
                             <separator string="Service Details" colspan="4"/>
                             <group>
                                 <field name="doc_type" string="Visit Type" required="1" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                <field name="pick_up_drop"/>
                                 <field name="work_type" string="Work Type" attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                 <field name="service_options" required="1" options="{'no_create': True}"
                                     attrs="{'readonly': [('state','not in', ('draft'))]}"/>

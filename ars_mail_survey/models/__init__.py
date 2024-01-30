@@ -4,3 +4,6 @@ from . import res_config_settings
 from . import followup_spoc_master
 from . import helpdesk_ticket
 from . import category
+from . import sale_report_xls
+from . import service_report_xls
+from . import mail_logs

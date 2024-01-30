@@ -78,6 +78,7 @@ class ARS_sale_order(models.Model):
                                  ('res_drop', 'RSA Drop'), ('p&d', 'P&D')],
                                 string='Type',
                                 default='appointment')
+    pick_up_drop = fields.Char('Pick Up and Drop', compute='compute_doc_type')
     vin_no = fields.Char(string="VIN")
     model = fields.Many2one('product.product')
     service_advisor = fields.Many2one('res.users', string="Service Advisor")
@@ -120,16 +121,13 @@ class ARS_sale_order(models.Model):
                 raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
                 break
 
-    # @api.multi
-    # @api.onchange('service_type')
-    # def domain_set_service_option(self):
-    #     self.service_options = False
-    #     if self.service_type:
-    #         service_options = self.env['service.options'].sudo().search(
-    #             [('service_type', '=', self.service_type.id)])
-    #         return {'domain': {'service_options': [('id', 'in', service_options.ids)]}}
-    #     else:
-    #         return {'domain': {'product_id': [('id', 'in', False)]}}
+    @api.depends('doc_type')
+    def compute_doc_type(self):
+        for rec in self:
+            if rec.doc_type == 'p&d':
+                rec.pick_up_drop = 'Yes'
+            else:
+                rec.pick_up_drop = 'No'
 
     @api.onchange('regn_no')
     def update_vin_number(self):
@@ -383,7 +381,7 @@ class ARS_sale_order(models.Model):
     @api.multi
     def action_confirm(self):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories']:
+        if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories'] and not self.counter_parts:
             if self.mileage_in == 0 and not self.counter_parts:
                 raise UserError(_('Please enter the mileage'))
             else:

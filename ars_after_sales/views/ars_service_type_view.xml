@@ -19,6 +19,7 @@
                     <field name="name"/>
 <!--                    <field name="service_type"/>-->
                     <field name="warranty_ir_seq" required="1" options="{'no_create': True}"/>
+                    <field name="psf_restrict"/>
                 </tree>
             </field>
         </record>
