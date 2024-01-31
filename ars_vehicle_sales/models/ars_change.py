@@ -334,6 +334,19 @@ class ars_sale_order_line(models.Model):
 class ars_sale_invoice(models.Model):
     _inherit = 'account.invoice'
 
+    delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
+    after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
+
+    @api.constrains('date_invoice')
+    def invoice_date_validation(self):
+        for rec in self:
+            given_date = rec.date_invoice
+            if given_date:
+                given_date_obj = datetime.strptime(given_date, "%Y-%m-%d")
+                date_today = datetime.today()
+                if given_date_obj > date_today:
+                    raise ValidationError(_("Invoice Date can't be a future date"))
+
     @api.multi
     def invoice_print(self):
         res = super(ars_sale_invoice, self).invoice_print()

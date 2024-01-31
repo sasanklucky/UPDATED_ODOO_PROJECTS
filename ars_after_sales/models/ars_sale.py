@@ -202,14 +202,50 @@ class ARS_sale_order(models.Model):
         #         self.vin_no = customer_details.name
         #         self.vehicle_model = customer_details.product_id.name
 
-    # @api.multi
-    # @api.onchange('partner_id')
-    # def onchange_partner_id(self):
-    #     res = super(ARS_sale_order, self).onchange_partner_id()
-    #     values = {
-    #         'vin_no': ''
-    #     }
-    #     self.update(values)
+    @api.multi
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        if not self.partner_id:
+            self.update({
+                'partner_invoice_id': False,
+                'partner_shipping_id': False,
+                'payment_term_id': False,
+                'fiscal_position_id': False,
+            })
+            return
+
+        addr = self.partner_id.address_get(['delivery', 'invoice'])
+        values = {
+            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'partner_shipping_id': addr['delivery'],
+            'user_id': self.partner_id.user_id.id or self.env.uid
+        }
+        if self.env['ir.config_parameter'].sudo().get_param(
+                'sale.use_sale_note') and self.env.user.company_id.sale_note:
+            values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+
+        # if self.partner_id.team_id:
+        #     values['team_id'] = self.partner_id.team_id.id
+        self.update(values)
+
+        # res = super(ARS_sale_order, self).onchange_partner_id()
+        # values = {}
+        # if self.partner_id:
+        #     print('self.env.user.id', self.env.user.name)
+        #     print('self.env.user.team_id.id', self.env.user.team_id.id, self.env.context)
+        # self.team_id = self.env.team_id.id or self.partner_id.team_id.id
+        # self.user_id = self.env.user.id or self.partner_id.user_id.id
+
+        # values['team_id'] = self.env.user.team_id.id or self.partner_id.team_id.id
+        # values['user_id'] = self.env.user.id or self.partner_id.user_id.id
+
+        # values = {
+        #     'vin_no': ''
+        # }
+        # self.update(values)
+        # return res
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):

@@ -22,6 +22,7 @@
         'security/ars_security.xml',
         'security/ir.model.access.csv',
         'views/ars_test_drive.xml',
+        'wizard/print_gate_pass_wiz_temp.xml',
         'views/ars_gatepass_template.xml',
         'views/ars_model_views.xml',
         'views/annual_income_view.xml',

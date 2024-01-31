@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_gate_pass_wiz" model="ir.ui.view">
+        <field name="name">gatee_pass.wiz</field>
+        <field name="model">gate.pass.wiz</field>
+        <field name="arch" type="xml">
+            <form string="Print Gate Pass ">
+
+                <group>
+                    <field name='delivery_type' required="True"/>
+                    <field name='after_sale_intro' required="True"/>
+                </group>
+                <footer>
+                    <button name="action_print_gate_pass_wiz" string="Print Gate Pass" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gate_pass_wiz" model="ir.actions.act_window">
+        <field name="name">Print gate Pass</field>
+        <field name="res_model">gate.pass.wiz</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="ars_vehicle_sales.view_gate_pass_wiz"/>
+        <field name="view_type">form</field>
+        <field name="target">new</field>
+    </record>
+
+<!--    <menuitem id="menu_ars_mail_survey_sale_psf"-->
+<!--                  name="PSF Sale Report"-->
+<!--                  action="action_sale_psf_report_wizard"-->
+<!--                  parent="crm.crm_menu_report"-->
+<!--                  sequence="1"/>-->
+
+
+</odoo>
