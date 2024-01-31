@@ -139,11 +139,21 @@ class ARSMailActivity(models.Model):
                 sheets.write(row, column + 12, invoice.kilometer_out, format11)
             if len(invoice.reg_no.service_ids) > 2:
                 if invoice.reg_no.service_ids[-2].servicetype == invoice.reg_no.service_ids[-1].servicetype:
-                    date_1 = datetime.strptime(invoice.reg_no.service_ids[-2].order.appointment_date, '%Y-%m-%d %H:%M:%S')
-                    date_2 = datetime.strptime(invoice.reg_no.service_ids[-1].order.appointment_date, '%Y-%m-%d %H:%M:%S')
-                    final_date = ((date_2 - date_1).days)
-                    if final_date < 15:
-                        sheets.write(row, column + 13, 'YES', format11)
+                    if (invoice.reg_no.service_ids[-2].order.appointment_date
+                            and invoice.reg_no.service_ids[-1].order.appointment_date):
+                        date_1 = datetime.strptime(invoice.reg_no.service_ids[-2].order.appointment_date,
+                                                   '%Y-%m-%d %H:%M:%S')
+                        date_2 = datetime.strptime(invoice.reg_no.service_ids[-1].order.appointment_date,
+                                                   '%Y-%m-%d %H:%M:%S')
+                        final_date = ((date_2 - date_1).days)
+                        if final_date < 15:
+                            sheets.write(row, column + 13, 'YES', format11)
+                        else:
+                            sheets.write(row, column + 13, 'NO', format11)
+                    else:
+                        sheets.write(row, column + 13, 'NO', format11)
+                else:
+                    sheets.write(row, column + 13, 'NO', format11)
             else:
                 sheets.write(row, column + 13, 'NO', format11)
             voc_cus = ''
