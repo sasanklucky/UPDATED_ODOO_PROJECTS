@@ -655,6 +655,26 @@ class ARSSaleOrderLine(models.Model):
                                copy=False)
     # price_unit = fields.Float(related='product_id.list_price', string="Price")
     category = fields.Many2one('order.line.category', string="Category")
+    qty_available_line = fields.Float(string='Qty Available',
+                                      compute='_compute_product_qty_on_hand')
+
+    @api.depends('product_id', 'order_id.company_id')
+    def _compute_product_qty_on_hand(self):
+        for line in self:
+            product = line.product_id
+            company = line.order_id.company_id
+
+            if product and company:
+                # Adjust this logic based on your actual product and company structure
+                stock_quant = self.env['stock.quant'].search([
+                    ('product_id', '=', product.id),
+                    ('location_id.company_id', '=', company.id)
+                ])
+
+                total_qty = sum(stock_quant.mapped('quantity'))
+                line.qty_available_line = total_qty
+            else:
+                line.qty_available_line = 0.0
 
     @api.multi
     @api.onchange('product_id')
