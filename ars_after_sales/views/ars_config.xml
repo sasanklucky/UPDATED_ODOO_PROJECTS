@@ -4,7 +4,7 @@
         <field name="name">ars_config</field>
         <field name="model">res.config.settings</field>
         <field name="priority" eval="10"/>
-        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
                 <div class="app_settings_block" data-string="ARS" string="ARS" data-key="ars_after_sales">
@@ -31,17 +31,17 @@
                     </div>
 
                     <h2>Report Setup</h2>
-                     <div class="row mt16 o_settings_container" id="ars_settings">
+                    <div class="row mt16 o_settings_container" id="ars_settings">
                         <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
                             <div class="o_setting_right_pane">
                                 <label string="Format Changes"/>
                                 <div class="text-muted">
-                                    Pro-Forma &amp;  Sale Order Format
+                                    Pro-Forma &amp; Sale Order Format
                                 </div>
                                 <field name="sale_report_format"/>
                             </div>
                         </div>
-                     </div>
+                    </div>
 
                     <h2>Service Settings</h2>
                     <div class="row mt16 o_settings_container" id="ars_settings2">
@@ -54,16 +54,16 @@
                                 <field name="next_service_due"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                    <label string="Next Service Reminder"/>
+                                <label string="Next Service Reminder"/>
                                 <div class="text-muted">
                                     Reminder Trigger
                                 </div>
                                 <field name="next_service_remainder"/>
                             </div>
                         </div>
-                            <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_setting">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_setting">
                             <div class="o_setting_right_pane">
-                                    <label string="Lead Next Service Due Date"/>
+                                <label string="Lead Next Service Due Date"/>
                                 <div class="text-muted">
                                     Next Service Date Lead
                                 </div>
@@ -76,10 +76,10 @@
                                 </div>
                                 <field name="next_km_service_due_date"/>
                             </div>
-                            </div>
+                        </div>
                     </div>
                     <h2>Labor Rate</h2>
-                     <div class="row mt16 o_settings_container" id="ars_settings">
+                    <div class="row mt16 o_settings_container" id="ars_settings">
                         <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
                             <div class="o_setting_right_pane">
                                 <label string="Labor Rate"/>
@@ -89,11 +89,18 @@
                                 <field name="labor_rate"/>
                             </div>
                             <div class="o_setting_right_pane">
-                                    <label string="Labor Warranty Rate"/>
+                                <label string="Labor Warranty Rate"/>
                                 <div class="text-muted">
                                     Labor Warranty Rate
                                 </div>
                                 <field name="labor_warranty_rate"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="	Max Fleet Size PSF"/>
+                                <div class="text-muted">
+                                    Maximum fleet size allowed to avoid PSF
+                                </div>
+                                <field name="max_fleet_size"/>
                             </div>
                         </div>
                     </div>
@@ -124,30 +131,30 @@
               web_icon=""/>
 
     <record id="view_landing_form" model="ir.ui.view">
-            <field name="name">landing.setting.form</field>
-            <field name="model">landing.setting</field>
-            <field name="arch" type="xml">
-                <form string="Process">
-                  <sheet>
+        <field name="name">landing.setting.form</field>
+        <field name="model">landing.setting</field>
+        <field name="arch" type="xml">
+            <form string="Process">
+                <sheet>
                     <group col="4">
                         <field name="landing_user"/>
                         <field name="landing_link"/>
                     </group>
-                  </sheet>
-                </form>
-            </field>
-        </record>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <record id="view_landing_tree" model="ir.ui.view">
-            <field name="name">landing.setting.tree</field>
-            <field name="model">landing.setting</field>
-            <field name="arch" type="xml">
-                <tree string="Process">
-                    <field name="landing_user" />
-                    <field name="landing_link"/>
-                </tree>
-            </field>
-        </record>
+    <record id="view_landing_tree" model="ir.ui.view">
+        <field name="name">landing.setting.tree</field>
+        <field name="model">landing.setting</field>
+        <field name="arch" type="xml">
+            <tree string="Process">
+                <field name="landing_user"/>
+                <field name="landing_link"/>
+            </tree>
+        </field>
+    </record>
 
     <record id="view_category_config_tree" model="ir.ui.view">
         <field name="name">view_labour_group_tree</field>
@@ -160,13 +167,13 @@
         </field>
     </record>
 
-        <record id="action_landing_page" model="ir.actions.act_window">
-            <field name="name">Landing Settings</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">landing.setting</field>
-            <field name="view_type">form</field>
-            <field name="view_id" ref="view_landing_tree"/>
-        </record>
+    <record id="action_landing_page" model="ir.actions.act_window">
+        <field name="name">Landing Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">landing.setting</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_landing_tree"/>
+    </record>
 
     <record id="action_category_config" model="ir.actions.act_window">
         <field name="name">Category Config</field>
@@ -176,17 +183,17 @@
 
     </record>
 
-        <menuitem id="category_config"
+    <menuitem id="category_config"
               action="ars_after_sales.action_category_config"
               parent="menu_aftersales_config"
               name="Category Order Line" sequence="4"/>
-        <menuitem id="landing_page"
-                  action="ars_after_sales.action_landing_page"
-                  parent="menu_aftersales_config"
-                  name="Landing Page" sequence="4"/>
+    <menuitem id="landing_page"
+              action="ars_after_sales.action_landing_page"
+              parent="menu_aftersales_config"
+              name="Landing Page" sequence="4"/>
 
-        <!-- Employee - configuration - Labour Group-->
-        <record id="view_labour_group_tree" model="ir.ui.view">
+    <!-- Employee - configuration - Labour Group-->
+    <record id="view_labour_group_tree" model="ir.ui.view">
         <field name="name">view_labour_group_tree</field>
         <field name="model">labour.group</field>
         <field name="arch" type="xml">
@@ -197,17 +204,17 @@
                 <field name="company_id" groups="base.group_multi_company"/>
             </tree>
         </field>
-        </record>
+    </record>
 
-        <record id="view_labour_group_action" model="ir.actions.act_window">
-            <field name="name">Labour Group</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">labour.group</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-            <field name="view_id" ref="view_labour_group_tree"/>
-        </record>
-        <menuitem
+    <record id="view_labour_group_action" model="ir.actions.act_window">
+        <field name="name">Labour Group</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">labour.group</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_labour_group_tree"/>
+    </record>
+    <menuitem
             id="menu_labour_group"
             action="view_labour_group_action"
             parent="hr.menu_human_resources_configuration"
@@ -248,32 +255,37 @@
         <field name="model">ars.sale.warranty</field>
         <field name="arch" type="xml">
             <form string="Warranty Claims">
-              <header>
-                  <button name="set_aligment" string="Set Warranty Alignment" states="draft,inprocess,processed" type="object" class="btn-primary" groups="ars_after_sales.group_warranty_manager"/>
-                  <button name="action_approval_send" string="Send for Approval" states="draft,inprocess,processed" type="object" groups="ars_after_sales.group_warranty_manager"/>
-                  <field name="state" widget="statusbar" statusbar_visible="draft,inprocess,processed,done"/>
-              </header>
-              <sheet>
-                <div class="oe_title">
-                    <h1>
-                        <field name="name" readonly="1"/>
-                    </h1>
-                </div>
-                <group string="Customer Details">
-                    <group>
-                        <field name="partner_id" readonly="1" domain="[('customer','=',True)]" context="{'search_default_customer':1, 'show_address': 1}" options='{"always_reload": True}'/>
-                        <field name="regn_no" readonly="1"/>
-                        <field name="model_id" readonly="1"/>
-                        <field name="vin_no" readonly="1"/>
+                <header>
+                    <button name="set_aligment" string="Set Warranty Alignment" states="draft,inprocess,processed"
+                            type="object" class="btn-primary" groups="ars_after_sales.group_warranty_manager"/>
+                    <button name="action_approval_send" string="Send for Approval" states="draft,inprocess,processed"
+                            type="object" groups="ars_after_sales.group_warranty_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,inprocess,processed,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group string="Customer Details">
+                        <group>
+                            <field name="partner_id" readonly="1" domain="[('customer','=',True)]"
+                                   context="{'search_default_customer':1, 'show_address': 1}"
+                                   options='{"always_reload": True}'/>
+                            <field name="regn_no" readonly="1"/>
+                            <field name="model_id" readonly="1"/>
+                            <field name="vin_no" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="order_id" readonly="1"/>
+                        </group>
                     </group>
-                    <group>
-                        <field name="order_id" readonly="1"/>
-                    </group>
-                </group>
-                <notebook>
-                    <page string="Warranty Lines">
-                        <field name="order_lines" nolabel="1" options="{'no_create': True}" attrs="{'readonly':[('state','=','done')]}">
-                            <tree string="Warranty Lines" editable="top" create="false">
+                    <notebook>
+                        <page string="Warranty Lines">
+                            <field name="order_lines" nolabel="1" options="{'no_create': True}"
+                                   attrs="{'readonly':[('state','=','done')]}">
+                                <tree string="Warranty Lines" editable="top" create="false">
                                     <!--<field name="product_updatable" invisible="1"/>-->
                                     <field name="product_id" readonly="1"/>
                                     <field name="name" readonly="1"/>
@@ -284,22 +296,25 @@
                                     <field name="tax_id" widget="many2many_tags" readonly="1"/>
                                     <field name="discount" groups="sale.group_discount_per_so_line" readonly="1"/>
                                     <field name="wrn_price_subtotal" widget="monetary"/>
-                                    <field name="apr_action" required="1" groups="ars_after_sales.group_warranty_approval"/>
+                                    <field name="apr_action" required="1"
+                                           groups="ars_after_sales.group_warranty_approval"/>
                                 </tree>
-                        </field>
-                        <group class="oe_subtotal_footer oe_right" colspan="2" name="warranty_total">
-                            <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                            <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                            <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                <label for="amount_total" />
-                            </div>
-                            <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                        </group>
-                        <div class="oe_clear"/>
-                    </page>
-                </notebook>
-              </sheet>
-              <div class="oe_chatter">
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="warranty_total">
+                                <field name="amount_untaxed" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="amount_total"/>
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                       widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="activity_ids" widget="mail_activity"/>
                     <field name="message_ids" widget="mail_thread"/>
@@ -313,7 +328,7 @@
         <field name="model">ars.sale.warranty</field>
         <field name="arch" type="xml">
             <tree string="Warranty Claims">
-                <field name="name" />
+                <field name="name"/>
                 <field name="order_id"/>
                 <field name="order_date"/>
                 <field name="partner_id"/>

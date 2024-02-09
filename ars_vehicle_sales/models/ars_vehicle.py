@@ -207,6 +207,36 @@ class FleetVehicle(models.Model):
     #     if vehicle_details:
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
+   
+    @api.multi
+    def update_customer_ownership(self):
+        ownership_history = []
+        for rec in self:
+            history = False
+            if rec.vehicle_status == 'customer':
+                if rec.vin_sn:
+                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', rec.vin_sn)])
+                    for record in rec.customer_ids:
+                        history = False
+                        for sale in sale_line:
+                            if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
+                                for invoice in sale.order_id.invoice_ids:
+                                    if invoice.date_invoice == record.date_of_ownership:
+                                        history = True
+                        if not history:
+                            record.unlink()
+                    if len(rec.customer_ids) == 0:
+                        for sale in sale_line:
+                            if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier:
+                                for invoice in sale.order_id.invoice_ids:
+                                    if invoice.state not in ['draft', 'cancel']:
+                                        ownership_history.append([0, 0, {'custmer_name': sale.order_id.partner_id.id,
+                                                                         'order': sale.order_id.id,
+                                                                         'date_of_ownership': invoice.date_invoice,
+                                                                         'address': sale.order_id.partner_id.city,
+                                                                         'mobile': sale.order_id.partner_id.mobile,
+                                                                         'sold_by': sale.order_id.company_id.partner_id.id}])
+                        rec.customer_ids = ownership_history
 
 
 class CrmLeadLost(models.TransientModel):

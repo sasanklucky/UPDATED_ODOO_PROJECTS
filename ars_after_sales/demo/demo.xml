@@ -11,5 +11,17 @@
                     records.create_supplier_info()
             </field>
         </record>
+
+        <record id="action_update_ownership" model="ir.actions.server">
+            <field name="name">Update Owner</field>
+            <field name="model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.update_customer_ownership()
+            </field>
+        </record>
     </data>
 </odoo>

@@ -52,14 +52,28 @@ class service_history(models.Model):
 
 
     order = fields.Many2one('sale.order')
-    servicetype = fields.Char()
+    servicetype = fields.Char(compute='_compute_servicetype')
     date = fields.Date()
-    mileage = fields.Integer()
+    mileage = fields.Integer(compute='_compute_mileage')
     next_serv_due = fields.Date()
     next_service_due = fields.Date()
     set_reminder = fields.Date()
     stock_id4 = fields.Many2one('stock.production.lot')
     vehicle_id = fields.Many2one('fleet.vehicle', 'Fleet Vehicle ID')
+
+    @api.multi
+    def _compute_servicetype(self):
+        for record in self:
+            if record.order.service_type:
+                record.servicetype = record.order.service_type.name
+
+    @api.multi
+    def _compute_mileage(self):
+        for mileage in self:
+            if mileage.order.mileage_in:
+                mileage.mileage = mileage.order.mileage_in
+
+
 class Brand_model(models.Model):
     _name = 'brand.name'
 
