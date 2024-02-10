@@ -153,6 +153,18 @@ class FleetVehicle(models.Model):
         if self.vehicle_status == 'new':
             self.driver_id = self.env.user.company_id.partner_id.id
 
+    @api.model
+    def create(self, data):
+        vehicle = super(FleetVehicle, self.with_context(mail_create_nolog=True)).create(data)
+        if self.vehicle_status == 'customer':
+            if not self.customer_ids:
+                raise ValidationError(_("Please Update Ownership History"))
+            else:
+                for line in self.customer_ids:
+                    if line.sold_by.id == False:
+                        raise ValidationError(_("Please Update Selling Dealer Details in Ownership History"))
+        return vehicle
+
     # @api.model
     # def create(self,data):
     #     data.update({'customer_ids' : [(0, 0, {'custmer_name': self.partner_id.id,
@@ -171,7 +183,15 @@ class FleetVehicle(models.Model):
                                                   'address': res.street,
                                                   'sold_by': self.env.user.company_id.partner_id.id,
                                                   'mobile': res.mobile})]})
-        return super(FleetVehicle, self).write(vals)
+        res = super(FleetVehicle, self).write(vals)
+        if self.vehicle_status == 'customer' and 'customer_ids' not in vals:
+            if not self.customer_ids:
+                raise ValidationError(_("Please Update Ownership History"))
+            else:
+                for line in self.customer_ids:
+                    if line.sold_by.id == False:
+                        raise ValidationError(_("Please Update Selling Dealer Details in Ownership History"))
+        return res
 
     @api.model
     def _auto_init(self):
@@ -216,15 +236,22 @@ class FleetVehicle(models.Model):
             if rec.vehicle_status == 'customer':
                 if rec.vin_sn:
                     sale_line = self.env['sale.order.line'].search([('vin_no', '=', rec.vin_sn)])
-                    for record in rec.customer_ids:
-                        history = False
-                        for sale in sale_line:
-                            if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
-                                for invoice in sale.order_id.invoice_ids:
-                                    if invoice.date_invoice == record.date_of_ownership:
-                                        history = True
-                        if not history:
-                            record.unlink()
+                    history = False
+                    if sale_line:
+                        for record in rec.customer_ids:
+                            for sale in sale_line:
+                                if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
+                                    for invoice in sale.order_id.invoice_ids:
+                                        if invoice.date_invoice == record.date_of_ownership:
+                                            history = True
+                            if not history:
+                                record.unlink()
+                    elif len(rec.customer_ids) > 1:
+                        owner = rec.customer_ids.sorted(key=lambda r: r.id, reverse=True)
+                        i = 0
+                        while owner[-1] != owner[i]:
+                            owner[i].sudo().unlink()
+                            i += 1
                     if len(rec.customer_ids) == 0:
                         for sale in sale_line:
                             if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier:
