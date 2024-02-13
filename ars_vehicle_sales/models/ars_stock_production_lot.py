@@ -11,6 +11,7 @@ class ARS_stock_production_lot(models.Model):
     check_new_lotno = fields.Boolean(default=False)
     motor_number = fields.Char(string="Motor Number")
     product_catalog = fields.Char(string='Catalog Type', related='product_id.catalog_type.name')
+    battery_number = fields.Char('Battery Number')
 
     @api.model
     def create(self, vals):
