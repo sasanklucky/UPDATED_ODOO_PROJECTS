@@ -17,10 +17,10 @@
         'demo/demo.xml',
         'demo/ars_parts_sales.xml',
         'views/parts_purchase.xml',
+        'views/res_company.xml',
         'menus/parts_sales_menus.xml',
         'menus/parts_inventory_menus.xml',
         'menus/parts_purchase.xml',
-
     ],
     # only loaded in demonstration mode
     'demo': [
