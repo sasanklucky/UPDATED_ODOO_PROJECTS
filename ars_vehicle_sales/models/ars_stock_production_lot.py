@@ -224,6 +224,7 @@ class StockMoveLine(models.Model):
     _inherit = "stock.move.line"
 
     motor_number = fields.Char(string="Motor Number")
+    battery_number = fields.Char(string="Battery Number")
 
     @api.onchange('lot_id', 'motor_number')
     def _update_motor_number(self):

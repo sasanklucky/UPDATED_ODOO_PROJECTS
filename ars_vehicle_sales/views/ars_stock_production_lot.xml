@@ -10,6 +10,7 @@
                 <field name="product_id" position="after">
                     <field name="product_catalog" readonly="True"/>
                     <field name="motor_number" attrs="{'required': [('product_catalog', '=', 'Vehicle')]}"/>
+                    <field name="battery_number"  attrs="{'required': [('product_catalog', '=', 'Vehicle')]}" string="Battery Number"/>
                 </field>
             </field>
         </record>
