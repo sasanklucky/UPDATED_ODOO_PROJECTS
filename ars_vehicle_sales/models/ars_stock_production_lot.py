@@ -149,9 +149,9 @@ class Picking(models.Model):
                             existing_lot_numbers.extend([vin_sn])
                             print(existing_lot_numbers)
                         else:
-                            #sold_by_id = self.env.user.company_id.partner_id
+                            # sold_by_id = self.env.user.company_id.partner_id
                             res = self.env['fleet.vehicle'].create(vals)
-                            #res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+                            # res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                             #                            'date_of_ownership': datetime.now(),
                             #                           'address': self.partner_id.city,
                             #                           'mobile': self.partner_id.mobile,
