@@ -2,6 +2,7 @@ from dateutil.relativedelta import relativedelta
 import json
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
+from odoo.exceptions import ValidationError
 
 
 class FleetVehicle(models.Model):
