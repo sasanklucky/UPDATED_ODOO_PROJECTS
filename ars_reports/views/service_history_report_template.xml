@@ -63,7 +63,7 @@
                         <td style="border:1px solid black;padding: 0px 2px">
                             <t t-if="doc._get_service_history()">
                                 <t t-if="doc._get_service_history().order">
-                                    <t t-esc="doc._get_service_history().order.company_id.name"/>
+                                    <t t-esc="doc._get_service_history().sudo().order.company_id.name"/>
                                 </t>
                             </t>
                         </td>
@@ -83,7 +83,7 @@
                         <td style="border:1px solid black;padding: 0px 2px">
                             <t t-if="doc._get_service_history()">
                                 <t t-if="doc._get_service_history().order">
-                                    <t t-esc="doc._get_service_history().order.company_id.name"/>
+                                    <t t-esc="doc._get_service_history().sudo().order.company_id.name"/>
                                 </t>
                             </t>
                         </td>
@@ -155,12 +155,12 @@
                                 <tr>
                                     <td style="padding: 0px 2px;font-weight:bold;">SR NUM</td>
                                     <td style="padding: 0px 2px">
-                                        <span t-field="o.order"/>
+                                        <span t-field="o.sudo().order"/>
                                     </td>
                                     <td style="padding: 0px 2px;font-weight:bold;">SR Open Date
                                     </td>
                                     <td style="padding: 0px 2px">
-                                        <span t-field="o.order.date_order" t-options='{"widget": "date"}'/>
+                                        <span t-field="o.sudo().order.date_order" t-options='{"widget": "date"}'/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -171,7 +171,7 @@
                                     <td style="padding: 0px 2px;font-weight:bold;">SR Close Date
                                     </td>
                                     <td style="padding: 0px 2px">
-                                        <span t-esc="o.order.invoice_ids.mapped('create_date')[-1]"
+                                        <span t-esc="o.sudo().order.invoice_ids.mapped('create_date')[-1]"
                                               t-options='{"widget": "date"}'/>
                                     </td>
                                 </tr>
@@ -195,12 +195,12 @@
                             <tr>
                                 <td style="border:0px solid black;padding: 0px 2px;font-weight:bold;">RO NUM</td>
                                 <td style="border:0px solid black;padding: 0px 2px">
-                                    <span t-field="o.order"/>
+                                    <span t-field="o.sudo().order"/>
                                 </td>
                                 <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">RO Open Date
                                 </td>
                                 <td style="border:1px solid black;padding: 0px 2px">
-                                    <span t-field="o.order.date_order" t-options='{"widget": "date"}'/>
+                                    <span t-field="o.sudo().order.date_order" t-options='{"widget": "date"}'/>
                                 </td>
                             </tr>
                             <tr>
@@ -211,7 +211,7 @@
                                 <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;">RO Close Date
                                 </td>
                                 <td style="border:1px solid black;padding: 0px 2px">
-                                    <span t-esc="o.order.invoice_ids.mapped('create_date')[-1]"
+                                    <span t-esc="o.sudo().order.invoice_ids.mapped('create_date')[-1]"
                                           t-options='{"widget": "date"}'/>
                                 </td>
                             </tr>
@@ -235,7 +235,7 @@
                                     <th class="text-center" style="border:1px solid black;">Instruction</th>
                                 </tr>
                             </thead>
-                            <tr t-foreach="o.order.customer_voice_sale" t-as="l">
+                            <tr t-foreach="o.sudo().order.customer_voice_sale" t-as="l">
                                 <td style="background-color:#FFF;border:1px solid black">
                                     <span t-field="l.name"/>
                                 </td>
@@ -285,7 +285,7 @@
                                 <!--                                        </td>-->
                                 <!--                                    </tr>-->
                                 <!--                                </t>-->
-                                <tr t-foreach="o.order.order_line" t-as="sol">
+                                <tr t-foreach="o.sudo().order.order_line" t-as="sol">
                                     <td class="text-center" style="background-color:#FFF;">
                                         <span t-field="sol.product_catalog_id.name"/>
                                     </td>
