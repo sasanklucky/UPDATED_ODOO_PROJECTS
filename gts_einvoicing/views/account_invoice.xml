@@ -195,4 +195,25 @@
         </field>
     </record>
 
+    <record id="ac_product_catalog_form_inherit" model="ir.ui.view">
+        <field name="name">Product Catalog Form View Inherit</field>
+        <field name="model">product.catalog</field>
+        <field name="inherit_id" ref="ac_product_catalog.ac_product_catalog_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/group" position="inside">
+                <field name="is_service" string="IS-Service"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_account_invoice_form_inherit_einvoice">
+        <field name="name">account.invoice.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
+                <field name="is_service" string="IS-Service" groups="base.group_no_one" />
+            </xpath>
+        </field>
+    </record>
 </odoo>

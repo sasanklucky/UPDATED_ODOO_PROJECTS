@@ -25,6 +25,21 @@ class AccountInvoiceLine(models.Model):
     hsn_code = fields.Char('HSN/SAC Code', compute='_get_hsn_code', store=True)
     is_service = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Service')
 
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        for lines in self:
+            if lines.product_id.catalog_type.is_service:
+                lines.is_service = lines.product_id.catalog_type.is_service
+            else:
+                lines.is_service = 'N'
+
+    def create(self, vals):
+        product_id = int(vals['product_id'])
+        is_service = self.env['product.product'].search([('id', '=', product_id)]).catalog_type.is_service
+        vals['is_service'] = is_service
+        res = super(AccountInvoiceLine, self).create(vals)
+        return res
+
 
 class account_invoice(models.Model):
     _inherit = 'account.invoice'
@@ -798,3 +813,10 @@ class ResCountryState(models.Model):
     _inherit = 'res.country.state'
 
     stcd = fields.Char('STCD')
+
+
+class ProductCatalog(models.Model):
+    _inherit = 'product.catalog'
+
+    is_service = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Service')
+

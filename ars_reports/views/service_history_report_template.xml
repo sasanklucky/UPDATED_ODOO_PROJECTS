@@ -115,22 +115,22 @@
                 <tbody class="service_line_body">
                     <tr t-foreach="doc.service_ids" t-as="l">
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.order"/>
+                            <span t-field="l.sudo().order"/>
                         </td>
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.order.date_order" tz="IST"/>
+                            <span t-field="l.sudo().order.date_order" tz="IST"/>
                         </td>
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-esc="l.order.invoice_ids.mapped('create_date')[-1]"/>
+                            <span t-esc="l.sudo().order.invoice_ids.mapped('create_date')[-1]"/>
                         </td>
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.servicetype"/>
+                            <span t-field="l.sudo().servicetype"/>
                         </td>
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.mileage"/>
+                            <span t-field="l.sudo().mileage"/>
                         </td>
                         <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.order.company_id.name"/>
+                            <span t-field="l.sudo().order.company_id.name"/>
                         </td>
                     </tr>
                 </tbody>
