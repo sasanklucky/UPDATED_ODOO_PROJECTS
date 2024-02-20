@@ -19,6 +19,7 @@
                     <field name="hsn_code"/>
                     <field name="part_type"/>
                     <field name="invoice_no"/>
+                    <field name="invoice_state" string="Invoice Status"/>
                     <field name="invoice_date"/>
                     <field name="bill_to_customer"/>
                     <field name="repair_no"/>
