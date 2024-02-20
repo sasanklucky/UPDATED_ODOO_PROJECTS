@@ -76,6 +76,12 @@ class SalesReportFormat(models.Model):
             record.total_amount = record.amount + record.cgst_amount + record.sgst_amount + record.igst_amount + record.utgst_amount + record.vat_amount
 
     invoice_id = fields.Many2one('account.invoice', 'Invoice Id')
+    invoice_state = fields.Selection([
+        ('draft', 'Draft'),
+        ('open', 'Open'),
+        ('paid', 'Paid'),
+        ('cancel', 'Cancelled'),
+    ], string='Status')
     company_id = fields.Many2one('res.company', 'Dealer name')
     # dealer_zone = fields.Char(related="company_id.dealer_zone",string="Region")
     dealer_zone = fields.Selection([
@@ -121,7 +127,7 @@ class SalesReportFormat(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         print("table name", self._table);
         self.env.cr.execute(f"""  CREATE or REPLACE VIEW %s as (
-                    select row_number() over() as id,a.id as invoice_id,a.company_id,
+                    select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,  
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
                     (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
                     (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
