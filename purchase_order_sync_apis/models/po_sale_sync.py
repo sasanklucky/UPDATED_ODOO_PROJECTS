@@ -300,13 +300,14 @@ class PurchaseOrderInheritSync(models.Model):
                         sale_type = False
                         if rec.purchase_type == 'after_sales':
                             seq = env['ir.sequence'].sudo().search(
-                                [('code', '=', 'parts.purchase.order'), ('active', '=', True)],
+                                [('code', '=', 'parts.sale.quotation'), ('active', '=', True)],
                                 limit=1)
                             counter_parts = True
                             sale_type = 'parts'
                         else:
                             seq = env['ir.sequence'].sudo().search([('code', '=', 'sale.order'), ('active', '=', True)],
                                                                    limit=1)
+                        addr = customer.address_get(['delivery', 'invoice', 'workshop_billing', 'workshop_shipping'])
                         code = f"{seq.prefix}" + f"{seq.number_next_actual}"
                         print("seq===================", seq, code)
                         data = {
@@ -314,8 +315,8 @@ class PurchaseOrderInheritSync(models.Model):
                             'partner_id': customer.id if customer else False,
                             'mobile': customer.mobile if customer.mobile else '',
                             'email': customer.email if customer.email else '',
-                            'partner_invoice_id': customer.id if customer else False,
-                            'partner_shipping_id': customer.id if customer else False,
+                            'partner_invoice_id': addr['workshop_billing'] if rec.purchase_type == 'after_sales' else addr['invoice'],
+                            'partner_shipping_id': addr['workshop_shipping'] if rec.purchase_type == 'after_sales' else addr['delivery'],
                             'pricelist_id': pricelist_id.id if pricelist_id else False,
                             'user_id': customer.user_id.id if customer.user_id else False,
                             'payment_term_id': payment_term_id.id if payment_term_id else False,
@@ -489,7 +490,7 @@ class PurchaseOrderInheritSync(models.Model):
                                         lambda x: x.product_id.id == data_list['product_id'])
                                     cr.execute(f"""
                                         UPDATE sale_order 
-                                        SET sale_type = {"'"+str(data['sale_type']+"'")},
+                                        SET sale_type = {"'" + str(data['sale_type'] + "'")},
                                             counter_parts = {data['counter_parts']}
                                         WHERE id ={new_recordds.id};
                                     """)
