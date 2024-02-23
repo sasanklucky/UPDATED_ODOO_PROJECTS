@@ -18,4 +18,4 @@ from . import customer_dump_mis
 from . import sales_report_format
 from . import crm_summary_report
 from . import service_vehicle_setup
-
+from . import ars_stock_quantity_history

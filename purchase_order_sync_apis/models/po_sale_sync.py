@@ -310,6 +310,7 @@ class PurchaseOrderInheritSync(models.Model):
                         addr = customer.address_get(['delivery', 'invoice', 'workshop_billing', 'workshop_shipping'])
                         code = f"{seq.prefix}" + f"{seq.number_next_actual}"
                         print("seq===================", seq, code)
+                        current_time = fields.Datetime.from_string(fields.Datetime.now())
                         data = {
                             'name': code,
                             'partner_id': customer.id if customer else False,
@@ -324,7 +325,7 @@ class PurchaseOrderInheritSync(models.Model):
                             # 'user_id': customer.user_id.id if customer.user_id else False,
                             'picking_policy': 'direct',
                             'team_id': customer.team_id.id if customer.team_id else team_id.id,
-                            'date_order': rec.date_order if rec.date_order else '',
+                            'date_order': current_time,
                             'fiscal_position_id': fiscal_position_id.id if fiscal_position_id else False,
                             'product_catalog_id': catalog_data.id if catalog_data else False,
                             'counter_parts': counter_parts,

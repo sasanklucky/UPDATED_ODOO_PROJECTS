@@ -12,6 +12,7 @@ class WholesaleReport(models.Model):
             if color:
                 attribute = self.env['product.attribute.value'].sudo().search([('id', 'in', color)])
                 record.color = attribute.name
+
     dealer_code = fields.Char(string="Dealer Code")
     dealer_city = fields.Char(string="City", related="outlet.city")
     dealer_state = fields.Many2one('res.country.state', string="State", related="outlet.state_id")
@@ -45,5 +46,5 @@ class WholesaleReport(models.Model):
             left join account_invoice ai on ai.id = ail.invoice_id
             left join res_company rc on rc.id = ai.company_id
             left join sale_order so on so.id = ai.order_id
-            where ai.type = 'in_invoice' and ai.ars_invoice_type = 'vehicle'
+            where ai.type = 'in_invoice' and ai.ars_type = 'vehicle'
         )""" % (self._table))

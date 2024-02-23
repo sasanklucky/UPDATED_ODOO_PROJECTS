@@ -13,6 +13,22 @@ import json
 class ARS_sale_order(models.Model):
     _inherit = "sale.order"
 
+    @api.onchange('mobile')
+    def mobile_validation(self):
+        pattern = re.compile(r'\d{10}$')
+        if self.mobile:
+	    pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+            if not re.match(pattern, self.mobile):
+            
+                raise UserError(f'{self.mobile} Please enter a valid phone number')
+
+    @api.onchange('email')
+    def email_validation(self):
+        match_email = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if self.email:
+            if not re.match(match_email, self.email):
+                raise UserError(f'{self.email} is not a valid email')
+
     @api.model
     def _ars_default_warehouse_id(self):
         userid = self.env.user
@@ -80,7 +96,8 @@ class ARS_sale_order(models.Model):
                                 default='appointment')
     pick_up_drop = fields.Char('Pick Up and Drop', compute='compute_doc_type')
     vin_no = fields.Char(string="VIN")
-    model = fields.Many2one('product.product')
+    vehicle_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Vehicle Model')
+    model = fields.Many2one('product.product', string='Vehicle Model Variant')
     service_advisor = fields.Many2one('res.users', string="Service Advisor")
     delivery_service_advisor = fields.Many2one('res.users')
     appointment_date = fields.Datetime(string="Appointment Date")
@@ -555,7 +572,10 @@ class ARS_sale_order(models.Model):
     @api.multi
     def action_view_invoice(self):
         userid = self.env.user
-        if userid.sale_team_id.team_type == 'after_sales' or self.sale_type == 'after_sales':
+        res = super(ARS_sale_order, self).action_view_invoice()
+        if self.sale_type == 'parts' or self.counter_parts:
+            return res
+        if userid.sale_team_id.team_type == 'after_sales':
             invoices = self.mapped('invoice_ids')
             action = self.env.ref('account.action_invoice_tree1').read()[0]
             if len(invoices) > 1:
@@ -698,6 +718,7 @@ class ARS_sale_order(models.Model):
                 'order': self.id,
                 'servicetype': self.service_type.name,
                 'date': date.today(),
+                'mileage': self.mileage_in,
                 'next_service_due': next_service_due,
                 'set_reminder': set_reminder,
                 'vehicle_id': vehicle.id,
@@ -718,6 +739,7 @@ class ARSPurchaseOrderLine(models.Model):
     product_template_id = fields.Many2one('product.template', string='Product')
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
     product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
+    qty_available_line = fields.Float(string='Qty Available', related='product_template_id.qty_available')
     sl_no = fields.Integer(compute="onchange_order_line")
 
     @api.multi

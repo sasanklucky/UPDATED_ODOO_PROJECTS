@@ -13,6 +13,8 @@
                     <field name="company_id"/>
                     <field name="record_id" invisible="1"/>
                     <field name="enquiry_date"/>
+                    <field name="lead_creation_date"/>
+                    <field name="opportunity_conversion_date"/>
                     <field name="purchase_date"/>
                     <field name="no_of_days"/>
                     <field name="enquiry_category"/>
@@ -34,6 +36,8 @@
                     <field name="source_id"/>
                     <field name="medium" string="First Enquiry Mode"/>
                     <field name="test_drive" string="Test Drive" />
+                    <field name="test_drive_date"/>
+                    <field name="test_drive_remark"/>
                     <field name="invoice" string="Proforma Invoice"/>
                     <field name="stage_id" string="Enquiry Status"/>
                     <field name="lost_reason" string="Lost Sales Reason"/>
