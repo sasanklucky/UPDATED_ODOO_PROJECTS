@@ -8,6 +8,7 @@ from lxml import etree
 from openerp.osv.orm import setup_modifiers
 from odoo.exceptions import ValidationError, UserError, RedirectWarning, except_orm
 import json
+import re
 
 
 class ARS_sale_order(models.Model):
@@ -15,12 +16,9 @@ class ARS_sale_order(models.Model):
 
     @api.onchange('mobile')
     def mobile_validation(self):
-        pattern = re.compile(r'\d{10}$')
-        if self.mobile:
-	    pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
-            if not re.match(pattern, self.mobile):
-            
-                raise UserError(f'{self.mobile} Please enter a valid phone number')
+        pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+        if self.mobile and not re.match(pattern, self.mobile):
+            raise UserError(f'{self.mobile} Please enter a valid phone number')
 
     @api.onchange('email')
     def email_validation(self):
@@ -96,7 +94,8 @@ class ARS_sale_order(models.Model):
                                 default='appointment')
     pick_up_drop = fields.Char('Pick Up and Drop', compute='compute_doc_type')
     vin_no = fields.Char(string="VIN")
-    vehicle_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Vehicle Model')
+    vehicle_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True,
+                                    string='Vehicle Model')
     model = fields.Many2one('product.product', string='Vehicle Model Variant')
     service_advisor = fields.Many2one('res.users', string="Service Advisor")
     delivery_service_advisor = fields.Many2one('res.users')
@@ -434,7 +433,8 @@ class ARS_sale_order(models.Model):
     @api.multi
     def action_confirm(self):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        if sale_team.team_type == 'after_sales' and self.sale_type in ['parts', 'accessories'] and not self.counter_parts:
+        if sale_team.team_type == 'after_sales' and self.sale_type in ['parts',
+                                                                       'accessories'] and not self.counter_parts:
             if self.mileage_in == 0 and not self.counter_parts:
                 raise UserError(_('Please enter the mileage'))
             else:

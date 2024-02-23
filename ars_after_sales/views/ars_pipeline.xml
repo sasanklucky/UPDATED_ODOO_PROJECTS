@@ -1129,7 +1129,6 @@
                     <field name="currency_id" invisible="1"/>
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
-                    <field name="fleet_regn_no"/>
                     <field name="work_type"/>
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>

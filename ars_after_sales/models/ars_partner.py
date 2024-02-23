@@ -1,5 +1,4 @@
 import re
-
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 from odoo.tools.translate import _
@@ -7,7 +6,7 @@ from datetime import datetime, timedelta
 from datetime import date
 from odoo.addons.phone_validation.tools import phone_validation
 from openerp.exceptions import UserError, ValidationError
-import re
+
 
 
 class ARSPartner(models.Model):
@@ -15,11 +14,9 @@ class ARSPartner(models.Model):
 
     @api.onchange('mobile')
     def mobile_validation(self):
-	pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
-            if not re.match(pattern, self.mobile):
-        if self.mobile:
-            if not pattern.match(self.mobile):
-                raise UserError(f'{self.mobile} Please enter a valid mobile number')
+        pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+        if self.mobile and not re.match(pattern, self.mobile):
+            raise UserError(f'{self.mobile} Please enter a valid mobile number')
 
     @api.onchange('email')
     def email_validation(self):
@@ -27,6 +24,7 @@ class ARSPartner(models.Model):
         if self.email:
             if not re.match(match_email, self.email):
                 raise UserError(f'{self.email} is not a valid email')
+
     @api.multi
     def _compute_vehicle_count(self):
         for partner in self:
