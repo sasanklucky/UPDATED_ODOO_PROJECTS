@@ -169,8 +169,8 @@ class ARSMailActivity(models.Model):
         output.close()
         data = base64.encodebytes(data)
         doc_id = self.env['ir.attachment'].create(
-            {'datas': data, 'name': 'SalePsfReport_' + str(datetime.now().date()) + '.xls',
-             'datas_fname': 'SalePsfReport_' + str(datetime.now().date()) + '.xls',
+            {'datas': data, 'name': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
+             'datas_fname': 'Aftersale_psf_report_' + str(datetime.now().date()) + '.xls',
              })
 
         return doc_id

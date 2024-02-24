@@ -27,11 +27,11 @@
                 </xpath>
                 <xpath expr="//field[@name='sla_id']" position="after">
                     <field name="activity_source_id"/>
-                    <field name="source_complaint_id"/>
+                    <field name="source_complaint_id" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
                 <xpath expr="//field[@name='tag_ids']" position="after">
-                    <field name="category_i_id"/>
-                    <field name="category_ii_id"/>
+                    <field name="category_i_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="category_ii_id" options="{'no_create': True, 'no_open': True}"/>
                     <field name="close_date"/>
                 </xpath>
 
