@@ -396,7 +396,7 @@ class ARS_sale_order_line(models.Model):
         invoice_lines = self.env['account.invoice.line']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         for line in self:
-            if line.order_id.sale_aftersales == 'after_sales':
+            if line.order_id.sale_aftersales == 'after_sales' and not self.order_id.counter_parts:
                 invoice = self.env['account.invoice'].browse(invoice_id)
                 if invoice.partner_id == line.customer_split:
                     vals = line._prepare_invoice_line(qty=qty)

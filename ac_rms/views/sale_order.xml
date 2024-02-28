@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
         <field name="arch" type="xml">
             <field name='partner_id' position="after">
-                <field name="main_process_id"/>
+                <field name="main_process_id" groups="base.group_no_one"/>
                 <field name="cre_work_flow" invisible="1"/>
                 <field name="sa_work_flow" invisible="1"/>
             </field>

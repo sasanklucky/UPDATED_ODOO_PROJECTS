@@ -72,7 +72,7 @@ class ARS_sale_order_line(models.Model):
         _logger.info('Category Change start === %s' % datetime.now().strftime("%H:%M:%S.%f"))
         if self.category and self.category.name.lower() == 'warranty':
             seller_ids = [sl.name.id for sl in self.product_id.seller_ids]
-            print('seller_ids', seller_ids)
+            # print('seller_ids', seller_ids)
             if len(seller_ids) == 1:
                 self.customer_split = seller_ids and seller_ids[0]
             else:
@@ -92,7 +92,7 @@ class ARS_sale_order_line(models.Model):
     def CustomerSplit_Change(self):
         res = {}
         self.ensure_one()
-        print('customer onchange', self.customer_split)
+        # print('customer onchange', self.customer_split)
         if self.customer_split and self.product_id:
             res = self.customer_split.property_product_pricelist.with_context().get_product_price_rule(self.product_id,
                                                                                                        1.0,
@@ -107,7 +107,7 @@ class ARS_sale_order_line(models.Model):
         msg = ''
         priceDict = {}
         context = self._context
-        print('order line context', self._context)
+        # print('order line context', self._context)
         for ol in self:
             priceDict[ol.id] = ol.price_unit
         if 'apr_action' in values and values.get('apr_action') == 'reject':

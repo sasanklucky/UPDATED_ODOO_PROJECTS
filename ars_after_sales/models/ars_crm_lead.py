@@ -4,11 +4,25 @@ from openerp.exceptions import UserError, ValidationError
 from openerp.exceptions import except_orm, Warning, RedirectWarning
 from lxml import etree
 from odoo.http import request
+from datetime import datetime, timedelta, date
+import re
 
 
 class ARS_crm_lead(models.Model):
     _name = "crm.lead"
     _inherit = "crm.lead"
+
+    def update_model_info(self):
+        crm_lead = self.search([('model_id', '=', False), ('vehicle_line', '!=', False)])
+        for record in crm_lead:
+            if record.vehicle_line[0].product_catalog_id.name == 'Vehicle':
+                record.model_id = record.vehicle_line[0].product_template_id
+
+    @api.onchange('vehicle_line')
+    def _onchange_vehicle_line(self):
+        if self.vehicle_line:
+            if self.vehicle_line[0].product_catalog_id.name == 'Vehicle':
+                self.model_id = self.vehicle_line[0].product_template_id
 
     # _rec_name = "company_type"
     # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
@@ -119,6 +133,7 @@ class ARS_crm_lead(models.Model):
     crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
+    model_id = fields.Many2one('product.template', string="Model")
 
     # planned_revenue = fields.Float('Expected Revenue', compute="_get_compute_expected_revenue",
     #                                track_visibility='always', store=True)
@@ -491,9 +506,9 @@ class ARS_crm_lead(models.Model):
     def mobile_change(self):
         request.session['mobile'] = self.mobile
         if self.mobile:
-            pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
-            if not re.match(pattern, self.mobile):
-                raise UserError(f'{self.mobile} Please enter a valid mobile number')
+            # pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+            # if not re.match(pattern, self.mobile):
+            #     raise UserError(f'{self.mobile} Please enter a valid mobile number')
             res_details = self.env['res.partner'].search([('mobile', '=', self.mobile)], order="id desc", limit=1)
             if res_details:
                 self.partner_id = res_details.id
@@ -816,9 +831,9 @@ class Lead2OpportunityPartner(models.TransientModel):
             else:
                 pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
                 match_email = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
-                if lead.mobile:
-                    if not re.match(pattern, lead.mobile):
-                        raise UserError(f'{lead.mobile} Mobile Number Should Contain 10 Numbers')
+                # if lead.mobile:
+                #     if not re.match(pattern, lead.mobile):
+                #         raise UserError(f'{lead.mobile} Mobile Number Should Contain 10 Numbers')
                 if lead.email_from:
                     if not re.match(match_email, lead.email_from):
                         raise UserError(f'{lead.email_from} is not a valid email')

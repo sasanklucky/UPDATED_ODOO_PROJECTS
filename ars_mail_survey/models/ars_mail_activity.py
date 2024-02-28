@@ -18,7 +18,7 @@ class ARS_MailActivity(models.Model):
     @api.depends('response_id', 'survey_percentage')
     def get_survey_percentage(self):
         for rec in self:
-            print("==========")
+            # print("==========")
             if rec.response_id.state == 'done':
                 # try:
                 questions = rec.response_id.user_input_line_ids.mapped('question_id')
@@ -88,7 +88,7 @@ class ARS_MailActivity(models.Model):
         postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
 
         if self.activity_type_id:
-            print(self.activity_type_id.name)
+            # print(self.activity_type_id.name)
             self.summary = self.activity_type_id.summary
             tz = self.user_id.sudo().tz
             if tz:
@@ -287,7 +287,7 @@ class ARS_MailActivity(models.Model):
             'vehicle_no': vehicle_no,
             'source_complaint_id': source_complaint_id.id
         }
-        print(vals)
+        # print(vals)
         helpdesk_model = self.env['helpdesk.ticket'].sudo()
         res = helpdesk_model.create(vals)
         activity_id.write({'stages': 'ticket_created'})

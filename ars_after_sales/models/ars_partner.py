@@ -12,11 +12,11 @@ from openerp.exceptions import UserError, ValidationError
 class ARSPartner(models.Model):
     _inherit = 'res.partner'
 
-    @api.onchange('mobile')
-    def mobile_validation(self):
-        pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
-        if self.mobile and not re.match(pattern, self.mobile):
-            raise UserError(f'{self.mobile} Please enter a valid mobile number')
+    # @api.onchange('mobile')
+    # def mobile_validation(self):
+    #     pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+    #     if self.mobile and not re.match(pattern, self.mobile):
+    #         raise UserError(f'{self.mobile} Please enter a valid mobile number')
 
     @api.onchange('email')
     def email_validation(self):

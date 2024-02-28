@@ -120,8 +120,6 @@ class account_invoice(models.Model):
 
     @api.multi
     def create_einvoicing(self):
-        print("Create Invoice...")
-        print("Create Invoice...")
         item_list = []
         einvoicing = self.env['einvoicing.configuration'].search([], limit=1)
         warehouse = self.generate_einvoice()

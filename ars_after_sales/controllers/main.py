@@ -127,7 +127,7 @@ class ARSLogin(Website):
 
     @http.route(['/Warranty-Claim/Update'], type='json', auth="user", website=True, csrf=False)
     def warrantyclaim_update(self, db_id, warranty_id, vals, **post):
-        print('warrantyclaim_update',db_id, warranty_id, vals)
+        # print('warrantyclaim_update',db_id, warranty_id, vals)
         request.env['sale.order.line'].browse(int(db_id)).write(vals)
         warranty = request.env['ars.sale.warranty'].browse(warranty_id)
         vals.get('comment') and warranty.message_post(body=vals.get('comment'))

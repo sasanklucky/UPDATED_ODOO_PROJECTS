@@ -1440,7 +1440,7 @@ class Home(http.Controller):
                 #             res_skill_grp['grouped_tech'] = resource_by_group
                 for res_gp in res_grp:
                     grp_str += '<div class="fc-event res_div" id=' + str(res_gp.id) + '>' + str(res_gp.name) + '</div>'
-            print(grp_str)
+            # print(grp_str)
             vals = {'status': True, 'grp': grp_str}
         return vals
 

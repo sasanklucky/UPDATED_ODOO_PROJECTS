@@ -14,11 +14,11 @@ import re
 class ARS_sale_order(models.Model):
     _inherit = "sale.order"
 
-    @api.onchange('mobile')
-    def mobile_validation(self):
-        pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
-        if self.mobile and not re.match(pattern, self.mobile):
-            raise UserError(f'{self.mobile} Please enter a valid phone number')
+    # @api.onchange('mobile','')
+    # def mobile_validation(self):
+    #     pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+    #     if self.mobile and not re.match(pattern, self.mobile):
+    #         raise UserError(f'{self.mobile} Please enter a valid phone number')
 
     @api.onchange('email')
     def email_validation(self):
@@ -767,7 +767,7 @@ class ARSPurchaseOrderLine(models.Model):
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
         self.product_id = False
-        print(self.product_template_id.attribute_line_ids)
+        # print(self.product_template_id.attribute_line_ids)
         if self.product_template_id and self.product_template_id.attribute_line_ids:
             varient_ids = self.env['product.product'].sudo().search(
                 [('product_tmpl_id', '=', self.product_template_id.id)])

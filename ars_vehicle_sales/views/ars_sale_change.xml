@@ -69,11 +69,13 @@
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
                 <field name='partner_id' position="after">
-                    <field name="mobile" required="1" string="Mobile"/>
-                    <field name="email" required="1"/>
+                    <field name="mobile" required="1" string="Mobile"
+                           attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                    <field name="email" required="1" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 </field>
                 <field name="payment_term_id" position="after">
-                    <field name="user_id" required="1" options="{'no_create': True}" domain="[('salesperson', '=', True)]"/>
+                    <field name="user_id" required="1" options="{'no_create': True, 'no_open':True}"
+                           domain="[('salesperson', '=', True)]" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                     <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
 
@@ -103,7 +105,7 @@
 
                 <field name="phone" position="after">
                     <field name="mobile" required="True"></field>
-                    <field name="is_test_drive"/>
+                    <field name="is_test_drive" readonly="True"/>
                 </field>
                 <field name="phone" position="attributes">
                     <attribute name="invisible">True</attribute>
@@ -116,7 +118,7 @@
                     <field name="tag_ids" widget="many2many_tags"
                            options="{'color_field': 'color', 'no_create_edit': True}"/>
                     <field name="user_id" domain="[('share', '=', False),('salesperson', '=', True)]"
-                           options="{'no_create': True}"
+                           options="{'no_create': True, 'no_open': True}" required="1"
                            context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"/>
                 </field>
                 <field name="function" position="replace"/>
@@ -144,8 +146,7 @@
 
                 <xpath expr="//form/sheet/div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" type="action" icon="fas fa-car"
-                            name="%(ars_test_drive_tree_action)d"
-                            attrs="{'invisible': [('is_test_drive', '=', False)]}">
+                            name="%(ars_test_drive_tree_action)d">
                         <div class="o_stat_info">
                             <field name="no_of_test_drive"/>
                             <span class="o_stat_text">Test Drive</span>
@@ -157,7 +158,13 @@
                 </field>
                 <field name="source_id" position="attributes">
                     <attribute name="required">True</attribute>
-                    <attribute name="options">{'no_open': True,'no_create':True,'no_edit':True}</attribute>
+                    <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                </field>
+                <field name="medium_id" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
+                </field>
+                <field name="campaign_id" position="attributes">
+                    <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
                 </field>
                 <field name="mobile" position="attributes">
                     <attribute name="required">True</attribute>
@@ -177,8 +184,10 @@
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
                 <field name='payment_term_id' position="before">
-                    <field name="mobile" required="1"/>
-                    <field name="email" required="1"/>
+                    <field name="mobile" required="1" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                    <field name="email" required="1" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                    <field name="delivery_type" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                    <field name="after_sale_intro" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                 </field>
                 <field name='payment_term_id' position="replace"/>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="after">

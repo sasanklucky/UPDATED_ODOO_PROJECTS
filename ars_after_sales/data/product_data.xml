@@ -34,6 +34,16 @@
             <field name="number_increment">1</field>
         </record>
 
+<!--        PDI Services Sequence-->
+        <record id="sequence_pdi_services_seq" model="ir.sequence">
+            <field name="name">PDI Services</field>
+            <field name="code">pdi_service</field>
+            <field name="prefix">PDI/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
         <!--Email template -->
         <record id="email_template_edi_warranty_sale" model="mail.template">
             <field name="name">Warranty - Send Approval Request</field>

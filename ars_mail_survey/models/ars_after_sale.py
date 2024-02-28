@@ -37,7 +37,7 @@ class AccountInvoice_inherit(models.Model):
                     (item['user_id'][0], item['user_id_count']) for item in ticket_count_data)
                 assigned_user_id = self.env['res.users'].browse(
                     min(open_ticket_per_user_map, key=open_ticket_per_user_map.get))
-                print(assigned_user_id.company_id.name)
+                # print(assigned_user_id.company_id.name)
         return assigned_user_id
 
     @api.multi
