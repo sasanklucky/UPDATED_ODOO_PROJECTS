@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="gatepass_report" model="ir.actions.report">
-        <field name="name">Gate pass report</field>
-        <field name="model">account.invoice</field>
-        <field name="report_type">qweb-pdf</field>
-        <field name="report_name">ars_vehicle_sales.report_gatepass</field>
-        <field name="report_file">ars_vehicle_sales.report_gatepass</field>
-        <field name="print_report_name">'Gate Pass - %s' % (object.number)</field>
-        <field name="binding_model_id" ref="model_account_invoice"/>
-        <field name="binding_type">report</field>
-    </record>
+<!--    <record id="gatepass_report" model="ir.actions.report">-->
+<!--        <field name="name">Gate pass report</field>-->
+<!--        <field name="model">account.invoice</field>-->
+<!--        <field name="report_type">qweb-pdf</field>-->
+<!--        <field name="report_name">ars_vehicle_sales.report_gatepass</field>-->
+<!--        <field name="report_file">ars_vehicle_sales.report_gatepass</field>-->
+<!--        <field name="print_report_name">'Gate Pass - %s' % (object.number)</field>-->
+<!--        <field name="binding_model_id" ref="model_account_invoice"/>-->
+<!--        <field name="binding_type">report</field>-->
+<!--    </record>-->
 
-    <!-- <report
+ <report
         id="gatepass_report"
         model="account.invoice"
         string="Gate pass report"
         report_type="qweb-pdf"
         name="ars_vehicle_sales.report_gatepass"
         file="ars_vehicle_sales.report_gatepass"
-    /> -->
+        menu="False"
+    />
 
 
     <template id="gate_pass_report_template">
