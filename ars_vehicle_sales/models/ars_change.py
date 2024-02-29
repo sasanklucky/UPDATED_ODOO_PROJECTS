@@ -360,18 +360,33 @@ class ars_sale_invoice(models.Model):
     @api.multi
     def action_print_gate_pass(self):
         self.ensure_one()
-        vehcile_obj = self.env['fleet.vehicle'].sudo().search(
-            [('mvariant_id', 'in', self.invoice_line_ids.mapped('product_id.id')),
-             ('driver_id', '=', self.partner_id.id), ('vin_sn', 'in', self.invoice_line_ids.mapped('vin_no.name'))])
-        if vehcile_obj:
+        if not self.gate_pass_date:
+            self.gate_pass_date = date.today()
+        if self.ars_invoice_type == 'vehicle':
+            vehcile_obj = self.env['fleet.vehicle'].sudo().search(
+                [('mvariant_id', 'in', self.invoice_line_ids.mapped('product_id.id')),
+                 ('driver_id', '=', self.partner_id.id), ('vin_sn', 'in', self.invoice_line_ids.mapped('vin_no.name'))])
+            if not vehcile_obj:
+                raise ValidationError(_('Vehicle not found against Customer.'))
             if not vehcile_obj.license_plate:
                 raise ValidationError(_('Please enter Registration Number of Vehicle to print Gate Pass.'))
-            else:
-                if not self.gate_pass_date:
-                    self.gate_pass_date = date.today()
-                return self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(self)
+            view = self.env.ref('ars_vehicle_sales.view_gate_pass_wiz')
+            return {
+                'name': _('Print Gate Pass'),
+                'type': 'ir.actions.act_window',
+                'view_type': 'form',
+                'view_mode': 'form',
+                'res_model': 'gate.pass.wiz',
+                'views': [(view.id, 'form')],
+                'view_id': view.id,
+                'target': 'new',
+            }
         else:
-            raise ValidationError(_('Vehicle not found against Customer.'))
+            data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(
+                self)
+            return data
+
+
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
