@@ -103,3 +103,4 @@ access_crm_summary_report,access_crm_summary_report,model_crm_summary_report,bas
 access_crm_summary_source_report,access_crm_summary_source_report,model_crm_summary_source_report,base.group_user,1,1,1,0
 
 access_activity_log_report,activity_log_report,model_activity_log_report,base.group_user,1,1,1,1
+access_service_setup_manual,access_service_setup_manual,model_service_setup_manual,base.group_user,1,1,1,0

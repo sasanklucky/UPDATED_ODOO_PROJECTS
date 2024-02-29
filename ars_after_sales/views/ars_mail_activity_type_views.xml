@@ -1,0 +1,91 @@
+<odoo>
+    <data>
+
+        <record id="mail_activity_type_view_form_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.type.form.inherit.calendar</field>
+            <field name="model">mail.activity.type</field>
+            <field name="inherit_id" ref="mail.mail_activity_type_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='next_type_ids']" position="after">
+                    <field name="stages"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mail_activity_view_tree_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.tree.inherit</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='summary']" position="after">
+                    <field name="mobile"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <!-- mail.activity form butto design change -->
+        <record id="mail_activity_view_form_popup_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.view.form.popup</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_form_popup"/>
+            <field name="arch" type="xml">
+                <button name="action_done" type="object" class="btn-primary" position="replace">
+                    <button string="Mark as Done" name="action_done"
+                            type="object" class="btn-primary" style="margin-right: 9px;"/>
+                </button>
+                <button name="action_close_dialog" type="object" class="btn-primary" position="replace">
+                    <button string="Schedule" name="action_close_dialog"
+                            type="object" class="btn-primary" style="margin-right: 9px;"/>
+                </button>
+                <button attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                        name="action_create_calendar_event"
+                        type="object"
+                        class="btn-primary" position="replace">
+                    <button string="Schedule a meeting"
+                            attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                            name="action_create_calendar_event"
+                            type="object"
+                            class="btn-primary" style="margin-right: 9px;"/>
+                </button>
+
+            </field>
+        </record>
+        <!-- mail.activity search filter modify -->
+        <record id="mail_activity_view_search_inherit" model="ir.ui.view">
+            <field name="name">mail.activity.view.form.popup</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail.mail_activity_view_search"/>
+            <field name="arch" type="xml">
+                <filter name="activities_my" position="replace">
+                    <filter string="My Activities" name="activities_my"
+                            domain="[('user_id', '=', uid)]"/>
+                </filter>
+            </field>
+        </record>
+
+
+        <record id="mail_activity_action" model="ir.actions.act_window">
+            <field name="name">Activity List</field>
+            <field name="res_model">mail.activity</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="mail.mail_activity_view_tree"/>
+            <field name="context">{'search_default_activities_my': 1,}</field>
+        </record>
+
+        <menuitem id="menu_mail_activity"
+                  name="Activity List"
+                  parent="crm.crm_menu_root"
+                  action="mail_activity_action"
+                  sequence="4"/>
+
+
+        <act_window id="schedule_activity"
+                    multi="True"
+                    key2="client_action_multi" name="Schedule activity"
+                    res_model="mail.activity" src_model="crm.lead"
+                    view_mode="form" target="new" view_type="form"/>
+
+
+    </data>
+</odoo>

@@ -4,16 +4,35 @@ from openerp.exceptions import UserError, ValidationError
 from openerp.exceptions import except_orm, Warning, RedirectWarning
 from lxml import etree
 from odoo.http import request
+from datetime import datetime, timedelta, date
+import re
 
 
 class ARS_crm_lead(models.Model):
     _name = "crm.lead"
     _inherit = "crm.lead"
 
+    def update_model_info(self):
+        crm_lead = self.search([('model_id', '=', False), ('vehicle_line', '!=', False)])
+        for record in crm_lead:
+            if record.vehicle_line[0].product_catalog_id.name == 'Vehicle':
+                record.model_id = record.vehicle_line[0].product_template_id
+
+    @api.onchange('vehicle_line')
+    def _onchange_vehicle_line(self):
+        if self.vehicle_line:
+            if self.vehicle_line[0].product_catalog_id.name == 'Vehicle':
+                self.model_id = self.vehicle_line[0].product_template_id
+
     # _rec_name = "company_type"
     # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
     #                           default=lambda self: self.env.user)
-
+    @api.onchange('email_from')
+    def email_validation(self):
+        match_email = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if self.email_from:
+            if not re.match(match_email, self.email_from):
+                raise UserError(f'{self.email_from} is not a valid email')
     @api.model
     def default_team_id(self):
         # channel = self.env['res.users'].browse(self.env.uid).sale_team_id
@@ -113,6 +132,8 @@ class ARS_crm_lead(models.Model):
     is_estimation = fields.Char(default='No Estimation')
     crm_lead_stage = fields.Many2one('crm.lead.stage', string="Lead Stage")
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
+    opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
+    model_id = fields.Many2one('product.template', string="Model")
 
     # planned_revenue = fields.Float('Expected Revenue', compute="_get_compute_expected_revenue",
     #                                track_visibility='always', store=True)
@@ -259,8 +280,26 @@ class ARS_crm_lead(models.Model):
     @api.model
     def create(self, vals):
         con = self.env.context
-        partner_id = vals.get('partner_id')
-        if partner_id:
+        res_value = {}
+        partner_create_id = self.env['res.partner'].search([('id', '=', vals.get('partner_id'))])
+        if partner_create_id:
+            if 'gender' in vals:
+                res_value.update({'gender': vals['gender']})
+            if 'annual_income' in vals:
+                res_value.update({'annual_income': vals['annual_income']})
+            if 'street' in vals:
+                res_value.update({'street': vals['street']})
+            if 'city' in vals:
+                res_value.update({'city': vals['city']})
+            if 'street2' in vals:
+                res_value.update({'street2': vals['street2']})
+            if 'mobile' in vals:
+                res_value.update({'mobile': vals['mobile']})
+            if 'email_from' in vals:
+                res_value.update({'email': vals['email_from']})
+            if res_value:
+                partner_create_id.write(res_value)
+            partner_id = vals.get('partner_id')
             partner = self.env['res.partner'].browse(partner_id)
             partner_name = partner.parent_id.name
             if not partner_name and partner.is_company:
@@ -305,8 +344,14 @@ class ARS_crm_lead(models.Model):
                 res.planned_revenue = sum(res.vehicle_line.mapped('product_template_id.list_price'))
         return res
 
-    # @api.multi
-    # def write(self, vals):
+    @api.multi
+    def write(self, vals):
+        res = super(ARS_crm_lead, self).write(vals)
+        if self.type == 'opportunity':
+            if len(self.vehicle_line) < 1:
+                raise ValidationError("Please add at least one product before saving.")
+        return res
+
     #     if self.vehicle_line:
     #         if 'vehicle_line' in vals:
     #             print(vals['vehicle_line'])
@@ -461,16 +506,14 @@ class ARS_crm_lead(models.Model):
     def mobile_change(self):
         request.session['mobile'] = self.mobile
         if self.mobile:
+            # pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+            # if not re.match(pattern, self.mobile):
+            #     raise UserError(f'{self.mobile} Please enter a valid mobile number')
             res_details = self.env['res.partner'].search([('mobile', '=', self.mobile)], order="id desc", limit=1)
             if res_details:
                 self.partner_id = res_details.id
             else:
-                self.partner_id = False
-            # if len(res_details) == 1:
-            #     self.partner_id = res_details.id
-            # else:
-            #     for res in res_details:
-            #         self.partner_id = res.id
+                self.partner_id.write({'mobile': self.mobile})
 
     # onchange of regn no
     #     @api.multi
@@ -779,10 +822,21 @@ class Lead2OpportunityPartner(models.TransientModel):
         }
 
         leads = self.env['crm.lead'].browse(self._context.get('active_ids', []))
+        date_today = date.today()
+        leads.write({'opportunity_conversion_date': date_today})
         for lead in leads:
             if not all([lead.mobile, lead.email_from, lead.source_id, lead.city]):
                 raise UserError(_("The following fields are mandatory please fill it to continue\n"
-                                  " Mobile,Email,Source,City"))
+                                  " Mobile,Email,Source,City,Model"))
+            else:
+                pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+                match_email = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+                # if lead.mobile:
+                #     if not re.match(pattern, lead.mobile):
+                #         raise UserError(f'{lead.mobile} Mobile Number Should Contain 10 Numbers')
+                if lead.email_from:
+                    if not re.match(match_email, lead.email_from):
+                        raise UserError(f'{lead.email_from} is not a valid email')
 
         if self.partner_id:
             values['partner_id'] = self.partner_id.id

@@ -133,7 +133,7 @@ class FleetVehicle(models.Model):
     @api.multi
     def name_get(self):
         context = dict(self.env.context)
-        print(context)
+        # print(context)
         result = []
         ress = super(FleetVehicle, self).name_get()
 

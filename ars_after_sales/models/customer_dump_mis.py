@@ -86,7 +86,7 @@ class customer_dump_mis_report(models.Model):
     dealer_zone = fields.Selection(related="company_id.dealer_zone")
     medium = fields.Char(string="Medium")
     dealer_code = fields.Char(related="company_id.dealer_code")
-    enquiry_date = fields.Char('Enquiry Creation Date')
+    enquiry_date = fields.Date('Enquiry Date')
     purchase_date = fields.Char('Expected Purchase Date')
     no_of_days = fields.Char('Intension To Purchase Days')
     enquiry_category = fields.Char('Enquiry Category')
@@ -119,15 +119,18 @@ class customer_dump_mis_report(models.Model):
     feedback_2 = fields.Html('Feedback(2)')
     note_3 = fields.Html('Note(3)')
     feedback_3 = fields.Html('Feedback(3)')
-
+    lead_creation_date = fields.Date('Lead Creation Date')
+    opportunity_conversion_date = fields.Date()
+    test_drive_date = fields.Date('Test Drive Date')
+    test_drive_remark = fields.Char('Test Drive Remark')
 
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         print("table name", self._table);
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-        select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline 
-            as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,
+        select row_number() over() as id,a.id as record_id,a.company_id,a.enquiry_date::Date as enquiry_date,a.date_deadline 
+            as purchase_date,a.date_deadline - a.enquiry_date::Date as no_of_days,a.create_date::Date as lead_creation_date,a.opportunity_conversion_date::Date as opportunity_conversion_date,
             case
             when a.date_deadline - a.create_date::Date <= 30 then 'HOT'
             when a.date_deadline - a.create_date::Date > 30 and a.date_deadline - a.create_date::Date <= 60 then 'WARM'
@@ -142,7 +145,9 @@ class customer_dump_mis_report(models.Model):
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 1) as note_2,
 			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 1) as feedback_2,
 			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as note_3,
-			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as feedback_3
+			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as feedback_3,
+			(select test_drive_date from ars_test_drive where opportunity_id = a.id order by id desc limit 1) as test_drive_date,
+			(select test_drive_remark from ars_test_drive where opportunity_id = a.id order by id desc limit 1) as test_drive_remark
             from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
             left join utm_medium utm on a.medium_id = utm.id
             where a.type = 'opportunity'
@@ -150,8 +155,7 @@ class customer_dump_mis_report(models.Model):
            
         )""" % (self._table))
 
-
-        # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline 
+        # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline
         #     as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,
         #     case
         #     when a.date_deadline - a.create_date::Date <= 30 then 'HOT'

@@ -66,7 +66,7 @@ class ARSMailActivity(models.Model):
         if questions_list:
             q_rw = 19
             for quest in questions_list:
-                print(quest.question)
+                # print(quest.question)
                 sheets.write(1, q_rw, quest.question, format21)
                 q_rw += 1
         sheets.write(1, 31, 'Satisfaction Status', format21)
@@ -175,7 +175,7 @@ class ARSMailActivity(models.Model):
             for question in questions_list:
                 quest_vals = False
                 for qst_vals in recs.response_id.user_input_line_ids:
-                    print('qst_valssss', qst_vals)
+                    # print('qst_valssss', qst_vals)
                     if question.id == qst_vals.question_id.id:
                         if qst_vals.question_id.type != 'multiple_choice':
                             rating_star = qst_vals.question_id.labels_ids.filtered(

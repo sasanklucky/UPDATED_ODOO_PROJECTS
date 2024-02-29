@@ -9,6 +9,7 @@ class ARS_account_invoice(models.Model):
     gate_pass_date = fields.Date(string='Gate Pass Date')
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
+    product_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Model')
 
 
     @api.multi
@@ -110,7 +111,7 @@ class ARS_account_invoice(models.Model):
     regno = fields.Char()
     reg_no = fields.Many2one('fleet.vehicle', string="Regn No")
     vin = fields.Char(string="VIN")
-    model = fields.Many2one('product.product')
+    model = fields.Many2one('product.product', string="Model Variant")
     kilometer = fields.Float(string="Kilometer",required=True)
     kilometer_out = fields.Float(string="Kilometer Out",required=True)
     delivery_service_advisor = fields.Many2one('res.users')
@@ -124,6 +125,13 @@ class ARS_account_invoice(models.Model):
     delivery_date = fields.Datetime(string="Delivery Date")
     count_vehicle = fields.Integer()
 
+    @api.multi
+    def check_valid_sales_channel(self, sales_team):
+        if sales_team.team_type == 'after_sales':
+            pass
+        else:
+            raise ValidationError(_("You are not belongs to After Sales  channel, Please select After Sales channel and try again"))
+
     def action_invoice_open(self):
         if self.ars_invoice_type == 'after_sales' and self.kilometer_out == 0.00:
             raise UserError('Please Enter Kilometer Out ')
@@ -131,6 +139,9 @@ class ARS_account_invoice(models.Model):
             raise UserError('Please Enter Kilometer IN')
         if self.ars_invoice_type == 'after_sales' and self.kilometer_out < self.kilometer:
             raise UserError(_("Kilometer Out is lesser than Kilometer In"))
+        if self.ars_invoice_type == 'after_sales':
+            sale_team = self.env['crm.team'].search([('member_ids', 'in', self.user_id.id),('member_ids', 'in', self.env.user.ids)])
+            self.check_valid_sales_channel(sale_team)
         res = super(ARS_account_invoice,self).action_invoice_open()
         return res
 

@@ -47,6 +47,9 @@ class AfterSlaesRetailReport(models.Model):
     cgst_amt = fields.Float('CGST Amount',compute='_compute_tax_percentage')
     sgst_amt = fields.Float(string='SGST Amount',compute='_compute_tax_percentage')
     igst_amt = fields.Float(string='IGST Amount',compute='_compute_tax_percentage')
+    product_uom_qty = fields.Float('Ordered Quantity')
+    product_catalog_id = fields.Many2one('product.catalog','Catalog Type')
+
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -75,7 +78,9 @@ class AfterSlaesRetailReport(models.Model):
             sol.price_unit as price_unit,
             sol.discount as discount,
             sol.price_subtotal as part_price,
-            sol.price_total as total_part_price
+            sol.price_total as total_part_price,
+            sol.product_uom_qty as product_uom_qty,
+            sol.product_catalog_id as product_catalog_id
 
             from sale_order_line sol
             left join sale_order so on so.id = sol.order_id

@@ -38,6 +38,8 @@
                     <field name="ro_type" />
                     <field name="last_ro_close_date" />
                     <field name="odoometer" />
+                    <field name="product_catalog_id" />
+                    <field name="product_uom_qty" />
 <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
                     <field name="default_code"/>
                     <field name="part_description" />

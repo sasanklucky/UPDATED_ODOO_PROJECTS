@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="group_ebill_manager" model="res.groups">
+            <field name="name">E-Bill-Manager</field>
+        </record>
+
+        <record id="group_ebill_response" model="res.groups">
+            <field name="name">E-Bill Response/json</field>
+        </record>
+
+        <record id="group_ebill_can" model="res.groups">
+            <field name="name">Cancel E-way/E-invoice</field>
+        </record>
+
+    </data>
+</odoo>
+

@@ -1057,7 +1057,7 @@
                                 <group>
                                     <group string="Shipping Information" name="sale_shipping" modifiers="{}">
                                         <field name="warehouse_id" default="Parts Warehouse"
-                                               options="{'no_create': True}"
+                                               options="{'no_create': True, 'no_open': True}"
                                                groups="stock.group_stock_multi_locations"/>
                                         <field name="incoterm" widget="selection"
                                                groups="sale_stock.group_display_incoterm"/>
@@ -1068,9 +1068,11 @@
                                         <field name="sale_order_number" groups="base.group_no_one" readonly="1"/>
                                         <field name="sale_type" groups="base.group_no_one"/>
                                         <field name="team_id" options="{'no_create': True}" invisible="1"/>
-                                        <field name="client_order_ref"/>
-                                        <field name="company_id" options="{'no_create': True}"
-                                               groups="base.group_multi_company"/>
+                                        <field name="client_order_ref"
+                                               attrs="{'readonly':[('state','in',['sale','done'])]}"/>
+                                        <field name="company_id" options="{'no_create': True, 'no_open': True}"
+                                               groups="base.group_multi_company"
+                                               attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                                         <field name="analytic_account_id"
                                                context="{'default_partner_id':partner_invoice_id, 'default_name':name}"
                                                attrs="{'readonly': ['|',('analytic_account_id','!=',False),('invoice_count','!=',0),('state','=','sale')]}"
@@ -1079,11 +1081,13 @@
                                     <group name="sale_pay" string="Invoicing">
                                         <field name="date_order"
                                                attrs="{'invisible': [('state', 'in', ['sale', 'done', 'cancel'])]}"/>
-                                        <field name="fiscal_position_id" options="{'no_create': True}"/>
+                                        <field name="fiscal_position_id" options="{'no_create': True}"
+                                               attrs="{'readonly':[('state','not in',['draft','so','sent','to_approve'])]}"/>
                                         <field name="invoice_status" states="sale,done" invisible="1"/>
                                     </group>
-                                    <group string="Reporting" name="technical" groups="base.group_no_one">
-                                        <field groups="base.group_no_one" name="origin"/>
+                                    <group string="Reporting" name="technical">
+                                        <field name="origin"
+                                               attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                     </group>
                                 </group>
                             </page>
@@ -1123,8 +1127,11 @@
                     <field name="user_id" string="Service Advisor"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                     <field name="currency_id" invisible="1"/>
-                    <field name="invoice_status" invisible="1"/>
+                    <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
+                    <field name="work_type"/>
+                    <field name="model"/>
+                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                 </tree>
             </field>
         </record>
@@ -1307,13 +1314,14 @@
                                 <field name="user_id" string="Service Advisor"
                                        context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'sales_team.group_sale_salesman_all_leads'], 'team_id': team_id}"
                                        domain="[('share', '=', False),('serviceadvisor','=',True)]"
-                                       options="{'no_create': True}"/>
+                                       options="{'no_create': True, 'no_open': True}"/>
                                 <!--<field name="resource_id_lead" domain="[('resource_category.code','=','SA')]" />-->
                                 <field name="team_id" widget="selection" invisible="1"/>
                                 <field name="appo_date" string="Appointment Date"/>
                                 <field name="delivery_time" string="Delivery Date"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
-                                       domain="[('serviceadvisor','=',True)]"/>
+                                       domain="[('serviceadvisor','=',True)]"
+                                       options="{'no_create': True, 'no_open': True}"/>
                             </group>
                             <!--<group>-->
                             <!--&lt;!&ndash;<field name="vin_no" />&ndash;&gt;-->
@@ -1878,10 +1886,12 @@
                                 <field name="service_type" required="1" options="{'no_create': True}"/>
                                 <field name="service_options" required="1" options="{'no_create': True}"/>
                                 <!--<field name="resource_id_sale" domain="[('resource_category.code','=','SA')]"/>-->
-                                <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]" required="1"/>
+                                <field name="user_id" string="Service Advisor" domain="[('serviceadvisor','=',True)]"
+                                       required="1" options="{'no_create': True, 'no_open': True}"/>
                                 <field name="appointment_date"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
-                                       domain="[('serviceadvisor','=',True)]"/>
+                                       domain="[('serviceadvisor','=',True)]"
+                                       options="{'no_create': True, 'no_open': True}"/>
                                 <field name="delivery_date"/>
                                 <!--<field name="mileage_out"/>-->
                             </group>
@@ -2081,10 +2091,13 @@
                                 <group>
                                     <group string="Sales Information" name="sales_person">
                                         <!--<field name="user_id" invisible="1"/>-->
-                                        <field name="team_id" options="{'no_create': True}" invisible="1"/>
-                                        <field name="client_order_ref"/>
+                                        <field name="team_id" options="{'no_create': True, 'no_open': True}"
+                                               invisible="1"/>
+                                        <field name="client_order_ref"
+                                               attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                                         <field name="company_id" options="{'no_create': True}"
-                                               groups="base.group_multi_company"/>
+                                               groups="base.group_multi_company"
+                                               attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                                         <field name="analytic_account_id"
                                                context="{'default_partner_id':partner_invoice_id, 'default_name':name}"
                                                attrs="{'readonly': ['|',('analytic_account_id','!=',False),('invoice_count','!=',0),('state','=','sale')]}"
@@ -2093,7 +2106,8 @@
                                     <group name="sale_pay" string="Invoicing">
                                         <field name="date_order"
                                                attrs="{'invisible': [('state', 'in', ['sale', 'done', 'cancel'])]}"/>
-                                        <field name="fiscal_position_id" options="{'no_create': True}"/>
+                                        <field name="fiscal_position_id" options="{'no_create': True}"
+                                               attrs="{'readonly':[('state','not in',['draft','so','sent','to_approve'])]}"/>
                                         <field name="invoice_status" states="sale,done" invisible="1"/>
                                     </group>
                                     <group string="Reporting" name="technical" groups="base.group_no_one">
@@ -2805,7 +2819,7 @@
                            options="{'no_create': True, 'no_open': True}"/>
                 </field>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="after">
-                    <field name="gate_pass_date" required="1"/>
+                    <field name="gate_pass_date"/>
                 </xpath>
             </field>
         </record>
@@ -2845,7 +2859,7 @@
 
                 <xpath expr="//form/sheet/group/group[2]/field[@name='date_invoice']" position="before">
                     <field name="origin" groups="base.group_user" string="Order No"/>
-                    <field name="gate_pass_date" required="1"/>
+                    <field name="gate_pass_date"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='user_id']" position="replace">
                     <field name="user_id" groups="base.group_user" invisible="1"/>

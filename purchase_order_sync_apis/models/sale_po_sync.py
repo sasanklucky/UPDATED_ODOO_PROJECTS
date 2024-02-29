@@ -240,7 +240,10 @@ class SaleOrderInheritSync(models.Model):
             child = param.get_param('purchase_order_sync_apis.po_company_type')
             check_sale_sync = param.get_param('purchase_order_sync_apis.enable_sale_sync')
             print("child---",child,check_sale_sync)
-            so_records = self.env['sale.order'].sudo().search([('ready_for_sync','=',True),('child_po_id_ref','!=',False)],order='id asc')
+            if not current_po_record:
+                so_records = self.env['sale.order'].sudo().search([('ready_for_sync','=',True),('child_po_id_ref','!=',False)],order='id asc')
+            else:
+                so_records = current_po_record
             if child == 'is_parent_company' and check_sale_sync == 'yes' and so_records:
                 database = self._cr.dbname
                 print("database=====",database)
@@ -357,33 +360,35 @@ class SaleOrderInheritSync(models.Model):
                             #update shipping and receive quantity
                             picking_id = self.env['stock.picking'].sudo().search([('sale_id','=',rec.id),('state','=','done'),('sync_picking','=',False)],order='id desc',limit=1)
                             print("picking_id====",picking_id)
+                            update_val = False
                             if picking_id:
-                                move_id = self.env['stock.move'].sudo().search([('picking_id','=',picking_id.id)],order='id desc',limit=1)
-                                print("move_id====",move_id)
-                                update_val = False
-                                if move_id:
-                                    move_line_ids = self.env['stock.move.line'].sudo().search([('move_id','=',move_id.id)])
-                                    print("move_line_ids====",move_line_ids)
-                                    origin = env['purchase.order'].sudo().search([('id','=',int(rec.child_po_id_ref))],order='id desc',limit=1)
-                                    print("origin===",origin)
-                                    po_picking_id = env['stock.picking'].sudo().search([('origin','=',origin.name)],order='id desc',limit=1)
-                                    print("po_picking_id===",po_picking_id,rec.child_po_id_ref)
-                                    po_move_id = env['stock.move'].sudo().search([('picking_id','=',po_picking_id.id)],order='id desc',limit=1)
-                                    print("po_move_id===",po_move_id,po_picking_id)
-                                    for data in move_line_ids:
-                                        unvalidated_rec = po_move_id.move_line_ids.filtered(lambda x:x.qty_done == 0.0 and x.state not in ['done','cancel'])
-                                        print("unvalidated_recvv===",unvalidated_rec)
-                                        if unvalidated_rec.ids:
-                                            unvalidated_rec[0].sudo().write({
-                                                'qty_done':data.qty_done if data.qty_done  else 0,
-                                                'lot_name':data.lot_id.name if data.lot_id else '',
-                                                'owner_id':partner_id.id if partner_id else False,
-                                            })
-                                            print("-----------------picking updated---------------")
-                                        update_val = True
-                                if update_val:
-                                    print("-----------------sync updated---------------")
-                                    picking_id.sync_picking = True
-                       
+                                move_ids = self.env['stock.move'].sudo().search([('picking_id','=',picking_id.id)],order='id desc')
+                                print("move_id====",move_ids)
+                                for move_id in move_ids:
+                                    if move_id:
+                                        move_line_ids = self.env['stock.move.line'].sudo().search([('move_id','=',move_id.id)])
+                                        print("move_line_ids====",move_line_ids)
+                                        origin = env['purchase.order'].sudo().search([('id','=',int(rec.child_po_id_ref))],order='id desc',limit=1)
+                                        print("origin===",origin)
+                                        po_picking_id = env['stock.picking'].sudo().search([('origin','=',origin.name)],order='id desc',limit=1)
+                                        print("po_picking_id===",po_picking_id,rec.child_po_id_ref)
+                                        po_move_id = env['stock.move'].sudo().search([('picking_id','=',po_picking_id.id)],order='id desc')
+                                        print("po_move_id===",po_move_id,po_picking_id)
+                                        for data in move_line_ids:
+                                            po_move_id = po_move_id.filtered(lambda x: x.state not in ['done','cancel'] and x.product_id.name == data.product_id.name)
+                                            unvalidated_rec = po_move_id.move_line_ids.filtered(lambda x: x.state not in ['done','cancel'] and x.product_id.name == data.product_id.name)
+                                            print("unvalidated_recvv===",unvalidated_rec)
+                                            if unvalidated_rec.ids:
+                                                unvalidated_rec[0].sudo().write({
+                                                    'qty_done':data.qty_done if data.qty_done  else 0,
+                                                    'lot_name':data.lot_id.name if data.lot_id else '',
+                                                    'owner_id':partner_id.id if partner_id else False,
+                                                })
+                                                print("-----------------picking updated---------------")
+                                update_val = True
+                        if update_val:
+                            print("-----------------sync updated---------------")
+                            picking_id.sync_picking = True
+
         except Exception as e:
             raise ValidationError(e)

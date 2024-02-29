@@ -44,7 +44,7 @@ class ARS_stock_quant(models.Model):
     def create(self, vals):
         cr = self._cr
         if 'product_id' in vals:
-            print(">>>>>", vals['product_id'])
+            # print(">>>>>", vals['product_id'])
             cr.execute("""select categ_id from product_template pt
             inner join product_product pp on pt.id =  pp.product_tmpl_id
             where pp.id = """ + str(vals.get('product_id')))

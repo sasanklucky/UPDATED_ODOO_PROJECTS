@@ -1,34 +1,29 @@
+import re
 from odoo import models, fields, api
+from odoo.exceptions import UserError
 from odoo.tools.translate import _
 from datetime import datetime, timedelta
 from datetime import date
 from odoo.addons.phone_validation.tools import phone_validation
 from openerp.exceptions import UserError, ValidationError
-import re
+
 
 
 class ARSPartner(models.Model):
     _inherit = 'res.partner'
 
-    # def isValidMobileNumber(self, number):
-    #     Pattern = re.compile("(0|91)?[6-9][0-9]{9}")
-    #     return Pattern.match(number)
-    #
     # @api.onchange('mobile')
-    # def validate_mobile_number(self):
-    #     if self.mobile:
-    #         re.compile("(0|91)?[6-9][0-9]{9}")
-    #         number = self.mobile
-    #         country = self.country_id if self.country_id else self.env.user.company_id.country_id
-    #         result = phone_validation.phone_format(
-    #             number,
-    #             country.code if country else None,
-    #             self.env.user.company_id if self.env.user.company_id else None
-    #         )
-    #         if self.isValidMobileNumber(result):
-    #             print(result)
-    #         else:
-    #             raise ValidationError("Please Add correct Aadhar No.")
+    # def mobile_validation(self):
+    #     pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
+    #     if self.mobile and not re.match(pattern, self.mobile):
+    #         raise UserError(f'{self.mobile} Please enter a valid mobile number')
+
+    @api.onchange('email')
+    def email_validation(self):
+        match_email = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
+        if self.email:
+            if not re.match(match_email, self.email):
+                raise UserError(f'{self.email} is not a valid email')
 
     @api.multi
     def _compute_vehicle_count(self):

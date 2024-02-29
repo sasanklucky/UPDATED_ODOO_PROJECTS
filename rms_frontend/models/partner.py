@@ -7,7 +7,7 @@ class rms_partner(models.Model):
 
     @api.model
     def create_customer(self, vals):
-        print(vals)
+        # print(vals)
         partner = {'name':vals.get('customer_name'),'phone':vals.get('mobile'),'email':vals.get('email')}
         part = self.create(partner)
         model_id = self.env.ref('rms_frontend.default_vehicle').id

@@ -38,6 +38,13 @@
                   parent="menu_vehicle_sale_sale_invoicing"
                   sequence="5" active="True"/>
 
+<!--        <menuitem action="ars_vehicle_sales.action_invoice_vehicle_tree1"-->
+<!--                  name="Vehicle Invoices"-->
+<!--                  id="menu_vehicle_sale_invoices"-->
+<!--                  parent="menu_vehicle_sale_sale_invoicing"-->
+<!--                  groups="ac_vehicle_management.ac_vehicle_sale_finance_manager"-->
+<!--                  sequence="5" active="True"/>-->
+
         <menuitem id="ac_vehicle_management_catalog"
                   name="Catalog"
                   parent="vehicle_sale_menu_root" sequence="5"/>

@@ -13,18 +13,18 @@
                 <tree string="retail_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
                     <field name="id" string="Sl. No." />
                     <field name="dealer_code" />
-                    <field name="outlet" />
+                    <field name="outlet" string="Dealer Name" />
                     <field name="dealer_state" />
                     <field name="dealer_city" />
                     <field name="date_of_booking" />
                     <field name="date_of_invoice" />
                     <field name="invoice_number" />
                     <field name="product_template_id" string="Product"/>
-                    <field name="product_id" invisible="1" />
+                    <field name="product_id" invisible="0" string="Product Varient"/>
                     <field name="color" string="Attributes"/>
                     <field name="vin_no" />
                     <field name="customer_name" />
-                    <field name="contact_person" />
+                    <field name="contact_person" string="Contact Person Name" />
                     <field name="contact_no" />
                     <field name="email" />
                     <field name="source" />

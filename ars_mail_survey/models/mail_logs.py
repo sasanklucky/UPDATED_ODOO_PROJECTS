@@ -12,7 +12,7 @@ class MailMessageHelpdesk(models.Model):
 
     @api.model
     def create(self, values):
-        print('custom create called mail activity',values)
+        # print('custom create called mail activity',values)
         res = super(MailMessageHelpdesk, self).create(values)
         if res.model == 'helpdesk.ticket':
             html_text = res.body
@@ -30,7 +30,7 @@ class MailActivityHelpdesk(models.Model):
 
     @api.model
     def create(self, values):
-        print('custom create called',values)
+        # print('custom create called',values)
         res = super(MailActivityHelpdesk, self).create(values)
         if res.res_model == 'helpdesk.ticket':
             html_text = res.note

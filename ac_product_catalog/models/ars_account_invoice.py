@@ -53,6 +53,19 @@ class ARSCatalogInvoice(models.Model):
                 self.journal_id = default_journal_id
         return res
 
+    def _prepare_invoice_line_from_po_line(self, line):
+        res = super(ARSCatalogInvoice, self)._prepare_invoice_line_from_po_line(line)
+        print(res)
+        if 'name' in res:
+            po_line = self.env['purchase.order.line'].search([('id', '=', res['purchase_line_id'])])
+            if po_line.product_id.default_code:
+                description = '[' + po_line.product_id.default_code + '] ' + po_line.name
+            else:
+                description = po_line.name
+            res['name'] = description
+        res['product_template_id'] = line.product_template_id
+        res['product_catalog_id'] = line.product_catalog_id
+        return res
 
 class ARSaccount_journal(models.Model):
     _inherit = "account.journal"

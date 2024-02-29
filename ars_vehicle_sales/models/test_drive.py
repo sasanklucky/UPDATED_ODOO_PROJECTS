@@ -11,4 +11,15 @@ class ARSTestDrive(models.Model):
     test_drive_remark = fields.Text('Test Drive Remark')
     opportunity_id = fields.Many2one('crm.lead')
 
+    @api.model
+    def create(self, values):
+        context = self.env.context
+        res_id = super(ARSTestDrive, self).create(values)
+        if 'default_opportunity_id' in context:
+            opportunity = self.env['crm.lead'].search([('id', '=', context['default_opportunity_id'])])
+            if opportunity:
+                opportunity.write({'is_test_drive': True})
+        return res_id
+
+
 

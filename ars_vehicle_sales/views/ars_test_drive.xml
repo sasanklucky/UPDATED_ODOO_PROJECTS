@@ -6,9 +6,10 @@
             <field name="model">ars.test.drive</field>
             <field name="arch" type="xml">
                 <tree string="Test Drive" editable="bottom" default_order="test_drive_date">
-                    <field name="test_drive_date"/>
-                    <field name="user_id"/>
-                    <field name="test_drive_remark"/>
+                    <field name="opportunity_id" readonly="1"/>
+                    <field name="test_drive_date" required="1"/>
+                    <field name="user_id" required="1"/>
+                    <field name="test_drive_remark" required="1"/>
                 </tree>
             </field>
         </record>

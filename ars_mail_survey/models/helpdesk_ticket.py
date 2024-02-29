@@ -40,7 +40,7 @@ class HelpdeskTicketInheritMail(models.Model):
     def close_mail_activity(self):
         for record in self:
             if record.stage_id.sequence == 2:
-                print(record.activity_source_id)
+                # print(record.activity_source_id)
                 record.activity_source_id.write({'stages': 'completed'})
 
 

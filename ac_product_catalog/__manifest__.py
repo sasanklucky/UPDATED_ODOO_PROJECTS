@@ -23,6 +23,7 @@
         'views/shell_location.xml',
         # 'views/stock_picking.xml',
         'views/templates.xml',
+        'views/menu_items.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
