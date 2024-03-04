@@ -479,7 +479,8 @@ class ARS_sale_order(models.Model):
         if self.invoice_count > 0:
             raise ValidationError(_("You cannot unreserved after create invoice"))
         result = super(ARS_sale_order, self).action_cancel()
-        self.sale_order_number = self.name
+        if self.state == 'sale':
+            self.sale_order_number = self.name
         for order in self:
             for wr in order.warranty_ids:
                 wr.state = 'draft'
