@@ -30,11 +30,11 @@ class AfterSlaesRetailReport(models.Model):
     price_unit = fields.Float(string="Price Unit")
     discount = fields.Float(string="Discount")
     part_id = fields.Many2one('product.product', string="Parts Replace")
-    part_description = fields.Text(string="Parts Description")
+    part_description = fields.Text(string="Product Description")
     default_code = fields.Char(related='part_id.default_code')
     l10n_in_hsn_code = fields.Char(related='part_id.l10n_in_hsn_code', string='HSN/SAC Code')
-    part_price = fields.Float(string="Part price(W/O Tax)")
-    total_part_price = fields.Float(string="Total part amount")
+    part_price = fields.Float(string="Product price(W/O Tax)")
+    total_part_price = fields.Float(string="Total amount")
     customer_voc = fields.Text(string="Customer VOC", compute="_compute_customer_voc")
     cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
@@ -49,6 +49,7 @@ class AfterSlaesRetailReport(models.Model):
     igst_amt = fields.Float(string='IGST Amount',compute='_compute_tax_percentage')
     product_uom_qty = fields.Float('Ordered Quantity')
     product_catalog_id = fields.Many2one('product.catalog','Catalog Type')
+    bill_to_customer = fields.Char()
 
     @api.model_cr
     def init(self):
@@ -80,7 +81,8 @@ class AfterSlaesRetailReport(models.Model):
             sol.price_subtotal as part_price,
             sol.price_total as total_part_price,
             sol.product_uom_qty as product_uom_qty,
-            sol.product_catalog_id as product_catalog_id
+            sol.product_catalog_id as product_catalog_id,
+            rp.name as bill_to_customer
 
             from sale_order_line sol
             left join sale_order so on so.id = sol.order_id
@@ -88,6 +90,7 @@ class AfterSlaesRetailReport(models.Model):
             join sale_order_line_invoice_rel invl on invl.order_line_id = sol.id
 			left join account_invoice_line inli on inli.id = invl.invoice_line_id
 			left join account_invoice inv on inv.id = inli.invoice_id
+			left join res_partner rp on inv.partner_id = rp.id
             where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
         )""" % (self._table))
 

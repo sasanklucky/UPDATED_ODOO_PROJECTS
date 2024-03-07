@@ -16,6 +16,7 @@
                     <field name="dealer_id" />
                     <field name="dealer_gst" />
                     <field name="dealer_state_id" />
+                    <field name="bill_to_customer" string="Bill To Customer"/>
                     <field name="dealer_city_id" />
 <!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
                     <!-- <field name="line_item_id" /> -->
@@ -42,16 +43,16 @@
                     <field name="product_uom_qty" />
 <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
                     <field name="default_code"/>
-                    <field name="part_description" />
+                    <field name="part_description" string="Product Description"/>
                     <field name="l10n_in_hsn_code"/>
-                    <field name="part_price" />
+                    <field name="part_price" string="Product price(W/O Tax)"/>
                     <field name="cgst_per" />
                     <field name="cgst_amt" />
                     <field name="sgst_per" />
                     <field name="sgst_amt" />
                     <field name="igst_per" />
                     <field name="igst_amt" />
-                    <field name="total_part_price" />
+                    <field name="total_part_price" string="Total amount"/>
                     <field name="customer_voc" />
                 </tree>
             </field>
