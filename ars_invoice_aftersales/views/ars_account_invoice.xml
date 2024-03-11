@@ -10,6 +10,9 @@
                         <field name="invoice_reference" attrs="{'readonly':[('state','not in',['draft'])]}" groups="base.group_no_one"/>
                         <field name="cust_invoice_type" attrs="{'readonly':[('state','not in',['draft'])]}" groups="base.group_no_one"/>
                     </group>
+                    <group>
+                        <button name="action_print_customer_invoice" string="Customer Invoice" type="object"/>
+                    </group>
                 </xpath>
             </field>
         </record>
