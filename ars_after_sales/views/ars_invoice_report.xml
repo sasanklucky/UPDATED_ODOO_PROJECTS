@@ -58,6 +58,7 @@
                                         </td>
                                     </t>
                                     <t t-if="env.context.get('warranty_cus', False)">
+                                        
                                         <td>
                                             <t t-if="o.order_id.partner_id.parent_id">
                                                 <span t-field="o.order_id.partner_id.parent_id.name"></span>
