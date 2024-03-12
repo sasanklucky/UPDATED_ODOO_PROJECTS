@@ -541,3 +541,10 @@ class AccountInvoice_inherit(models.Model):
                     res['debit'] = 0.0
                     res['credit'] = 0.0
         return res
+
+    @api.multi
+    def action_print_customer_invoice(self):
+        if self.cust_invoice_type == 'warranty' and not self.invoice_reference:
+            data = self.env.ref('account.account_invoices').with_context(doc=self, context={'warranty_cus': True}).report_action(
+                self)
+            return data
