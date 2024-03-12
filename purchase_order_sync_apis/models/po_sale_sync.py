@@ -340,7 +340,8 @@ class PurchaseOrderInheritSync(models.Model):
                         for line_data in rec.order_line:
                             print("line_data=====", line_data)
                             template_data = env['product.template'].sudo().search(
-                                [('name', '=', line_data.product_id.product_tmpl_id.name)], order='id desc', limit=1)
+                                [('name', '=', line_data.product_id.product_tmpl_id.name),
+                                 ('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)
                             product_data = env['product.product'].sudo().search(
                                 [('name', '=', line_data.product_id.name),
                                  ('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)

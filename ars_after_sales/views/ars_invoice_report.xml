@@ -47,27 +47,14 @@
                                 <tr>
                                     <td>Customer Name</td>
                                     <td>:</td>
-                                    <t t-if="not (env.context.get('warranty_cus', False))">
-                                        <td>
-                                            <t t-if="o.partner_id.parent_id">
-                                                <span t-field="o.partner_id.parent_id.name"></span>
-                                            </t>
-                                            <t t-if="not o.partner_id.parent_id">
-                                                <span t-field="o.partner_id.name"></span>
-                                            </t>
-                                        </td>
-                                    </t>
-                                    <t t-if="env.context.get('warranty_cus', False)">
-                                        
-                                        <td>
-                                            <t t-if="o.order_id.partner_id.parent_id">
-                                                <span t-field="o.order_id.partner_id.parent_id.name"></span>
-                                            </t>
-                                            <t t-if="not o.order_id.partner_id.parent_id">
-                                                <span t-field="o.order_id.partner_id.name"></span>
-                                            </t>
-                                        </td>
-                                    </t>
+                                    <td>
+                                        <t t-if="o.partner_id.parent_id">
+                                            <span t-field="o.partner_id.parent_id.name"></span>
+                                        </t>
+                                        <t t-if="not o.partner_id.parent_id">
+                                            <span t-field="o.partner_id.name"></span>
+                                        </t>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <!--                                    <td>Mobile Number</td>-->
