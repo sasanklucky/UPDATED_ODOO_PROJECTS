@@ -30,6 +30,12 @@ class HelpdeskTicketInheritMail(models.Model):
     logs = fields.Char()
     sol_ids = fields.One2many('solution.logs','sol_log')
 
+    @api.multi
+    def update_user_company_info(self):
+        for rec in self:
+            if not rec.company_id:
+                rec.company_id = rec.user_id.company_id
+
     @api.onchange('category_i_id')
     def _get_category_ii(self):
         self.category_ii_id = False

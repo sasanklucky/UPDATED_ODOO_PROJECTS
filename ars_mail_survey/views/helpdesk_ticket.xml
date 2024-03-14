@@ -55,5 +55,16 @@
             </field>
         </record>
 
+        <record id="update_user_company_server_action" model="ir.actions.server">
+            <field name="name">Update Company</field>
+            <field name="model_id" ref="model_helpdesk_ticket"/>
+            <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                records.update_user_company_info()
+            </field>
+        </record>
     </data>
 </odoo>
