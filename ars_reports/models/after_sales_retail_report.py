@@ -50,14 +50,15 @@ class AfterSlaesRetailReport(models.Model):
     product_uom_qty = fields.Float('Ordered Quantity')
     product_catalog_id = fields.Many2one('product.catalog','Catalog Type')
     bill_to_customer = fields.Char()
+    cust_invoice_type = fields.Char(string="Invoice Type")
 
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over(order by sol.id desc) as id,
+            select row_number() over(order by inli.id desc) as id,
             so.id as order_id,
-            sol.id as line_item_id,
+            inli.id as line_item_id,
             rs.dealer_code as dealer_code,
             so.company_id as dealer_id,
             so.vin_no as vin,
@@ -65,6 +66,7 @@ class AfterSlaesRetailReport(models.Model):
             so.model as model,
             inv.id as invoice_id,
             inv.date_invoice as ro_close_date,
+            inv.cust_invoice_type as cust_invoice_type,
             (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
             (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
@@ -74,22 +76,19 @@ class AfterSlaesRetailReport(models.Model):
             (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
             so.mileage_in as odoometer,
-            sol.product_id as part_id,
-            sol.name as part_description,
-            sol.price_unit as price_unit,
-            sol.discount as discount,
-            sol.price_subtotal as part_price,
-            sol.price_total as total_part_price,
-            sol.product_uom_qty as product_uom_qty,
-            sol.product_catalog_id as product_catalog_id,
+            inli.product_id as part_id,
+            inli.name as part_description,
+            inli.price_unit as price_unit,
+            inli.discount as discount,
+            inli.price_subtotal as part_price,
+            inli.price_total as total_part_price,
+            inli.uom_id as product_uom_qty,
+            inli.product_catalog_id as product_catalog_id,
             rp.name as bill_to_customer
-
-            from sale_order_line sol
-            left join sale_order so on so.id = sol.order_id
-            left join res_company rs on rs.id = so.company_id
-            join sale_order_line_invoice_rel invl on invl.order_line_id = sol.id
-			left join account_invoice_line inli on inli.id = invl.invoice_line_id
+            from account_invoice_line inli
 			left join account_invoice inv on inv.id = inli.invoice_id
+            left join sale_order so on so.id = inv.order_id
+            left join res_company rs on rs.id = so.company_id
 			left join res_partner rp on inv.partner_id = rp.id
             where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
         )""" % (self._table))

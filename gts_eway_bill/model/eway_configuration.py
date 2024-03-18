@@ -7,6 +7,7 @@ import json
 import base64
 import urllib
 import logging
+
 _logger = logging.getLogger('Eway Bill')
 
 
@@ -63,7 +64,7 @@ class EwayConfiguration(models.Model):
             pass
 
     def generate_token(self, url):
-        print("======url",url)
+        print("======url", url)
         _logger.info("generate_token URL: %s", url)
         resp = requests.get(url)
         print("======Res", resp)
@@ -76,11 +77,11 @@ class EwayConfiguration(models.Model):
                 self.access_token_staging = resp.json().get('authtoken')
                 self.access_date_staging = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             if 'test_connection' in self.env.context:
-
                 self.env.user.notify_info(message='EwayBill Connection Successful !')
         else:
             if 'test_connection' in self.env.context:
                 self.env.user.notify_info(message=resp.json().get('error', {}).get('message'))
+
     def get_eway_base_url(self):
         if self.active_production:
             eway_url = self.eway_url_live
@@ -92,15 +93,15 @@ class EwayConfiguration(models.Model):
         print("###", warehouse)
         if self.active_production:
             extra_url = 'aspid=' + self.asp_id + '&password=' + \
-              self.asp_password + '&gstin=' + warehouse.gstin_live + '&username=' + warehouse.user_name_live + \
-              '&ewbpwd=' + warehouse.ewb_password_live
+                        self.asp_password + '&gstin=' + warehouse.gstin_live + '&username=' + warehouse.user_name_live + \
+                        '&ewbpwd=' + warehouse.ewb_password_live
             if self.access_token_live:
                 if with_token:
                     extra_url += '&authtoken=' + self.access_token_live
         else:
             extra_url = 'aspid=' + self.asp_id + '&password=' + \
-              self.asp_password + '&gstin=' + self.gstin_staging + '&username=' + self.user_name_staging + \
-              '&ewbpwd=' + self.ewb_password_staging
+                        self.asp_password + '&gstin=' + self.gstin_staging + '&username=' + self.user_name_staging + \
+                        '&ewbpwd=' + self.ewb_password_staging
             if with_token:
                 extra_url += '&authtoken=' + self.access_token_staging
         return extra_url
@@ -109,8 +110,8 @@ class EwayConfiguration(models.Model):
         # if not warehouse:
         warehouse = self.env['stock.warehouse'].search([], limit=1)
         eway_url = self.get_eway_base_url()
-        print("111111111",warehouse)
-        url = eway_url + '/' +'auth?action=ACCESSTOKEN' + '&' + self.get_eway_extra_url(warehouse)
+        print("111111111", warehouse)
+        url = eway_url + '/' + 'auth?action=ACCESSTOKEN' + '&' + self.get_eway_extra_url(warehouse)
         if self.active_production:
             access_date = self.access_date_live
         else:
@@ -121,7 +122,7 @@ class EwayConfiguration(models.Model):
         else:
             access_token = self.access_token_staging
         if access_date:
-            print("access_date" ,access_date)
+            print("access_date", access_date)
             time1 = datetime.strptime(str(access_date), '%Y-%m-%d %H:%M:%S')
             time2 = datetime.strptime(datetime.now().strftime('%Y-%m-%d %H:%M:%S'), '%Y-%m-%d %H:%M:%S')
             diff = time2 - time1
@@ -131,34 +132,36 @@ class EwayConfiguration(models.Model):
                 self.generate_token(url)
         _logger.info("handle_auth_token access_token: %s, access_date: %s", access_token, access_date)
         if not access_token:
-            print("url",url)
+            print("url", url)
             self.generate_token(url)
         return True
 
     def generate_eway(self, warehouse, data_base64=False, action_name=False):
-        print("data_base64",data_base64)
+        print("data_base64", data_base64)
         eway_url = self.get_eway_base_url()
         self.handle_auth_token(warehouse)
-        print("22222222222",warehouse)
-        full_url = eway_url +'/'+ 'ewayapi?action=' + action_name + '&' + self.get_eway_extra_url(warehouse, with_token=True)
-        print("full_url",full_url)
+        print("22222222222", warehouse)
+        full_url = eway_url + '/' + 'ewayapi?action=' + action_name + '&' + self.get_eway_extra_url(warehouse,
+                                                                                                    with_token=True)
+        print("full_url", full_url)
         resp = requests.post(full_url, data=data_base64)
-        print ("url------------------======mew ",resp)
+        print("url------------------======mew ", resp)
         return resp
 
     def get_eway_details(self, action_name, ewaybill_no, warehouse):
         eway_url = self.get_eway_base_url()
         # print("=-eway_url============",eway_url)
         self.handle_auth_token(warehouse)
-        print("33333333333",warehouse)
-        resp = requests.get(eway_url +'/'+ 'ewayapi?action=' + action_name + '&' + self.get_eway_extra_url(warehouse, with_token=True)
-                            + '&ewbNo=' + ewaybill_no)
+        print("33333333333", warehouse)
+        resp = requests.get(
+            eway_url + '/' + 'ewayapi?action=' + action_name + '&' + self.get_eway_extra_url(warehouse, with_token=True)
+            + '&ewbNo=' + ewaybill_no)
         return resp
 
     def print_eway(self, action_name, response):
         # https://einvapi.charteredinfo.com/aspapi/v1.0/printewb?showdemo=&aspid=1674261522&password=Gl0bal20@2&Gstin=34AACCC1596Q002
-        full_print_url = self.print_url_live + action_name + '?aspid=' + self.asp_id +\
-                             '&password=' + self.asp_password + '&Gstin=' + self.gstin_staging 
+        full_print_url = self.print_url_live + action_name + '?aspid=' + self.asp_id + \
+                         '&password=' + self.asp_password + '&Gstin=' + self.gstin_staging
         headers = {
             'Content-type': 'application/json'
         }

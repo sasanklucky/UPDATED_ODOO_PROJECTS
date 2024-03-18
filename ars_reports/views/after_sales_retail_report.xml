@@ -35,6 +35,7 @@
                     <field name="ro_close_date" />
                     <field name="invoice_id"/>
                     <field name="invoice_date"/>
+                    <field name="cust_invoice_type" string="Invoice Type"/>
                     <field name="service_type" />
                     <field name="ro_type" />
                     <field name="last_ro_close_date" />
