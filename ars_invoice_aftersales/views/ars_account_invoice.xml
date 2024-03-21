@@ -11,16 +11,16 @@
                         <field name="cust_invoice_type"/>
                     </group>
                 </xpath>
-                <xpath expr="//form/sheet/group[last()]" position="after">
-                    <button class="oe_stat_button"
-                            name="action_print_customer_invoice"
-                            string="Customer Invoice"
-                            type="object"
-                            icon="fa-print"
-                            help="Print Customer Invoice for Warranty"
-                            attrs="{'invisible': ['|',('cust_invoice_type', '!=', 'warranty'),('invoice_reference','!=',False)]}">
-                    </button>
-                </xpath>
+<!--                <xpath expr="//form/sheet/group[last()]" position="after">-->
+<!--                    <button class="oe_stat_button"-->
+<!--                            name="action_print_customer_invoice"-->
+<!--                            string="Customer Invoice"-->
+<!--                            type="object"-->
+<!--                            icon="fa-print"-->
+<!--                            help="Print Customer Invoice for Warranty"-->
+<!--                            attrs="{'invisible': ['|',('cust_invoice_type', '!=', 'warranty'),('invoice_reference','!=',False)]}">-->
+<!--                    </button>-->
+<!--                </xpath>-->
             </field>
         </record>
 
