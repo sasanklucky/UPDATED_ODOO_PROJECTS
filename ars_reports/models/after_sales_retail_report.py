@@ -51,6 +51,7 @@ class AfterSlaesRetailReport(models.Model):
     product_catalog_id = fields.Many2one('product.catalog','Catalog Type')
     bill_to_customer = fields.Char()
     cust_invoice_type = fields.Char(string="Invoice Type")
+    work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
 
     @api.model_cr
     def init(self):
@@ -71,7 +72,6 @@ class AfterSlaesRetailReport(models.Model):
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
             (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
             (select so.appointment_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
-            
             so.service_type as service_type,
             (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
@@ -84,7 +84,8 @@ class AfterSlaesRetailReport(models.Model):
             inli.price_total as total_part_price,
             inli.uom_id as product_uom_qty,
             inli.product_catalog_id as product_catalog_id,
-            rp.name as bill_to_customer
+            rp.name as bill_to_customer,
+			so.work_type as work_type
             from account_invoice_line inli
 			left join account_invoice inv on inv.id = inli.invoice_id
             left join sale_order so on so.id = inv.order_id
