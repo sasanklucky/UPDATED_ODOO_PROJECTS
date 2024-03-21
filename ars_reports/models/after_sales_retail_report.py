@@ -12,7 +12,7 @@ class AfterSlaesRetailReport(models.Model):
     dealer_city_id = fields.Char(string="City", related="dealer_id.city")
     order_id = fields.Many2one('sale.order', string="Order")
     customer_name = fields.Many2one('res.partner', related='order_id.partner_id')
-    line_item_id = fields.Many2one('sale.order.line', string="Order Line")
+    line_item_id = fields.Many2one('account.invoice.line', string="Invoice Line")
     vin = fields.Char(string="VIN")
     registration_no = fields.Many2one('fleet.vehicle', string="Registration No")
     model = fields.Many2one('product.product', string="Model")
@@ -39,19 +39,27 @@ class AfterSlaesRetailReport(models.Model):
     cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
-    dealer_gst = fields.Char(string='Dealer GST Number',related='dealer_id.vat')
-    customer_gst = fields.Char('Customer GST Number',related='customer_name.vat')
-    customer_ph = fields.Char(string='Customer Mobile No',related='customer_name.mobile')
-    customer_city = fields.Char(string='Customer City',related='customer_name.city')
-    customer_state = fields.Many2one(string='Customer State',related='customer_name.state_id')
-    cgst_amt = fields.Float('CGST Amount',compute='_compute_tax_percentage')
-    sgst_amt = fields.Float(string='SGST Amount',compute='_compute_tax_percentage')
-    igst_amt = fields.Float(string='IGST Amount',compute='_compute_tax_percentage')
+    dealer_gst = fields.Char(string='Dealer GST Number', related='dealer_id.vat')
+    customer_gst = fields.Char('Customer GST Number', related='customer_name.vat')
+    customer_ph = fields.Char(string='Customer Mobile No', related='customer_name.mobile')
+    customer_city = fields.Char(string='Customer City', related='customer_name.city')
+    customer_state = fields.Many2one(string='Customer State', related='customer_name.state_id')
+    cgst_amt = fields.Float('CGST Amount', compute='_compute_tax_percentage')
+    sgst_amt = fields.Float(string='SGST Amount', compute='_compute_tax_percentage')
+    igst_amt = fields.Float(string='IGST Amount', compute='_compute_tax_percentage')
     product_uom_qty = fields.Float('Ordered Quantity')
-    product_catalog_id = fields.Many2one('product.catalog','Catalog Type')
+    product_catalog_id = fields.Many2one('product.catalog', 'Catalog Type')
     bill_to_customer = fields.Char()
     cust_invoice_type = fields.Char(string="Invoice Type")
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
+    invoice_type = fields.Selection([
+        ('out_invoice', 'Customer Invoice'),
+        ('in_invoice', 'Vendor Bill'),
+        ('out_refund', 'Customer Credit Note'),
+        ('in_refund', 'Vendor Credit Note'),
+    ],string="Invoice Category")
+    invoice_reference = fields.Char('Invoice Reference')
+    origin = fields.Char('Invoice Origin')
 
     @api.model_cr
     def init(self):
@@ -68,6 +76,9 @@ class AfterSlaesRetailReport(models.Model):
             inv.id as invoice_id,
             inv.date_invoice as ro_close_date,
             inv.cust_invoice_type as cust_invoice_type,
+            inv.type as invoice_type,
+            inv.origin as origin,
+            inv.reference as invoice_reference,
             (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
             (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
@@ -102,11 +113,11 @@ class AfterSlaesRetailReport(models.Model):
     @api.multi
     def _compute_tax_percentage(self):
         for rec in self:
-            price = rec.price_unit * (1 - (rec.discount or 0.0) / 100.0)
-            taxes = rec.line_item_id.tax_id.compute_all(price, rec.line_item_id.order_id.currency_id,
-                                                        rec.line_item_id.product_uom_qty,
-                                                        product=rec.line_item_id.product_id,
-                                                        partner=rec.line_item_id.order_id.partner_shipping_id)
+            price = rec.line_item_id.price_unit * (1 - (rec.discount or 0.0) / 100.0)
+            taxes = rec.line_item_id.invoice_line_tax_ids.compute_all(price, rec.line_item_id.company_id.currency_id,
+                                                                      rec.line_item_id.quantity,
+                                                                      product=rec.line_item_id.product_id,
+                                                                      partner=rec.line_item_id.invoice_id.partner_shipping_id)
             for t in taxes.get('taxes', []):
                 tax_id = self.env['account.tax'].browse(t.get('id', False))
                 if tax_id:

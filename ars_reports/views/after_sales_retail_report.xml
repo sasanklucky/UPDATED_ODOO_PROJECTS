@@ -35,6 +35,9 @@
                     <field name="ro_close_date" />
                     <field name="invoice_id"/>
                     <field name="invoice_date"/>
+                    <field name="invoice_type" string="Invoice Category" groups="base.group_no_one"/>
+                    <field name="invoice_reference"/>
+                    <field name="origin"/>
                     <field name="cust_invoice_type" string="Invoice Type"/>
                     <field name="service_type" />
                     <field name="work_type"/>
