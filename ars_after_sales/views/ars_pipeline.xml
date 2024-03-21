@@ -787,17 +787,22 @@
                                            context="{'default_type':'invoice'}" options='{"always_reload": True}'/>
                                     <field name="partner_shipping_id" groups="sale.group_delivery_invoice_address"
                                            context="{'default_type':'delivery'}" options='{"always_reload": True}'/>
-                                    <field name="mobile" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
-                                    <field name="email" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="mobile"
+                                           attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="email"
+                                           attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                 </group>
                                 <group string="Vehicle Details">
-                                    <field name="regn_no" string="Reg No" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
-                                    <field name="vin_no" string="VIN" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="regn_no" string="Reg No"
+                                           attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="vin_no" string="VIN"
+                                           attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                     <!--                                                <field name="lot_id" options="{'no_create': True, 'no_open': True}"/>-->
-                                    <field name="model" string="Vehicle Model" attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
+                                    <field name="model" string="Vehicle Model"
+                                           attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"/>
                                     <field name="mileage_in" string="Kilometer"
                                            attrs="{'readonly': [('state','not in', ('draft', 'so'))],'required': [('state','in', ['draft','so'])]}"
-                                            />
+                                    />
                                     <field name="sold_by" string="Selling Dealer" readonly="1" force_save="1"/>
                                 </group>
                             </group>
@@ -1704,7 +1709,9 @@
                                       (0, 0, {'view_mode': 'pivot'}),
                                       (0, 0, {'view_mode': 'graph'})]"/>
             <field name="search_view_id" ref="sale_order_view_search_inherit_quotation_inherit"/>
-            <field name="domain">[('sale_aftersales','=', 'after_sales'),('sale_type', '=', 'parts'),('counter_parts','!=', 'parts')]</field>
+            <field name="domain">[('sale_aftersales','=', 'after_sales'),('sale_type', '=',
+                'parts'),('counter_parts','!=', 'parts')]
+            </field>
             <field name="context">{ 'default_sale_type': 'parts','default_sale_aftersales':'after_sales'}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
@@ -2683,7 +2690,7 @@
                             <page string="Invoice Lines">
                                 <field name="invoice_line_ids" nolabel="1" widget="one2many_list" mode="tree,kanban"
                                        context="{'type': type, 'journal_id': journal_id, 'default_invoice_id': id}"
-                                        attrs="{'required': True}">
+                                       attrs="{'required': True}">
                                     <tree string="Invoice Lines" editable="bottom">
                                         <field name="sequence" widget="handle"/>
                                         <field name="product_id" domain="[('sale_ok','=',True)]"/>
@@ -2891,7 +2898,8 @@
                 <xpath expr="//form/sheet/group/group[2]" position="before">
                     <group string="">
                         <field name="doc_type" required="1"/>
-                        <field name="user_id" string="Service Advisor" required="1" domain="[('serviceadvisor','=',True)]"/>
+                        <field name="user_id" string="Service Advisor" required="1"
+                               domain="[('serviceadvisor','=',True)]"/>
                         <field name="appointment_date"/>
                         <field name="delivery_service_advisor" string="Advisor for Delivery" readonly="0"
                                domain="[('serviceadvisor','=',True)]"/>
@@ -2910,7 +2918,7 @@
                         <field name="kilometer" string="Kilometer In"/>
                         <field name="kilometer_out"/>
                     </group>
-                    <separator string="Service Details" colspan="4"/>
+                    <separator string="Service Details" colspan="2"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
                     <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
@@ -2922,7 +2930,8 @@
             <field name="name">After-Sales Invoices</field>
             <field name="res_model">account.invoice</field>
             <field name="domain">[('type','=','out_invoice'),('team_id.team_type','=','after_sales')]</field>
-            <field name="context">{'type':'out_invoice', 'journal_type': 'sale','default_ars_invoice_type':'after_sales'}
+            <field name="context">{'type':'out_invoice', 'journal_type':
+                'sale','default_ars_invoice_type':'after_sales'}
             </field>
             <field name="view_ids" eval="[(5,0,0),
                                       (0,0,{'view_mode':'tree','view_id': ref('account.invoice_tree')}),

@@ -21,6 +21,7 @@
         'demo/demo.xml',
         # 'security/ars_security_xml.xml',
         # 'security/ir.model.access.csv',
+        'reports/warranty_customer_invoice.xml',
         'views/ars_parts_views.xml',
         'views/ars_lead.xml',
         'views/ars_pipeline.xml',

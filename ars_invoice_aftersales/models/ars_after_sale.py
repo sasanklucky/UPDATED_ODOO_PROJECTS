@@ -545,6 +545,15 @@ class AccountInvoice_inherit(models.Model):
     @api.multi
     def action_print_customer_invoice(self):
         if self.cust_invoice_type == 'warranty' and not self.invoice_reference:
-            data = self.env.ref('account.account_invoices').with_context(doc=self, context={'warranty_cus': True}).report_action(
+            data = self.env.ref('ars_after_sales.account_warranty_customer_invoices').with_context(doc=self, context={'warranty_cus': True}).report_action(
                 self)
             return data
+        else:
+            if self.invoice_reference:
+                data = self.env.ref('ars_after_sales.account_warranty_customer_invoices').with_context(doc=self.invoice_reference, context={
+                    'warranty_cus': True}).report_action(
+                    self)
+                return data
+            else:
+                raise ValidationError("Please take a print out from the print 'Invoice'")
+
