@@ -60,6 +60,11 @@ class AccountInvoice(models.Model):
             invoice_report1.unlink_action()
             invoice_report2.unlink_action()
             # gate_pass_report.unlink_action()
+        elif 'default_type' in con and con.get('default_type') == 'in_invoice':
+            invoice_report3.unlink_action()
+            invoice_report1.create_action()
+            invoice_report2.create_action()
+            invoice_report4.unlink_action()
         else:
             invoice_report3.create_action()
         res = super(AccountInvoice, self).fields_view_get(view_id, view_type, toolbar, submenu)
