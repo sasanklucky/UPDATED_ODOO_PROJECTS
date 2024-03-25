@@ -13,17 +13,18 @@ class ARS_crm_lead(models.Model):
     _inherit = "crm.lead"
 
     def update_model_info(self):
-        crm_lead = self.search([('model_id', '=', False), ('vehicle_line', '!=', False)])
+        crm_lead = self.search([('vehicle_line', '!=', False)])
         for record in crm_lead:
-            if record.vehicle_line[0].product_catalog_id.name == 'Vehicle':
-                record.model_id = record.vehicle_line[0].product_template_id
+            record.model_id = record.vehicle_line[0].product_template_id
+        crm_lead = self.search([('vehicle_line', '!=', False), ('active', '=', False)])
+        for record in crm_lead:
+            record.model_id = record.vehicle_line[0].product_template_id
 
     @api.onchange('vehicle_line')
     def _onchange_vehicle_line(self):
-        if self.vehicle_line:
-            if self.vehicle_line[0].product_catalog_id.name == 'Vehicle':
-                self.model_id = self.vehicle_line[0].product_template_id
-
+        for record in self:
+            if record.vehicle_line:
+                record.model_id = record.vehicle_line[0].product_template_id.id
     # _rec_name = "company_type"
     # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
     #                           default=lambda self: self.env.user)

@@ -21,6 +21,7 @@
                     <field name="phone" widget="phone"/>
                     <field name="function"/>
                     <field name="crm_lead_stage"/>
+                    <field name="model_id" force_save="1" readonly="1"/>
                 </xpath>
 
                 <xpath expr="//group/group[1]/label[@for='street']" position="attributes">
