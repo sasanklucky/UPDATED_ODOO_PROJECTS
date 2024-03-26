@@ -316,8 +316,10 @@ class PurchaseOrderInheritSync(models.Model):
                             'partner_id': customer.id if customer else False,
                             'mobile': customer.mobile if customer.mobile else '',
                             'email': customer.email if customer.email else '',
-                            'partner_invoice_id': addr['workshop_billing'] if rec.purchase_type == 'after_sales' else addr['invoice'],
-                            'partner_shipping_id': addr['workshop_shipping'] if rec.purchase_type == 'after_sales' else addr['delivery'],
+                            'partner_invoice_id': addr['workshop_billing'] if rec.purchase_type == 'after_sales' else
+                            addr['invoice'],
+                            'partner_shipping_id': addr['workshop_shipping'] if rec.purchase_type == 'after_sales' else
+                            addr['delivery'],
                             'pricelist_id': pricelist_id.id if pricelist_id else False,
                             'user_id': customer.user_id.id if customer.user_id else False,
                             'payment_term_id': payment_term_id.id if payment_term_id else False,
@@ -339,9 +341,15 @@ class PurchaseOrderInheritSync(models.Model):
                         }
                         for line_data in rec.order_line:
                             print("line_data=====", line_data)
-                            template_data = env['product.template'].sudo().search(
-                                [('name', '=', line_data.product_id.product_tmpl_id.name),
-                                 ('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)
+                            if rec.purchase_type == 'after_sales':
+                                template_data = env['product.template'].sudo().search(
+                                    [('name', '=', line_data.product_id.product_tmpl_id.name),
+                                     ('default_code', '=', line_data.product_id.default_code)], order='id desc',
+                                    limit=1)
+                            else:
+                                template_data = env['product.template'].sudo().search(
+                                    [('name', '=', line_data.product_id.product_tmpl_id.name)], order='id desc',
+                                    limit=1)
                             product_data = env['product.product'].sudo().search(
                                 [('name', '=', line_data.product_id.name),
                                  ('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)
