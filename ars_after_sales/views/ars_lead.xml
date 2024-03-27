@@ -387,6 +387,11 @@
                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
                     />
                     <field name="qty_available_line"/>
+                    <field name="admin_access" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
+                       position="replace">
+                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']"
                        position="replace">
@@ -412,7 +417,9 @@
                            groups="base.group_multi_company" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                 </xpath>
                 <xpath expr="//field[@name='warehouse_id']" position="replace">
-                    <field name="warehouse_id" options="{'no_create': True, 'no_open': True}" groups="stock.group_stock_multi_locations"/>
+                    <field name="warehouse_id" options="{'no_create': True, 'no_open': True}"
+                           groups="stock.group_stock_multi_locations"/>
+                    <field name="admin_access" invisible="1"/>
                 </xpath>
             </field>
         </record>

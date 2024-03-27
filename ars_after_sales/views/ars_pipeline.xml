@@ -878,6 +878,7 @@
                                                        options="{'no_create': True, 'no_open': True}"
                                                        required='1'/>
                                                 <field name="product_id_domain" invisible="1"/>
+                                                <field name="admin_access" invisible="1"/>
                                                 <field name="product_template_id" required="True"
                                                        options="{'no_create': True, 'no_open': True}"/>
                                                 <field name="product_id" domain="product_id_domain" string="Variant"
@@ -910,7 +911,7 @@
                                                     <field name="qty_invoiced"
                                                            attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                                 </div>
-                                                <field name="price_unit"/>
+                                                <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                                                 <label for="discount" groups="sale.group_discount_per_so_line"/>
                                                 <div name="discount" groups="sale.group_discount_per_so_line">
                                                     <field name="discount" class="oe_inline"/>
@@ -2817,6 +2818,12 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="admin_access" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="replace">
+                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                </xpath>
                 <field name="journal_id" position="before">
                     <field name="service_type"
                            attrs="{'invisible':[('ars_invoice_type', '!=', 'after_sales')]}"
@@ -2868,6 +2875,12 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="admin_access" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="replace">
+                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                </xpath>
                 <xpath expr="//form//header" position="inside">
                     <button class="btn btn-primary" name="action_print_gate_pass" type="object" string="Print Gate Pass"
                             attrs="{'invisible':[('state','not in', ('open','paid'))]}"/>

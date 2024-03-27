@@ -10,6 +10,19 @@ class ARS_account_invoice(models.Model):
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
     product_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Model')
+    admin_access = fields.Boolean(compute="_check_if_admin")
+
+    @api.multi
+    @api.depends('invoice_line_ids')
+    def _check_if_admin(self):
+        for record in self:
+            record.admin_access = False
+            user = self.env['res.users'].browse(int(self.env.context.get('uid')))
+            if user:
+                if user.has_group("base.group_system"):
+                    record.admin_access = True
+                else:
+                    record.admin_access = False
 
 
     @api.multi

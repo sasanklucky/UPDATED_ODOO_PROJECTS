@@ -48,8 +48,8 @@ class ARS_MailActivity(models.Model):
             if rec.invoice_id and not rec.company_id:
                 rec.company_id = rec.invoice_id.company_id
             else:
-                company = self.user_id.company_id.id
-                rec.company_id = company.id
+                company = rec.user_id.company_id.id
+                rec.company_id = company
 
     @api.multi
     def _get_ticket_count(self):

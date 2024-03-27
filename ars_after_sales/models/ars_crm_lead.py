@@ -701,6 +701,7 @@ class ARSSaleOrderLine(models.Model):
     category = fields.Many2one('order.line.category', string="Category")
     qty_available_line = fields.Float(string='Qty Available',
                                       compute='_compute_product_qty_on_hand')
+    admin_access = fields.Boolean(related='order_id.admin_access')
 
     @api.depends('product_id', 'order_id.company_id')
     def _compute_product_qty_on_hand(self):
