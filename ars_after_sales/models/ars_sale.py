@@ -128,6 +128,18 @@ class ARS_sale_order(models.Model):
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
     sold_by = fields.Many2one('res.partner')
     sale_order_number = fields.Char('SO Number', copy=False)
+    admin_access = fields.Boolean(compute="_check_if_admin")
+
+
+    @api.multi
+    @api.depends('order_line')
+    def _check_if_admin(self):
+        for record in self:
+            record.admin_access = False
+            if record.env.user.has_group("base.group_system"):
+                record.admin_access = True
+            else:
+                record.admin_access = False
 
     @api.onchange('order_line')
     def onchange_identity_ids(self):
