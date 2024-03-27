@@ -41,6 +41,7 @@ class ars_sale_crm_lead(models.Model):
     annual_income = fields.Many2one('annual.income', 'Annual Income')
     sales_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
                                    ('after_sales', 'After Sales'), ('others', 'Others')])
+    model_id = fields.Many2one('product.template', string="Model")
 
     @api.multi
     def write(self, values):
