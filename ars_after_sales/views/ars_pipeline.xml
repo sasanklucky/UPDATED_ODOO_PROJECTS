@@ -982,8 +982,9 @@
                                                groups="product.group_uom" options='{"no_open": True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                        <field name="admin_access" invisible="1"/>
                                         <field name="price_unit"
-                                               attrs="{'readonly': True}"/>
+                                               attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
                                                domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
