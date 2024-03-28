@@ -983,7 +983,7 @@
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="price_unit"
-                                               attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                               attrs="{'readonly': True}"/>
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
                                                domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
@@ -1960,7 +1960,7 @@
                                                     <field name="qty_invoiced"
                                                            attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                                 </div>
-                                                <field name="price_unit"/>
+                                                <field name="price_unit" readonly="1"/>
                                                 <label for="discount" groups="sale.group_discount_per_so_line"/>
                                                 <div name="discount" groups="sale.group_discount_per_so_line">
                                                     <field name="discount" class="oe_inline"/>
@@ -2019,7 +2019,7 @@
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="price_unit"
-                                               attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                               attrs="{'readonly': True}"/>
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
                                                domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
@@ -2708,7 +2708,7 @@
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="quantity"/>
                                         <field name="uom_id" groups="product.group_uom"/>
-                                        <field name="price_unit"/>
+                                        <field name="price_unit" readonly="1"/>
                                         <field name="discount" groups="base.group_no_one"/>
                                         <field name="invoice_line_tax_ids" widget="many2many_tags"
                                                options="{'no_create': True}" context="{'type':parent.type}"
@@ -3052,7 +3052,5 @@
                   id="ARS_instructions_menu_1_list"
                   parent="crm.crm_menu_config"
                   action="ARS_instructions_action_window"/>
-
-
     </data>
 </odoo>
