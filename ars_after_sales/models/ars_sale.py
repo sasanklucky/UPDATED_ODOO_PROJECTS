@@ -133,9 +133,12 @@ class ARS_sale_order(models.Model):
     @api.multi
     @api.depends('order_line')
     def _check_if_admin(self):
+        context = self.env.context
+        user = context['uid'] if 'uid' in context else False
+        user = self.env['res.users'].browse(user)
         for record in self:
             record.admin_access = False
-            if record.env.user.has_group("base.group_system"):
+            if user.has_group("base.group_system"):
                 record.admin_access = True
             else:
                 record.admin_access = False
