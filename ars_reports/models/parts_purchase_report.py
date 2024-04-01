@@ -1,5 +1,6 @@
 from odoo import models, fields, api, tools, _
 
+
 class PartsPurchaseReport(models.Model):
     _name = 'parts.purchase.report'
     _description = 'Parts Purchase Report'
@@ -26,6 +27,8 @@ class PartsPurchaseReport(models.Model):
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
     net_dealer_price = fields.Float(string="Net Dealer Price")
+    vendor = fields.Char(string="Vendor")
+    vendor_ref = fields.Char(string="Vendor Reference")
 
     @api.model_cr
     def init(self):
@@ -43,12 +46,15 @@ class PartsPurchaseReport(models.Model):
             ail.quantity as quantity,
             ail.price_unit as unit_price,
             ail.discount as discount,
-            ail.price_total as net_dealer_price
+            ail.price_total as net_dealer_price,
+            rp.name as vendor,
+            ai.reference as vendor_ref
             from account_invoice_line ail
             left join account_invoice ai on ai.id = ail.invoice_id
             left join product_product pp on pp.id = ail.product_id
             left join res_company rs on rs.id = ai.company_id
             left join purchase_order po on po.name = ai.origin
+            left join res_partner rp on rp.id = ai.partner_id
             where ai.type = 'in_invoice' and ai.ars_type = 'after_sales'
         )""" % (self._table))
 

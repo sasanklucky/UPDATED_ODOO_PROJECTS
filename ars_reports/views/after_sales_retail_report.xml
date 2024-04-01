@@ -25,7 +25,6 @@
                     <field name="customer_ph"/>
                     <field name="customer_city"/>
                     <field name="customer_state"/>
-                    <field name="bill_to_customer" string="Bill To Customer"/>
                     <field name="vin"/>
                     <field name="registration_no"/>
                     <field name="model"/>
@@ -55,6 +54,11 @@
                     <field name="igst_amt"/>
                     <field name="total_part_price" string="Total amount"/>
                     <field name="customer_voc"/>
+                    <field name="bill_to_customer" string="Bill To Customer"/>
+                    <field name="pincode"/>
+                    <field name="bill_to_customer_gst"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
                 </tree>
             </field>
         </record>

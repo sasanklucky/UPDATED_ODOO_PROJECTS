@@ -20,6 +20,8 @@
                     <field name="invoice_date" />
                     <field name="po_id" />
                     <field name="po_date" />
+                    <field name="vendor" />
+                    <field name="vendor_ref" />
 <!--                    <field name="part_id" />-->
                     <field name="default_code"/>
                     <field name="part_description" />
