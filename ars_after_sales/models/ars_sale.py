@@ -128,6 +128,22 @@ class ARS_sale_order(models.Model):
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
     sold_by = fields.Many2one('res.partner')
     sale_order_number = fields.Char('SO Number', copy=False)
+    admin_access = fields.Boolean(compute="_check_if_admin")
+
+    @api.multi
+    @api.depends('order_line')
+    def _check_if_admin(self):
+        context = self.env.context
+        user = context['uid'] if 'uid' in context else False
+        user = self.env['res.users'].browse(user)
+        for record in self:
+            record.admin_access = False
+            if user.has_group("base.group_system"):
+                record.admin_access = True
+            else:
+                record.admin_access = False
+
+
 
     @api.onchange('order_line')
     def onchange_identity_ids(self):
@@ -783,6 +799,8 @@ class ARSPurchaseOrderLine(models.Model):
 class ARS_AccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
     _description = "Invoice Line"
+
+    admin_access = fields.Boolean(related='invoice_id.admin_access')
 
     @api.onchange('product_id')
     def _onchange_product_id(self):

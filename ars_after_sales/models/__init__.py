@@ -9,8 +9,8 @@ from . import ars_sale_order_line
 from . import ars_configure
 from . import ars_partner
 from . import ars_service_type
-from . import ars_sale
 from . import ars_account_invoice
+from . import ars_sale
 from . import ars_mail_activity_type
 from . import ars_resource_resource
 from . import ars_product

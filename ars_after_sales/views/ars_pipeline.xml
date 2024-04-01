@@ -878,6 +878,7 @@
                                                        options="{'no_create': True, 'no_open': True}"
                                                        required='1'/>
                                                 <field name="product_id_domain" invisible="1"/>
+                                                <field name="admin_access" invisible="1"/>
                                                 <field name="product_template_id" required="True"
                                                        options="{'no_create': True, 'no_open': True}"/>
                                                 <field name="product_id" domain="product_id_domain" string="Variant"
@@ -910,7 +911,7 @@
                                                     <field name="qty_invoiced"
                                                            attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                                 </div>
-                                                <field name="price_unit"/>
+                                                <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                                                 <label for="discount" groups="sale.group_discount_per_so_line"/>
                                                 <div name="discount" groups="sale.group_discount_per_so_line">
                                                     <field name="discount" class="oe_inline"/>
@@ -981,8 +982,9 @@
                                                groups="product.group_uom" options='{"no_open": True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                        <field name="admin_access" invisible="1"/>
                                         <field name="price_unit"
-                                               attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                               attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
                                                domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
@@ -1959,7 +1961,7 @@
                                                     <field name="qty_invoiced"
                                                            attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
                                                 </div>
-                                                <field name="price_unit"/>
+                                                <field name="price_unit" readonly="1"/>
                                                 <label for="discount" groups="sale.group_discount_per_so_line"/>
                                                 <div name="discount" groups="sale.group_discount_per_so_line">
                                                     <field name="discount" class="oe_inline"/>
@@ -2018,7 +2020,7 @@
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="price_unit"
-                                               attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                                               attrs="{'readonly': True}"/>
                                         <field name="tax_id" widget="many2many_tags" options="{'no_create': True}"
                                                domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
@@ -2707,7 +2709,7 @@
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="quantity"/>
                                         <field name="uom_id" groups="product.group_uom"/>
-                                        <field name="price_unit"/>
+                                        <field name="price_unit" readonly="1"/>
                                         <field name="discount" groups="base.group_no_one"/>
                                         <field name="invoice_line_tax_ids" widget="many2many_tags"
                                                options="{'no_create': True}" context="{'type':parent.type}"
@@ -2817,6 +2819,12 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="admin_access" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="replace">
+                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                </xpath>
                 <field name="journal_id" position="before">
                     <field name="service_type"
                            attrs="{'invisible':[('ars_invoice_type', '!=', 'after_sales')]}"
@@ -2868,6 +2876,12 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
             <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="admin_access" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="replace">
+                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                </xpath>
                 <xpath expr="//form//header" position="inside">
                     <button class="btn btn-primary" name="action_print_gate_pass" type="object" string="Print Gate Pass"
                             attrs="{'invisible':[('state','not in', ('open','paid'))]}"/>
@@ -3039,7 +3053,5 @@
                   id="ARS_instructions_menu_1_list"
                   parent="crm.crm_menu_config"
                   action="ARS_instructions_action_window"/>
-
-
     </data>
 </odoo>

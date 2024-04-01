@@ -60,6 +60,11 @@ class AfterSlaesRetailReport(models.Model):
     ],string="Invoice Category")
     invoice_reference = fields.Char('Invoice Reference')
     origin = fields.Char('Invoice Origin')
+    pincode = fields.Char(string="Pincode")
+    bill_to_customer_gst = fields.Char(string="Bill to Customer GST")
+    e_invoice_generated = fields.Char(string="E-Invoice Generated")
+    irn_no = fields.Char(string="IRN Number")
+
 
     @api.model_cr
     def init(self):
@@ -96,7 +101,14 @@ class AfterSlaesRetailReport(models.Model):
             inli.uom_id as product_uom_qty,
             inli.product_catalog_id as product_catalog_id,
             rp.name as bill_to_customer,
-			so.work_type as work_type
+			so.work_type as work_type,
+			rp.zip as pincode,
+            rp.vat as bill_to_customer_gst,
+            (select 
+                case when inv.irn_no is not null then 'Yes' 
+                else 'No' 
+                end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
+            inv.irn_no as irn_no
             from account_invoice_line inli
 			left join account_invoice inv on inv.id = inli.invoice_id
             left join sale_order so on so.id = inv.order_id
