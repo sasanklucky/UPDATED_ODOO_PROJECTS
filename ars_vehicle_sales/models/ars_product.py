@@ -189,24 +189,25 @@ class ARS_product_vehicle(models.Model):
                 raise UserError(_('U can not select by lots & no tracking'))
             # else:
             #     return super(ARS_product_vehicle, self).write(vals)
-        action = self.env.context['params']['action']
-        action_name = self.env['ir.actions.act_window'].browse(int(action)).name
-        if action_name == 'Model Variants' or action_name == 'Models':
-            if self.env.user.has_group('base.group_system'):
-                pass
-            else:
-                raise UserError(_('You are not allowed to create this record'))
+        action = self.env.context['params']['action'] if 'action' in self.env.context['params'] else False
+        if action:
+            action_name = self.env['ir.actions.act_window'].browse(int(action)).name
+            if action_name == 'Model Variants' or action_name == 'Models':
+                if self.env.user.has_group('base.group_system'):
+                    pass
+                else:
+                    raise UserError(_('You are not allowed to create this record'))
 
-        if action_name == 'Accessories':
-            if self.env.user.has_group('base.group_system'):
-                pass
-            else:
-                raise UserError(_('You are not allowed to create this record'))
-        if action_name == 'Parts' or action_name == 'Labors':
-            if self.env.user.has_group("base.group_system"):
-                pass
-            else:
-                raise UserError(_('Only Administrators Can Edit the Records'))
+            if action_name == 'Accessories':
+                if self.env.user.has_group('base.group_system'):
+                    pass
+                else:
+                    raise UserError(_('You are not allowed to create this record'))
+            if action_name == 'Parts' or action_name == 'Labors':
+                if self.env.user.has_group("base.group_system"):
+                    pass
+                else:
+                    raise UserError(_('Only Administrators Can Edit the Records'))
         return val
 
     @api.onchange('type', 'catalog_type')
@@ -243,27 +244,28 @@ class ARS_product_product(models.Model):
     def create(self, vals):
         # Change create access for groups
         context = self.env.context
-        action = self.env.context['params']['action']
-        action_name = self.env['ir.actions.act_window'].browse(int(action)).name
-        if action_name == 'Model Variants' or action_name == 'Models':
-            if self.env.user.has_group('base.group_system'):
-                pass
-            else:
-                raise UserError(_('You are not allowed to create this record'))
+        action = self.env.context['params']['action'] if 'action' in self.env.context['params'] else False
+        if action:
+            action = self.env.context['params']['action']
+            action_name = self.env['ir.actions.act_window'].browse(int(action)).name
+            if action_name == 'Model Variants' or action_name == 'Models':
+                if self.env.user.has_group('base.group_system'):
+                    pass
+                else:
+                    raise UserError(_('You are not allowed to create this record'))
 
-        if action_name == 'Accessories':
-            if self.env.user.has_group('base.group_system'):
-                pass
-            else:
-                raise UserError(_('You are not allowed to create this record'))
-        if action_name == 'Parts' or action_name == 'Labors':
-            if self.env.user.has_group("base.group_system"):
-                pass
-            else:
-                raise UserError(_('Only Administrators Can Create Records'))
+            if action_name == 'Accessories':
+                if self.env.user.has_group('base.group_system'):
+                    pass
+                else:
+                    raise UserError(_('You are not allowed to create this record'))
+            if action_name == 'Parts' or action_name == 'Labors':
+                if self.env.user.has_group("base.group_system"):
+                    pass
+                else:
+                    raise UserError(_('Only Administrators Can Create Records'))
         res = super(ARS_product_product, self).create(vals)
         return res
-
 
 
 # class ARS_product_Catalog(models.Model):
