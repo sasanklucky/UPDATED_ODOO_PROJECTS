@@ -98,7 +98,7 @@ class AfterSlaesRetailReport(models.Model):
             inli.discount as discount,
             inli.price_subtotal as part_price,
             inli.price_total as total_part_price,
-            inli.uom_id as product_uom_qty,
+            inli.quantity as product_uom_qty,
             inli.product_catalog_id as product_catalog_id,
             rp.name as bill_to_customer,
 			so.work_type as work_type,
