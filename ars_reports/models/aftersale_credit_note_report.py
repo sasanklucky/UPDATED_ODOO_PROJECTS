@@ -50,6 +50,9 @@ class AfterSlaesRetailReport(models.Model):
     cgst_amt = fields.Float('CGST Amount', compute='_compute_tax_percentage')
     sgst_amt = fields.Float(string='SGST Amount', compute='_compute_tax_percentage')
     igst_amt = fields.Float(string='IGST Amount', compute='_compute_tax_percentage')
+    e_invoice_generated = fields.Char(string="E-Invoice Generated")
+    irn_no = fields.Char(string="IRN Number")
+
     # product_uom_qty = fields.Float('Ordered Quantity')
     # product_catalog_id = fields.Many2one('product.catalog', 'Catalog Type')
     # bill_to_customer = fields.Char()
@@ -85,7 +88,12 @@ class AfterSlaesRetailReport(models.Model):
             cnl.price_unit as price_unit,
             cnl.discount as discount,
             cnl.price_subtotal as part_price,
-            cnl.price_total as total_part_price
+            cnl.price_total as total_part_price,
+            (select 
+                case when inv.irn_no is not null then 'Yes' 
+                else 'No' 
+                end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
+            inv.irn_no as irn_no
             --sol.product_uom_qty as product_uom_qty,
             --sol.product_catalog_id as product_catalog_id
 

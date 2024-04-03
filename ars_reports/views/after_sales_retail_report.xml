@@ -123,6 +123,8 @@
                     <field name="igst_amt"/>
                     <field name="total_part_price" string="Total amount"/>
                     <field name="customer_voc"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
                 </tree>
             </field>
         </record>
