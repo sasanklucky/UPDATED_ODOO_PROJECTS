@@ -8,3 +8,4 @@ ac_access_after_sales_retail_report,retail_report_after_sales,model_retail_repor
 ac_accessstock_ageing_report,stock_ageing_report,model_stock_ageing_report,,1,1,1,1
 ac_access_after_sale_report,ac_access_after_sale_report,model_after_sale_report,,1,1,1,0
 ac_access_report_action_acces,report_action_acces_hide,base.model_ir_actions_report,base.group_user,1,1,1,1
+ac_access_credit_report_after_sales,ac_access_credit_report_after_sales,model_credit_report_after_sales,base.group_user,1,1,1,0
