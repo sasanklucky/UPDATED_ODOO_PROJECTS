@@ -7,58 +7,124 @@
             <field name="model">retail.report.after.sales</field>
             <field name="type">tree</field>
             <field name="mode">primary</field>
-            <field name="priority" eval="16" />
-            <field name="active" eval="True" />
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
             <field name="arch" type="xml">
-                <tree string="after_sales_retail_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
-                    <field name="id" string="Sl. No." />
-                    <field name="dealer_code" />
-                    <field name="dealer_id" />
-                    <field name="dealer_gst" />
-                    <field name="dealer_state_id" />
-                    <field name="bill_to_customer" string="Bill To Customer"/>
-                    <field name="dealer_city_id" />
-<!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
+                <tree string="after_sales_retail_report_tree" create="false" delete="false" edit="false"
+                      default_order='id asc'>
+                    <field name="id" string="Sl. No."/>
+                    <field name="dealer_code"/>
+                    <field name="dealer_id"/>
+                    <field name="dealer_gst"/>
+                    <field name="dealer_state_id"/>
+                    <field name="dealer_city_id"/>
+                    <!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
                     <!-- <field name="line_item_id" /> -->
-                    <field name="customer_name" string="Customer Name" />
-                    <field name="customer_gst" />
-                    <field name="customer_ph" />
-                    <field name="customer_city" />
-                    <field name="customer_state" />
-                    <field name="vin" />
-                    <field name="registration_no" />
-                    <field name="model" />
-                    <field name="last_service_dealer" />
-                    <field name="last_service_date" />
-                    <field name="ro_number" />
-                    <field name="ro_open_date" />
-                    <field name="ro_close_date" />
+                    <field name="customer_name" string="Customer Name"/>
+                    <field name="customer_gst"/>
+                    <field name="customer_ph"/>
+                    <field name="customer_city"/>
+                    <field name="customer_state"/>
+                    <field name="vin"/>
+                    <field name="registration_no"/>
+                    <field name="model"/>
+                    <field name="last_service_dealer"/>
+                    <field name="last_service_date"/>
+                    <field name="ro_number"/>
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
                     <field name="invoice_id"/>
                     <field name="invoice_date"/>
                     <field name="invoice_type" string="Invoice Category" groups="base.group_no_one"/>
                     <field name="invoice_reference"/>
                     <field name="origin"/>
                     <field name="cust_invoice_type" string="Invoice Type"/>
-                    <field name="service_type" />
                     <field name="work_type"/>
-                    <field name="ro_type" string="Last Service Type"/>
-                    <field name="last_ro_close_date" />
-                    <field name="odoometer" />
-                    <field name="product_catalog_id" />
-                    <field name="product_uom_qty" />
-<!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
+                    <field name="service_type"/>
+                    <field name="ro_type"/>
+                    <field name="last_ro_close_date"/>
+                    <field name="odoometer"/>
+                    <field name="product_catalog_id"/>
+                    <field name="product_uom_qty"/>
+                    <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
                     <field name="default_code"/>
                     <field name="part_description" string="Product Description"/>
                     <field name="l10n_in_hsn_code"/>
                     <field name="part_price" string="Product price(W/O Tax)"/>
-                    <field name="cgst_per" />
-                    <field name="cgst_amt" />
-                    <field name="sgst_per" />
-                    <field name="sgst_amt" />
-                    <field name="igst_per" />
-                    <field name="igst_amt" />
+                    <field name="cgst_per"/>
+                    <field name="cgst_amt"/>
+                    <field name="sgst_per"/>
+                    <field name="sgst_amt"/>
+                    <field name="igst_per"/>
+                    <field name="igst_amt"/>
                     <field name="total_part_price" string="Total amount"/>
-                    <field name="customer_voc" />
+                    <field name="customer_voc"/>
+                    <field name="bill_to_customer" string="Bill To Customer"/>
+                    <field name="pincode"/>
+                    <field name="bill_to_customer_gst"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_after_sales_credit_report_tree" model="ir.ui.view">
+            <field name="name">view.after.sales.credit_report.tree</field>
+            <field name="model">credit.report.after.sales</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <tree string="after_sales_credit_report_tree" create="false" delete="false" edit="false"
+                      default_order='id asc'>
+                    <field name="id" string="Sl. No."/>
+                    <field name="dealer_code"/>
+                    <field name="dealer_id"/>
+                    <field name="dealer_gst"/>
+                    <field name="dealer_state_id"/>
+                    <field name="dealer_city_id"/>
+                    <!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
+                    <!-- <field name="line_item_id" /> -->
+                    <field name="customer_name" string="Customer Name"/>
+                    <field name="customer_gst"/>
+                    <field name="customer_ph"/>
+                    <field name="customer_city"/>
+                    <field name="customer_state"/>
+                    <!--                    <field name="bill_to_customer" string="Bill To Customer"/>-->
+                    <field name="vin"/>
+                    <field name="registration_no"/>
+                    <field name="model"/>
+                    <field name="last_service_dealer"/>
+                    <field name="last_service_date"/>
+                    <field name="ro_number"/>
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
+                    <field name="invoice_id"/>
+                    <field name="credit_note_number"/>
+                    <field name="credit_note_date"/>
+                    <field name="invoice_date"/>
+                    <field name="service_type"/>
+                    <field name="ro_type"/>
+                    <field name="last_ro_close_date"/>
+                    <field name="odoometer"/>
+                    <!--                    <field name="product_catalog_id"/>-->
+                    <!--                    <field name="product_uom_qty"/>-->
+                    <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
+                    <field name="default_code"/>
+                    <field name="part_description" string="Product Description"/>
+                    <field name="l10n_in_hsn_code"/>
+                    <field name="part_price" string="Product price(W/O Tax)"/>
+                    <field name="cgst_per"/>
+                    <field name="cgst_amt"/>
+                    <field name="sgst_per"/>
+                    <field name="sgst_amt"/>
+                    <field name="igst_per"/>
+                    <field name="igst_amt"/>
+                    <field name="total_part_price" string="Total amount"/>
+                    <field name="customer_voc"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
                 </tree>
             </field>
         </record>
@@ -70,11 +136,11 @@
             <field name="model">retail.report.after.sales</field>
             <field name="type">search</field>
             <field name="mode">primary</field>
-            <field name="priority" eval="16" />
-            <field name="active" eval="True" />
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
             <field name="arch" type="xml">
                 <search string="retail_report_search">
-                    <field name="dealer_id" />
+                    <field name="dealer_id"/>
                 </search>
             </field>
         </record>
@@ -104,7 +170,7 @@
             <field name="target">current</field>
             <field name="domain">[]</field>
             <field name="context">{}</field>
-            <field name="search_view_id" ref="view_retail_report_search" />
+            <field name="search_view_id" ref="view_retail_report_search"/>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Retail Report
