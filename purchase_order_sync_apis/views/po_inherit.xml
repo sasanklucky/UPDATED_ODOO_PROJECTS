@@ -17,7 +17,7 @@
                        position="inside">
                        <field name="hide_sync" invisible='1'/>
                        <button class="oe_highlight" name="call_po_sync" 
-                        string="Send to OEM" type="object" attrs="{'invisible': [('hide_sync','=',True)]}"
+                        string="Send to NSC" type="object" attrs="{'invisible': [('hide_sync','=',True)]}"
                         />
                 </xpath>
                 <xpath expr="//notebook" position="inside">
