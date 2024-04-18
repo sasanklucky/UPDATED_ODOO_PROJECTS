@@ -1,4 +1,3 @@
-
 import json
 from odoo import models, fields, api, _
 from datetime import datetime, time
@@ -26,7 +25,6 @@ class arsCompany(models.Model):
     display_name_short = fields.Char(string="Display Name", track_visibility='always')
 
 
-
 class ars_sale_crm_lead(models.Model):
     _inherit = 'crm.lead'
 
@@ -48,17 +46,18 @@ class ars_sale_crm_lead(models.Model):
         result = super(ars_sale_crm_lead, self).write(values)
         res_value = {}
         print(values)
-        if self.partner_id:
-            if 'gender' in values:
-                res_value.update({'gender': values['gender']})
-            if 'annual_income' in values:
-                res_value.update({'annual_income': values['annual_income']})
-            if 'street' in values:
-                res_value.update({'street': values['street']})
-            if 'street2' in values:
-                res_value.update({'street2': values['street2']})
-            if res_value:
-                self.partner_id.write(res_value)
+        for res in self:
+            if res.partner_id:
+                if 'gender' in values:
+                    res_value.update({'gender': values['gender']})
+                if 'annual_income' in values:
+                    res_value.update({'annual_income': values['annual_income']})
+                if 'street' in values:
+                    res_value.update({'street': values['street']})
+                if 'street2' in values:
+                    res_value.update({'street2': values['street2']})
+                if res_value:
+                    res.partner_id.write(res_value)
         return result
 
     @api.model
@@ -387,8 +386,6 @@ class ars_sale_invoice(models.Model):
                 self)
             return data
 
-
-
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
@@ -509,5 +506,3 @@ class ARSCrmLostReason(models.Model):
 
     type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
                             help="Type is used to separate Leads and Opportunities")
-
-
