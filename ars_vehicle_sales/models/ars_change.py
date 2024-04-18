@@ -23,6 +23,7 @@ class arsCompany(models.Model):
         ('south', 'SOUTH')
     ], 'Dealer Zone')
     display_name_short = fields.Char(string="Display Name", track_visibility='always')
+    restrict_bd_inv = fields.Boolean()
 
 
 class ars_sale_crm_lead(models.Model):
@@ -344,6 +345,9 @@ class ars_sale_invoice(models.Model):
             if given_date:
                 given_date_obj = datetime.strptime(given_date, "%Y-%m-%d")
                 date_today = datetime.today()
+                if self.env.user.company_id.restrict_bd_inv:
+                    if given_date_obj.date() < date_today.date():
+                        raise ValidationError(_("Warning: Invoice dates cannot be set to a date in the past"))
                 if given_date_obj > date_today:
                     raise ValidationError(_("Invoice Date can't be a future date"))
 

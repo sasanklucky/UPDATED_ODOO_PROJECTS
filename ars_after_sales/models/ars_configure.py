@@ -14,6 +14,7 @@ class ars_company(models.Model):
     next_service_due = fields.Char(string="Next Service Due")
     labor_rate = fields.Float()
     labor_warranty_rate = fields.Float()
+    restrict_bd_inv = fields.Boolean()
 
 
 class ars_configure_settings(models.TransientModel):
@@ -40,6 +41,7 @@ class ars_configure_settings(models.TransientModel):
                                           related="company_id.sale_report_format")
     sale_text = fields.Text()
     max_fleet_size = fields.Integer(string="Max Fleet Size Allowed For PSF")
+    restrict_bd_inv = fields.Boolean(related="company_id.restrict_bd_inv")
 
 
 
