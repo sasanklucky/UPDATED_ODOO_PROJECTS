@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 from datetime import date
 
 
@@ -23,7 +23,6 @@ class ARS_account_invoice(models.Model):
                     record.admin_access = True
                 else:
                     record.admin_access = False
-
 
     @api.multi
     def invoice_print(self):
@@ -125,8 +124,8 @@ class ARS_account_invoice(models.Model):
     reg_no = fields.Many2one('fleet.vehicle', string="Regn No")
     vin = fields.Char(string="VIN")
     model = fields.Many2one('product.product', string="Model Variant")
-    kilometer = fields.Float(string="Kilometer",required=True)
-    kilometer_out = fields.Float(string="Kilometer Out",required=True)
+    kilometer = fields.Float(string="Kilometer", required=True)
+    kilometer_out = fields.Float(string="Kilometer Out", required=True)
     delivery_service_advisor = fields.Many2one('res.users')
     doc_type = fields.Selection([
         ('appointment', 'Appointment'),
@@ -143,7 +142,8 @@ class ARS_account_invoice(models.Model):
         if sales_team.team_type == 'after_sales':
             pass
         else:
-            raise ValidationError(_("You are not belongs to After Sales  channel, Please select After Sales channel and try again"))
+            raise ValidationError(
+                _("You are not belongs to After Sales  channel, Please select After Sales channel and try again"))
 
     def action_invoice_open(self):
         if self.ars_invoice_type == 'after_sales' and self.kilometer_out == 0.00:
@@ -153,9 +153,10 @@ class ARS_account_invoice(models.Model):
         if self.ars_invoice_type == 'after_sales' and self.kilometer_out < self.kilometer:
             raise UserError(_("Kilometer Out is lesser than Kilometer In"))
         if self.ars_invoice_type == 'after_sales':
-            sale_team = self.env['crm.team'].search([('member_ids', 'in', self.user_id.id),('member_ids', 'in', self.env.user.ids)])
+            sale_team = self.env['crm.team'].search(
+                [('member_ids', 'in', self.user_id.id), ('member_ids', 'in', self.env.user.ids)])
             self.check_valid_sales_channel(sale_team)
-        res = super(ARS_account_invoice,self).action_invoice_open()
+        res = super(ARS_account_invoice, self).action_invoice_open()
         return res
 
     @api.onchange('partner_id')

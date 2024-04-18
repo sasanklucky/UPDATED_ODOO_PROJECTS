@@ -348,9 +348,10 @@ class ARS_crm_lead(models.Model):
     @api.multi
     def write(self, vals):
         res = super(ARS_crm_lead, self).write(vals)
-        if self.type == 'opportunity':
-            if len(self.vehicle_line) < 1:
-                raise ValidationError("Please add at least one product before saving.")
+        for res in self:
+            if res.type == 'opportunity':
+                if len(res.vehicle_line) < 1:
+                    raise ValidationError("Please add at least one product before saving.")
         return res
 
     #     if self.vehicle_line:
