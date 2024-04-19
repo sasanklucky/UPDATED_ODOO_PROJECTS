@@ -1,3 +1,4 @@
+import datetime
 from odoo import models, fields, api, _, SUPERUSER_ID
 from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
@@ -34,6 +35,7 @@ class ARS_crm_lead(models.Model):
         if self.email_from:
             if not re.match(match_email, self.email_from):
                 raise UserError(f'{self.email_from} is not a valid email')
+
     @api.model
     def default_team_id(self):
         # channel = self.env['res.users'].browse(self.env.uid).sale_team_id
@@ -135,6 +137,14 @@ class ARS_crm_lead(models.Model):
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
     model_id = fields.Many2one('product.template', string="Model")
+    booking_date = fields.Date(string="Booking Date")
+
+    @api.onchange('stage_id')
+    def _set_booking_date(self):
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        if booking_stage and self.stage_id.id == int(booking_stage):
+            print('booking_stage', booking_stage, self.stage_id, datetime.date.today())
+            self.booking_date = datetime.date.today()
 
     # planned_revenue = fields.Float('Expected Revenue', compute="_get_compute_expected_revenue",
     #                                track_visibility='always', store=True)
@@ -347,6 +357,11 @@ class ARS_crm_lead(models.Model):
 
     @api.multi
     def write(self, vals):
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        stage = vals.get('stage_id')
+        if stage and booking_stage:
+            if int(stage) == int(booking_stage):
+                vals['booking_date'] = datetime.date.today()
         res = super(ARS_crm_lead, self).write(vals)
         if self.type == 'opportunity':
             if len(self.vehicle_line) < 1:

@@ -29,6 +29,16 @@
                             <field name="stages_id" string="Stages"/>
                         </div>
                     </div>
+                    <div class="row mt16 o_settings_container" id="ars_settings_2">
+                        <div class="o_setting_right_pane">
+                            <label class="col-md-3 o_light_label" string="Booking Stage"/>
+                            <field name="booking_stage_id" options="{'no_create': True}"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+
+                        </div>
+                    </div>
+
 
                     <h2>Report Setup</h2>
                     <div class="row mt16 o_settings_container" id="ars_settings">
@@ -76,25 +86,6 @@
                                 </div>
                                 <field name="next_km_service_due_date"/>
                             </div>
-                        </div>
-                    </div>
-                    <h2>Labor Rate</h2>
-                    <div class="row mt16 o_settings_container" id="ars_settings">
-                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
-                            <div class="o_setting_right_pane">
-                                <label string="Labor Rate"/>
-                                <div class="text-muted">
-                                    Labor Rate
-                                </div>
-                                <field name="labor_rate"/>
-                            </div>
-                            <div class="o_setting_right_pane">
-                                <label string="Labor Warranty Rate"/>
-                                <div class="text-muted">
-                                    Labor Warranty Rate
-                                </div>
-                                <field name="labor_warranty_rate"/>
-                            </div>
                             <div class="o_setting_right_pane">
                                 <label string="	Max Fleet Size PSF"/>
                                 <div class="text-muted">
@@ -103,14 +94,34 @@
                                 <field name="max_fleet_size"/>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_sale_setting">
-                        <div class="o_setting_right_pane">
-                            <label string="Sale Text Message"/>
-                            <div class="text-muted">
-                                Sale Text
+                        <h2>Labor Rate</h2>
+                        <div class="row mt16 o_settings_container" id="ars_settings">
+                            <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                                <div class="o_setting_right_pane">
+                                    <label string="Labor Rate"/>
+                                    <div class="text-muted">
+                                        Labor Rate
+                                    </div>
+                                    <field name="labor_rate"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label string="Labor Warranty Rate"/>
+                                    <div class="text-muted">
+                                        Labor Warranty Rate
+                                    </div>
+                                    <field name="labor_warranty_rate"/>
+                                </div>
+                                <field name="max_fleet_size"/>
                             </div>
-                            <field name="sale_text"/>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_sale_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Sale Text Message"/>
+                                <div class="text-muted">
+                                    Sale Text
+                                </div>
+                                <field name="sale_text"/>
+                            </div>
                         </div>
                     </div>
                 </div>

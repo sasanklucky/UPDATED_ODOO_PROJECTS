@@ -231,6 +231,10 @@
                     <field name="phone" invisible="1"/>
                     <field name="team_id" readonly="1" invisible="1"/>
                 </xpath>
+                <xpath expr="//field[@name='enquiry_date']" position="after">
+                    <field name="booking_date" force_save="1" invisible="1"/>
+                </xpath>
+
                 <!--<xpath expr="//form/sheet/group/group[1]/field[@name='phone']" position="replace">-->
                 <!--<field name="mobile" />-->
                 <!--</xpath>-->
@@ -391,7 +395,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="replace">
-                    <field name="price_unit" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']"
                        position="replace">
@@ -433,6 +437,11 @@
                 <field name="company_id" position="after">
                     <field name="product_catalog_id"/>
                 </field>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']"
+                       position="replace">
+                    <field name="admin_access" invisible="1"/>
+                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}" />
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
                        position="replace">
                     <field name="sl_no" string="Sl_NO" required="1" force_save="1"/>
