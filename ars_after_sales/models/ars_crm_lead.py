@@ -363,9 +363,10 @@ class ARS_crm_lead(models.Model):
             if int(stage) == int(booking_stage):
                 vals['booking_date'] = datetime.date.today()
         res = super(ARS_crm_lead, self).write(vals)
-        if self.type == 'opportunity':
-            if len(self.vehicle_line) < 1:
-                raise ValidationError("Please add at least one product before saving.")
+        for res in self:
+            if res.type == 'opportunity':
+                if len(res.vehicle_line) < 1:
+                    raise ValidationError("Please add at least one product before saving.")
         return res
 
     #     if self.vehicle_line:

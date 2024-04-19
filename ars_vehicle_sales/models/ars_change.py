@@ -1,4 +1,3 @@
-
 import json
 from odoo import models, fields, api, _
 from datetime import datetime, time
@@ -24,7 +23,7 @@ class arsCompany(models.Model):
         ('south', 'SOUTH')
     ], 'Dealer Zone')
     display_name_short = fields.Char(string="Display Name", track_visibility='always')
-
+    restrict_bd_inv = fields.Boolean()
 
 
 class ars_sale_crm_lead(models.Model):
@@ -48,17 +47,18 @@ class ars_sale_crm_lead(models.Model):
         result = super(ars_sale_crm_lead, self).write(values)
         res_value = {}
         print(values)
-        if self.partner_id:
-            if 'gender' in values:
-                res_value.update({'gender': values['gender']})
-            if 'annual_income' in values:
-                res_value.update({'annual_income': values['annual_income']})
-            if 'street' in values:
-                res_value.update({'street': values['street']})
-            if 'street2' in values:
-                res_value.update({'street2': values['street2']})
-            if res_value:
-                self.partner_id.write(res_value)
+        for res in self:
+            if res.partner_id:
+                if 'gender' in values:
+                    res_value.update({'gender': values['gender']})
+                if 'annual_income' in values:
+                    res_value.update({'annual_income': values['annual_income']})
+                if 'street' in values:
+                    res_value.update({'street': values['street']})
+                if 'street2' in values:
+                    res_value.update({'street2': values['street2']})
+                if res_value:
+                    res.partner_id.write(res_value)
         return result
 
     @api.model
@@ -345,6 +345,9 @@ class ars_sale_invoice(models.Model):
             if given_date:
                 given_date_obj = datetime.strptime(given_date, "%Y-%m-%d")
                 date_today = datetime.today()
+                if self.env.user.company_id.restrict_bd_inv:
+                    if given_date_obj.date() < date_today.date():
+                        raise ValidationError(_("Warning: Invoice dates cannot be set to a date in the past"))
                 if given_date_obj > date_today:
                     raise ValidationError(_("Invoice Date can't be a future date"))
 
@@ -386,8 +389,6 @@ class ars_sale_invoice(models.Model):
             data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(
                 self)
             return data
-
-
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
@@ -509,5 +510,3 @@ class ARSCrmLostReason(models.Model):
 
     type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
                             help="Type is used to separate Leads and Opportunities")
-
-
