@@ -11,20 +11,24 @@
             <field name="active" eval="True" />
             <field name="arch" type="xml">
                 <tree string="wholesale_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
-                    <field name="id" string="Sl. No." />
+                    <field name="sl_no" />
                     <field name="dealer_code" />
-                    <field name="outlet" />
+                    <field name="outlet" string="Dealer Name"/>
                     <field name="dealer_state" />
                     <field name="dealer_city" />
                     <field name="invoice_number" />
                     <field name="product_template_id" string="Product" />
+                    <field name="product_id" string="Product Variant"/>
                     <field name="date_of_invoice" />
                     <field name="vin_no" string="VIN"/>
-                    <field name="product_id" invisible="1" />
                     <field name="color" string="Attributes"/>
                     <field name="basic_price" />
                     <field name="gst" />
                     <field name="total" />
+                    <field name="motor_number" />
+                    <field name="description" />
+                    <field name="vendor" />
+                    <field name="vendor_reference_no" />
                 </tree>
             </field>
         </record>
