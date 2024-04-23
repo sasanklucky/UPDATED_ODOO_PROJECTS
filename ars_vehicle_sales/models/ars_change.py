@@ -1,12 +1,11 @@
 import json
 from odoo import models, fields, api, _
-from datetime import datetime, time
+from datetime import datetime, time, date
 from datetime import timedelta
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
-from datetime import date
 
 
 class arsCompany(models.Model):
@@ -24,6 +23,27 @@ class arsCompany(models.Model):
     ], 'Dealer Zone')
     display_name_short = fields.Char(string="Display Name", track_visibility='always')
     restrict_bd_inv = fields.Boolean()
+    booking_stage_id = fields.Many2one('crm.stage', 'Booking Stage')
+
+
+class ArsConfigureSettings(models.TransientModel):
+    _inherit = 'res.config.settings'
+
+    booking_stage_id = fields.Many2one(related="company_id.booking_stage_id")
+
+    @api.multi
+    def set_values(self):
+        res = super(ArsConfigureSettings, self).set_values()
+        self.env['ir.config_parameter'].sudo().set_param('ars_vehicle_sales.booking_stage_id', self.booking_stage_id.id)
+        return res
+
+    @api.model
+    def get_values(self):
+        res = super(ArsConfigureSettings, self).get_values()
+        booking_stage_id = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+        res.update(
+            booking_stage_id=booking_stage_id if booking_stage_id else False)
+        return res
 
 
 class ars_sale_crm_lead(models.Model):
@@ -41,9 +61,24 @@ class ars_sale_crm_lead(models.Model):
     sales_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
                                    ('after_sales', 'After Sales'), ('others', 'Others')])
     model_id = fields.Many2one('product.template', string="Model")
+    # enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
+    booking_date = fields.Date(string="Booking Date")
+
+    @api.onchange('stage_id')
+    def _set_booking_date(self):
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        if booking_stage and self.stage_id.id == int(booking_stage):
+            # print('booking_stage', booking_stage, self.stage_id, datetime.date.today())
+            print('date', date.today())
+            self.booking_date = date.today()
 
     @api.multi
     def write(self, values):
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        stage = values.get('stage_id')
+        if stage and booking_stage:
+            if int(stage) == int(booking_stage):
+                values['booking_date'] = date.today()
         result = super(ars_sale_crm_lead, self).write(values)
         res_value = {}
         print(values)

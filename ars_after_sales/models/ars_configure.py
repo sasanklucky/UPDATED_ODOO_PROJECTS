@@ -15,7 +15,7 @@ class ars_company(models.Model):
     labor_rate = fields.Float()
     labor_warranty_rate = fields.Float()
     restrict_bd_inv = fields.Boolean()
-    booking_stage_id = fields.Many2one('crm.stage', 'Booking Stage')
+    # booking_stage_id = fields.Many2one('crm.stage', 'Booking Stage')
 
 
 
@@ -43,22 +43,22 @@ class ars_configure_settings(models.TransientModel):
                                           related="company_id.sale_report_format")
     sale_text = fields.Text()
     max_fleet_size = fields.Integer(string="Max Fleet Size Allowed For PSF")
+    # booking_stage_id = fields.Many2one(related="company_id.booking_stage_id")
     restrict_bd_inv = fields.Boolean(related="company_id.restrict_bd_inv")
-    booking_stage_id = fields.Many2one(related="company_id.booking_stage_id")
 
-    @api.multi
-    def set_values(self):
-        res = super(ars_configure_settings, self).set_values()
-        self.env['ir.config_parameter'].sudo().set_param('ars_after_sales.booking_stage_id', self.booking_stage_id.id)
-        return res
-
-    @api.model
-    def get_values(self):
-        res = super(ars_configure_settings, self).get_values()
-        booking_stage_id = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
-        res.update(
-            booking_stage_id=booking_stage_id if booking_stage_id else False)
-        return res
+    # @api.multi
+    # def set_values(self):
+    #     res = super(ars_configure_settings, self).set_values()
+    #     self.env['ir.config_parameter'].sudo().set_param('ars_after_sales.booking_stage_id', self.booking_stage_id.id)
+    #     return res
+    #
+    # @api.model
+    # def get_values(self):
+    #     res = super(ars_configure_settings, self).get_values()
+    #     booking_stage_id = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+    #     res.update(
+    #         booking_stage_id=booking_stage_id if booking_stage_id else False)
+    #     return res
 
 
 #     @api.multi

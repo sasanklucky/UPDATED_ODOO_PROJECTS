@@ -231,9 +231,7 @@
                     <field name="phone" invisible="1"/>
                     <field name="team_id" readonly="1" invisible="1"/>
                 </xpath>
-                <xpath expr="//field[@name='enquiry_date']" position="after">
-                    <field name="booking_date" force_save="1" invisible="1"/>
-                </xpath>
+
 
                 <!--<xpath expr="//form/sheet/group/group[1]/field[@name='phone']" position="replace">-->
                 <!--<field name="mobile" />-->
