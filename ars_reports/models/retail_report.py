@@ -1,5 +1,6 @@
 from odoo import models, fields, api, tools, _
 
+
 class RetailReport(models.Model):
     _name = 'retail.report'
     _description = 'Retail Report'
@@ -33,8 +34,40 @@ class RetailReport(models.Model):
     salesperson = fields.Many2one('res.users',string="SalesPerson")
     finance_bank = fields.Many2one('res.bank','Finance Bank')
     basic_price = fields.Float(string="Basic Price")
-    gst = fields.Float(string="GST")
+    # gst = fields.Float(string="GST")
+    line_item_id = fields.Many2one('account.invoice.line', string="Invoice Line")
     total = fields.Float(String="Total")
+    price_unit = fields.Float(string="Price Unit")
+    discount = fields.Float(string="Discount")
+    cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
+    sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
+    igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
+    cgst_amt = fields.Float('CGST Amount', compute='_compute_tax_percentage')
+    sgst_amt = fields.Float(string='SGST Amount', compute='_compute_tax_percentage')
+    igst_amt = fields.Float(string='IGST Amount', compute='_compute_tax_percentage')
+    pincode = fields.Char(string='Pincode', related="customer_name.zip")
+    bill_to_customer_gstn = fields.Char(string='Bill to Customer GSTIN', related="customer_name.vat")
+
+    @api.multi
+    def _compute_tax_percentage(self):
+        for rec in self:
+            price = rec.line_item_id.price_unit * (1 - (rec.discount or 0.0) / 100.0)
+            taxes = rec.line_item_id.invoice_line_tax_ids.compute_all(price, rec.line_item_id.company_id.currency_id,
+                                                                      rec.line_item_id.quantity,
+                                                                      product=rec.line_item_id.product_id,
+                                                                      partner=rec.line_item_id.invoice_id.partner_shipping_id)
+            for t in taxes.get('taxes', []):
+                tax_id = self.env['account.tax'].browse(t.get('id', False))
+                if tax_id:
+                    if 'cgst' in tax_id['name'].lower() and t['amount']:
+                        rec.cgst_per = round(tax_id.amount, 1)
+                        rec.cgst_amt = t['amount']
+                    if 'sgst' in tax_id['name'].lower():
+                        rec.sgst_per = round(tax_id.amount, 1)
+                        rec.sgst_amt = t['amount']
+                    if 'igst' in tax_id['name'].lower():
+                        rec.igst_per = round(tax_id.amount, 1)
+                        rec.igst_amt = t['amount']
 
     @api.multi
     @api.depends('customer_name')
@@ -58,7 +91,10 @@ class RetailReport(models.Model):
             ai.number as invoice_number,
             ail.product_template_id as product_template_id,
             ail.product_id as product_id,
-            ail.vin_no as vin_no,
+            sml.lot_id as vin_no,
+            ail.id as line_item_id,
+            ail.price_unit as price_unit,
+            ail.discount as discount,
             ai.partner_id as customer_name,
             (select name from res_partner where parent_id= ai.partner_id order by id desc limit 1) as contact_person,
 			(select mobile from res_partner where parent_id= ai.partner_id order by id desc limit 1) as contact_no,
@@ -71,14 +107,17 @@ class RetailReport(models.Model):
 			ai.user_id as salesperson,
 			so.bank_account as finance_bank,
 			ail.price_subtotal_signed as basic_price,
-			(ail.price_total - ail.price_subtotal) as gst,
+			--(ail.price_total - ail.price_subtotal) as gst,
 			ail.price_total as total
-
             from account_invoice_line ail 
             left join account_invoice ai on ai.id = ail.invoice_id
             left join res_company rc on rc.id = ai.company_id
             left join sale_order so on so.id = ai.order_id
             left join crm_team ct on ct.id = ai.team_id
-            where ai.type = 'out_invoice' and ct.team_type = 'sales'
-           
+            left join sale_order_line_invoice_rel solir on solir.invoice_line_id = ail.id
+            left join sale_order_line sol on solir.order_line_id = sol.id
+            left join stock_move sm on sm.sale_line_id = sol.id
+            left join stock_move_line sml on sml.move_id = sm.id
+            where ai.type = 'out_invoice' and ct.team_type = 'sales' and ai.ars_invoice_type = 'vehicle'
+            
         )""" % (self._table))
