@@ -193,7 +193,7 @@
                         <tr style="font-size: 12px;">
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">GSTIN</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-esc="doc.partner_id.vat"/>
+                                <t t-if="doc.partner_id"><t t-esc="doc.partner_id.vat"/></t>
                             </td>
                             <!--                                <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,-->
                             <!--                                </t>-->
@@ -222,11 +222,19 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Address</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <!--                                <t t-if="doc.partner_id.zip">-->
-                                <!--                                    <span t-field="doc.partner_id.zip"/>-->
-                                <!--                                </t>-->
+                                <t t-if="doc.partner_id.street"><span t-field="doc.partner_id.street"/>,
+                                </t>
+                                <t t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/>,
+                                </t>
+                                <t t-if="doc.partner_id.city"><span t-field="doc.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.partner_id.state_id"><span t-field="doc.partner_id.state_id.name"/>,
+                                </t>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>
+                                </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Motor No</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
@@ -238,9 +246,11 @@
                             </td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Pin Code</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <!--                                <t t-esc="doc.partner_id.email"/>-->
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Model</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
@@ -264,9 +274,11 @@
 
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Email :</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <!--                                <t t-esc="doc.partner_id.mobile"/>-->
+                                <t t-if="doc.company_id.email">
+                                    <span t-field="doc.company_id.email"/>
+                                </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Selling Dealer</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
@@ -278,8 +290,10 @@
                             <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2"></td>
                         </tr>
                         <tr style="font-size: 12px;">
-                            <td style="text-align:left;padding: 3px 2px;" class="lborder"></td>
-                            <td style="text-align:left;padding: 3px 2px;" class="rborder"></td>
+                            <td style="text-align:left;padding: 3px 2px;" class="lborder">Contact No</td>
+                            <td style="text-align:left;padding: 3px 2px;" class="rborder">
+                                <t t-esc="doc.partner_id.mobile"/>
+                            </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Date of Sale</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
                                 <t t-if="doc.regn_no._get_ownership_details()">
