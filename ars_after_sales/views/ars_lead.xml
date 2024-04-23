@@ -435,11 +435,6 @@
                 <field name="company_id" position="after">
                     <field name="product_catalog_id"/>
                 </field>
-                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']"
-                       position="replace">
-                    <field name="admin_access" invisible="1"/>
-                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}" />
-                </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
                        position="replace">
                     <field name="sl_no" string="Sl_NO" required="1" force_save="1"/>

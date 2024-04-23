@@ -66,22 +66,19 @@ class ars_sale_crm_lead(models.Model):
 
     @api.onchange('stage_id')
     def _set_booking_date(self):
-        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         if booking_stage and self.stage_id.id == int(booking_stage):
-            # print('booking_stage', booking_stage, self.stage_id, datetime.date.today())
-            print('date', date.today())
             self.booking_date = date.today()
 
     @api.multi
     def write(self, values):
-        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.booking_stage_id')
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         stage = values.get('stage_id')
         if stage and booking_stage:
             if int(stage) == int(booking_stage):
                 values['booking_date'] = date.today()
         result = super(ars_sale_crm_lead, self).write(values)
         res_value = {}
-        print(values)
         for res in self:
             if res.partner_id:
                 if 'gender' in values:
