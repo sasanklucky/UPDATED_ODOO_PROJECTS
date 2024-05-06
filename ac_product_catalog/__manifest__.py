@@ -24,6 +24,7 @@
         # 'views/stock_picking.xml',
         'views/templates.xml',
         'views/menu_items.xml',
+        'views/res_region.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
