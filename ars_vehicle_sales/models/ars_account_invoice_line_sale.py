@@ -16,6 +16,16 @@ class ARSAccountInvoiceLine(models.Model):
 
     product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
 
+    @api.depends('product_id')
+    def _get_hsn_code(self):
+        for lines in self:
+            if lines.product_id.l10n_in_hsn_code:
+                lines.hsn_code = lines.product_id.l10n_in_hsn_code
+            else:
+                lines.hsn_code = ''
+
+    hsn_code = fields.Char('HSN/SAC Code', compute='_get_hsn_code', store=True)
+
     @api.multi
     @api.onchange('product_template_id')
     def onchange_product_template_id(self):
