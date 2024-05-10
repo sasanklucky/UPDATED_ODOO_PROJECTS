@@ -8,10 +8,14 @@ class WholesaleReport(models.Model):
 
     def get_color(self):
         for record in self:
-            color = record.product_id.attribute_value_ids.filtered(lambda x: x.attribute_id.name == 'color').ids
+            color = record.product_id.attribute_value_ids.filtered(
+                lambda x: x.attribute_id.name == 'colour' or x.attribute_id.name == 'Ext. colour').ids
             if color:
-                attribute = self.env['product.attribute.value'].sudo().search([('id', 'in', color)])
-                record.color = attribute.name
+                color_list = []
+                for i in color:
+                    attribute = self.env['product.attribute.value'].sudo().search([('id', '=', i)])
+                    color_list.append(attribute.name)
+                record.color = ', '.join(str(attribute) for attribute in color_list)
 
     sl_no = fields.Integer()
     dealer_code = fields.Char(string="Dealer Code")
@@ -37,8 +41,8 @@ class WholesaleReport(models.Model):
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over(order by mvl.id ASC) as sl_no,
-            mvl.id AS id,
+            select row_number() over(order by mvl.id ASC) as id,
+            mvl.id AS sl_no,
             ai.number as invoice_number,
             ai.date_invoice as date_of_invoice,
             mvl.lot_name as vin_no,
