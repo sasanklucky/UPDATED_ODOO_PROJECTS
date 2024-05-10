@@ -41,6 +41,8 @@ class ars_sale_crm_lead(models.Model):
                                    ('after_sales', 'After Sales'), ('others', 'Others')])
     model_id = fields.Many2one('product.template', string="Model")
 
+    enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
+
     @api.multi
     def write(self, values):
         result = super(ars_sale_crm_lead, self).write(values)
