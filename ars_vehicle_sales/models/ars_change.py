@@ -70,6 +70,8 @@ class ars_sale_crm_lead(models.Model):
         if booking_stage and self.stage_id.id == int(booking_stage):
             self.booking_date = date.today()
 
+    enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
+
     @api.multi
     def write(self, values):
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
