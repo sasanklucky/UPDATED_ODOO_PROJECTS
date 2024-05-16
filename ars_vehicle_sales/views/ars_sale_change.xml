@@ -106,7 +106,7 @@
                     <field name="mobile" required="True"></field>
                     <field name="is_test_drive" readonly="True"/>
                     <field name="model_id" force_save="1"/>
-                    <field name="booking_date" force_save="1" invisible="1"/>
+                    <field name="booking_date" force_save="1" />
                 </field>
                 <field name="phone" position="attributes">
                     <attribute name="invisible">True</attribute>
