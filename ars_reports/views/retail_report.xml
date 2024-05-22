@@ -23,9 +23,11 @@
                     <field name="product_id" invisible="0" string="Product Varient"/>
                     <field name="color" string="Attributes"/>
                     <field name="vin_no" />
-                    <field name="customer_name" />
+                    <field name="customer_name" string="Bill To Customer"/>
+                    <field name="bill_to_customer_gstn" />
+                    <field name="pincode"/>
                     <field name="contact_person" string="Contact Person Name" />
-                    <field name="contact_no" />
+                    <field name="contact_no" string="Mobile"/>
                     <field name="email" />
                     <field name="source" />
                     <field name="city" />
@@ -34,7 +36,13 @@
                     <field name="salesperson" />
                     <field name="finance_bank" />
                     <field name="basic_price" />
-                    <field name="gst" />
+<!--                    <field name="gst" />-->
+                    <field name="cgst_per" />
+                    <field name="cgst_amt" />
+                    <field name="sgst_per" />
+                    <field name="sgst_amt" />
+                    <field name="igst_per" />
+                    <field name="igst_amt" />
                     <field name="total" />
                 </tree>
             </field>
