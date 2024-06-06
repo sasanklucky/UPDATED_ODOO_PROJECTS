@@ -5,7 +5,7 @@ ac_access_wholesale_report,wholesale_report,model_wholesale_report,,1,1,1,0
 ac_access_repair_order_report,repair_order_report,model_repair_order_report,,1,1,1,0
 ac_access_parts_purchase_report,parts_purchase_report,model_parts_purchase_report,,1,1,1,0
 ac_access_after_sales_retail_report,retail_report_after_sales,model_retail_report_after_sales,,1,1,1,0
-ac_access_stock_ageing_report,ac_stock_ageing_report,model_stock_ageing_report,,1,1,1,1
+ac_access_stock_ageing_report,ac_stock_ageing_report,model_ars_stock_ageing_report,base.group_user,1,1,1,0
 ac_access_after_sale_report,ac_access_after_sale_report,model_after_sale_report,,1,1,1,0
 ac_access_report_action_acces,report_action_acces_hide,base.model_ir_actions_report,base.group_user,1,1,1,1
 ac_access_credit_report_after_sales,ac_access_credit_report_after_sales,model_credit_report_after_sales,base.group_user,1,1,1,0
