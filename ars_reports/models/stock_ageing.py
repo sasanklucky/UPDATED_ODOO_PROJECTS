@@ -49,7 +49,7 @@ class stock_ageing_report(models.Model):
     company_id = fields.Many2one('res.company', related='location_id.company_id')
     quantity = fields.Integer('Stock Quantity')
     stock_value = fields.Float(compute="get_stock_value", string='Stock Value')
-    computed_quantity = fields.Integer('Computed Quantity')
+    # computed_quantity = fields.Integer('Computed Quantity')
     mrp_price = fields.Float(related="template_id.standard_price", string='MRP')
     list_price = fields.Float('Selling Price')
 
