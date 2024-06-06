@@ -2,7 +2,7 @@ from odoo import models, fields, tools, api, _
 
 
 class stock_ageing_report(models.Model):
-    _name = 'stock.ageing.report'
+    _name = 'ars.stock.ageing.report'
     _description = 'Stock Ageing Report'
     _auto = False
 
@@ -49,7 +49,7 @@ class stock_ageing_report(models.Model):
     company_id = fields.Many2one('res.company', related='location_id.company_id')
     quantity = fields.Integer('Stock Quantity')
     stock_value = fields.Float(compute="get_stock_value", string='Stock Value')
-    computed_quantity = fields.Integer('Computed Quantity')
+    # computed_quantity = fields.Integer('Computed Quantity')
     mrp_price = fields.Float(related="template_id.standard_price", string='MRP')
     list_price = fields.Float('Selling Price')
 
@@ -63,8 +63,6 @@ class stock_ageing_report(models.Model):
     days_180_stock_val = fields.Float(compute="get_stock_value", string='91-180 days Stock Qty Value')
     days_90_stock_bal = fields.Integer(string='< 90 days Stock Qty')
     days_90_stock_val = fields.Float(compute="get_stock_value", string='< 90 days Stock Qty Value')
-
-
 
     # days_90 = fields.Integer('< 90 days Stock Qty')
     # days_180 = fields.Integer('91-180 days Stock Qty')
