@@ -26,6 +26,7 @@ class ARS_crm_lead(models.Model):
         for record in self:
             if record.vehicle_line:
                 record.model_id = record.vehicle_line[0].product_template_id.id
+
     # _rec_name = "company_type"
     # user_id1 = fields.Many2one('res.users', string='Service Advisor', index=True, track_visibility='onchange',
     #                           default=lambda self: self.env.user)
@@ -137,6 +138,7 @@ class ARS_crm_lead(models.Model):
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
     model_id = fields.Many2one('product.template', string="Model")
+
     # booking_date = fields.Date(string="Booking Date")
 
     # @api.onchange('stage_id')
@@ -364,7 +366,7 @@ class ARS_crm_lead(models.Model):
         #         vals['booking_date'] = datetime.date.today()
         res = super(ARS_crm_lead, self).write(vals)
         for res in self:
-            if res.type == 'opportunity':
+            if res.type == 'opportunity' and self.team_id.team_type == 'sales':
                 if len(res.vehicle_line) < 1:
                     raise ValidationError("Please add at least one product before saving.")
         return res
