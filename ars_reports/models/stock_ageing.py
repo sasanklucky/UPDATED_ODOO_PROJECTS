@@ -46,7 +46,7 @@ class stock_ageing_report(models.Model):
     parts_category = fields.Char(string='Part Category Desc')
     product_id = fields.Many2one('product.product', 'Product')
     location_id = fields.Many2one('stock.location', 'Bin Location')
-    company_id = fields.Many2one('res.company', related='location_id.company_id')
+    company_id = fields.Many2one('res.company')
     quantity = fields.Integer('Stock Quantity')
     stock_value = fields.Float(compute="get_stock_value", string='Stock Value')
     # computed_quantity = fields.Integer('Computed Quantity')
@@ -85,15 +85,21 @@ class stock_ageing_report(models.Model):
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         print('hello')
 
-    @api.model_cr
-    def init(self):
+
+    @api.multi
+    def sql_querry(self, user):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        print("table name", self._table);
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
+        print("table name", self._table)
+        print("table name", self.env.uid)
+        if len(user) == 1:
+            company_ids = f"({user[0]})"
+        else:
+            company_ids = tuple(user)
+        self.env.cr.execute(""" CREATE or REPLACE VIEW {table_name} as (
                 WITH initial_values AS (
                 SELECT 
                 row_number() over() as id,t.id as template_id,t.default_code as default_code,t.name as name,
-                s.product_id as product_id,s.location_id as location_id,s.quantity as quantity,t.list_price as list_price,
+                s.product_id as product_id,s.location_id as location_id,l.company_id as company_id,s.quantity as quantity,t.list_price as list_price,
                 'Spares' as parts_category,
                 --prop.value_float as cost,
                 --s.quantity * prop.value_float  as stock_value,
@@ -116,7 +122,9 @@ class stock_ageing_report(models.Model):
                 --JOIN ir_property prop on prop.res_id = 'product.product,' || p.id
                 join product_template t on t.id = p.product_tmpl_id
                 join product_catalog pc on t.catalog_type = pc.id
-                where l.usage = 'internal' and pc.name = 'Parts' and t.active = True
+                --join res_users rs on rs.id = %s
+                --join res_company_users_rel cu on cu.user_id = rs.id
+                where l.usage = 'internal' and pc.name = 'Parts' and t.active = True and l.company_id in {company_idss}
                 order by product_id asc),
             
             stage1_calculations AS (
@@ -155,7 +163,7 @@ class stock_ageing_report(models.Model):
                 FROM stage1_calculations
             )   
             
-            select row_number() over() as id,template_id,default_code,product_id,location_id,quantity,
+            select row_number() over() as id,template_id,default_code,product_id,location_id,company_id,quantity,
             name,list_price,parts_category,greater_730_incoming,greater_730_outgoing,days_730_incoming,
             days_730_outgoing,days_365_incoming,days_365_outgoing,days_180_incoming,
             days_180_outgoing,days_90_incoming,days_90_outgoing,total_incoming,total_outgoing,greater_730_stock_bal,
@@ -169,4 +177,26 @@ class stock_ageing_report(models.Model):
             from stage2_calculations
     -- 			join stage1_calculations on initial_values.id = stage1_calculations.id
     -- 			join stage2_calculations on stage2_calculations.id = stage1_calculations.id
-        )""" % (self._table))
+        )""".format(table_name=self._table, company_idss=company_ids))
+
+class stockWizard(models.TransientModel):
+    _name = 'stock.ageing.report.wiz'
+
+    company_id = fields.Many2many('res.company', string='Company', default=lambda self : self.env.user.company_ids)
+
+    def retrieve_stock_qty(self):
+        self.ensure_one()
+        query = self.env['ars.stock.ageing.report']
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query.sudo().sql_querry(user=comp_ids)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Stock Ageing Report',
+            'res_model': 'ars.stock.ageing.report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
