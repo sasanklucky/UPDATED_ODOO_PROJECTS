@@ -9,7 +9,8 @@ class ACProductCatalog(models.Model):
     name = fields.Char()
     code = fields.Char(required=True)
     type = fields.Selection([('consu', 'Consumable'), ('service', 'Service'), ('product', 'Stockable Product')])
-
+    unit_price = fields.Boolean('Enable Unit Price')
+    groups = fields.Many2many("res.groups", string="Groups")
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'

@@ -9,6 +9,10 @@
                 <xpath expr="//sheet" position="before">
                     <header>
                         <!-- <field name="compute_stages" invisible="1" /> -->
+                        <button class="btn btn-primary" name="cancel_mail_activity" type="object"
+                                string="Cancel Activity" attrs="{'invisible': [('stages','=','not_applicable')]}"/>
+                        <button class="btn btn-primary" name="retrieve_mail_activity" type="object"
+                                string="Retrieve" attrs="{'invisible': [('stages','=','pending')]}"/>
                         <field name="stages" invisible="1"/>
                         <field name="stages" widget="statusbar"
                                attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
@@ -37,11 +41,13 @@
                     </div>
                 </xpath>
                 <field name="activity_type_id" position="before">
-                    <field name="res_name" string="Customer Name" />
+                    <field name="res_name" string="Customer Name"/>
                     <field name="psf_order_id"/>
                 </field>
                 <field name="summary" position="after">
                     <field name="mobile" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+                    <field name="tag_ids" widget="many2many_tags"/>
+                    <field name="reason_id" attrs="{'invisible': [('stages','!=','not_applicable')]}" readonly="1" />
                 </field>
                 <field name="user_id" position="after">
                     <separator colspan="4"/>

@@ -187,8 +187,8 @@
                 <field name='payment_term_id' position="before">
                     <field name="mobile" required="1" attrs="{'readonly':[('state','not in',['draft'])]}"/>
                     <field name="email" required="1" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                    <field name="delivery_type" attrs="{'readonly':[('state','not in',['draft'])]}"/>
-                    <field name="after_sale_intro" attrs="{'readonly':[('state','not in',['draft'])]}"/>
+                    <field name="delivery_type" attrs="{'readonly':[('state','not in',['draft'])]}" groups="base.group_no_one"/>
+                    <field name="after_sale_intro" attrs="{'readonly':[('state','not in',['draft'])]}" groups="base.group_no_one"/>
                 </field>
                 <field name='payment_term_id' position="replace"/>
                 <xpath expr="//form/sheet/group/group[2]/field[@name='team_id']" position="after">

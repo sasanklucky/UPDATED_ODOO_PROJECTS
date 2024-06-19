@@ -11,7 +11,7 @@
                     <field name='after_sale_intro' required="True"/>
                 </group>
                 <footer>
-                    <button name="action_print_gate_pass_wiz" string="Print Gate Pass" type="object" class="btn-primary"/>
+                    <button name="action_print_gate_pass_wiz" string="Update" type="object" class="btn-primary"/>
                     <button string="Cancel" class="btn-default" special="cancel"/>
                 </footer>
             </form>

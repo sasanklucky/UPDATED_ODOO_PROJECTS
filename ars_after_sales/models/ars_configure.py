@@ -16,6 +16,8 @@ class ars_company(models.Model):
     labor_warranty_rate = fields.Float()
     restrict_bd_inv = fields.Boolean()
     # booking_stage_id = fields.Many2one('crm.stage', 'Booking Stage')
+    restrict_gp_date = fields.Boolean()
+    inv_line_unit_price = fields.Boolean()
 
 
 
@@ -45,6 +47,29 @@ class ars_configure_settings(models.TransientModel):
     max_fleet_size = fields.Integer(string="Max Fleet Size Allowed For PSF")
     # booking_stage_id = fields.Many2one(related="company_id.booking_stage_id")
     restrict_bd_inv = fields.Boolean(related="company_id.restrict_bd_inv")
+    restrict_gp_date = fields.Boolean(related="company_id.restrict_gp_date")
+    inv_line_unit_price = fields.Boolean(related="company_id.inv_line_unit_price")
+
+    @api.multi
+    def set_values(self):
+        res = super(ars_configure_settings, self).set_values()
+        param = self.env['ir.config_parameter'].sudo()
+        param.set_param('ars_after_sales.restrict_gp_date', self.restrict_gp_date)
+        param.set_param('ars_after_sales.inv_line_unit_price', self.inv_line_unit_price)
+
+        return res
+    @api.multi
+    def get_values(self):
+        res = super(ars_configure_settings, self).get_values()
+        restrict_gp_date = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.restrict_gp_date')
+        inv_line_unit_price = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.inv_line_unit_price')
+
+        res.update(
+            restrict_gp_date=restrict_gp_date if restrict_gp_date else False,
+            inv_line_unit_price=inv_line_unit_price if inv_line_unit_price else False
+        )
+
+        return res
 
     # @api.multi
     # def set_values(self):

@@ -1,4 +1,4 @@
-from odoo import models, fields,api, _
+from odoo import models, fields, api, _
 from odoo.tools import format_date
 
 
@@ -43,6 +43,21 @@ class ARSPurchaseOrder(models.Model):
             else:
                 types = type_obj.search([('code', '=', 'incoming'), ('warehouse_id', '=', False)])
         self.picking_type_id = types[:1].id
+
+    admin_access = fields.Boolean(compute="_check_if_admin")
+
+    @api.multi
+    @api.depends('order_line')
+    def _check_if_admin(self):
+        context = self.env.context
+        user = context['uid'] if 'uid' in context else False
+        user = self.env['res.users'].browse(user)
+        for record in self:
+            record.admin_access = False
+            if user.has_group("base.group_system"):
+                record.admin_access = True
+            else:
+                record.admin_access = False
 
 
 class ARSPurchaseOrderLine(models.Model):

@@ -37,6 +37,5 @@ class GatePassWizard(models.TransientModel):
             })
         # if not self.gate_pass_date:
         # #     self.gate_pass_date = date.today()
-        data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=invoice_id).report_action(invoice_id)
-        return data
-
+        # data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=invoice_id).report_action(invoice_id)
+        return invoice
