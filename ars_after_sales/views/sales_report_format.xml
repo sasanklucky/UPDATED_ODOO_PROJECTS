@@ -47,7 +47,7 @@
 
         <record id="view_sales_report_format_report_search" model="ir.ui.view">
             <field name="name">view.sales.report.format.search</field>
-            <field name="model">sales_report_format</field>
+            <field name="model">sales.report.format</field>
             <field name="type">search</field>
             <field name="mode">primary</field>
             <field name="priority" eval="16"/>
