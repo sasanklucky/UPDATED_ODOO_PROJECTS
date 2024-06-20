@@ -19,6 +19,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='summary']" position="after">
                     <field name="mobile"/>
+                    <field name="cus_feedback" readonly="1"/>
                 </xpath>
             </field>
         </record>
@@ -51,6 +52,7 @@
 
             </field>
         </record>
+
         <!-- mail.activity search filter modify -->
         <record id="mail_activity_view_search_inherit" model="ir.ui.view">
             <field name="name">mail.activity.view.form.popup</field>
@@ -60,6 +62,11 @@
                 <filter name="activities_my" position="replace">
                     <filter string="My Activities" name="activities_my"
                             domain="[('user_id', '=', uid)]"/>
+
+                    <field name="mobile" filter_domain="[('mobile','ilike',self)]" string="Mobile"/>
+                    <field name="res_name" filter_domain="[('res_name','ilike',self)]" string="Doc Name"/>
+<!--                    <field name="summary" filter_domain="[('summary','ilike',self)]" string="Summary"/>-->
+
                 </filter>
             </field>
         </record>

@@ -10,6 +10,7 @@ class WmsProduct(models.Model):
     prod_cat = fields.Many2one('product.category')
     category_code_desc = fields.Char(related='prod_cat.category_code', readonly=True)
     mrp = fields.Float(string='MRP')
+    access_price_unit = fields.Boolean('Modify Unit Price')
 
     @api.multi
     def create_supplier_info(self):
@@ -52,6 +53,7 @@ class ARS_stock_quant(models.Model):
             categ_id = [x[0] for x in cr.fetchall()]
             vals.update({"category_id": categ_id and categ_id[0] or False})
         return super(ARS_stock_quant, self).create(vals)
+
 
     def action_update(self):
         quant_obj = self.env['stock.quant']

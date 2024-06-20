@@ -35,6 +35,7 @@ class activity_log_report(models.Model):
     state = fields.Char(related="lead_id.partner_id.state_id.name", string="State")
     pin = fields.Char(related="lead_id.partner_id.zip", string="Pin")
     date_boolean = fields.Boolean(compute="compute_date")
+    activity_cr_date_3 = fields.Date('Activity Date')
 
 
 class customer_dump_mis_report(models.Model):
@@ -114,15 +115,21 @@ class customer_dump_mis_report(models.Model):
     existing_customer = fields.Char(compute="get_existing_customer")
     referred = fields.Char()
     note_1 = fields.Html('Note(1)')
-    feedback_1 = fields.Html('Feedback(1)')
+    # feedback_1 = fields.Html('Remarks(1)')
+    remarks_1 = fields.Html('Remarks(1)')
     note_2 = fields.Html('Note(2)')
-    feedback_2 = fields.Html('Feedback(2)')
+    # feedback_2 = fields.Html('Remarks(2)')
+    remarks_2 = fields.Html('Remarks(2)')
     note_3 = fields.Html('Note(3)')
-    feedback_3 = fields.Html('Feedback(3)')
+    remarks_3 = fields.Html('Remarks(3)')
+    # feedback_3 = fields.Html('Remarks(3)')
     lead_creation_date = fields.Date('Lead Creation Date')
     opportunity_conversion_date = fields.Date()
     test_drive_date = fields.Date('Test Drive Date')
     test_drive_remark = fields.Char('Test Drive Remark')
+    activity_cr_date_1 = fields.Date('Activity Date(1)')
+    activity_cr_date_2 = fields.Date('Activity Date(2)')
+    activity_cr_date_3 = fields.Date('Activity Date(3)')
 
     @api.model_cr
     def init(self):
@@ -140,20 +147,24 @@ class customer_dump_mis_report(models.Model):
             a.phone,a.mobile,a.email_from as email,a.source_id,utm.name as medium,a.stage_id,a.lost_reason,b.product_id,
             a.referred as referred,
             case when a.is_test_drive = True then 'YES' else 'NO' end as test_drive,
-			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 0) as note_1,
-			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 0) as feedback_1,
-			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 1) as note_2,
-			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 1) as feedback_2,
-			(select summary from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as note_3,
-			(select feedback from activity_log_report where lead_id = a.id order by id desc limit 1 OFFSET 2) as feedback_3,
-			(select test_drive_date from ars_test_drive where opportunity_id = a.id order by id desc limit 1) as test_drive_date,
-			(select test_drive_remark from ars_test_drive where opportunity_id = a.id order by id desc limit 1) as test_drive_remark
-            from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
-            left join utm_medium utm on a.medium_id = utm.id
-            where a.type = 'opportunity'
-            
-           
-        )""" % (self._table))
+			 (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS note_1,
+            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS remarks_1,
+            (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS note_2,
+            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS remarks_2,
+            (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS note_3,
+            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS remarks_3,
+            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS activity_cr_date_1,
+            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS activity_cr_date_2,
+            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS activity_cr_date_3,
+            (SELECT test_drive_date FROM ars_test_drive WHERE opportunity_id = a.id ORDER BY id DESC LIMIT 1) AS test_drive_date,
+            (SELECT test_drive_remark FROM ars_test_drive WHERE opportunity_id = a.id ORDER BY id DESC LIMIT 1) AS test_drive_remark
+        FROM 
+            crm_lead a 
+            JOIN crm_lead_line b ON a.id = b.lead_order_id
+            LEFT JOIN utm_medium utm ON a.medium_id = utm.id
+        WHERE 
+            a.type = 'opportunity'
+    )""" % (self._table))
 
         # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline
         #     as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,
@@ -181,14 +192,14 @@ class activity_inherit(models.Model):
         res = super(activity_inherit, self).create(values)
         if res.res_model == 'crm.lead':
             self.env['activity_log_report'].create({
-               'lead_id': res.res_id,
-               'activity_type_id': res.activity_type_id.id,
-               'summary': res.summary,
-               'date_deadline': res.date_deadline,
-               'user_id': res.user_id.id,
-               'note': res.note,
-               'activity_id':res.id
-
+                'lead_id': res.res_id,
+                'activity_type_id': res.activity_type_id.id,
+                'summary': res.summary,
+                'date_deadline': res.date_deadline,
+                'user_id': res.user_id.id,
+                'note': res.note,
+                'activity_id': res.id,
+                # 'activity_cr_date_3': res.write_date,
             })
         return res
 

@@ -14,6 +14,11 @@ class ARS_MailActivity(models.Model):
     company_id = fields.Many2one('res.company', compute="get_company", store=True)
     active = fields.Boolean("Active", default=True)
 
+    @api.depends('response_id', 'survey_percentage')
+    def _compute_survey_percentage_stored(self):
+        for rec in self:
+            rec.survey_percentage_stored = rec.survey_percentage
+
     @api.multi
     @api.depends('response_id', 'survey_percentage')
     def get_survey_percentage(self):
@@ -32,15 +37,29 @@ class ARS_MailActivity(models.Model):
     invoice_type = fields.Selection([('sales', 'Sales'), ('after_sales', 'After Sales')], string="Invoice Type")
     invoice_id = fields.Many2one('account.invoice', string="Customer Invoice")
     cre_id = fields.Many2one('cre_team_configuration', string="CRE Team")
+    # stages = fields.Selection(
+    #     [('pending', 'Pending'), ('survey_done', 'Survey Done'),
+    #      ('ticket_created', 'Ticket Created'),
+    #      ('survey_incomplete', 'Survey Incomplete'),
+    #      ('completed', 'Completed')],
+    #     string="Status", default="pending", store=True)
     stages = fields.Selection(
-        [('pending', 'Pending'), ('survey_done', 'Survey Done'), ('ticket_created', 'Ticket Created'),
-         ('completed', 'Completed')], string="Status", default="pending", store=True)
+        [('pending', 'Pending'), ('survey_done', 'Complete Survey'),
+         ('survey_incomplete', 'Incomplete Survey'),
+         ('ticket_created', 'Ticket Raised'),
+         ('not_applicable', 'Not Applicable'),
+         ('completed', 'Completed')],
+        string="Status", default="pending", store=True)
     # compute_stages = fields.Char(string="Compute Stages",compute="_get_compute_stages")
     survey_percentage = fields.Float(string="Survey %", compute="get_survey_percentage")
+    survey_percentage_stored = fields.Float(compute="_compute_survey_percentage_stored")
     survey_marks = fields.Float(string="Survey Marks")
     response_id = fields.Many2one('survey.user_input', "Response", ondelete="set null", oldname="response")
     ticket_count = fields.Integer(string="Ticket Count", compute="_get_ticket_count")
     psf_order_id = fields.Many2one('sale.order', 'Order ID', index=True)
+    reason_id = fields.Many2one('mail.activity.cancel.reason')
+    tag_ids = fields.Many2many('res.partner.category', string='Tags')
+    cus_feedback = fields.Char('Feedback')
 
     @api.multi
     def get_company(self):
@@ -88,7 +107,7 @@ class ARS_MailActivity(models.Model):
         postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
 
         if self.activity_type_id:
-            # print(self.activity_type_id.name)
+            print(self.activity_type_id.name)
             self.summary = self.activity_type_id.summary
             tz = self.user_id.sudo().tz
             if tz:
@@ -249,6 +268,8 @@ class ARS_MailActivity(models.Model):
     def create_helpdesk_ticket(self, activity_id):
         if (type(activity_id).__name__) == 'list':
             activity_id = self.env['mail.activity'].search([('id', 'in', activity_id)])
+        else:
+            activity_id = self
         if activity_id.invoice_type == 'sales':
             seller = activity_id.env.user.company_id.partner_id.id
             vin_no = activity_id.env['account.invoice.line'].sudo().search(
@@ -306,3 +327,20 @@ class ARS_MailActivity(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'self'
         }
+
+    def cancel_mail_activity(self):
+        view = self.env.ref('ars_mail_survey.view_psf_cancel_activity')
+        return {
+            'name': _('Cancel Activity'),
+            'res_model': 'dealer.cancel.activity.mail',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': view.id,
+            'context': {'default_activity_id': self.id, 'create': False, 'edit': False},
+            'type': 'ir.actions.act_window',
+            'target': 'new'
+        }
+
+    def retrieve_mail_activity(self):
+        for res in self:
+            res.write({'stages': 'pending'})

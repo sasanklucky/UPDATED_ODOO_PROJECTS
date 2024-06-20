@@ -20,8 +20,10 @@
                     <field name="email_from" widget="email"/>
                     <field name="phone" widget="phone"/>
                     <field name="function"/>
+<!--                    <field name="lead_token" readonly="1"/>-->
                     <field name="crm_lead_stage"/>
                     <field name="model_id" force_save="1" readonly="1"/>
+                    <field name="booking_date" force_save="1" readonly="1"/>
                 </xpath>
 
                 <xpath expr="//group/group[1]/label[@for='street']" position="attributes">
@@ -390,10 +392,11 @@
                     />
                     <field name="qty_available_line"/>
                     <field name="admin_access" invisible="1"/>
+                    <field name="admin_access_sale" invisible="1"/>
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="replace">
-                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}"/>
+                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access_sale', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']"
                        position="replace">
@@ -435,6 +438,12 @@
                 <field name="company_id" position="after">
                     <field name="product_catalog_id"/>
                 </field>
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='price_unit']"
+                       position="replace">
+                    <field name="admin_access" invisible="1"/>
+                    <field name="admin_access_purchase" invisible="1"/>
+                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access_purchase', 'not in', [True])]}" />
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
                        position="replace">
                     <field name="sl_no" string="Sl_NO" required="1" force_save="1"/>

@@ -87,6 +87,17 @@ class ARS_sale_order_line(models.Model):
         _logger.info('Category Change end === %s' % datetime.now().strftime("%H:%M:%S.%f"))
         return res
 
+    @api.onchange('customer_split','product_uom_qty')
+    def unit_price_updation(self):
+        if self.customer_split and self.product_id:
+            if self.category and self.category.name.lower() == 'warranty':
+                print(self.id, '=============>')
+                vendor_price_dict = {vendor.name.id: vendor.price for vendors in self.product_id for vendor in
+                                     vendors.seller_ids}
+                if vendor_price_dict:
+                    if self.customer_split.id in vendor_price_dict:
+                        self.price_unit = vendor_price_dict[self.customer_split.id]
+
     @api.multi
     @api.onchange('customer_split')
     def CustomerSplit_Change(self):

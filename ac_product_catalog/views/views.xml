@@ -21,6 +21,8 @@
                         <field name="code"/>
 <!--                         attrs="{'readonly': [('code','!=',False)]}"-->
                         <field name="type"/>
+                        <field name="unit_price"/>
+                        <field name="groups" widget="many2many_tags"/>
                     </group>
                 </form>
             </field>
