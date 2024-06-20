@@ -53,13 +53,25 @@ class Split(http.Controller):
                     percent_value = percent[index].split('%')
                 for re_id in res_id:
                     res = request.env['sale.order.line'].browse(int(re_id))
-                    line_data = {'product_id': res.product_id.id,
+                    #Chnages by Krishna
+                    ir_property_obj = request.env['ir.property']
+                    account_idd = False
+                    if res.product_id.id:
+                        account_idd = order_id.fiscal_position_id.map_account(
+                            res.product_id.property_account_income_id or res.product_id.categ_id.property_account_income_categ_id).id
+                    if not account_idd:
+                        inc_acc = ir_property_obj.get('property_account_income_categ_id', 'product.category')
+                        account_idd = order_id.fiscal_position_id.map_account(inc_acc).id if inc_acc else False
+                    #this above part added we using 'account_idd' in line_data
+                    line_data = {'product_catalog_id': res.product_catalog_id.id,
+                                 'product_template_id': res.product_template_id.id,
+                                 'product_id': res.product_id.id,
                                  'name': res.name,
                                  'quantity': res.product_uom_qty,
                                  'price_unit': res.price_unit,
                                  'sale_line_ids': [(6, 0, [res.id])],
                                  'account_analytic_id': order_id.analytic_account_id.id or False,
-                                 'account_id': 1,
+                                 'account_id': account_idd,
                                  'invoice_line_tax_ids': [[6, 0, res.tax_id.ids]],
                                  'price_subtotal': ((int(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
                                  'split_amount': ((int(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
@@ -68,12 +80,29 @@ class Split(http.Controller):
                     invoice_line = [0, 0, line_data]
                     lines.append(invoice_line)
                 vals = {
-                    'partner_id':int(customer),
-                    'account_id': 1,
-                    'invoice_line_ids':lines,
-                    'origin':order_id.name
+                    'partner_id': int(customer),
+                    # Chnages by Krishna below line changed the values
+                    'account_id': order_id.partner_id.property_account_receivable_id.id,
+                    'invoice_line_ids': lines,
+                    'origin': order_id.name,
+                    'mobile': request.env['res.partner'].search([('id', '=', int(customer))]).mobile,
+                    'email': request.env['res.partner'].search([('id', '=', int(customer))]).email,
+                    # Vehicle-Details
+                    'reg_no': order_id.regn_no.id,
+                    'vin': order_id.vin_no,
+                    'product_id': order_id.vehicle_model.id,
+                    'model': order_id.model.id,
+                    'kilometer': order_id.mileage_in,
+                    'appointment_date': order_id.appointment_date,
+                    'delivery_service_advisor': order_id.delivery_service_advisor.id,
+                    'delivery_date': order_id.delivery_date,
+                    'payment_term_id': order_id.payment_term_id.id,
+                    'fiscal_position_id': order_id.fiscal_position_id.id,
+                    'service_type': order_id.service_type.id,
+                    'service_options': order_id.service_options.id,
                 }
-                request.env['account.invoice'].create(vals)
+                context = {'type': 'out_invoice', 'journal_type': 'sale', 'default_ars_invoice_type': 'after_sales'}
+                request.env['account.invoice'].with_context(context).create(vals)
         # action = {'type': 'ir.actions.act_window_close'}
 
         return {'status':True}

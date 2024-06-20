@@ -138,7 +138,7 @@ class ARS_crm_lead(models.Model):
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
     model_id = fields.Many2one('product.template', string="Model")
-
+    lead_token = fields.Char("Lead Token")
     # booking_date = fields.Date(string="Booking Date")
 
     # @api.onchange('stage_id')
@@ -720,6 +720,18 @@ class ARSSaleOrderLine(models.Model):
     qty_available_line = fields.Float(string='Qty Available',
                                       compute='_compute_product_qty_on_hand')
     admin_access = fields.Boolean(related='order_id.admin_access')
+    admin_access_sale = fields.Boolean(compute="_compute_admin_access_sale", string='Admin Sale Access')
+
+    @api.depends('product_id')
+    def _compute_admin_access_sale(self):
+        user = self.env.user
+        setting_price_config = user.company_id.inv_line_unit_price
+        for record in self:
+            catalog = self.env['product.catalog'].search(
+                [('name', '=', record.product_id.catalog_type.name), ('unit_price', '=', True)])
+            record.admin_access_sale = True if record.product_template_id.access_price_unit else any(
+                user in group.users for catalog_group in catalog for group in catalog_group.groups) if (
+                        catalog and setting_price_config) else False
 
     @api.depends('product_id', 'order_id.company_id')
     def _compute_product_qty_on_hand(self):

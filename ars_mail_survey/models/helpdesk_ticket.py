@@ -2,16 +2,18 @@ from odoo import models, fields, api
 from odoo.tools import datetime
 import re
 
+
 class ComplaintSources(models.Model):
     _name = 'complaint.source'
 
     name = fields.Char()
 
-class HelpdeskStageInheritStage(models.Model):
 
-    _inherit ='helpdesk.stage'
+class HelpdeskStageInheritStage(models.Model):
+    _inherit = 'helpdesk.stage'
 
     is_close_stage = fields.Boolean('Is Close Stage')
+
 
 class HelpdeskTicketInheritMail(models.Model):
     _inherit = 'helpdesk.ticket'
@@ -28,7 +30,8 @@ class HelpdeskTicketInheritMail(models.Model):
     vehicle_no = fields.Char('Vehicle Number')
     close_date = fields.Date('Close Date ')
     logs = fields.Char()
-    sol_ids = fields.One2many('solution.logs','sol_log')
+    sol_ids = fields.One2many('solution.logs', 'sol_log')
+
 
     @api.multi
     def update_user_company_info(self):

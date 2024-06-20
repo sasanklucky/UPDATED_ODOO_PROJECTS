@@ -54,6 +54,36 @@
                             </div>
                         </div>
                     </div>
+                    <h2>ARS Gate Pass Setup</h2>
+                    <div class="row mt16 o_settings_container" id="gate_pass_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="restrict_gp_date"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Restrict Back Dated Gate Pass" for="restrict_gp_date"/>
+                                <div class="text-muted">
+                                    Couldn't able to create any back dated Gate Pass
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <h2>Unit Price Setup</h2>
+                    <div class="row mt16 o_settings_container" id="unit_price_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="inv_line_unit_price"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Edit Invoice Line Unit Price based on Groups" for="inv_line_unit_price"/>
+                                <div class="text-muted">
+                                    able to edit unit price for selected Groups.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <h2>Report Setup</h2>
                     <div class="row mt16 o_settings_container" id="ars_settings">

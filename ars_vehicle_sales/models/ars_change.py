@@ -1,4 +1,5 @@
 import json
+import re
 from odoo import models, fields, api, _
 from datetime import datetime, time, date
 from datetime import timedelta
@@ -396,7 +397,7 @@ class ars_sale_invoice(models.Model):
         return res
 
     @api.multi
-    def action_print_gate_pass(self):
+    def action_print_gate_pass(self, report=None):
         self.ensure_one()
         if not self.gate_pass_date:
             self.gate_pass_date = date.today()
@@ -417,17 +418,37 @@ class ars_sale_invoice(models.Model):
                 'res_model': 'gate.pass.wiz',
                 'views': [(view.id, 'form')],
                 'view_id': view.id,
+                'context': {'report': True},
                 'target': 'new',
             }
+        # elif report is None:
+        #     data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(
+        #         self)
+        #     return data
         else:
-            data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(
-                self)
-            return data
+            return True
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
         for sale in self:
             sale.amount_total_words = sale.currency_id.amount_to_text(sale.amount_total)
+
+    @api.multi
+    def action_print_gate_pass_button(self):
+        if self.state in ['open', 'paid']:
+            data = self.env.ref('ars_vehicle_sales.gatepass_report').with_context(doc=self).report_action(
+                self)
+            return data
+        else:
+            return True
+
+    def ars_action_invoice_open(self):
+        for rec in self:
+            rec.action_invoice_open()
+            result = rec.action_print_gate_pass()
+            if isinstance(result, dict):  # Check if the result is an action dictionary
+                return result
+        return True
 
     mobile = fields.Char(string="Mobile")
     email = fields.Char(string="Email")

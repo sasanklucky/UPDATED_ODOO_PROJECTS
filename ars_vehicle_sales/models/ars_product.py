@@ -155,6 +155,43 @@ class ARS_product_vehicle(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+#Visiable the columns MRP and Customer Taxes in Parts Tree View Only.
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='tree', toolbar=False, submenu=False):
+        res = super(ARS_product_vehicle, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        if view_type == 'tree':
+            catalog = self._get_default_catalog_id()
+            category = self.env['product.catalog'].browse(catalog)
+            if category.name in ['Vehicle', 'Accessories', 'Labor']:
+                doc = etree.XML(res['arch'])
+                fields_to_modify = {
+                    'mrp': 'column_invisible',
+                    'taxes_id': 'column_invisible'
+                }
+                for field_name, attr in fields_to_modify.items():
+                    for node in doc.xpath(f"//field[@name='{field_name}']"):
+                        node.set('attrs', "{'%s': True}" % attr)
+                        setup_modifiers(node, res['fields'][field_name])
+
+                res['arch'] = etree.tostring(doc, pretty_print=True)
+        return res
+
+        # con = self.env.context
+        # res = super(ARS_product_vehicle, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        # doc = etree.XML(res['arch'])
+        # if view_type == 'tree':
+        #     catalog = self._get_default_catalog_id()
+        #     category = self.env['product.catalog'].browse(catalog)
+        #     if category.name in ['Vehicle', 'Accessories', 'Labor']:
+        #         for node in doc.xpath("//field[@name='mrp']"):
+        #             node.set('attrs', "{'column_invisible': True}")
+        #             setup_modifiers(node, res['fields']['mrp'])
+        #         for node in doc.xpath("//field[@name='taxes_id']"):
+        #             node.set('attrs', "{'column_invisible': True}")
+        #             setup_modifiers(node, res['fields']['taxes_id'])
+        #
+        # res['arch'] = etree.tostring(doc)
+        # return res
     # @api.multi
     # @api.onchange('tracking')
     # def tracking_set(self):

@@ -747,6 +747,19 @@ class ARSPurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'Purchase Order Line'
 
+    admin_access = fields.Boolean(related='order_id.admin_access')
+    admin_access_purchase = fields.Boolean(compute="_compute_admin_access_purchase", string="Admin Access Purchase")
+
+    @api.depends('product_id')
+    def _compute_admin_access_purchase(self):
+        user = self.env.user
+        setting_price_config = user.company_id.inv_line_unit_price
+        for record in self:
+            catalog = self.env['product.catalog'].search(
+                [('name', '=', record.product_id.catalog_type.name), ('unit_price', '=', True)])
+            record.admin_access_purchase = True if record.product_template_id.access_price_unit else any(user in group.users for catalog_group in catalog for group in catalog_group.groups) if (catalog and setting_price_config) else False
+
+
     def onchange_order_line(self):
         length = 1
         for line in self:
@@ -801,6 +814,7 @@ class ARS_AccountInvoiceLine(models.Model):
     _description = "Invoice Line"
 
     admin_access = fields.Boolean(related='invoice_id.admin_access')
+    admin_access_1 = fields.Boolean(compute="_compute_admin_access", string='Admin access')
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -813,6 +827,17 @@ class ARS_AccountInvoiceLine(models.Model):
         elif self.env.user.has_group('ars_after_sales.group_aftersale_invoice'):
             domain['domain'] = {'product_id': [('catalog_type.name', 'in', ('Labor', 'Parts', 'Accessories'))]}
         return domain
+
+    # @api.onchange('product_catalog_id','name')
+    @api.depends('product_id')
+    def _compute_admin_access(self):
+        user = self.env.user
+        setting_price_config = user.company_id.inv_line_unit_price
+        for record in self:
+            catalog = self.env['product.catalog'].search(
+                [('name', '=', record.product_id.catalog_type.name), ('unit_price', '=', True)])
+            record.admin_access_1 = True if record.product_template_id.access_price_unit else any(user in group.users for catalog_group in catalog for group in catalog_group.groups) if (catalog and setting_price_config) else False
+            print(record.admin_access_1, '=====>')
 
 
 class ARS_PickingType(models.Model):
