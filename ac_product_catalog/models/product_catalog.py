@@ -42,3 +42,4 @@ class ARSAccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
     product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_template_id = fields.Many2one('product.template', string="Model")
