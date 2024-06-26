@@ -500,7 +500,7 @@ class PurchaseOrderInheritSync(models.Model):
                                         lambda x: x.product_id.id == data_list['product_id'])
                                     cr.execute(f"""
                                         UPDATE sale_order 
-                                        SET sale_type = {"'" + (str(data['sale_type']) + "'")},
+                                        SET sale_type = {"'" + str(data['sale_type'] + "'")},
                                             counter_parts = {data['counter_parts']}
                                         WHERE id ={new_recordds.id};
                                     """)
