@@ -377,7 +377,7 @@ class ars_sale_invoice(models.Model):
     def invoice_date_validation(self):
         for rec in self:
             given_date = rec.date_invoice
-            if given_date:
+            if given_date and rec.type == 'out_invoice':
                 given_date_obj = datetime.strptime(given_date, "%Y-%m-%d")
                 date_today = datetime.today()
                 if self.env.user.company_id.restrict_bd_inv:
