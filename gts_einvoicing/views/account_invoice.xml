@@ -218,6 +218,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
                 <field name="is_service" string="IS-Service" groups="base.group_no_one" />
+                <field name="is_round_off"/>
             </xpath>
         </field>
     </record>

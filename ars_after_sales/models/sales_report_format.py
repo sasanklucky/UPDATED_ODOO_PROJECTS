@@ -96,7 +96,8 @@ class SalesReportFormat(models.Model):
     hsn_code = fields.Char(related="product_id.product_tmpl_id.l10n_in_hsn_code", string="HSN / SAC")
     part_type = fields.Many2one('product.category', related="product_id.product_tmpl_id.categ_id", string="Part Type")
     invoice_no = fields.Char(related="invoice_id.number", string="Customer Invoice No")
-    invoice_date = fields.Date(related="invoice_id.date_invoice", string="Customer Invoice Date")
+    # invoice_date = fields.Date(related="invoice_id.date_invoice", string="Customer Invoice Date")
+    invoice_date = fields.Date(string="Customer Invoice Date")
     bill_to_customer = fields.Many2one('res.partner', related="invoice_id.partner_id", string="Bill to Customer Name")
     repair_no = fields.Char(related="invoice_id.origin", string="Repair Order No")
     vin = fields.Char(related="invoice_id.vin", string="VIN")
@@ -127,7 +128,8 @@ class SalesReportFormat(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         print("table name", self._table);
         self.env.cr.execute(f"""  CREATE or REPLACE VIEW %s as (
-                    select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,  
+                    select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
+                    a.date_invoice::Date as invoice_date,
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
                     (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
                     (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,

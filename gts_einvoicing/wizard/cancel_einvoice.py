@@ -79,7 +79,8 @@ class EbillCancel(models.TransientModel):
                 url = 'https://gstsandbox.charteredinfo.com/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
                 url = str(url)
             if einvoicing.testing == 'p':
-                url = 'https://api.taxprogsp.co.in/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
+                # url = 'https://api.taxprogsp.co.in/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
+                url = 'https://einvapi.charteredinfo.com/eicore/dec/v1.03/Invoice/Cancel?aspid=' + einvoicing.asp_id + '&password=' + einvoicing.asp_password + '&Gstin=' + warehouse.gst_no + '&eInvPwd=' + warehouse.user_password + '&AuthToken=' + warehouse.auth_token + '&user_name=' + warehouse.user_name
                 url = str(url)
             headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
             response = requests.post(url, data=json.dumps(data), headers=headers)

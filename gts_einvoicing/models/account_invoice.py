@@ -24,6 +24,7 @@ class AccountInvoiceLine(models.Model):
 
     hsn_code = fields.Char('HSN/SAC Code', compute='_get_hsn_code', store=True)
     is_service = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Service')
+    is_round_off = fields.Selection([('Y', 'Yes'), ('N', 'No')], string='IS-Round-Off', default='N')
 
     @api.onchange('product_id')
     def _onchange_product_id(self):
@@ -120,6 +121,8 @@ class account_invoice(models.Model):
 
     @api.multi
     def create_einvoicing(self):
+        print("Create Invoice...")
+        print("Create Invoice...")
         item_list = []
         einvoicing = self.env['einvoicing.configuration'].search([], limit=1)
         warehouse = self.generate_einvoice()
@@ -281,7 +284,7 @@ class account_invoice(models.Model):
             "Addr1": self.company_id.street,
             "Loc": self.company_id.city,
             # "TrdNm":'',
-            "State": self.company_id.state_id.code,
+            # "State": self.company_id.state_id.code,
             "Pin": int(self.company_id.zip),
             "Stcd": self.company_id.state_id.code,
         }
@@ -293,7 +296,7 @@ class account_invoice(models.Model):
                 "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.code,
+                # "State": self.partner_id.state_id.code,
                 "Pin": self.partner_id.zip,
                 "Stcd": self.partner_id.state_id.code,
             }
@@ -314,7 +317,7 @@ class account_invoice(models.Model):
                 "Pos": self.partner_id.state_id.code,
                 "Addr1": self.partner_id.street,
                 "Loc": self.partner_id.city,
-                "State": self.partner_id.state_id.code,
+                # "State": self.partner_id.state_id.code,
                 "Pin": int(self.partner_id.zip),
                 "Stcd": self.partner_id.state_id.code, }
             # print("BuyerDtls=================%s===",self.partner_id.state_id.code)
@@ -332,7 +335,7 @@ class account_invoice(models.Model):
         #         "Addr1": self.street,
         #         "Loc": self.city,
         #         "Pin": int(self.zip),
-        #         "Stcd": self.state_id.port_code
+        #         "Stcd": self.state_id.code
         #     }
         # else:
         addr1 = ''
@@ -378,6 +381,7 @@ class account_invoice(models.Model):
         total_sgsts = 0.0
         total = 0.0
         total_round, tcs_amount = 0.0, 0.0
+        round_of_val = 0
         assmt = 0.0
         for idx, inv_line in enumerate(self.invoice_line_ids):
             if not inv_line:
@@ -388,76 +392,84 @@ class account_invoice(models.Model):
         flag = False
         for idx, inv_line in enumerate(self.invoice_line_ids):
             if inv_line:
-                total = total + inv_line.price_subtotal
-                discount = 0.0
-                if inv_line.discount:
-                    discount = (inv_line.price_unit * inv_line.quantity) * inv_line.discount / 100
-                tax_rate = 0
-                if inv_line.invoice_line_tax_ids:
-                    for tax in inv_line.invoice_line_tax_ids:
-                        # if tax.gst_type in ('cgst', 'sgst', 'igst'):
-                        if tax.amount_type == 'group':
-                            for child in tax.children_tax_ids:
-                                if child.tax_group_id.name == "SGST":
-                                    # Change price_unit to price_subtotal from the line items on 23/sep/2023
-                                    total_sgst = inv_line.price_subtotal * child.amount / 100
-                                    total_sgsts += inv_line.price_subtotal * child.amount / 100
-                                if child.tax_group_id.name == "CGST":
-                                    total_cgst = inv_line.price_subtotal * child.amount / 100
-                                    total_cgsts += inv_line.price_subtotal * child.amount / 100
-                                # assmt = round(inv_line.price_subtotal - (
-                                #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
-                                assmt = inv_line.price_subtotal
-                                tax_rate += child.amount
-                        else:
-                            tax_rate = tax.amount
-                        if tax.amount_type != 'group':
-                            if tax.tax_group_id.name == "IGST" and tax.price_include == False:
-                                total_igst = inv_line.price_subtotal * tax.amount / 100
-                                total_igsts += inv_line.price_subtotal * tax.amount / 100
-                                assmt = inv_line.price_subtotal
-                                # assmt = round(inv_line.price_subtotal - (
-                                #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
-                                # assmt = inv_line.price_subtotal
-                            elif tax.tax_group_id.name == "IGST" and tax.price_include == True:
-                                total_igst = inv_line.price_subtotal * tax.amount / 100
-                                total_igsts += inv_line.price_subtotal * tax.amount / 100
-                                assmt = inv_line.price_subtotal
+                if inv_line.is_round_off == 'Y':
+                    round_of_val += inv_line.price_subtotal
                 else:
-                    tax_rate = 0.0
-                    total_cgst = 0.0
-                    total_sgst = 0.0
-                    total_igst = 0.0
-                total_tax = total_igst + total_cgst + total_sgst
-                item_dict = {
-                    "SlNo": str(idx + 1),
-                    # "IsServc": 'N',
-                    "IsServc": inv_line.is_service,
-                    "HsnCd": inv_line.hsn_code,
-                    "PrdDesc": inv_line.name,
-                    "Qty": inv_line.quantity,
-                    "UnitPrice": round(inv_line.price_unit, 2),
-                    "Unit": 'UNT',
-                    "TotAmt": round(inv_line.price_unit * inv_line.quantity, 2),
-                    # "Discount": (inv_line.price_unit * inv_line.quantity),
-                    "Discount": round(discount, 2),
-                    "AssAmt": assmt,
-                    "SgstAmt": round(total_sgst, 2),
-                    "CgstAmt": round(total_cgst, 2),
-                    "IgstAmt": round(total_igst, 2),
-                    "GstRt": tax_rate,
-                    "TotItemVal": round(
-                        inv_line.price_subtotal + total_tax, 2)}
-                item_list.append(item_dict)
+                    total = total + inv_line.price_subtotal
+                    discount = 0.0
+                    if inv_line.discount:
+                        discount = (inv_line.price_unit * inv_line.quantity) * inv_line.discount / 100
+                    tax_rate = 0
+                    if inv_line.invoice_line_tax_ids:
+                        for tax in inv_line.invoice_line_tax_ids:
+                            # if tax.gst_type in ('cgst', 'sgst', 'igst'):
+                            if tax.amount_type == 'group':
+                                for child in tax.children_tax_ids:
+                                    if child.tax_group_id.name == "SGST":
+                                        # Change price_unit to price_subtotal from the line items on 23/sep/2023
+                                        total_sgst = inv_line.price_subtotal * child.amount / 100
+                                        total_sgsts += inv_line.price_subtotal * child.amount / 100
+                                    if child.tax_group_id.name == "CGST":
+                                        total_cgst = inv_line.price_subtotal * child.amount / 100
+                                        total_cgsts += inv_line.price_subtotal * child.amount / 100
+                                    # assmt = round(inv_line.price_subtotal - (
+                                    #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                    assmt = inv_line.price_subtotal
+                                    tax_rate += child.amount
+                            else:
+                                tax_rate = tax.amount
+                            if tax.amount_type != 'group':
+                                if tax.tax_group_id.name == "IGST" and tax.price_include == False:
+                                    total_igst = inv_line.price_subtotal * tax.amount / 100
+                                    total_igsts += inv_line.price_subtotal * tax.amount / 100
+                                    assmt = inv_line.price_subtotal
+                                    # assmt = round(inv_line.price_subtotal - (
+                                    #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
+                                    # assmt = inv_line.price_subtotal
+                                elif tax.tax_group_id.name == "IGST" and tax.price_include == True:
+                                    total_igst = inv_line.price_subtotal * tax.amount / 100
+                                    total_igsts += inv_line.price_subtotal * tax.amount / 100
+                                    assmt = inv_line.price_subtotal
+                    else:
+                        tax_rate = 0.0
+                        total_cgst = 0.0
+                        total_sgst = 0.0
+                        total_igst = 0.0
+                    total_tax = total_igst + total_cgst + total_sgst
+                    item_dict = {
+                        "SlNo": str(idx + 1),
+                        # "IsServc": 'N',
+                        "IsServc": inv_line.is_service,
+                        "HsnCd": inv_line.hsn_code,
+                        "PrdDesc": inv_line.name,
+                        "Qty": inv_line.quantity,
+                        "UnitPrice": round(inv_line.price_unit, 2),
+                        "Unit": 'UNT',
+                        "TotAmt": round(inv_line.price_unit * inv_line.quantity, 2),
+                        # "Discount": (inv_line.price_unit * inv_line.quantity),
+                        "Discount": round(discount, 2),
+                        "AssAmt": assmt,
+                        "SgstAmt": round(total_sgst, 2),
+                        "CgstAmt": round(total_cgst, 2),
+                        "IgstAmt": round(total_igst, 2),
+                        "GstRt": tax_rate,
+                        "TotItemVal": round(
+                            inv_line.price_subtotal + total_tax, 2)}
+
+
+                    item_list.append(item_dict)
+
+
 
                 print("item_dict===========================", total_igst, item_list)
-
+        print("## round of val",round_of_val)
         data['ItemList'] = item_list
+        TottalInvVal = self.amount_total - round_of_val
         values = {
             "AssVal": round(total, 2),
-            "RndOffAmt": round(total_round, 2),
+            "RndOffAmt": round(round_of_val, 2),
             "Othchrg": round(tcs_amount, 2),
-            "TotInvVal": round(self.amount_total, 2),
+            "TotInvVal": round(TottalInvVal, 2),
             "IgstVal": round(total_igsts, 2),
             "CgstVal": round(total_cgsts, 2),
             "SgstVal": round(total_sgsts, 2),

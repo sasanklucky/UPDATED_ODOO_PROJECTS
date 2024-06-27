@@ -79,7 +79,6 @@ class PurchaseRequisition(models.Model):
                                       ('after_sales', 'After Sales')], string='Type')
 
 
-
 class ARSStockPicking(models.Model):
     _inherit = 'stock.picking'
 

@@ -17,7 +17,8 @@
     'author': 'Geo Technosoft',
     'sequence': 1,
     'website': 'https://www.geotechnosoft.com',
-    'depends': ['account', 'stock', 'ars_after_sales'],
+    # 'depends': ['account', 'stock','ars_after_sales'],
+    'depends': ['account', 'stock', 'ac_product_catalog'],
     'data': [
         'security/ir.model.access.csv',
         'security/e_invoice_group.xml',
@@ -31,7 +32,6 @@
         'views/account_invoice.xml',
         'views/after_sales_invoice.xml',
         'views/stock_warehouse.xml',
-
     ],
     'application': True,
     'installable': True,

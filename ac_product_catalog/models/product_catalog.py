@@ -12,6 +12,7 @@ class ACProductCatalog(models.Model):
     unit_price = fields.Boolean('Enable Unit Price')
     groups = fields.Many2many("res.groups", string="Groups")
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
@@ -35,3 +36,10 @@ class ARSProcurementRule(models.Model):
                 result['product_template_id'] = order_line.product_template_id.id
                 result['product_catalog_id'] = order_line.product_catalog_id.id
         return result
+
+
+class ARSAccountInvoiceLine(models.Model):
+    _inherit = "account.invoice.line"
+
+    product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
+    product_template_id = fields.Many2one('product.template', string="Model")
