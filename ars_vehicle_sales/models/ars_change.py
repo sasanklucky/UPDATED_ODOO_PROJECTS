@@ -373,6 +373,19 @@ class ars_sale_invoice(models.Model):
     delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
     after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
 
+    @api.constrains('gate_pass_date')
+    def gate_pass_date_validation(self):
+        for rec in self:
+            given_date = rec.gate_pass_date
+            if given_date:
+                given_date_obj = datetime.strptime(given_date, "%Y-%m-%d")
+                date_today = datetime.today()
+                if self.env.user.company_id.restrict_gp_date:
+                    if given_date_obj.date() < date_today.date():
+                        raise ValidationError(_("Warning: Gate Pass dates cannot be set to a date in the past"))
+                if given_date_obj > date_today:
+                    raise ValidationError(_("Gate Pass Date can't be a future date"))
+
     @api.constrains('date_invoice')
     def invoice_date_validation(self):
         for rec in self:

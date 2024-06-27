@@ -44,12 +44,8 @@ class ARS_MailActivity(models.Model):
     #      ('completed', 'Completed')],
     #     string="Status", default="pending", store=True)
     stages = fields.Selection(
-        [('pending', 'Pending'), ('survey_done', 'Complete Survey'),
-         ('survey_incomplete', 'Incomplete Survey'),
-         ('ticket_created', 'Ticket Raised'),
-         ('not_applicable', 'Not Applicable'),
-         ('completed', 'Completed')],
-        string="Status", default="pending", store=True)
+        [('pending', 'Pending'), ('survey_done', 'Survey Done'), ('ticket_created', 'Ticket Created'),
+         ('completed', 'Completed')], string="Status", default="pending", store=True)
     # compute_stages = fields.Char(string="Compute Stages",compute="_get_compute_stages")
     survey_percentage = fields.Float(string="Survey %", compute="get_survey_percentage")
     survey_percentage_stored = fields.Float(compute="_compute_survey_percentage_stored")
@@ -327,20 +323,3 @@ class ARS_MailActivity(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'self'
         }
-
-    def cancel_mail_activity(self):
-        view = self.env.ref('ars_mail_survey.view_psf_cancel_activity')
-        return {
-            'name': _('Cancel Activity'),
-            'res_model': 'dealer.cancel.activity.mail',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'view_id': view.id,
-            'context': {'default_activity_id': self.id, 'create': False, 'edit': False},
-            'type': 'ir.actions.act_window',
-            'target': 'new'
-        }
-
-    def retrieve_mail_activity(self):
-        for res in self:
-            res.write({'stages': 'pending'})
