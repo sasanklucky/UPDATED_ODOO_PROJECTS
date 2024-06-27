@@ -9,10 +9,15 @@
         <field name="arch" type="xml">
 
         <xpath expr="//button[@name='action_invoice_open']" position="after">
+            <button name="ars_action_invoice_open" type="object" states="draft" string="Validate"
+                                class="oe_highlight o_invoice_validate" groups="account.group_account_invoice"/>
             <button name="create_einvoicing" type="object" string="Create E-Invoicing" class="oe_highlight" groups="gts_einvoicing.group_ebill_manager" attrs="{'invisible': ['|','|',('irn_no', '!=', False),('state','=','draft'),('state','=','cancel')]}"/>
             <button name="%(gts_einvoicing.action_cancel_einvoice_bill)d" string="Cancel E-Invoicing" type="action" groups="gts_einvoicing.group_ebill_manager"
                                 class="oe_highlight" attrs="{'invisible': ['|',('irn_no', '=', False),('irn_cancel_date','!=',False)]}"/>
         </xpath>
+            <xpath expr="//form/header/button[@name='action_invoice_open']" position="attributes">
+                   <attribute name="invisible">1</attribute>
+                </xpath>
         <xpath expr="//field[@name='reference']" position="after">
             <field name="gen_einvoice" groups="gts_einvoicing.group_ebill_manager"/>
             <field name='invoice_origin'/>
@@ -213,6 +218,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
                 <field name="is_service" string="IS-Service" groups="base.group_no_one" />
+                <field name="is_round_off"/>
             </xpath>
         </field>
     </record>

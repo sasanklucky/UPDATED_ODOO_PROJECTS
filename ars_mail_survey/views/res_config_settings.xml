@@ -7,7 +7,7 @@
         <field name="inherit_id" ref="base.res_config_settings_view_form" />
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('settings')]" position="inside">
-                <div class="app_settings_block" data-string="Sale and Post Sale" string="Sale and Post Sale" data-key="ars_invoice_aftersales">
+                <div class="app_settings_block" data-string="Sale and Post Sale" string="Sale and Post Sale" data-key="ars_mail_survey">
                     <h2>Sale and Post Sales Activity Settings</h2>
                     <div class="row mt16 o_settings_container" id="sale_and_post_sale_settings">
                         <div class="col-xs-12 col-md-6 o_setting_box" id="sale_and_post_sale_settings">
@@ -56,13 +56,14 @@
             </xpath>
         </field>
     </record>
+
     <record id="action_sale_and_post_sale_config_settings" model="ir.actions.act_window">
-        <field name="name">ARS Settings</field>
+        <field name="name">PSF Settings</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">res.config.settings</field>
         <field name="view_id" ref="res_sale_n_post_sale_config_rms_settings" />
         <field name="view_mode">form</field>
         <field name="target">inline</field>
-        <field name="context">{'module' : 'ars_invoice_aftersales'}</field>
+        <field name="context">{'module' : 'ars_mail_survey'}</field>
     </record>
 </odoo>

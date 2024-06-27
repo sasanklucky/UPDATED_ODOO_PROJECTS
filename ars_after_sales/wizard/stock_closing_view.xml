@@ -48,7 +48,7 @@
                 <attribute name="invisible">1</attribute>
             </field>
             <field name="attribute_value_ids" position="attributes">
-                <attribute name="invisible">1</attribute>
+                <attribute name="invisible">0</attribute>
             </field>
             <field name="name" position="attributes">
                 <attribute name="string">Description</attribute>
@@ -57,6 +57,18 @@
                 <field name="company_id" string="Dealer Name"/>
             </field>
 
+        </field>
+    </record>
+
+    <record id="view_parts_product_template_tree" model="ir.ui.view">
+        <field name="name">product.template.parts.tree.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <tree position="inside">
+                <field name="mrp"/>
+                <field name="taxes_id" widget="many2many_tags"/>
+            </tree>
         </field>
     </record>
 

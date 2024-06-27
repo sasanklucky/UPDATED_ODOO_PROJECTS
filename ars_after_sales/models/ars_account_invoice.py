@@ -156,7 +156,9 @@ class ARS_account_invoice(models.Model):
             sale_team = self.env['crm.team'].search(
                 [('member_ids', 'in', self.user_id.id), ('member_ids', 'in', self.env.user.ids)])
             self.check_valid_sales_channel(sale_team)
-        res = super(ARS_account_invoice, self).action_invoice_open()
+        if not self.gate_pass_date:
+            self.gate_pass_date = date.today()
+        res = super(ARS_account_invoice,self).action_invoice_open()
         return res
 
     @api.onchange('partner_id')
