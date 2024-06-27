@@ -19,7 +19,6 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='summary']" position="after">
                     <field name="mobile"/>
-                    <field name="cus_feedback" readonly="1"/>
                 </xpath>
             </field>
         </record>
@@ -52,7 +51,6 @@
 
             </field>
         </record>
-
         <!-- mail.activity search filter modify -->
         <record id="mail_activity_view_search_inherit" model="ir.ui.view">
             <field name="name">mail.activity.view.form.popup</field>

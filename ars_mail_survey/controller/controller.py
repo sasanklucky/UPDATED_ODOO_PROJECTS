@@ -15,7 +15,7 @@ class WebsiteSurvey(main.WebsiteSurvey):
         _logger.debug('Incoming data: %s', post)
         page_id = int(post['page_id'])
         questions = request.env['survey.question'].search([('page_id', '=', page_id)])
-        tot_questions = request.env['survey.question'].search([('page_id', '=', page_id)])
+
         # Answer validation
         errors = {}
         for question in questions:
@@ -66,16 +66,7 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     #     request.env['helpdesk.ticket'].sudo().create(vals)
                     #     activity_id.write({'stages':'ticket_created'})
                     else:
-                        len_user_answer = len(activity_id.response_id.user_input_line_ids)
-                        skipped_answers = activity_id.response_id.user_input_line_ids.mapped('skipped')
-                        if len(tot_questions) != len_user_answer:
-                            activity_id.write({'stages': 'survey_incomplete'})
-                        else:
-                            activity_id.write({'stages': 'survey_done'})
-                feedback = [input for input in activity_id.response_id.user_input_line_ids if
-                            'feedback' in input.question_id.question.lower()]
-                cus_responce = feedback[-1].value_suggested.value if feedback else False
-                activity_id.write({'cus_feedback': cus_responce if cus_responce else ''})
+                        activity_id.write({'stages': 'survey_done'})
             else:
                 vals.update({'state': 'skip'})
             user_input.sudo(user=user_id).write(vals)
