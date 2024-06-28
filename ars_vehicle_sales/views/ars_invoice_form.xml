@@ -1,6 +1,6 @@
 <odoo>
   <data>
-    <record id="invoice_form_sales_inherit" model="ir.ui.view">
+    <record id="vehicle_invoice_form_sales_inherit" model="ir.ui.view">
             <field name="name"> .form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
@@ -30,7 +30,7 @@
                   <field name="gate_pass_date"/>
               </field> -->
                 <xpath expr="//form//header" position="inside">
-                      <button class="btn-primary" type="object" name="action_print_gate_pass" string="Print Gate Pass"/>
+                      <button class="btn-primary" type="object" name="action_print_gate_pass_button" string="Print Gate Pass"/>
                       <!-- <button name="%(gatepass_report)d" class="btn-primary" string="Print Gate Pass" type="action" /> -->
                       <!-- <button name="send_whatsapp" class="btn-primary" string="Send In Whatsapp" type="object" /> -->
                 </xpath>
