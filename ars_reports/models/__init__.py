@@ -8,4 +8,4 @@ from . import stock_ageing
 from . import sale_order_report_hide
 from . import after_sale_psf_report
 from . import aftersale_credit_note_report
-
+from . import product_tax_fetch
