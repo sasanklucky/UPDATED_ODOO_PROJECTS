@@ -47,11 +47,17 @@ class ARS_sale_order(models.Model):
             self.warehouse_id = warehouse_ids.id
             self.sale_aftersales = 'sale'
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
-        elif self.sale_type in ['parts', 'accessories']:
+
+        elif self.sale_type in ['after_sales']:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
             self.warehouse_id = warehouse_ids.id
             self.sale_aftersales = 'after_sales'
+        elif self.sale_type in ['parts', 'accessories']:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
+            self.warehouse_id = warehouse_ids.id
+            self.sale_aftersales = 'sale'
         else:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)
@@ -122,7 +128,8 @@ class ARS_sale_order(models.Model):
     product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog',
                                          compute="_get_product_sale_catalog")
     sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
-                                  ('accessories', 'Accessories'), ('others', 'Others')])
+                                  ('accessories', 'Accessories'), ('after_sales', 'After Sales'),
+                                  ('others', 'Others')])
     service_type = fields.Many2one('service.type', 'Service Type')
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])

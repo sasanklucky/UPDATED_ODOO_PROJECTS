@@ -525,8 +525,9 @@ class AccountInvoice_inherit(models.Model):
                         {'driver_id': order.partner_id.id, 'vehicle_status': 'customer',
                          'lot_id': vin.id,
                          'customer_ids': [(0, 0, {'custmer_name': order.partner_id.id,
-                                                  'date_of_ownership': order.date_invoice,
+                                                  'date_of_ownership': datetime.now(),
                                                   'address': order.partner_id.city,
+                                                  'sold_by': self.env.user.company_id.partner_id.id,
                                                   'mobile': order.partner_id.mobile})]})
         res = super(AccountInvoice_inherit, self).action_invoice_open()
         return res
