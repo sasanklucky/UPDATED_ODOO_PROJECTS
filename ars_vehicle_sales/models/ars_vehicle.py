@@ -242,9 +242,9 @@ class FleetVehicle(models.Model):
                     lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.vin_sn])
                     sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
                     _logger.info(f"Sale line for update owner history for {sale_line.vin_no.name} with {sale_line.order_id.partner_id.name}")
-                    history = False
                     if sale_line:
                         for record in rec.customer_ids:
+                            history = False
                             for sale in sale_line:
                                 if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
                                     for invoice in sale.order_id.invoice_ids:
