@@ -3,7 +3,9 @@ import json
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
+import logging
 
+_logger = logging.getLogger("_____")
 
 class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
@@ -237,8 +239,9 @@ class FleetVehicle(models.Model):
             if rec.vehicle_status == 'customer':
                 if rec.vin_sn:
                     lot_Obj = self.env['stock.production.lot']
-                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.name])
+                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.vin_sn])
                     sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
+                    _logger.info(f"Sale line for update owner history for {sale_line.vin_no.name} with {sale_line.order_id.partner_id.name}")
                     history = False
                     if sale_line:
                         for record in rec.customer_ids:
