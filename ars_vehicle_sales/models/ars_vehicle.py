@@ -228,7 +228,7 @@ class FleetVehicle(models.Model):
     #     if vehicle_details:
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
-   
+
     @api.multi
     def update_customer_ownership(self):
         ownership_history = []
@@ -236,7 +236,9 @@ class FleetVehicle(models.Model):
             history = False
             if rec.vehicle_status == 'customer':
                 if rec.vin_sn:
-                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', rec.vin_sn)])
+                    lot_Obj = self.env['stock.production.lot']
+                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.name])
+                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
                     history = False
                     if sale_line:
                         for record in rec.customer_ids:
