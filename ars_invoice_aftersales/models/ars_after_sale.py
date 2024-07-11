@@ -129,7 +129,8 @@ class ARS_After_sale_order(models.Model):
             # for data in all_data:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
             warranty_invoice, customer_invoice = None, None
-            if order.sale_aftersales == 'after_sales':
+            if order.sale_aftersales == 'after_sales' and not order.counter_parts:
+                # res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
                 # print("--------after sales-----------")
                 # for data in all_data:
                 count = 0
@@ -173,7 +174,7 @@ class ARS_After_sale_order(models.Model):
                         if order.counter_parts == False:
                             if line.category.name.lower() == 'warranty':
                                 inv_data.update({'cust_invoice_type': 'warranty'})
-                                print('warranty check')
+                                # print('warranty check')
                             elif line.category.name.lower() == 'customer':
                                 inv_data.update({'cust_invoice_type': 'customer'})
                             elif line.category.name.lower() == 'insurance':
@@ -229,7 +230,7 @@ class ARS_After_sale_order(models.Model):
                 order.invoice_status = "invoiced"
                 return [inv.id for inv in invoices.values()]
 
-            if order.sale_aftersales != 'after_sales':
+            if order.sale_aftersales != 'after_sales' or order.counter_parts:
                 res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)
                 rest.write({'mobile': order.mobile, 'email': order.email,
