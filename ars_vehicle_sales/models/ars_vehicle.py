@@ -3,7 +3,9 @@ import json
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError
+import logging
 
+_logger = logging.getLogger("_____")
 
 class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
@@ -228,7 +230,7 @@ class FleetVehicle(models.Model):
     #     if vehicle_details:
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
-   
+
     @api.multi
     def update_customer_ownership(self):
         ownership_history = []
@@ -236,10 +238,13 @@ class FleetVehicle(models.Model):
             history = False
             if rec.vehicle_status == 'customer':
                 if rec.vin_sn:
-                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', rec.vin_sn)])
-                    history = False
+                    lot_Obj = self.env['stock.production.lot']
+                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.vin_sn])
+                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
+                    _logger.info(f"Sale line for update owner history for {sale_line.vin_no.name} with {sale_line.order_id.partner_id.name}")
                     if sale_line:
                         for record in rec.customer_ids:
+                            history = False
                             for sale in sale_line:
                                 if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
                                     for invoice in sale.order_id.invoice_ids:
