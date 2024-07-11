@@ -85,6 +85,7 @@ class Split(http.Controller):
                     'account_id': order_id.partner_id.property_account_receivable_id.id,
                     'invoice_line_ids': lines,
                     'origin': order_id.name,
+                    'order_id': order_id.id,
                     'mobile': request.env['res.partner'].search([('id', '=', int(customer))]).mobile,
                     'email': request.env['res.partner'].search([('id', '=', int(customer))]).email,
                     # Vehicle-Details
