@@ -1716,9 +1716,9 @@
                                       (0, 0, {'view_mode': 'graph'})]"/>
             <field name="search_view_id" ref="sale_order_view_search_inherit_quotation_inherit"/>
             <field name="domain">[('sale_aftersales','=', 'after_sales'),('sale_type', '=',
-                'after_sales'),('counter_parts','!=', 'parts')]
+                'parts'),('counter_parts','!=', 'parts')]
             </field>
-            <field name="context">{ 'default_sale_type': 'after_sales','default_sale_aftersales':'after_sales'}</field>
+            <field name="context">{ 'default_sale_type': 'parts','default_sale_aftersales':'after_sales'}</field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
                     Create a Quotation, the first step of a new sale.
