@@ -43,7 +43,7 @@ class VehicleSalePsfReport(models.Model):
     @api.model_cr
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
+        self.env.cr.execute(f""" CREATE or REPLACE VIEW {self._table} as (
             select row_number() over(order by inv.id desc) as id,
                 invline.product_template_id,
                 brand_name.name AS brand_name,
@@ -94,8 +94,8 @@ class VehicleSalePsfReport(models.Model):
                 and inv.ars_invoice_type = 'vehicle' 
                 and invline.vin_no IS NOT NULL 
                 and inv.state not in ('draft', 'cancel')
-				and pa.name not in ('Int.Color'))
-            """ % (self._table))
+				and LOWER(pa.name) NOT LIKE 'int%')
+            """)
 
     def export_xls_rsa(self, param=None):
         output = io.BytesIO()
@@ -184,8 +184,8 @@ class VehicleSalePsfReport(models.Model):
             output.close()
             data = base64.encodebytes(data)
             doc_id = self.env['ir.attachment'].create(
-                {'datas': data, 'name': 'RSA Activation Request' + str(datetime.now().date()) + '.xls',
-                 'datas_fname': 'RSA Activation Request' + str(datetime.now().date()) + '.xls',
+                {'datas': data, 'name': 'RSA Activation Request' + str(datetime.now().strftime('%d/%m/%Y')) + '.xls',
+                 'datas_fname': 'RSA Activation Request' + str(datetime.now().strftime('%d/%m/%Y')) + '.xls',
                  })
             print((doc_id.id), "HELOOO")
             if param is not None:
