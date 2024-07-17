@@ -20,7 +20,7 @@
                     <field name="email_from" widget="email"/>
                     <field name="phone" widget="phone"/>
                     <field name="function"/>
-<!--                    <field name="lead_token" readonly="1"/>-->
+                    <!--                    <field name="lead_token" readonly="1"/>-->
                     <field name="crm_lead_stage"/>
                     <field name="model_id" force_save="1" readonly="1"/>
                     <field name="booking_date" force_save="1" readonly="1"/>
@@ -93,7 +93,8 @@
                     <page string="Model Intrested">
                         <field name="vehicle_line">
                             <tree name="CrmLeadLine" string="Crm Lead Lines" editable="bottom">
-                                <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]" options="{'no_create':True}"/>
+                                <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]"
+                                       options="{'no_create':True}"/>
                                 <field name="product_template_id" options="{'no_create':True}"/>
                                 <field name="product_id" string="Variant"
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
@@ -167,7 +168,7 @@
                     <field name="country_id" invisible="1"/>
                 </xpath>
                 <xpath expr="/tree/field[@name='source_id']" position="before">
-                    <field name="user_id" />
+                    <field name="user_id"/>
                 </xpath>
             </field>
         </record>
@@ -396,7 +397,8 @@
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="replace">
-                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access_sale', 'not in', [True])]}"/>
+                    <field name="price_unit" force_save="1"
+                           attrs="{'readonly': [('admin_access_sale', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']"
                        position="replace">
@@ -442,7 +444,8 @@
                        position="replace">
                     <field name="admin_access" invisible="1"/>
                     <field name="admin_access_purchase" invisible="1"/>
-                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access_purchase', 'not in', [True])]}" />
+                    <field name="price_unit" force_save="1"
+                           attrs="{'readonly': [('admin_access_purchase', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']"
                        position="replace">
@@ -539,6 +542,16 @@
             <field name="code">action = model.update_model_info()</field>
         </record>
 
+        <record id="update_booking_date_server_action" model="ir.actions.server">
+            <field name="name">Update Booking Date</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="binding_model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                records.update_booking_date()
+            </field>
+        </record>
 
     </data>
 </odoo>
