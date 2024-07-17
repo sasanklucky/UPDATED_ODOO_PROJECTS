@@ -1141,6 +1141,7 @@
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
                     <field name="work_type"/>
+                    <field name="vin_no"/>
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                 </tree>
