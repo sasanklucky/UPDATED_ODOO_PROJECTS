@@ -46,7 +46,6 @@ class VehicleSalePsfReport(models.Model):
         self.env.cr.execute(f""" CREATE or REPLACE VIEW {self._table} as (
                 select row_number() over(order by inv.id desc) as id,
                     invline.product_template_id,
-    --           pt.name,
                     brand_name.name AS brand_name,
                     inv.number AS policy_number,
                     inv.date_invoice AS start_date,
@@ -64,8 +63,7 @@ class VehicleSalePsfReport(models.Model):
                     rp.email AS dealer_email,
                     lot.name as vin_number,
                     fv.initial_reg_no as reg_no,
-    --                 pav.name AS color_id
-                 prod_attrs.Exterior_Color
+                    prod_attrs.Exterior_Color  as color_id
                 from 
                     account_invoice inv
                 left join 
@@ -82,10 +80,10 @@ class VehicleSalePsfReport(models.Model):
                     res_company AS dealer ON dealer.id = invline.company_id
                 left join 
                     res_partner AS rp ON rp.id = dealer.partner_id
-              left join 
-                 product_product as pp on pp.id = invline.product_id
-              left join (SELECT * FROM crosstab(
-                  'select inv.id as inv_id ,
+                left join 
+                     product_product as pp on pp.id = invline.product_id
+                left join (SELECT * FROM crosstab(
+                    'select inv.id as inv_id ,
                     CASE WHEN attr.name LIKE ''_xt%'' THEN ''Exterior Color'' ELSE ''Interior Color'' END AS attr,
                        attr_val.name AS attrs_val
                        from account_invoice inv
@@ -101,20 +99,13 @@ class VehicleSalePsfReport(models.Model):
                      FROM product_attribute_value attr_val
                      LEFT JOIN product_attribute attr ON attr_val.attribute_id = attr.id'
                     ) AS newtable (inv_id INT, Exterior_Color VARCHAR, Interior_Color VARCHAR)) as prod_attrs on prod_attrs.inv_id = inv.id
-    --        left join 
-    --            product_attribute_value_product_product_rel as pvc on pvc.product_product_id = pp.id
-    --        left join 
-    --            product_attribute_value as pav on pav.id = pvc.product_attribute_value_id
-    --        left join 
-    --           product_attribute as pa on pa.id = pav.attribute_id
                 where 
                     inv.id = invline.invoice_id
                     and inv.type='out_invoice'
                     and inv.ars_invoice_type = 'vehicle' 
                     and invline.vin_no IS NOT NULL 
                     and inv.state not in ('draft', 'cancel')
-    --           and LOWER(pa.name) NOT LIKE 'int%'
-                 and pt.rsa = 'yes'
+                 and pt.rsa = 'yes')
                 """)
 
     def export_xls_rsa(self, param=None):
@@ -221,7 +212,6 @@ class VehicleSalePsfReport(models.Model):
                 }
         else:
             False
-
 
     def send_rsa_mail(self):
         rsa_attachment, template = False, False
