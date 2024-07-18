@@ -16,6 +16,21 @@
             </field>
         </record>
 
+        <record id="mail_template_send_rsa_report" model="mail.template">
+            <field name="name">Vehicle-Sales RSA report</field>
+            <field name="model_id" ref="ac_vehicle_management.model_vehicle_sale_rsa_report"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="subject">Vehicle-Sales RSA report(RSA)</field>
+            <field name="lang"></field>
+            <field name="body_html" type="xml">
+                <div>
+                    <p>Hi Sir/Madam, Please find the enclosed vehicle details for RSA activation request</p>
+                    <br/>
+                </div>
+            </field>
+        </record>
+
+
         <record id="mail_template_send_csi_ssi_report" model="mail.template">
             <field name="name">CSI SSI Report</field>
             <field name="model_id" ref="ac_vehicle_management.model_automated_report"/>

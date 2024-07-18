@@ -47,11 +47,16 @@ class ARS_sale_order(models.Model):
             self.warehouse_id = warehouse_ids.id
             self.sale_aftersales = 'sale'
             # warehouse_ids = self.env['stock.warehouse'].search([('company_id', '=', company)], limit=1)
-        elif self.sale_type in ['parts', 'accessories']:
+        elif self.sale_type in ['parts', 'accessories'] and not self.counter_parts:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
             self.warehouse_id = warehouse_ids.id
             self.sale_aftersales = 'after_sales'
+        elif self.sale_type in ['parts', 'accessories'] and self.counter_parts:
+            warehouse_ids = self.env['stock.warehouse'].search(
+                [('company_id', '=', company), ('ars_type', '=', 'after_sales')], limit=1)
+            self.warehouse_id = warehouse_ids.id
+            self.sale_aftersales = 'sales'
         else:
             warehouse_ids = self.env['stock.warehouse'].search(
                 [('company_id', '=', company), ('ars_type', '=', 'general')], limit=1)

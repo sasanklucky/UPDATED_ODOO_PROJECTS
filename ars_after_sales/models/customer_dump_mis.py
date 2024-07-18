@@ -136,35 +136,74 @@ class customer_dump_mis_report(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         print("table name", self._table);
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-        select row_number() over() as id,a.id as record_id,a.company_id,a.enquiry_date::Date as enquiry_date,a.date_deadline 
-            as purchase_date,a.date_deadline - a.enquiry_date::Date as no_of_days,a.create_date::Date as lead_creation_date,a.opportunity_conversion_date::Date as opportunity_conversion_date,
-            case
-            when a.date_deadline - a.create_date::Date <= 30 then 'HOT'
-            when a.date_deadline - a.create_date::Date > 30 and a.date_deadline - a.create_date::Date <= 60 then 'WARM'
-            when a.date_deadline - a.create_date::Date > 60 then 'COLD'
-            else ''
-            end as enquiry_category,a.user_id,a.partner_id,a.title,a.contact_name,
-            a.phone,a.mobile,a.email_from as email,a.source_id,utm.name as medium,a.stage_id,a.lost_reason,b.product_id,
-            a.referred as referred,
-            case when a.is_test_drive = True then 'YES' else 'NO' end as test_drive,
-			 (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS note_1,
-            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS remarks_1,
-            (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS note_2,
-            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS remarks_2,
-            (SELECT summary FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS note_3,
-            (SELECT note FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS remarks_3,
-            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 2) AS activity_cr_date_1,
-            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 1) AS activity_cr_date_2,
-            (SELECT write_date FROM activity_log_report WHERE lead_id = a.id ORDER BY id DESC LIMIT 1 OFFSET 0) AS activity_cr_date_3,
-            (SELECT test_drive_date FROM ars_test_drive WHERE opportunity_id = a.id ORDER BY id DESC LIMIT 1) AS test_drive_date,
-            (SELECT test_drive_remark FROM ars_test_drive WHERE opportunity_id = a.id ORDER BY id DESC LIMIT 1) AS test_drive_remark
-        FROM 
-            crm_lead a 
-            JOIN crm_lead_line b ON a.id = b.lead_order_id
-            LEFT JOIN utm_medium utm ON a.medium_id = utm.id
-        WHERE 
-            a.type = 'opportunity'
-    )""" % (self._table))
+            WITH activity_log AS (
+                SELECT
+                    lead_id,
+                    summary,
+                    note,
+                    write_date,
+                    ROW_NUMBER() OVER (PARTITION BY lead_id ORDER BY id DESC) AS rn
+                FROM activity_log_report
+            ),
+            test_drive AS (
+                SELECT
+                    opportunity_id,
+                    test_drive_date,
+                    test_drive_remark,
+                    ROW_NUMBER() OVER (PARTITION BY opportunity_id ORDER BY id DESC) AS rn
+                FROM ars_test_drive
+            )
+            SELECT
+                ROW_NUMBER() OVER() AS id,
+                a.id AS record_id,
+                a.company_id,
+                a.enquiry_date::Date AS enquiry_date,
+                a.date_deadline AS purchase_date,
+                a.date_deadline - a.enquiry_date::Date AS no_of_days,
+                a.create_date::Date AS lead_creation_date,
+                a.opportunity_conversion_date::Date AS opportunity_conversion_date,
+                CASE
+                    WHEN a.date_deadline - a.create_date::Date <= 30 THEN 'HOT'
+                    WHEN a.date_deadline - a.create_date::Date > 30 AND a.date_deadline - a.create_date::Date <= 60 THEN 'WARM'
+                    WHEN a.date_deadline - a.create_date::Date > 60 THEN 'COLD'
+                    ELSE ''
+                END AS enquiry_category,
+                a.user_id,
+                a.partner_id,
+                a.title,
+                a.contact_name,
+                a.phone,
+                a.mobile,
+                a.email_from AS email,
+                a.source_id,
+                utm.name AS medium,
+                a.stage_id,
+                a.lost_reason,
+                b.product_id,
+                a.referred AS referred,
+                CASE WHEN a.is_test_drive = True THEN 'YES' ELSE 'NO' END AS test_drive,
+                act1.summary AS note_1,
+                act1.note AS remarks_1,
+                act2.summary AS note_2,
+                act2.note AS remarks_2,
+                act3.summary AS note_3,
+                act3.note AS remarks_3,
+                act1.write_date AS activity_cr_date_1,
+                act2.write_date AS activity_cr_date_2,
+                act3.write_date AS activity_cr_date_3,
+                td.test_drive_date AS test_drive_date,
+                td.test_drive_remark AS test_drive_remark
+            FROM
+                crm_lead a
+                JOIN crm_lead_line b ON a.id = b.lead_order_id
+                LEFT JOIN utm_medium utm ON a.medium_id = utm.id
+                LEFT JOIN activity_log act1 ON a.id = act1.lead_id AND act1.rn = 3
+                LEFT JOIN activity_log act2 ON a.id = act2.lead_id AND act2.rn = 2
+                LEFT JOIN activity_log act3 ON a.id = act3.lead_id AND act3.rn = 1
+                LEFT JOIN test_drive td ON a.id = td.opportunity_id AND td.rn = 1
+            WHERE
+                a.type = 'opportunity'
+        )""" % (self._table))
 
         # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline
         #     as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,

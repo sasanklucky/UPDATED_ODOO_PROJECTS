@@ -3,3 +3,4 @@ access_ac_vehicle_management_ac_vehicle_management,ac_vehicle_management.ac_vehi
 access_ac_vehicle_sale_report,access_ac_vehicle_sale_report,model_vehicle_sale_psf_report,,1,0,0,0
 access_automation_email_conf,access_automation_email_conf,model_automation_email_conf,,1,0,0,0
 access_vehicle_sale_psf_report,access_vehicle_sale_psf_report,model_vehicle_sale_psf_report,base.group_user,1,1,1,0
+access_vehicle_sale_rsa_report,access_vehicle_sale_rsa_report,model_vehicle_sale_rsa_report,base.group_user,1,1,1,0
