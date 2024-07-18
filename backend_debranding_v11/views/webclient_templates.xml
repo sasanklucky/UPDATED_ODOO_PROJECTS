@@ -33,8 +33,8 @@ and open the template in the editor.
                     .error {
                     position: fixed;
                     top: 70%;
-                    left:85%;
-                    width:27%;
+                    left:80%;
+                    width:35%;
                     transform: translateX(-50%);
                     padding: 15px;
                     background-color: #c7709f;
