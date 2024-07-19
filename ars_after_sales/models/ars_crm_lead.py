@@ -21,6 +21,19 @@ class ARS_crm_lead(models.Model):
         for record in crm_lead:
             record.model_id = record.vehicle_line[0].product_template_id
 
+    def update_booking_date(self):
+        cr = self.env.cr
+        for res in self:
+            query = f"""select date::Date from mail_message mm
+                        join mail_tracking_value mtv on mm.id = mtv.mail_message_id
+                        where mm.res_id = {res.id} and mm.model = 'crm.lead' and mtv.new_value_char ilike 'Booked' 
+                        limit 1
+                    """
+            cr.execute(query)
+            all_data = cr.dictfetchall()
+            print(all_data)
+            res.write({'booking_date': all_data[0].get('date')})
+
     @api.onchange('vehicle_line')
     def _onchange_vehicle_line(self):
         for record in self:
@@ -139,6 +152,7 @@ class ARS_crm_lead(models.Model):
     opportunity_conversion_date = fields.Date('Opportunity Conversion Date')
     model_id = fields.Many2one('product.template', string="Model")
     lead_token = fields.Char("Lead Token")
+
     # booking_date = fields.Date(string="Booking Date")
 
     # @api.onchange('stage_id')
@@ -731,7 +745,7 @@ class ARSSaleOrderLine(models.Model):
                 [('name', '=', record.product_id.catalog_type.name), ('unit_price', '=', True)])
             record.admin_access_sale = True if record.product_template_id.access_price_unit else any(
                 user in group.users for catalog_group in catalog for group in catalog_group.groups) if (
-                        catalog and setting_price_config) else False
+                    catalog and setting_price_config) else False
 
     @api.depends('product_id', 'order_id.company_id')
     def _compute_product_qty_on_hand(self):

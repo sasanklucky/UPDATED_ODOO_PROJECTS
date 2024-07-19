@@ -674,7 +674,7 @@
                   name="Vehicle Inventory"
                   parent="stock.menu_warehouse_report"
                   sequence="1"
-                  action="stock.action_stock_quantity_history"/>
+                  action="ars_after_sales.action_stock_quantity_history1"/>
         <!-- <menuitem id="stock_account.menu_valuation"
                   name="Vehicle Inventory Valuation"
                   parent="stock.menu_warehouse_report"
@@ -689,13 +689,8 @@
                   name="Parts Inventory"
                   parent="stock.menu_warehouse_report"
                   sequence="4"
-                  action="stock.action_stock_quantity_history"/>
+                  action="ars_after_sales.action_stock_quantity_history2"/>
 
-        <menuitem id="stock_closing_report_menu"
-                  name="Stock Closing Report"
-                  parent="ac_parts_management.stock_parts_reporting"
-                  sequence="4"
-                  action="ars_after_sales.action_stock_closing"/>
         <!-- <menuitem id="valuation_parts"
                   name="Parts Inventory Valuation"
                   parent="stock.menu_warehouse_report"

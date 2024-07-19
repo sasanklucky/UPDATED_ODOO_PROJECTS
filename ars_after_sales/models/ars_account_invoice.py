@@ -218,7 +218,7 @@ class ARS_account_invoice(models.Model):
                 self.reg_no.write({'odometer': self.kilometer_out})
             else:
                 raise UserError(_("Kilometer Out is lesser than Kilometer In"))
-        elif self.kilometer and self.kilometer_out == 0:
+        elif self.reg_no and self.kilometer and self.kilometer_out == 0:
             raise UserError(_("Please Enter the Kilometer Out"))
 
     @api.multi

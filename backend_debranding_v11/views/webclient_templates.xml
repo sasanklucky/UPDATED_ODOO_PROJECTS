@@ -10,7 +10,7 @@ and open the template in the editor.
     <data>
         <template id="web_web_layout_inherit" inherit_id="web.layout" name="Web layout">
             <xpath expr="//title" position="replace">
-                 <title t-esc="title or 'Autochip'"/>
+                <title t-esc="title or 'Autochip'"/>
             </xpath>
         </template>
 
@@ -21,7 +21,7 @@ and open the template in the editor.
             </xpath>
         </template>
 
-	<template id="web_menu_secondary_inherit" inherit_id="web.menu_secondary" name="Secondary Menu1">
+        <template id="web_menu_secondary_inherit" inherit_id="web.menu_secondary" name="Secondary Menu1">
             <xpath expr="//div[@class='o_sub_menu_footer']" position="replace">
                 <div class="oe_footer">
                     Powered by
