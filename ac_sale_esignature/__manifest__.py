@@ -10,9 +10,10 @@
     'category': 'sale',
     'version': '0.1',
     # any module necessary for this one to work correctly
-    'depends': ['base', 'sale', 'website_quote'],
+    'depends': ['base', 'sale', 'website_quote','ars_after_sales'],
     # always loaded
     'data': [
+        'views/sale_order.xml',
         'views/website_quote_template.xml',
 
     ],
