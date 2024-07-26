@@ -276,8 +276,8 @@
                         <tr style="font-size: 12px;">
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Email :</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder">
-                                <t t-if="doc.company_id.email">
-                                    <span t-field="doc.company_id.email"/>
+                                <t t-if="doc.partner_id.email">
+                                    <span t-field="doc.partner_id.email"/>
                                 </t>
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">Selling Dealer</td>
