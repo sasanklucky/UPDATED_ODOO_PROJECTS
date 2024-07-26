@@ -31,8 +31,9 @@ class ARS_crm_lead(models.Model):
                     """
             cr.execute(query)
             all_data = cr.dictfetchall()
-            print(all_data)
-            res.write({'booking_date': all_data[0].get('date')})
+            # print(all_data)
+            if all_data and all_data[0]:
+                res.write({'booking_date': all_data[0].get('date')})
 
     @api.onchange('vehicle_line')
     def _onchange_vehicle_line(self):
