@@ -239,8 +239,8 @@ class FleetVehicle(models.Model):
             if rec.vehicle_status == 'customer':
                 if rec.vin_sn:
                     lot_Obj = self.env['stock.production.lot']
-                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.vin_sn])
-                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
+                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search(['name', '=', rec.vin_sn], order="id desc", limit=1)
+                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)], order="id desc", limit=1)
                     _logger.info(f"Sale line for update owner history for {sale_line.vin_no.name} with {sale_line.order_id.partner_id.name}")
                     if sale_line:
                         for record in rec.customer_ids:
