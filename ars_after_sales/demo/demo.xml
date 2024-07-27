@@ -20,7 +20,8 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    records.update_customer_ownership()
+                    for rec in records:
+                        rec.update_customer_ownership()
             </field>
         </record>
     </data>
