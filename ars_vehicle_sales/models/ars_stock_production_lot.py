@@ -44,6 +44,14 @@ class ARS_stock_production_lot(models.Model):
 class Picking(models.Model):
     _inherit = 'stock.picking'
 
+    batch_id = fields.Many2one("stock.picking", string="Batch")
+    delivery_challan_sequence = fields.Char()
+    picking_operations = fields.Char()
+    batch_count = fields.Integer(string="Batch Count")
+    is_batch = fields.Boolean("Batch Transfer")
+    delivery_slip_sequence = fields.Char()
+    return_picking_id = fields.Many2one('stock.picking', 'Return Picking')
+
     def create_vehicle_card(self, vals, location):
         res = {}
         return res
