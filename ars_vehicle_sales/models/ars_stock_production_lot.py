@@ -226,6 +226,41 @@ class StockMoveLine(models.Model):
 
     motor_number = fields.Char(string="Motor Number")
     battery_number = fields.Char(string="Battery Number")
+    filter_vin_ids = fields.Many2many('stock.production.lot', compute="_compute_filtered_vin_ids")
+    move_id = fields.Many2one('stock.move', string='Stock Move')
+
+    @api.depends('location_id', 'move_id.product_id', 'picking_id.return_picking_id')
+    def _compute_filtered_vin_ids(self):
+        for rec in self:
+            rec.filter_vin_ids = self.env['stock.production.lot']
+            company_id = self.env.user.company_id.id
+
+            if rec.location_id and rec.location_id.usage != 'customer' and rec.move_id.product_id:
+                stock_quants = self.env['stock.quant'].search([
+                    ('location_id', '=', rec.location_id.id),
+                    ('company_id', '=', company_id),
+                    ('product_id', '=', rec.move_id.product_id.id)
+                ])
+                rec.filter_vin_ids = stock_quants.mapped('lot_id')
+
+            elif rec.picking_id.return_picking_id and rec.picking_id.origin:
+                return_picking = rec.picking_id.return_picking_id
+                return_lots = rec.picking_id.origin.split(' ')[2:]
+                stock_picking = self.env['stock.picking'].search([('name', 'in', return_lots)]).id
+                return_stock_moves = self.env['stock.move'].search([('picking_id', '=', stock_picking)])
+                return_stock_move_lines = self.env['stock.move.line'].search(
+                    [('move_id', 'in', return_stock_moves.ids)])
+                # lot_ids = return_stock_move_lines.mapped('lot_id').ids
+
+                # stock_quants = self.env['stock.quant'].search([
+                #     ('location_id', '=', rec.location_id.id),
+                #     ('product_id', '=', rec.move_id.product_id.id),
+                #     ('lot_id', '=', lot_ids)
+                # ])
+                rec.filter_vin_ids = return_stock_move_lines.mapped('lot_id')
+
+            else:
+                return False
 
     @api.onchange('lot_id', 'motor_number')
     def _update_motor_number(self):
