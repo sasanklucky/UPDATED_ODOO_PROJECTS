@@ -18,6 +18,7 @@ class ars_company(models.Model):
     # booking_stage_id = fields.Many2one('crm.stage', 'Booking Stage')
     restrict_gp_date = fields.Boolean()
     inv_line_unit_price = fields.Boolean()
+    marine_policy_no = fields.Text(string="Marine Policy Number")
 
 
 

@@ -921,6 +921,7 @@ class ARS_Picking_aftersale(models.Model):
     _inherit = "stock.picking"
 
     is_aftersale = fields.Boolean(default=False)
+    marine_policy_no = fields.Char(string="Marine Policy Number")
 
 
 class ARS_StockMove(models.Model):
