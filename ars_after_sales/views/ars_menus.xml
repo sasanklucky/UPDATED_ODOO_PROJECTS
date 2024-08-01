@@ -691,6 +691,11 @@
                   sequence="4"
                   action="ars_after_sales.action_stock_quantity_history2"/>
 
+        <menuitem id="stock_closing_report_menu"
+                  name="Stock Closing Report"
+                  parent="ac_parts_management.stock_parts_reporting"
+                  sequence="4"
+                  action="ars_after_sales.action_stock_closing"/>
         <!-- <menuitem id="valuation_parts"
                   name="Parts Inventory Valuation"
                   parent="stock.menu_warehouse_report"
