@@ -41,5 +41,14 @@ class ARSProcurementRule(models.Model):
 class ARSAccountInvoiceLine(models.Model):
     _inherit = "account.invoice.line"
 
+    @api.depends('product_id')
+    def _get_hsn_code(self):
+        for lines in self:
+            if lines.product_id.l10n_in_hsn_code:
+                lines.hsn_code = lines.product_id.l10n_in_hsn_code
+            else:
+                lines.hsn_code = ''
+
     product_catalog_id = fields.Many2one('product.catalog', string='Product Catalog')
     product_template_id = fields.Many2one('product.template', string="Model")
+    hsn_code = fields.Char('HSN/SAC Code', compute='_get_hsn_code', store=True)
