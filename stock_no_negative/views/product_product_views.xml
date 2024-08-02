@@ -10,14 +10,15 @@
     <record id="view_template_property_form" model="ir.ui.view">
         <field name="name">stock_no_negative.product.template.form</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="stock.view_template_property_form" />
+        <field name="inherit_id" ref="stock.view_template_property_form"/>
         <field name="arch" type="xml">
             <field name="categ_id" position="after">
                 <field name="allow_negative_stock"
-                    attrs="{'invisible': [('type', '!=', 'product')]}"/>
+                       attrs="{'invisible': [('type', '!=', 'product')]}"
+                       groups="base.group_system"/>
             </field>
         </field>
-        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+        <!--        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>-->
     </record>
 
     <record id="product_category_form_view_inherit" model="ir.ui.view">
@@ -26,10 +27,9 @@
         <field name="inherit_id" ref="stock.product_category_form_view_inherit"/>
         <field name="arch" type="xml">
             <field name="removal_strategy_id" position="after">
-                <field name="allow_negative_stock"/>
+                <field name="allow_negative_stock" groups="base.group_system"/>
             </field>
         </field>
-        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
     </record>
 
 </odoo>
