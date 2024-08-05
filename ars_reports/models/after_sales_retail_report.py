@@ -20,7 +20,7 @@ class AfterSlaesRetailReport(models.Model):
     last_service_date = fields.Date(string="Last Service Date")
     ro_number = fields.Char(string="RO Number")
     ro_open_date = fields.Datetime(string="RO Open Date")
-    ro_close_date = fields.Datetime(string="RO Close Date")
+    ro_close_date = fields.Date(string="RO Close Date")
     invoice_id = fields.Many2one('account.invoice', string="Invoice Number")
     invoice_date = fields.Date(string="Invoice Date", related="invoice_id.date_invoice")
     service_type = fields.Many2one('service.type', string="Service Type")
