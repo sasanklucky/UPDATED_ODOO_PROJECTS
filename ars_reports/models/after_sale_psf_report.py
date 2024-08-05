@@ -19,9 +19,9 @@ class AfterSaleReport(models.Model):
     dealer_name_id = fields.Many2one('res.company', string="Dealer Name")
     invoice_date = fields.Date(string="Invoice Date")
     invoice_number = fields.Char(string="Invoice Number")
-    ro_open_date = fields.Datetime(string="RO Open Date")
+    ro_open_date = fields.Date(string="RO Open Date")
     ro_number = fields.Char(string="RO Number")
-    ro_close_date = fields.Datetime(string="RO Close Date")
+    ro_close_date = fields.Date(string="RO Close Date")
     vin = fields.Char(string="VIN")
     partner_id = fields.Many2one('res.partner', string="Customer Name")
     mobile = fields.Char(string="Customer Mobile")
@@ -44,8 +44,8 @@ class AfterSaleReport(models.Model):
     def ro_ageing_compute(self):
         for record in self:
             if record.ro_open_date and record.ro_close_date:
-                start_date = datetime.strptime(record.ro_open_date, '%Y-%m-%d %H:%M:%S')
-                end_date = datetime.strptime(record.ro_close_date, '%Y-%m-%d %H:%M:%S')
+                start_date = datetime.strptime(record.ro_open_date, '%Y-%m-%d')
+                end_date = datetime.strptime(record.ro_close_date, '%Y-%m-%d')
                 delta = end_date - start_date
                 record.ro_ageing = delta.days
             else:
@@ -59,10 +59,10 @@ class AfterSaleReport(models.Model):
         initcap(to_char(inv.date_invoice, 'month')) as month,
         inv.company_id as dealer_name_id,
         inv.number as invoice_number, 
-        so.appointment_date as ro_open_date,
+        so.appointment_date::date as ro_open_date,
         inv.origin as ro_number,
         inv.date_invoice as invoice_date,
-        inv.create_date as ro_close_date,
+        inv.create_date::date as ro_close_date,
         inv.vin as vin,
         so.partner_id as partner_id,
         rp.mobile as mobile,
