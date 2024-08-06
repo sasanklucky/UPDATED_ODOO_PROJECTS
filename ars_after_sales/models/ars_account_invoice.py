@@ -196,9 +196,9 @@ class ARS_account_invoice(models.Model):
                 else:
                     self.partner_id = self.partner_id.id
                     self.mobile = self.partner_id.mobile
-                    multiple_regno = {}
-                    multiple_regno['domain'] = {'reg_no': [('id', '=', customer_details.ids)]}
-                    return multiple_regno
+                    # multiple_regno = {}
+                    # multiple_regno['domain'] = {'reg_no': [('id', '=', customer_details.ids)]}
+                    # return multiple_regno
         if self.reg_no:
             customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.reg_no.id)])
             self.count_vehicle = len(customer_details)
