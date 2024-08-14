@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 import re
 from openerp.exceptions import UserError, ValidationError
 
@@ -20,6 +20,11 @@ class ars_company(models.Model):
     inv_line_unit_price = fields.Boolean()
     marine_policy_no = fields.Text(string="Marine Policy Number")
 
+    @api.constrains('mobile')
+    def mobile_validation(self):
+        pattern = r'^[1-9]\d{9}$'
+        if not re.match(pattern, self.mobile):
+            raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
 
 
 class ars_configure_settings(models.TransientModel):

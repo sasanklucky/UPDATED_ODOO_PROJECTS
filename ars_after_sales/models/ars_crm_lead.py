@@ -13,6 +13,12 @@ class ARS_crm_lead(models.Model):
     _name = "crm.lead"
     _inherit = "crm.lead"
 
+    @api.constrains('mobile')
+    def mobile_validation(self):
+        pattern = r'^[1-9]\d{9}$'
+        if not re.match(pattern, self.mobile):
+            raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
+
     def update_model_info(self):
         crm_lead = self.search([('vehicle_line', '!=', False)])
         for record in crm_lead:

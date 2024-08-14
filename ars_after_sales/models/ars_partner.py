@@ -12,6 +12,13 @@ from openerp.exceptions import UserError, ValidationError
 class ARSPartner(models.Model):
     _inherit = 'res.partner'
 
+    @api.constrains('mobile')
+    def mobile_validation(self):
+        pattern = r'^[1-9]\d{9}$'
+        if not re.match(pattern, self.mobile):
+            raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
+
+
     # @api.onchange('mobile')
     # def mobile_validation(self):
     #     pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
