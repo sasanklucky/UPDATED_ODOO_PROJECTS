@@ -40,6 +40,14 @@
                     <field name="ars_std_price" invisible="1"/>
                     <field name="apr_action" invisible="1"/>
                 </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='tax_id']" position="after">
+                    <field name="price_tax" string="Tax Price"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <field name="price_total" string="Price Total"/>
+                </xpath>
+
                 <xpath expr="//field[@name='order_line']/tree" position="attributes">
                     <attribute name="decoration-info"></attribute>
                 </xpath>

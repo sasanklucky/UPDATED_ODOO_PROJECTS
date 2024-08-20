@@ -78,6 +78,12 @@
                            domain="[('salesperson', '=', True)]" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                     <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='tax_id']" position="after">
+                    <field name="price_tax" string="Tax Price"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <field name="price_total" string="Price Total"/>
+                </xpath>
             </field>
         </record>
 
