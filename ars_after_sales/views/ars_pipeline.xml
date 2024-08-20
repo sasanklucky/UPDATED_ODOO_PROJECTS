@@ -2153,6 +2153,8 @@
                     <separator/>
                     <filter string="To Invoice" domain="[('invoice_status','=','to invoice')]"/>
                     <filter string="Upselling" domain="[('invoice_status','=','upselling')]"/>
+                    <field name="regn_no" string="Reg No"/>
+                    <field name="vin_no" string="VIN No"/>
                 </xpath>
             </field>
         </record>
