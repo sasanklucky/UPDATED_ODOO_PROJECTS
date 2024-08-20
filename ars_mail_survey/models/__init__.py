@@ -1,3 +1,4 @@
+from . import mail_activity_remark
 from . import ars_mail_activity
 from . import ars_after_sale
 from . import res_config_settings

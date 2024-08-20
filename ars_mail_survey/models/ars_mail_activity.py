@@ -3,8 +3,9 @@ from datetime import date, datetime, timedelta
 import pytz
 from odoo.http import request
 from odoo.exceptions import UserError, AccessError, ValidationError
-
 from odoo import models, fields, api, _
+from lxml import html
+
 
 
 class ARS_MailActivity(models.Model):
@@ -13,6 +14,28 @@ class ARS_MailActivity(models.Model):
 
     company_id = fields.Many2one('res.company', compute="get_company", store=True)
     active = fields.Boolean("Active", default=True)
+
+    @api.model
+    def create(self, values):
+        res = super(ARS_MailActivity, self).create(values)
+        if self.note:
+            text_con = html.fromstring(self.note)
+            char_con = text_con.text_content()
+            self.env['mail.activity.remark'].create({'activity_id': self.id,
+                                                     'date': datetime.today(),
+                                                     'remark': char_con})
+        return res
+
+    @api.multi
+    def write(self, vals):
+        for rec in self:
+            if vals.get('note') and vals['note'] != rec.note:
+                text_con = html.fromstring(vals['note'])
+                char_con = text_con.text_content()
+                self.env['mail.activity.remark'].create({'activity_id': rec.id,
+                                                         'date': datetime.today(),
+                                                         'remark': char_con})
+        return super(ARS_MailActivity, self).write(vals)
 
     @api.depends('response_id', 'survey_percentage')
     def _compute_survey_percentage_stored(self):
@@ -163,6 +186,13 @@ class ARS_MailActivity(models.Model):
 
         for activity in self:
             record = self.env[activity.res_model].browse(activity.res_id)
+            if record and activity.activity_type_id and 'testdrive' == activity.activity_type_id.name.lower or 'test drive' == activity.activity_type_id.name.lower:
+                test_drive_obj = self.env['ars.test.drive']
+                test_drive_obj.create({'opportunity_id': record.id,
+                                        'test_drive_date': datetime.today(),
+                                        'user_id': activity.user_id.id,
+                                        'test_drive_remark': activity.note[3:-4] if activity.note[3:-4] != '<br>' else ''})
+                record.is_test_drive = True
             record.message_post_with_view(
                 'mail.message_activity_done',
                 values={'activity': activity},
