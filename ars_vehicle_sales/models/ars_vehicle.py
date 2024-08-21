@@ -285,7 +285,7 @@ class CrmLeadLost(models.TransientModel):
         if not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
             for rec in leads:
                 if rec.stage_id.probability == 100:
-                    raise UserError(f' You Dont have access to change the stage of the pipeline (id: {rec.id}) from Won')
+                    raise UserError(f' You do not have access to change the state of the pipeline (id: {rec.id}) from Won')
         for rec in leads:
             rec.write({'lost_reason': self.lost_reason_id.id, 'child_lost_reason': self.child_lost_reason.id})
             rec.action_set_lost()
