@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-
+,,,,,,,
+access_mail_activity_remark,mail_activity_remark,model_mail_activity_remark,,1,1,1,0
 access_cre_team_configuration,cre_team_configuration user,model_cre_team_configuration,,1,1,1,1
 access_helpdesk_category_i,helpdesk_category_i user,model_helpdesk_category_i,,1,1,1,1
 access_helpdesk_category_ii,helpdesk_category_ii user,model_helpdesk_category_ii,,1,1,1,1

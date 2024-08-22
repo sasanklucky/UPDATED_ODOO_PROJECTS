@@ -80,7 +80,12 @@ class ars_sale_crm_lead(models.Model):
         if stage and booking_stage:
             if int(stage) == int(booking_stage):
                 values['booking_date'] = date.today()
+        if len(self.ids) == 1:
+            previous_state_id = self.stage_id
         result = super(ars_sale_crm_lead, self).write(values)
+        if len(self.ids) == 1:
+            if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+                raise ValidationError('You do not have access to change the state')
         res_value = {}
         for res in self:
             if res.partner_id:

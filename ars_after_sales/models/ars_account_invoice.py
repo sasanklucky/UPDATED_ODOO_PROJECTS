@@ -1,3 +1,4 @@
+import re
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from datetime import date
@@ -11,6 +12,12 @@ class ARS_account_invoice(models.Model):
     service_options = fields.Many2one('service.options', 'Service Options')
     product_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Model')
     admin_access = fields.Boolean(compute="_check_if_admin")
+
+    @api.constrains('mobile')
+    def mobile_validation(self):
+        pattern = r'^[1-9]\d{9}$'
+        if not re.match(pattern, self.mobile):
+            raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
 
     @api.multi
     @api.depends('invoice_line_ids')
@@ -196,9 +203,9 @@ class ARS_account_invoice(models.Model):
                 else:
                     self.partner_id = self.partner_id.id
                     self.mobile = self.partner_id.mobile
-                    multiple_regno = {}
-                    multiple_regno['domain'] = {'reg_no': [('id', '=', customer_details.ids)]}
-                    return multiple_regno
+                    # multiple_regno = {}
+                    # multiple_regno['domain'] = {'reg_no': [('id', '=', customer_details.ids)]}
+                    # return multiple_regno
         if self.reg_no:
             customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.reg_no.id)])
             self.count_vehicle = len(customer_details)

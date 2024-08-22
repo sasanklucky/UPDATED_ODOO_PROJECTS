@@ -14,7 +14,13 @@ import re
 class ARS_sale_order(models.Model):
     _inherit = "sale.order"
 
-    # @api.onchange('mobile','')
+    @api.constrains('mobile')
+    def mobile_validation(self):
+        pattern = r'^[1-9]\d{9}$'
+        if not re.match(pattern, self.mobile):
+            raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
+
+    # @api.onchange('mobile')
     # def mobile_validation(self):
     #     pattern = "^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$"
     #     if self.mobile and not re.match(pattern, self.mobile):

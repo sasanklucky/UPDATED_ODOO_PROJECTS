@@ -2,7 +2,7 @@ from dateutil.relativedelta import relativedelta
 import json
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 import logging
 
 _logger = logging.getLogger("_____")
@@ -280,10 +280,17 @@ class CrmLeadLost(models.TransientModel):
 
     @api.multi
     def action_lost_reason_apply(self):
-        for rec in self:
-            leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
-            leads.write({'lost_reason': rec.lost_reason_id.id, 'child_lost_reason': rec.child_lost_reason.id})
-            return leads.action_set_lost()
+        # for rec in self:
+        leads = self.env['crm.lead'].browse(self.env.context.get('active_ids'))
+        if not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+            for rec in leads:
+                if rec.stage_id.probability == 100:
+                    raise UserError(f' You do not have access to change the state of the pipeline (id: {rec.id}) from Won')
+        for rec in leads:
+            rec.write({'lost_reason': self.lost_reason_id.id, 'child_lost_reason': self.child_lost_reason.id})
+            rec.action_set_lost()
+
+
 
     # @api.depends('lead_id')
     # def get_lost_reason_domain(self):
