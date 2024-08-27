@@ -14,6 +14,7 @@ class ARS_MailActivity(models.Model):
 
     company_id = fields.Many2one('res.company', compute="get_company", store=True)
     active = fields.Boolean("Active", default=True)
+    exact_psf_due_date = fields.Date()
 
     @api.model
     def create(self, values):
