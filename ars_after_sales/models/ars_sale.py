@@ -164,6 +164,14 @@ class ARS_sale_order(models.Model):
                 raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
                 break
 
+    @api.constrains('mileage_in')
+    def _check_mileage_in(self):
+        for order in self:
+            vehicle = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)], limit=1)
+            if vehicle and order.mileage_in < vehicle.odometer:
+                raise ValidationError("KM should be greater than the vehicle's KM reading of %s." % vehicle.odometer)
+
+
     @api.depends('doc_type')
     def compute_doc_type(self):
         for rec in self:
