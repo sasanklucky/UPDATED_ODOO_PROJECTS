@@ -101,10 +101,45 @@ class ars_sale_crm_lead(models.Model):
                     res.partner_id.write(res_value)
         return result
 
+    # Mandatory fields (street, pan no, zip) when pipline stage is going to booked
+    @api.multi
+    def write(self, vals):
+        if 'stage_id' in vals:
+            new_stage = self.env['crm.stage'].browse(vals['stage_id'])
+            booking_stage_id = int(self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+            if new_stage.id == booking_stage_id:
+                for lead in self:
+                    if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
+                        raise ValidationError(
+                            "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
+        return super(ars_sale_crm_lead, self).write(vals)
+
+    # @api.multi
+    # def create(self, vals):
+    #     if 'stage_id' in vals:
+    #         new_stage = self.env['crm.stage'].browse(vals['stage_id'])
+    #         booking_stage_id = int(
+    #             self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+    #         if new_stage.id == booking_stage_id:
+    #             for lead in self:
+    #                 if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
+    #                     raise ValidationError(
+    #                         "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
+    #     return super(ars_sale_crm_lead, self).create(vals)
+    # //
+
     @api.model
     def create(self, values):
+        if 'stage_id' in values:
+            new_stage = self.env['crm.stage'].browse(values['stage_id'])
+            booking_stage_id = int(
+                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+            if new_stage.id == booking_stage_id:
+                for lead in self:
+                    if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
+                        raise ValidationError(
+                            "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
         res_id = super(ars_sale_crm_lead, self).create(values)
-
         return res_id
 
     @api.depends('dob')
