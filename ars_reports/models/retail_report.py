@@ -96,11 +96,15 @@ class RetailReport(models.Model):
             ail.price_unit as price_unit,
             ail.discount as discount,
             ai.partner_id as customer_name,
+            rsp.mobile as contact_no,
+            rsp.email as email,
+            rsp.city as city,
+            rsp.state_id as state,
             (select name from res_partner where parent_id= ai.partner_id order by id desc limit 1) as contact_person,
-			(select mobile from res_partner where parent_id= ai.partner_id order by id desc limit 1) as contact_no,
-			(select email from res_partner where parent_id= ai.partner_id order by id desc limit 1) as email,
-			(select city from res_partner where parent_id= ai.partner_id order by id desc limit 1) as city,
-			(select state_id from res_partner where parent_id= ai.partner_id order by id desc limit 1) as state,
+			--(select mobile from res_partner where parent_id= ai.partner_id order by id desc limit 1) as contact_no,
+			--(select email from res_partner where parent_id= ai.partner_id order by id desc limit 1) as email,
+			--(select city from res_partner where parent_id= ai.partner_id order by id desc limit 1) as city,
+			--(select state_id from res_partner where parent_id= ai.partner_id order by id desc limit 1) as state,
             so.company_id as outlet,
             DATE(so.confirmation_date) as date_of_booking,
             so.source_id as source,
@@ -118,6 +122,7 @@ class RetailReport(models.Model):
             left join sale_order_line sol on solir.order_line_id = sol.id
             left join stock_move sm on sm.sale_line_id = sol.id
             left join stock_move_line sml on sml.move_id = sm.id
+            left join res_partner rsp on rsp.id = ai.partner_id          
             where ai.type = 'out_invoice' and ct.team_type = 'sales' and ai.ars_invoice_type = 'vehicle'
             
         )""" % (self._table))
