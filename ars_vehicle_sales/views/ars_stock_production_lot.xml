@@ -37,6 +37,18 @@
             </field>
         </record>
 
+        <record id="stock_picking_form_inherit_backorder" model="ir.ui.view">
+            <field name="name">Stock Picking Inherit Return Picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='backorder_id']" position="after">
+                    <field name="return_picking_id" string="Return Picking" invisible="0"/>
+<!--                    <field name="return_picking_id" string="Return Picking" attrs="{'invisible': [('return_picking_id','=',False)]}"/>-->
+                </xpath>
+            </field>
+        </record>
+
         <!--        Menu for vehicle in a product Catalog-->
 
         <menuitem name="Vehicle" id="menu_vehicle_sales" action="fleet.fleet_vehicle_action"

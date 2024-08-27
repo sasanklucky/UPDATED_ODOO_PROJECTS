@@ -278,6 +278,8 @@ class StockMoveLine(models.Model):
             lot = self.env['stock.production.lot'].search([('motor_number', '=', self.motor_number)], limit=1)
             self.lot_id = lot.id
         #
+
+
 #     @api.constrains('lot_name', 'lot_id')
 #     def lot_name_alphanumeric_constrains(self):
 #         for record in self:
@@ -300,3 +302,17 @@ class StockMoveLine(models.Model):
 #             elif record.lot_id:
 #                 if not record.lot_id.name.isalnum():
 #                     raise ValidationError(_('Please enter valid Lot/Serial Number!'))
+
+class ARSStockReturnPicking(models.TransientModel):
+    _inherit = 'stock.return.picking'
+
+    @api.multi
+    def _create_returns(self):
+        # Prevent copy of the carrier and carrier price when generating return picking
+        # (we have no integration of returns for now)
+        print(self.env.context)
+        return_from = self.env.context.get('active_id')
+        new_picking, pick_type_id = super(ARSStockReturnPicking, self)._create_returns()
+        picking = self.env['stock.picking'].browse(new_picking)
+        picking.write({'return_picking_id': return_from})
+        return new_picking, pick_type_id
