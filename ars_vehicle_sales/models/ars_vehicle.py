@@ -12,6 +12,14 @@ class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
     _description = 'Information on a vehicle'
 
+    @api.constrains('vin_sn')
+    def check_vin(self):
+        if self.vin_sn:
+            if not str(self.vin_sn).isalnum():
+                raise ValidationError(_('VIN is not Alphanumeric'))
+            if len(self.vin_sn) != 17:
+                raise ValidationError(_('VIN Have %s Characters. It Should be 17') % len(self.vin_sn))
+
     @api.multi
     def get_years(self):
         year_list = []

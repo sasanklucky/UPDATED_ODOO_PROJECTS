@@ -13,6 +13,14 @@ class ARS_stock_production_lot(models.Model):
     product_catalog = fields.Char(string='Catalog Type', related='product_id.catalog_type.name')
     battery_number = fields.Char('Battery Number')
 
+    @api.constrains('name')
+    def check_name(self):
+        if self.name:
+            if not str(self.name).isalnum():
+                raise ValidationError(_('VIN is not Alphanumeric'))
+            if len(self.name) != 17:
+                raise ValidationError(_('VIN Have %s Characters. It Should be 17') % len(self.name))
+
     @api.model
     def create(self, vals):
         vals.update({'vehicle_status': 'new'})
