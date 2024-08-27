@@ -9,7 +9,7 @@
                             <address t-field="o.partner_id"
                                      t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
                             <div t-if="o.partner_id.vat" class="mt16"><t
-                                    t-esc="o.company_id.country_id.vat_label or 'TIN'"/>:
+                                    t-esc="o.company_id.country_id.vat_label or 'IN'"/>:
                                 <span t-field="o.partner_id.vat"/>
                             </div>
                         </div>
@@ -1369,6 +1369,18 @@
                 report_type="qweb-pdf"
                 name="account.report_invoice"
                 file="account.report_invoice"
+                attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
+                print_report_name="(object._get_printed_report_name())"
+                groups="ars_after_sales.group_aftersale"
+        />
+
+        <report
+                id="account.account_credit_note"
+                model="account.invoice"
+                string="Credit Note"
+                report_type="qweb-pdf"
+                name="account.report_invoice_with_payments"
+                file="account.report_invoice_with_payments"
                 attachment="(object.state in ('open','paid')) and ('INV'+(object.number or '').replace('/','')+'.pdf')"
                 print_report_name="(object._get_printed_report_name())"
                 groups="ars_after_sales.group_aftersale"
