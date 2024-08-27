@@ -210,14 +210,24 @@
                                 </tr>
                                 <!--<tr><td>Delivery Date&amp;Time</td><td><span t-field="o.order_id.delivery_date"/></td></tr>-->
                                 <tr>
-                                    <td>Delivery Date&amp;Time</td>
+                                    <td>Delivery Date</td>
                                     <td>:</td>
                                     <td>
-                                        <t t-if="o.order_id.delivery_date">
-                                            <t t-set="delivery_date"
-                                               t-value="datetime.datetime.strptime(o.order_id.delivery_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
-                                            <span t-esc="delivery_date.strftime('%d/%m/%Y %H:%M:%S')"/>
+
+
+                                        <t t-if="o.gate_pass_date">
+                                            <t t-set="gate_pass_date"
+                                               t-value="datetime.datetime.strptime(o.gate_pass_date, '%Y-%m-%d')"/>
+                                            <span t-esc="gate_pass_date.strftime('%d/%m/%Y')"/>
+
                                         </t>
+
+                                        <!--                                        <t t-if="o.order_id.delivery_date">-->
+                                        <!--                                            <t t-set="delivery_date"-->
+                                        <!--                                               t-value="datetime.datetime.strptime(o.order_id.delivery_date, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>-->
+                                        <!--                                            <span t-esc="delivery_date.strftime('%d/%m/%Y %H:%M:%S')"/>-->
+                                        <!--                                        </t>-->
+
                                     </td>
 
                                 </tr>
