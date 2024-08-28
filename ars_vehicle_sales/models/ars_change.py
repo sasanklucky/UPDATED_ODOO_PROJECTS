@@ -7,7 +7,7 @@ from odoo.addons import decimal_precision as dp
 from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
-
+from ast import literal_eval
 
 class arsCompany(models.Model):
     _inherit = 'res.company'
@@ -31,18 +31,24 @@ class ArsConfigureSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
     booking_stage_id = fields.Many2one(related="company_id.booking_stage_id")
+    pipeline_stages_ids = fields.Many2many('crm.stage', 'crm_pipline_stages_rel', 'crm_id', 'pipline_id',
+                                           string='Pipeline Stages')
 
     @api.multi
     def set_values(self):
         res = super(ArsConfigureSettings, self).set_values()
         self.env['ir.config_parameter'].sudo().set_param('ars_vehicle_sales.booking_stage_id', self.booking_stage_id.id)
+        self.env['ir.config_parameter'].sudo().set_param('ars_vehicle_sales.pipeline_stages_ids',
+                                                         self.pipeline_stages_ids.ids)
         return res
 
     @api.model
     def get_values(self):
         res = super(ArsConfigureSettings, self).get_values()
         booking_stage_id = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+        pipeline_stages_ids = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.pipeline_stages_ids')
         res.update(
+            pipeline_stages_ids=[(6, 0, literal_eval(pipeline_stages_ids))] if pipeline_stages_ids else False,
             booking_stage_id=booking_stage_id if booking_stage_id else False)
         return res
 
@@ -104,41 +110,49 @@ class ars_sale_crm_lead(models.Model):
     # Mandatory fields (street, pan no, zip) when pipline stage is going to booked
     @api.multi
     def write(self, vals):
-        if 'stage_id' in vals:
-            new_stage = self.env['crm.stage'].browse(vals['stage_id'])
-            booking_stage_id = int(self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
-            if new_stage.id == booking_stage_id:
+        if 'stage_id' in vals or self.stage_id:
+            company = self.env.user.company_id.id
+            user = self.env.user.id
+            # new_stage = self.env['crm.stage'].browse(vals['stage_id'])
+            new_stage = self.env['crm.stage'].browse(vals['stage_id']) if 'stage_id' in vals else self.stage_id
+            # booking_stage_id = int(
+            #     self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+            config_group_records = literal_eval(self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.pipeline_stages_ids'))
+            teams = self.env['crm.team'].search(
+                [('company_id', '=', company), ('team_type', 'in', ['sales']), ('user_id', '=', user)])
+            if new_stage.id in config_group_records:
                 for lead in self:
+                    if not teams:
+                        raise ValidationError(
+                            f"You do not have access for the stage - '{new_stage.name}.'")
                     if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
                         raise ValidationError(
                             "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
         return super(ars_sale_crm_lead, self).write(vals)
 
-    # @api.multi
-    # def create(self, vals):
-    #     if 'stage_id' in vals:
-    #         new_stage = self.env['crm.stage'].browse(vals['stage_id'])
-    #         booking_stage_id = int(
-    #             self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
-    #         if new_stage.id == booking_stage_id:
-    #             for lead in self:
-    #                 if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
-    #                     raise ValidationError(
-    #                         "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
-    #     return super(ars_sale_crm_lead, self).create(vals)
+    @api.multi
+    def create(self, vals):
+        if 'stage_id' in vals:
+            company = self.env.user.company_id.id
+            user = self.env.user.id
+            new_stage = self.env['crm.stage'].browse(vals['stage_id'])
+            booking_stage_id = int(
+                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+            teams = self.env['crm.team'].search(
+                [('company_id', '=', company), ('team_type', 'in', ['sales']), ('user_id', '=', user)])
+            if new_stage.id == booking_stage_id:
+                for lead in self:
+                    if not teams:
+                        raise UserError(
+                            f"You do not have access for the stage - '{new_stage.name}.'")
+                    if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
+                        raise ValidationError(
+                            "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
+        return super(ars_sale_crm_lead, self).create(vals)
     # //
 
     @api.model
     def create(self, values):
-        if 'stage_id' in values:
-            new_stage = self.env['crm.stage'].browse(values['stage_id'])
-            booking_stage_id = int(
-                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
-            if new_stage.id == booking_stage_id:
-                for lead in self:
-                    if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
-                        raise ValidationError(
-                            "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
         res_id = super(ars_sale_crm_lead, self).create(values)
         return res_id
 
