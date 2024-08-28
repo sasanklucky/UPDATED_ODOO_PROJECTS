@@ -64,7 +64,7 @@ class FleetVehicle(models.Model):
     emission_ids = fields.One2many('emission.history', 'vehicle_id')
     insurance_ids = fields.One2many('insurance.history', 'vehicle_id')
     service_ids = fields.One2many('service.history', 'vehicle_id')
-    lot_id = fields.Many2one('stock.production.lot', 'Stock Production Lot ')
+    lot_id = fields.Many2one('stock.production.lot', 'Stock Production Lot', copy=False)
     license_plate = fields.Char(required=False, help='License plate number of the vehicle (i = plate number for a car)')
     driver_id = fields.Many2one('res.partner', 'Customer', track_visibility="onchange", help='Customer of the vehicle',
                                 copy=False)
