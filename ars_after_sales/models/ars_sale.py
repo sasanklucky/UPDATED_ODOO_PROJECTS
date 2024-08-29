@@ -168,7 +168,7 @@ class ARS_sale_order(models.Model):
     def _check_mileage_in(self):
         for order in self:
             vehicle = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)], limit=1)
-            if vehicle and order.mileage_in < vehicle.odometer:
+            if vehicle and order.mileage_in <= vehicle.odometer:
                 raise ValidationError("KM should be greater than the vehicle's KM reading of %s." % vehicle.odometer)
 
 
