@@ -28,10 +28,10 @@ class ARS_account_invoice(models.Model):
         if p:
             rec_account = p.property_account_receivable_id
             pay_account = p.property_account_payable_id
-            print(
-                'qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', p.name, p.id, rec_account, pay_account)
+            # print(
+            #     'qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', p.name, p.id, rec_account, pay_account)
             if not rec_account and not pay_account:
-                print('why came inside???????????????', rec_account, pay_account)
+                # print('why came inside???????????????', rec_account, pay_account)
                 action = self.env.ref('account.action_account_config')
                 msg = _(
                     'Cannot find a chart of accounts for this company, You should configure it. \nPlease go to Account Configuration.')
