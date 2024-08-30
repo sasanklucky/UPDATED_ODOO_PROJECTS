@@ -25,13 +25,15 @@ class ARS_account_invoice(models.Model):
         company_id = self.company_id.id
         p = self.partner_id if not company_id else self.partner_id.with_context(force_company=company_id)
         type = self.type
-        print('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq',p.name, p.id) 
         if p:
             rec_account = p.property_account_receivable_id
             pay_account = p.property_account_payable_id
+            print(
+                'qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq', p.name, p.id, rec_account, pay_account)
             if not rec_account and not pay_account:
                 action = self.env.ref('account.action_account_config')
-                msg = _('Cannot find a chart of accounts for this company, You should configure it. \nPlease go to Account Configuration.')
+                msg = _(
+                    'Cannot find a chart of accounts for this company, You should configure it. \nPlease go to Account Configuration.')
                 raise RedirectWarning(msg, action.id, _('Go to the configuration panel'))
 
             if type in ('in_invoice', 'in_refund'):
@@ -42,7 +44,8 @@ class ARS_account_invoice(models.Model):
                 payment_term_id = p.property_payment_term_id.id
 
             delivery_partner_id = self.get_delivery_partner_id()
-            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id, delivery_id=delivery_partner_id)
+            fiscal_position = self.env['account.fiscal.position'].get_fiscal_position(self.partner_id.id,
+                                                                                      delivery_id=delivery_partner_id)
 
             # If partner has no warning, check its company
             if p.invoice_warn == 'no-message' and p.parent_id:
@@ -54,7 +57,7 @@ class ARS_account_invoice(models.Model):
                 warning = {
                     'title': _("Warning for %s") % p.name,
                     'message': p.invoice_warn_msg
-                    }
+                }
                 if p.invoice_warn == 'block':
                     self.partner_id = False
 
