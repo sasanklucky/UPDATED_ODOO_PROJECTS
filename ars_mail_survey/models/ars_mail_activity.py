@@ -89,6 +89,7 @@ class ARS_MailActivity(models.Model):
                                      ('survey_incomplete', 'Incomplete Survey')],
                                     string="Survey Status", store=True)
     reg_no = fields.Char(string="Reg No")
+    vin_no = fields.Char(string="Vin No")
 
     @api.multi
     def get_company(self):
