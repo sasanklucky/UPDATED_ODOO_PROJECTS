@@ -9,17 +9,16 @@ from odoo import models, fields, api, _
 from lxml import html
 
 
-
 class ARS_MailActivity(models.Model):
     _name = 'mail.activity'
     _inherit = ['mail.activity', 'mail.thread']
 
     company_id = fields.Many2one('res.company', compute="get_company", store=True)
     active = fields.Boolean("Active", default=True)
-    exact_psf_due_date = fields.Date(string='PSF Done date')
+    exact_psf_due_date = fields.Date(string='Due Date', store=True)
     satisfaction_status = fields.Selection(
         [('satisfied', 'Satisfied'), ('dissatisfied', 'Dissatisfied')],
-        string="Survey Status",)
+        string="Survey Status", )
 
     @api.model
     def create(self, values):
@@ -90,7 +89,6 @@ class ARS_MailActivity(models.Model):
                                      ('survey_incomplete', 'Incomplete Survey')],
                                     string="Survey Status", store=True)
     reg_no = fields.Char(string="Reg No")
-
 
     @api.multi
     def get_company(self):
@@ -208,9 +206,9 @@ class ARS_MailActivity(models.Model):
                     elif activity.feedback and activity.feedback[3:-4]:
                         test_drive_remark = activity.feedback[3:-4]
                     test_drive_obj.create({'opportunity_id': record.id,
-                                            'test_drive_date': datetime.today(),
-                                            'user_id': activity.user_id.id,
-                                            'test_drive_remark': test_drive_remark if test_drive_remark else ''})
+                                           'test_drive_date': datetime.today(),
+                                           'user_id': activity.user_id.id,
+                                           'test_drive_remark': test_drive_remark if test_drive_remark else ''})
                     record.is_test_drive = True
             record.message_post_with_view(
                 'mail.message_activity_done',
@@ -263,9 +261,11 @@ class ARS_MailActivity(models.Model):
 
         elif self.invoice_type == 'after_sales':
             if module == 'crm_psef':
-                request.session['action'] = self.env.ref('ars_mail_survey.action_inherited_mail_crm_post_service_activity_view_1').id
+                request.session['action'] = self.env.ref(
+                    'ars_mail_survey.action_inherited_mail_crm_post_service_activity_view_1').id
             elif module == 'call_psef':
-                request.session['action'] = self.env.ref('ac_con_psf_helpesk.action_inherited_mail_post_service_activity_view_1').id
+                request.session['action'] = self.env.ref(
+                    'ac_con_psf_helpesk.action_inherited_mail_post_service_activity_view_1').id
             if not self.response_id:
                 response = self.env['survey.user_input'].create(
                     {'survey_id': postsale_survey.id, 'partner_id': self.user_id.partner_id.id})
@@ -381,11 +381,11 @@ class ARS_MailActivity(models.Model):
             'target': 'self'
         }
 
-
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        res_result = super(ARS_MailActivity, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
-                                                  submenu=submenu)
+        res_result = super(ARS_MailActivity, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                                   toolbar=toolbar,
+                                                                   submenu=submenu)
         """
         Used for invisible the fields in Pop-up form view.
         when we click on 'Schedule Activity' in sale, purchase, invoice,etc. 

@@ -148,10 +148,12 @@
                     <field name="message_ids" widget="mail_thread"/>
                 </xpath>
                 <xpath expr="//field[@name='date_deadline']" position="after">
-                    <field name="exact_psf_due_date" string="PSF Done date" attrs="{'required':True}"/>
+                    <field name="exact_psf_due_date" string="Due date"
+                           attrs="{'readonly':[('exact_psf_due_date','!=',False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='date_deadline']" position="attributes">
-                    <attribute name="readonly">1</attribute>
+                    <attribute name="readonly">0</attribute>
+                    <attribute name="string">PSF Done Date</attribute>
                 </xpath>
 
                 <button name="action_done" type="object" class="btn-primary" position="replace">
@@ -185,22 +187,22 @@
                       decoration-danger="date_deadline &lt; current_date"
                       decoration-success="date_deadline == current_date"
                       default_order="date_deadline" create="false">
-                   <field name="res_name"/>
+                    <field name="res_name"/>
                     <field name="activity_type_id" attrs="{'column_invisible': True}"/>
                     <field name="summary" attrs="{'column_invisible': True}"/>
-<!--                    <field name="vehicle_name"/>-->
+                    <!--                    <field name="vehicle_name"/>-->
                     <field name="reg_no"/>
-<!--                    <field name="vin_no"/>-->
-<!--                    <field name="company_name"/>-->
-<!--                    <field name="fleet_individual_name" widget="many2many_tags"/>-->
-                     <field name="mobile"/>
-<!--                    <field name="survey_stage"/>-->
+                    <!--                    <field name="vin_no"/>-->
+                    <!--                    <field name="company_name"/>-->
+                    <!--                    <field name="fleet_individual_name" widget="many2many_tags"/>-->
+                    <field name="mobile"/>
+                    <!--                    <field name="survey_stage"/>-->
                     <field name="satisfaction_status"/>
-<!--                    <field name="cus_feedback" string="Customer Status" readonly="1"/>-->
+                    <!--                    <field name="cus_feedback" string="Customer Status" readonly="1"/>-->
                     <field name="date_deadline"/>
                     <field name="exact_psf_due_date"/>
                     <field name="stages"/>
-<!--                    <field name="call_response"/>-->
+                    <!--                    <field name="call_response"/>-->
                 </tree>
             </field>
         </record>

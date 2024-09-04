@@ -77,7 +77,10 @@ class AccountInvoice_inherit(models.Model):
                     'active': True,
                     'tag_ids': [(6, 0, self.order_id.partner_id.category_id.ids if self.order_id.partner_id else [])],
                     'date_deadline': (today + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
+                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
+                    'exact_psf_due_date': (today + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
                             today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
+
                 })
             if (
                     self and self.team_id.team_type == 'after_sales' and self.order_id.counter_parts == False and self.type not in [
@@ -99,6 +102,9 @@ class AccountInvoice_inherit(models.Model):
                     'active': True,
                     'tag_ids': [(6, 0, self.order_id.partner_id.category_id.ids if self.order_id.partner_id else [])],
                     'date_deadline': (
+                            today + timedelta(days=int(postsale_followup_days))) if postsale_followup_days else (
+                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
+                    'exact_psf_due_date': (
                             today + timedelta(days=int(postsale_followup_days))) if postsale_followup_days else (
                             today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
                 })
