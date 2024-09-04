@@ -3,6 +3,8 @@ from datetime import date, datetime, timedelta
 import pytz
 from odoo.http import request
 from odoo.exceptions import UserError, AccessError, ValidationError
+from lxml import etree
+from openerp.osv.orm import setup_modifiers
 from odoo import models, fields, api, _
 from lxml import html
 
@@ -14,7 +16,10 @@ class ARS_MailActivity(models.Model):
 
     company_id = fields.Many2one('res.company', compute="get_company", store=True)
     active = fields.Boolean("Active", default=True)
-    exact_psf_due_date = fields.Date()
+    exact_psf_due_date = fields.Date(string='PSF Done date')
+    satisfaction_status = fields.Selection(
+        [('satisfied', 'Satisfied'), ('dissatisfied', 'Dissatisfied')],
+        string="Survey Status",)
 
     @api.model
     def create(self, values):
@@ -55,6 +60,7 @@ class ARS_MailActivity(models.Model):
                 score = rec.response_id.quizz_score / (len(questions) * 100) * 100
                 rec.survey_percentage = float("%.2f" % score)
                 rec.write({'survey_marks': float("%.2f" % score)})
+                rec.write({'satisfaction_status': 'satisfied' if rec.survey_marks >= 60 else 'dissatisfied'})
                 # except ZeroDivisionError:
                 #     rec.survey_percentage = 0
 
@@ -80,6 +86,11 @@ class ARS_MailActivity(models.Model):
     reason_id = fields.Many2one('mail.activity.cancel.reason')
     tag_ids = fields.Many2many('res.partner.category', string='Tags')
     cus_feedback = fields.Char('Feedback')
+    survey_stage = fields.Selection([('survey_done', 'Complete Survey'),
+                                     ('survey_incomplete', 'Incomplete Survey')],
+                                    string="Survey Status", store=True)
+    reg_no = fields.Char(string="Reg No")
+
 
     @api.multi
     def get_company(self):
@@ -187,13 +198,20 @@ class ARS_MailActivity(models.Model):
 
         for activity in self:
             record = self.env[activity.res_model].browse(activity.res_id)
-            if record and activity.activity_type_id and 'testdrive' == activity.activity_type_id.name.lower or 'test drive' == activity.activity_type_id.name.lower:
-                test_drive_obj = self.env['ars.test.drive']
-                test_drive_obj.create({'opportunity_id': record.id,
-                                        'test_drive_date': datetime.today(),
-                                        'user_id': activity.user_id.id,
-                                        'test_drive_remark': activity.note[3:-4] if activity.note[3:-4] != '<br>' else ''})
-                record.is_test_drive = True
+            if record and activity.activity_type_id:
+                if 'testdrive' in activity.activity_type_id.name.lower() or 'test drive' in activity.activity_type_id.name.lower():
+                    test_drive_obj = self.env['ars.test.drive']
+                    if activity.feedback and activity.feedback[3:-4]:
+                        test_drive_remark = activity.feedback[3:-4]
+                    elif activity.summary:
+                        test_drive_remark = activity.summary
+                    elif activity.feedback and activity.feedback[3:-4]:
+                        test_drive_remark = activity.feedback[3:-4]
+                    test_drive_obj.create({'opportunity_id': record.id,
+                                            'test_drive_date': datetime.today(),
+                                            'user_id': activity.user_id.id,
+                                            'test_drive_remark': test_drive_remark if test_drive_remark else ''})
+                    record.is_test_drive = True
             record.message_post_with_view(
                 'mail.message_activity_done',
                 values={'activity': activity},
@@ -227,8 +245,13 @@ class ARS_MailActivity(models.Model):
         postsale_survey_id = param.get_param('ars_mail_survey.post_sale_survey_id')
         sale_survey = self.env['survey.survey'].browse(int(sale_survey_id))
         postsale_survey = self.env['survey.survey'].browse(int(postsale_survey_id))
-
+        module = self.env.context.get('module')
+        print(self.response_id, 'self.response_id')
         if self.invoice_type == 'sales':
+            if module == 'crm_psf':
+                request.session['action'] = self.env.ref('ars_mail_survey.action_inherited_mail_activity_view_1').id
+            elif module == 'call_psf':
+                request.session['action'] = self.env.ref('ac_con_psf_helpesk.action_inherited_mail_activity_view_2').id
             if not self.response_id:
                 request.session['action'] = 'ars_mail_survey.sales_followup_mail_activity_action'
                 response = self.env['survey.user_input'].create(
@@ -239,7 +262,10 @@ class ARS_MailActivity(models.Model):
             return sale_survey.with_context(survey_token=response.token).action_start_survey()
 
         elif self.invoice_type == 'after_sales':
-            request.session['action'] = 'ars_mail_survey.post_sales_followup_mail_activity_action'
+            if module == 'crm_psef':
+                request.session['action'] = self.env.ref('ars_mail_survey.action_inherited_mail_crm_post_service_activity_view_1').id
+            elif module == 'call_psef':
+                request.session['action'] = self.env.ref('ac_con_psf_helpesk.action_inherited_mail_post_service_activity_view_1').id
             if not self.response_id:
                 response = self.env['survey.user_input'].create(
                     {'survey_id': postsale_survey.id, 'partner_id': self.user_id.partner_id.id})
@@ -354,3 +380,35 @@ class ARS_MailActivity(models.Model):
             'type': 'ir.actions.act_window',
             'target': 'self'
         }
+
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        res_result = super(ARS_MailActivity, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                  submenu=submenu)
+        """
+        Used for invisible the fields in Pop-up form view.
+        when we click on 'Schedule Activity' in sale, purchase, invoice,etc. 
+        """
+        if view_type == 'form':
+            # Parse the XML from the 'arch' key in the result dictionary
+            doc = etree.XML(res_result['arch'])
+            print('Helooo', self.env.context.get('default_res_model'))
+            print('Helooo', self.env.context)
+            res_id = self.env.context.get('default_res_model')
+            fields = self.env['mail.activity'].fields_get()
+            product_template_fields_attrs = {}
+            for key, val in fields.items():
+                product_template_fields_attrs[key] = 'invisible'
+            if res_id:
+                print('Performing')
+                for field_name, attr in product_template_fields_attrs.items():
+                    # List is used for invisible the fields inside it,
+                    # some moore fields we want to invisible just add inside it.
+                    if field_name in ['survey_marks', 'res_name', 'psf_order_id', 'exact_psf_due_date']:
+                        # Perform any modifications to the XML doc here
+                        for node in doc.xpath(f"//field[@name='{field_name}']"):
+                            node.set('attrs', "{'%s': 1}" % attr)
+                            setup_modifiers(node, res_result['fields'][field_name])
+                    res_result['arch'] = etree.tostring(doc)
+        return res_result

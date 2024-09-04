@@ -174,6 +174,7 @@ class ARS_account_invoice(models.Model):
         self.email = self.partner_id.email
         self.mobile = self.partner_id.mobile
 
+    @api.model
     def create(self, vals):
         if vals.get('type') == 'out_refund':
             partner = self.env['res.partner'].browse(vals.get('partner_id'))
