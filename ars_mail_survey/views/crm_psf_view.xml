@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        /** Form View of CRM PSF **/
+        <record id="mail_activity_crm_form_view" model="ir.ui.view">
+            <field name="name">inherited.mail.activity.crm.form.view.1</field>
+            <field name="model">mail.activity</field>
+            <!--            <field name="inherit_id" ref="mail.mail_activity_view_form_popup"/>-->
+            <field name="arch" type="xml">
+                <form string="Log an Activity" create="false">
+                    <sheet string="Activity">
+                        <group invisible="1">
+                            <field name="activity_category" invisible="1"/>
+                            <field name="res_model" invisible="1"/>
+                            <field name="res_model_id" invisible="1"/>
+                            <field name="res_id" invisible="1"/>
+                            <field name="previous_activity_type_id"/>
+                            <field name="has_recommended_activities"/>
+                        </group>
+                        <group attrs="{'invisible': [('has_recommended_activities','=',False)]}">
+                            <div>
+                                <p>
+                                    <strong>Recommended Activities</strong>
+                                </p>
+                                <field name="recommended_activity_type_id" widget="radio"
+                                       domain="[('previous_type_ids', '=', previous_activity_type_id)]"
+                                       options="{'horizontal':true}" nolabel="1"/>
+                            </div>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="activity_type_id" required="1"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                                <field name="summary" placeholder="e.g. Discuss proposal" attrs="{'invisible': True}"/>
+                                <field name="psf_order_id"/>
+                            </group>
+                            <group>
+                                <field name="date_deadline"/>
+                                <field name="survey_marks" attrs="{'invisible': 1}"/>
+                                <field name="user_id"/>
+                            </group>
+                        </group>
+                        <field name="note" placeholder="Log a note..."/>
+                        <footer>
+                            <button string="Schedule" name="action_close_dialog" type="object" class="btn-primary"/>
+                            <button string="Mark as Done" name="action_done" type="object" class="btn-primary"/>
+                            <button string="Discard" class="btn-default" special="cancel"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="inherited_mail_activity_crm_form_view" model="ir.ui.view">
+            <field name="name">mail.activity.form.inherir</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="mail_activity_crm_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_deadline']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('activity_category', '=', 'meeting')]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='user_id']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('activity_category', '=', 'meeting')]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_close_dialog']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('activity_category', '=', 'meeting')]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_done']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('activity_category', '=', 'meeting')]}</attribute>
+                </xpath>
+                <xpath expr="//button[@special='cancel']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('activity_category', '=', 'meeting')]}</attribute>
+                </xpath>
+                <xpath expr="//button[@name='action_close_dialog']" position="before">
+                    <button string="Schedule a meeting"
+                            attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                            name="action_create_calendar_event"
+                            type="object"
+                            class="btn-primary"/>
+                </xpath>
+                <xpath expr="//sheet" position="before">
+                    <header>
+                        <!-- <field name="compute_stages" invisible="1" /> -->
+                        <field name="stages" invisible="1"/>
+                        <field name="stages" widget="statusbar"
+                               attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+
+                    </header>
+                </xpath>
+                <xpath expr="//field[@name='note']" position="before">
+                    <attribute>
+                        <label for="note" string="Remarks"/>
+                    </attribute>
+                </xpath>
+                <xpath expr="//sheet/group" position="before">
+                    <field name="invoice_type" invisible="1"/>
+                    <div class="oe_button_box" name="button_box"
+                         attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}">
+                        <button name="action_start_survey" type="object" icon="fa-pencil-square-o" string="Survey">
+                        </button>
+                        <button name="get_invoice_form" type="object" icon="fa-pencil-square-o" string="Invoice">
+                        </button>
+                        <button name="customer_details" type="object" icon="fa-user" string="Customer">
+                        </button>
+                        <button name="ticket_details" type="object" class="oe_stat_button" icon="fa-ticket"
+                                attrs="{'invisible': [('stages','not in',('ticket_created','completed'))]}">
+                            <field name="ticket_count" widget="statinfo" string="Tickets "/>
+                        </button>
+                    </div>
+                </xpath>
+                <field name="activity_type_id" position="before">
+                    <field name="res_name" string="Customer Name"/>
+                </field>
+                <field name="res_name" position="after">
+                    <field name="mobile" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+                    <field name="vin_no"/>
+                    <field name="reg_no"/>
+                </field>
+                <field name="user_id" position="after">
+                    <field name="satisfaction_status" attrs="{'readonly':1}"/>
+                    <separator colspan="4"/>
+                    <field name="response_id" invisible="1"/>
+                    <field name="survey_percentage" nolabel="1" widget="percentpie" style="cursor:pointer;"
+                           attrs="{'invisible': True}">
+                        EntryProgress
+                    </field>
+                    <button name="create_helpdesk_ticket" type="object" icon="fa-ticket" string="Create Ticket"
+                            attrs="{'invisible': ['|',('invoice_type','not in',('sales','after_sales')),('stages','in',('draft','ticket_created','completed'))]}">
+                    </button>
+                </field>
+
+                <xpath expr="//footer" position="attributes">
+                    <attribute name="invisible">[('invoice_type','not in',('sales','after_sales'))]</attribute>
+                </xpath>
+                <field name="note" position="after">
+                    <button string="Schedule" name="action_close_dialog"
+                            attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','in',('survey_done','ticket_created','completed'))]}"
+                            type="object" class="btn-primary"/>
+                    <button string="Mark as Done" name="action_done"
+                            attrs="{'invisible': ['|',('activity_category', '=', 'meeting'),('stages','=','completed')]}"
+                            type="object" class="btn-primary"/>
+                    <button string="Discard" class="btn-default" special="cancel"/>
+                </field>
+                <!-- <field name="stages"  invisible="1"/>
+                <xpath expr="//footer/button[@name='action_close_dialog']" position="attributes">
+                    <attribute name="invisible">[('stages','in',('survey_done','completed'))]</attribute>
+                </xpath>  -->
+                <!-- <button name="action_done" position="attributes">
+                    <attribute name="invisible">[('stages','in',['completed'])]</attribute>
+                </button>  -->
+                <xpath expr="//form/sheet" position="after">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </xpath>
+                <xpath expr="//field[@name='date_deadline']" position="before">
+                    <field name="exact_psf_due_date" string="PSF Due Date" attrs="{'readonly':[('exact_psf_due_date','!=',False)]}"/>
+                </xpath>
+                <xpath expr="//field[@name='date_deadline']" position="attributes">
+                    <attribute name="readonly">0</attribute>
+                    <attribute name="string">PSF Done Date</attribute>
+                </xpath>
+
+
+                <button name="action_done" type="object" class="btn-primary" position="replace">
+                    <button string="Mark as Done" name="action_done"
+                            type="object" class="btn-primary" style="margin-right: 9px;" groups="base.group_no_one"/>
+                </button>
+                <button name="action_close_dialog" type="object" class="btn-primary" position="replace">
+                    <button string="Schedule" name="action_close_dialog"
+                            type="object" class="btn-primary" style="margin-right: 9px;" groups="base.group_no_one"/>
+                </button>
+
+                <button attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                        name="action_create_calendar_event"
+                        type="object"
+                        class="btn-primary" position="replace">
+                    <button string="Schedule a meeting"
+                            attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                            name="action_create_calendar_event"
+                            type="object"
+                            class="btn-primary" style="margin-right: 9px;"/>
+                </button>
+                <button name="action_done" type="object" class="btn-primary" position="replace">
+                    <button string="Mark as Done" name="action_done" type="object" class="btn-primary"
+                            style="margin-right: 9px;"/>
+                </button>
+                <button name="action_close_dialog" type="object" class="btn-primary" position="replace">
+                    <button string="Schedule" name="action_close_dialog" type="object" class="btn-primary"
+                            style="margin-right: 9px;"/>
+                </button>
+                <button attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                        name="action_create_calendar_event" type="object" class="btn-primary" position="replace">
+                    <button string="Schedule a meeting" attrs="{'invisible': [('activity_category', '!=', 'meeting')]}"
+                            name="action_create_calendar_event" type="object" class="btn-primary"
+                            style="margin-right: 9px;"/>
+                </button>
+                <field name="user_id" position="after">
+                    <button type="object" icon="fa-user" style="font-size: 20px;padding: 3px;" name="customer_details"/>
+                </field>
+            </field>
+        </record>
+
+        /** Tree View of CRM PSF **/
+        <record id="mail_activity_crm_tree_view" model="ir.ui.view">
+            <field name="name">inherited.mail.activity.crm.tree.view.1</field>
+            <field name="model">mail.activity</field>
+            <!--            <field name="inherit_id" ref="mail.mail_activity_view_tree"/>-->
+            <field name="arch" type="xml">
+                <tree string="Next Activities"
+                      decoration-danger="date_deadline &lt; current_date"
+                      decoration-success="date_deadline == current_date"
+                      default_order="date_deadline" create="false">
+                    <field name="res_name" string="Customer Name"/>
+                      <field name="mobile"/>
+                     <field name="vin_no"/>
+                    <field name="reg_no"/>
+                    <field name="satisfaction_status"/>
+                    <field name="exact_psf_due_date" string="PSF Due Date"/>
+                    <field name="date_deadline" string="PSF Done Date"/>
+                    <field name="stages"/>
+                </tree>
+            </field>
+        </record>
+        /** Action For PSF CRM **/
+        <record id="action_inherited_mail_activity_view_1" model="ir.actions.act_window">
+            <field name="name">CRM Post Sale Followup Activity</field>
+            <field name="res_model">mail.activity</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('invoice_type','=','sales')]</field>
+            <field name="context">{'hide_helpdesk':True, 'module':'crm_psf'}</field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('mail_activity_crm_tree_view')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('mail_activity_crm_form_view')})]"/>
+            <field name="target">current</field>
+        </record>
+        <menuitem id="menu_sales_followup_mail_activity"
+                  name="Post Sales Follow-up"
+                  parent="crm.crm_menu_root"
+                  action="action_inherited_mail_activity_view_1"
+                  sequence="5"/>
+    </data>
+</odoo>

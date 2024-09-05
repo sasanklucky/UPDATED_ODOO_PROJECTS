@@ -72,7 +72,7 @@
                   name="Parts Inventory"
                   parent="stock_parts_reporting"
                   sequence="4"
-                  action="stock.action_stock_quantity_history"/>
+                  action="ars_after_sales.action_stock_quantity_history2"/>
 
         <menuitem id="stock_inventory_move_line_menu"
                   action="stock.stock_move_line_action"

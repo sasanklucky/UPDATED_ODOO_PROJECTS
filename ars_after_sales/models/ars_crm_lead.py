@@ -376,6 +376,8 @@ class ARS_crm_lead(models.Model):
         if res.vehicle_line:
             if res.type == 'opportunity' and res.team_id.team_type == 'sales':
                 res.planned_revenue = sum(res.vehicle_line.mapped('product_template_id.list_price'))
+        if not vals['model_id']:
+            raise ValidationError(_('Please Update Model'))
         return res
 
     @api.multi
@@ -390,6 +392,8 @@ class ARS_crm_lead(models.Model):
             if res.type == 'opportunity' and self.team_id.team_type == 'sales':
                 if len(res.vehicle_line) < 1:
                     raise ValidationError("Please add at least one product before saving.")
+        if not self.model_id:
+            raise ValidationError(_('Please Update Model'))
         return res
 
     #     if self.vehicle_line:
@@ -641,7 +645,6 @@ class ARS_crm_lead(models.Model):
     #             if vals.get('main_process_id'):
     #                 sale_id.main_process_id = vals.get('main_process_id')
     #     return super(ARS_crm_lead, self).write(vals)
-
 
 class CRMLeadStage(models.Model):
     _name = "crm.lead.stage"

@@ -174,6 +174,16 @@ class ARS_account_invoice(models.Model):
         self.email = self.partner_id.email
         self.mobile = self.partner_id.mobile
 
+    @api.model
+    def create(self, vals):
+        if vals.get('type') == 'out_refund':
+            partner = self.env['res.partner'].browse(vals.get('partner_id'))
+            vals['mobile'] = partner.mobile
+            # print(partner.mobile, '111111111111')
+            vals['email'] = partner.email
+            # print(partner.email, '2222222222222')
+        return super(ARS_account_invoice, self).create(vals)
+
     @api.onchange('delivery_service_advisor')
     def in_advisor_change(self):
         if self.delivery_service_advisor.id:
