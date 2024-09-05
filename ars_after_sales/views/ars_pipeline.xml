@@ -2596,7 +2596,7 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar,graph,pivot,kanban</field>
             <field name="context">{'create': False}</field>
-            <field name="domain">[('invoice_status','=','to invoice')]</field>
+            <field name="domain">[('invoice_status','=','to invoice'),('sale_aftersales','=', 'after_sales'),('sale_type','in',['after_sales', 'parts'])]</field>
             <field name="search_view_id" ref="view_sales_order_filter_inherit"/>
             <field name="help" type="html">
                 <p>

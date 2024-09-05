@@ -35,7 +35,8 @@
                             <field name="booking_stage_id" options="{'no_create': True}"/>
                         </div>
                         <div class="o_setting_right_pane">
-
+                            <label class="col-md-3 o_light_label" string="Pipeline Stage"/>
+                            <field name="pipeline_stages_ids" widget="many2many_tags" options="{'no_create': True}"/>
                         </div>
                     </div>
 

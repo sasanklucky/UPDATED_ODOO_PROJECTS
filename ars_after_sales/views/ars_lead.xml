@@ -15,7 +15,7 @@
                         <field name="title" placeholder="Title" domain="[]"
                                options="{'no_create': False, 'no_open': False}"/>
                     </div>
-                    <field name="enquiry_date"/>
+                    <field name="enquiry_date" readonly="1"/>
                     <field name="mobile"/>
                     <field name="email_from" widget="email"/>
                     <field name="phone" widget="phone"/>

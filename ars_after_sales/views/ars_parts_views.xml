@@ -557,6 +557,11 @@
                 <xpath expr="//page[@name='general_information']//field[@name='list_price']" position="after">
                     <field name="mrp"/>
                 </xpath>
+
+                <xpath expr="//page[@name='general_information']//field[@name='l10n_in_hsn_code']" position="replace">
+                    <field name="l10n_in_hsn_code" required="1"/>
+                </xpath>
+
                 <xpath expr="//page[@name='invoicing']//group[@name='bill']" position="after">
                     <div groups="base.group_no_one">
                         <group string="Unit Price Access" name="price_unit" groups="base.group_system">

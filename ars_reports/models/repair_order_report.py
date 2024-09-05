@@ -81,40 +81,63 @@ class RepairOrderReport(models.Model):
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over(order by sol.id desc) as id,
-            so.id as order_id,
-            so.partner_id as customer_id,
-            sol.id as line_item_id,
-            rs.dealer_code as dealer_code,
-            so.company_id as dealer_id,
-            so.vin_no as vin,
-            so.service_type as repair_type,
-            so.regn_no as registration_no,
-            so.model as model,
-            (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
-            (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
-            (select mileage from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_km,
-            (select date_of_ownership from ownership_history where vehicle_id = so.regn_no order by id desc  limit 1) as vehiclesale_dt,
-            (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
-            (select so.appointment_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
-            (select so.confirmation_date from service_history sh where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
-            so.service_type as service_type,
-            (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
-            inv.create_date as ro_close_date,
-            so.mileage_in as odoometer,
-            sol.product_id as part_id,
-            sol.name as part_description,
-            sol.price_unit as price_unit,
-            sol.discount as discount,
-            sol.product_uom_qty as product_uom_qty,
-            sol.price_subtotal as part_price,
-            sol.price_total as total_part_price,
-            sol.product_catalog_id as product_catalog
-            from sale_order_line sol
-            left join sale_order so on so.id = sol.order_id
-            left join res_company rs on rs.id = so.company_id
-            left join account_invoice inv on inv.origin = so.name
-            where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
+            WITH last_service AS (
+                    SELECT 
+                        vehicle_id,
+                        MAX(id) AS last_service_id,
+                        MAX(date) AS last_service_date,
+                        MAX(mileage) AS last_service_km,
+                        MAX(servicetype) AS ro_type
+                    FROM service_history
+                    GROUP BY vehicle_id
+                ),
+                last_ownership AS (
+                    SELECT 
+                        vehicle_id,
+                        MAX(date_of_ownership) AS vehiclesale_dt
+                    FROM ownership_history
+                    GROUP BY vehicle_id
+                )
+                SELECT 
+                    ROW_NUMBER() OVER (ORDER BY sol.id DESC) AS id,
+                    so.id AS order_id,
+                    so.partner_id AS customer_id,
+                    sol.id AS line_item_id,
+                    rs.dealer_code AS dealer_code,
+                    so.company_id AS dealer_id,
+                    so.vin_no AS vin,
+                    so.service_type AS repair_type,
+                    so.service_type AS service_type,
+                    so.regn_no AS registration_no,
+                    so.model AS model,
+                    last_service.last_service_id,
+                    last_service.last_service_date,
+                    last_service.last_service_km,
+                    last_ownership.vehiclesale_dt,
+                    last_service.ro_type as ro_type,
+                    rs.dealer_code AS last_service_dealer, 
+                    so.name AS ro_number,  -- Fetching 'name' from 'sale_order' instead
+                    so.appointment_date AS ro_open_date,
+                    so.confirmation_date AS last_ro_close_date,
+                    inv.create_date AS ro_close_date,
+                    so.mileage_in AS odoometer,
+                    sol.product_id AS part_id,
+                    sol.name AS part_description,
+                    sol.price_unit AS price_unit,
+                    sol.discount AS discount,
+                    sol.product_uom_qty AS product_uom_qty,
+                    sol.price_subtotal AS part_price,
+                    sol.price_total AS total_part_price,
+                    sol.product_catalog_id AS product_catalog
+                    FROM sale_order_line sol
+                    LEFT JOIN sale_order so ON so.id = sol.order_id
+                    LEFT JOIN res_company rs ON rs.id = so.company_id
+                    LEFT JOIN account_invoice inv ON inv.origin = so.name
+                    LEFT JOIN last_service ON last_service.vehicle_id = so.regn_no
+                    LEFT JOIN service_history sh_last ON sh_last.id = last_service.last_service_id
+                    LEFT JOIN last_ownership ON last_ownership.vehicle_id = so.regn_no
+                    WHERE so.state NOT IN ('draft', 'sent', 'cancel') 
+                      AND so.sale_aftersales = 'after_sales'
         )""" % (self._table))
 
 

@@ -12,6 +12,14 @@ class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
     _description = 'Information on a vehicle'
 
+    @api.constrains('vin_sn')
+    def check_vin(self):
+        if self.vin_sn:
+            if not str(self.vin_sn).isalnum():
+                raise ValidationError(_('VIN is not Alphanumeric'))
+            if len(self.vin_sn) != 17:
+                raise ValidationError(_('VIN Have %s Characters. It Should be 17') % len(self.vin_sn))
+
     @api.multi
     def get_years(self):
         year_list = []
@@ -56,7 +64,7 @@ class FleetVehicle(models.Model):
     emission_ids = fields.One2many('emission.history', 'vehicle_id')
     insurance_ids = fields.One2many('insurance.history', 'vehicle_id')
     service_ids = fields.One2many('service.history', 'vehicle_id')
-    lot_id = fields.Many2one('stock.production.lot', 'Stock Production Lot ')
+    lot_id = fields.Many2one('stock.production.lot', 'Stock Production Lot', copy=False)
     license_plate = fields.Char(required=False, help='License plate number of the vehicle (i = plate number for a car)')
     driver_id = fields.Many2one('res.partner', 'Customer', track_visibility="onchange", help='Customer of the vehicle',
                                 copy=False)

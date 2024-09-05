@@ -21,11 +21,11 @@
         </record>
 
 
-        <menuitem id="menu_post_sales_followup_mail_activity"
-            name="Post Service Follow-up"
-            parent="crm.crm_menu_root"
-            action="post_sales_followup_mail_activity_action"
-            sequence="6" />
+<!--        <menuitem id="menu_post_sales_followup_mail_activity"-->
+<!--            name="Post Service Follow-up"-->
+<!--            parent="crm.crm_menu_root"-->
+<!--            action="post_sales_followup_mail_activity_action"-->
+<!--            sequence="6" />-->
 
         <template id="survey.back" name="Back">
             <div groups="website.group_website_publisher" t-ignore="true" class="pull-right">
