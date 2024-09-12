@@ -53,7 +53,6 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     score = activity_id.response_id.quizz_score / (len(questions) * 100) * 100
                     param = request.env['ir.config_parameter'].sudo()
                     survey_percentage = param.get_param('ars_mail_survey.survey_percentage')
-
                     if score < float(survey_percentage):
                         mail_activity_model.create_helpdesk_ticket(activity_id)
                     #     vals = {

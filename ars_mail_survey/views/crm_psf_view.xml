@@ -31,7 +31,8 @@
                             <group>
                                 <field name="activity_type_id" required="1"
                                        options="{'no_create': True, 'no_open': True}"/>
-                                <field name="summary" placeholder="e.g. Discuss proposal"/>
+                                <field name="summary" placeholder="e.g. Discuss proposal" attrs="{'invisible': True}"/>
+                                <field name="psf_order_id"/>
                             </group>
                             <group>
                                 <field name="date_deadline"/>
@@ -109,10 +110,11 @@
                 </xpath>
                 <field name="activity_type_id" position="before">
                     <field name="res_name" string="Customer Name"/>
-                    <field name="psf_order_id"/>
                 </field>
-                <field name="summary" position="after">
+                <field name="res_name" position="after">
                     <field name="mobile" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
+                    <field name="vin_no"/>
+                    <field name="reg_no"/>
                 </field>
                 <field name="user_id" position="after">
                     <field name="satisfaction_status" attrs="{'readonly':1}"/>
@@ -150,11 +152,12 @@
                     <field name="message_follower_ids" widget="mail_followers"/>
                     <field name="message_ids" widget="mail_thread"/>
                 </xpath>
-                <xpath expr="//field[@name='date_deadline']" position="after">
-                    <field name="exact_psf_due_date" string="PSF Done date" attrs="{'required':True}"/>
+                <xpath expr="//field[@name='date_deadline']" position="before">
+                    <field name="exact_psf_due_date" string="PSF Due Date" attrs="{'readonly':[('exact_psf_due_date','!=',False)]}"/>
                 </xpath>
                 <xpath expr="//field[@name='date_deadline']" position="attributes">
-                    <attribute name="readonly">1</attribute>
+                    <attribute name="readonly">0</attribute>
+                    <attribute name="string">PSF Done Date</attribute>
                 </xpath>
 
 
@@ -207,12 +210,13 @@
                       decoration-danger="date_deadline &lt; current_date"
                       decoration-success="date_deadline == current_date"
                       default_order="date_deadline" create="false">
-                    <field name="res_name"/>
+                    <field name="res_name" string="Customer Name"/>
+                      <field name="mobile"/>
+                     <field name="vin_no"/>
                     <field name="reg_no"/>
-                     <field name="mobile"/>
                     <field name="satisfaction_status"/>
-                    <field name="date_deadline"/>
-                    <field name="exact_psf_due_date"/>
+                    <field name="exact_psf_due_date" string="PSF Due Date"/>
+                    <field name="date_deadline" string="PSF Done Date"/>
                     <field name="stages"/>
                 </tree>
             </field>
