@@ -148,7 +148,7 @@
             <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
             <field name="arch" type="xml">
                 <field name="create_date" position="replace">
-                    <field name="create_date" widget="date"/>
+                    <field name="create_date" widget="date" groups="base.group_no_one"/>
                     <field name="enquiry_date" widget="date"/>
                     <field name="activity_date_deadline" widget="date"/>
                     <field name="model_id" force_save="1"/>
