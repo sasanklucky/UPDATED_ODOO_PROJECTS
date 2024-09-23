@@ -79,33 +79,33 @@ class ars_sale_crm_lead(models.Model):
 
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
 
-    @api.multi
-    def write(self, values):
-        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
-        stage = values.get('stage_id')
-        if stage and booking_stage:
-            if int(stage) == int(booking_stage):
-                values['booking_date'] = date.today()
-        if len(self.ids) == 1:
-            previous_state_id = self.stage_id
-        result = super(ars_sale_crm_lead, self).write(values)
-        if len(self.ids) == 1:
-            if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
-                raise ValidationError('You do not have access to change the state')
-        res_value = {}
-        for res in self:
-            if res.partner_id:
-                if 'gender' in values:
-                    res_value.update({'gender': values['gender']})
-                if 'annual_income' in values:
-                    res_value.update({'annual_income': values['annual_income']})
-                if 'street' in values:
-                    res_value.update({'street': values['street']})
-                if 'street2' in values:
-                    res_value.update({'street2': values['street2']})
-                if res_value:
-                    res.partner_id.write(res_value)
-        return result
+    # @api.multi
+    # def write(self, values):
+    #     booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+    #     stage = values.get('stage_id')
+    #     if stage and booking_stage:
+    #         if int(stage) == int(booking_stage):
+    #             values['booking_date'] = date.today()
+    #     if len(self.ids) == 1:
+    #         previous_state_id = self.stage_id
+    #     result = super(ars_sale_crm_lead, self).write(values)
+    #     if len(self.ids) == 1:
+    #         if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+    #             raise ValidationError('You do not have access to change the state')
+    #     res_value = {}
+    #     for res in self:
+    #         if res.partner_id:
+    #             if 'gender' in values:
+    #                 res_value.update({'gender': values['gender']})
+    #             if 'annual_income' in values:
+    #                 res_value.update({'annual_income': values['annual_income']})
+    #             if 'street' in values:
+    #                 res_value.update({'street': values['street']})
+    #             if 'street2' in values:
+    #                 res_value.update({'street2': values['street2']})
+    #             if res_value:
+    #                 res.partner_id.write(res_value)
+    #     return result
 
     # Mandatory fields (street, pan no, zip) when pipline stage is going to booked
     @api.multi
@@ -128,7 +128,31 @@ class ars_sale_crm_lead(models.Model):
                     if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
                         raise ValidationError(
                             "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
-        return super(ars_sale_crm_lead, self).write(vals)
+        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+        stage = vals.get('stage_id')
+        if stage and booking_stage:
+            if int(stage) == int(booking_stage):
+                vals['booking_date'] = date.today()
+        if len(self.ids) == 1:
+            previous_state_id = self.stage_id
+        result = super(ars_sale_crm_lead, self).write(vals)
+        if len(self.ids) == 1:
+            if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+                raise ValidationError('You do not have access to change the state')
+        res_value = {}
+        for res in self:
+            if res.partner_id:
+                if 'gender' in vals:
+                    res_value.update({'gender': vals['gender']})
+                if 'annual_income' in vals:
+                    res_value.update({'annual_income': vals['annual_income']})
+                if 'street' in vals:
+                    res_value.update({'street': vals['street']})
+                if 'street2' in vals:
+                    res_value.update({'street2': vals['street2']})
+                if res_value:
+                    res.partner_id.write(res_value)
+        return result
 
     @api.multi
     def create(self, vals):

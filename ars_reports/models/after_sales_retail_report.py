@@ -79,7 +79,7 @@ class AfterSlaesRetailReport(models.Model):
             so.regn_no as registration_no,
             so.model as model,
             inv.id as invoice_id,
-            inv.date_invoice as ro_close_date,
+            inv.create_date as ro_close_date,
             inv.cust_invoice_type as cust_invoice_type,
             inv.type as invoice_type,
             inv.origin as origin,

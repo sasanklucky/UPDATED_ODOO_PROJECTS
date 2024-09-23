@@ -18,7 +18,7 @@
     'sequence': 1,
     'website': 'https://www.geotechnosoft.com',
     # 'depends': ['account', 'stock','ars_after_sales'],
-    'depends': ['account', 'stock', 'ac_product_catalog'],
+    'depends': ['account', 'stock', 'ac_product_catalog', 'ars_after_sales'],
     'data': [
         'security/ir.model.access.csv',
         'security/e_invoice_group.xml',

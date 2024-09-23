@@ -93,7 +93,7 @@ class EbillCancel(models.TransientModel):
                 n = json.loads(a)
                 dt = n['CancelDate']
                 order.write({'irn_cancel_date': dt})
-                order.write({'way_bill_status': 'cancel'})
+                order.write({'e_invoice_status': 'cancel'})
                 self.env.user.notify_info(message='IRN Number Cancel Successfully !')
             if res_dict.get('Status') == '0':
                 order.write({'exception_reason': res_dict})

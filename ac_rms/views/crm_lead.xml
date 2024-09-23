@@ -26,7 +26,11 @@
                         string="Finish" type="object" attrs="{'invisible': ['|',('sa_work_flow', 'in', ('No Operation','Start','Operation Done','Ready for Delivery'))]}"
                         />
                 </xpath>
-
+                <xpath expr="//button[@name='action_set_won']" position="replace">
+                    <button name="action_set_won" string="Mark Won"
+                            type="object" class="oe_highlight"
+                            attrs="{'invisible': True}"/>
+                </xpath>
             </field>
         </record>
     </data>
