@@ -182,6 +182,11 @@
                 <field name="source_id" position="after">
                     <field name="sales_type" groups="base.group_no_one"/>
                 </field>
+                <xpath expr="//button[@name='action_set_won']" position="replace">
+                    <button name="action_set_won" string="Mark Won"
+                            type="object" class="oe_highlight"
+                            attrs="{'invisible': True}"/>
+                </xpath>
             </field>
         </record>
 
