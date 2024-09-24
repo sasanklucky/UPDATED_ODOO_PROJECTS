@@ -111,6 +111,36 @@
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//form/sheet/h1" position="after">
+                <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                    <b>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'cancel')]}">
+                            <span style="color: darkred;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: darkred;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'generated')]}">
+                            <span style="color: green;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: green;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'not generated')]}">
+                            <span style="color: black;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: black;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'exception')]}">
+                            <span style="color: orange;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: orange;" readonly="1"/>
+                        </div>
+                    </b>
+                </div>
+            </xpath>
             <xpath expr="//button[@name='action_invoice_sent']" position="after">
                 <button name="create_einvoicing" type="object" string="Create E-Invoicing" class="oe_highlight" groups="gts_einvoicing.group_ebill_manager" attrs="{'invisible': ['|','|',('irn_no', '!=', False),('state','=','draft'),('state','=','cancel')]}"/>
                 <button name="%(gts_einvoicing.action_cancel_einvoice_bill)d" string="Cancel E-Invoicing" type="action" groups="gts_einvoicing.group_ebill_manager"
@@ -196,6 +226,44 @@
                         </group>
                     </div>
                 </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="invoice_form_inherit_aftersales" model="ir.ui.view">
+        <field name="name">account.invoice.form.aftersales</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/h1" position="after">
+                <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                    <b>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'cancel')]}">
+                            <span style="color: darkred;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: darkred;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'generated')]}">
+                            <span style="color: green;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: green;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'not generated')]}">
+                            <span style="color: black;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: black;" readonly="1"/>
+                        </div>
+                        <div attrs="{'invisible': [('e_invoice_status', '!=', 'exception')]}">
+                            <span style="color: orange;">
+                                E-Invoice
+                            </span>
+                            <field name="e_invoice_status" style="color: orange;" readonly="1"/>
+                        </div>
+                    </b>
+                </div>
             </xpath>
         </field>
     </record>
