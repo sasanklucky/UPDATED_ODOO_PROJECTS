@@ -54,6 +54,8 @@ class AccountInvoice_inherit(models.Model):
         res = super(AccountInvoice_inherit, self).action_invoice_open()
         self.ensure_one()
         vin_no = self.env['account.invoice.line'].search([('invoice_id', '=', self.id)], limit=1).vin_no
+        reg_no = self.env['fleet.vehicle'].search([('lot_id', '=', vin_no.id)], limit=1).license_plate
+        invoice_line = self.env['account.invoice.line'].search([('invoice_id', '=', self.id)], limit=1)
         param = self.env['ir.config_parameter'].sudo()
         sale_followup_days = param.get_param('ars_mail_survey.sale_followup_days')
         postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
@@ -74,13 +76,18 @@ class AccountInvoice_inherit(models.Model):
                     'cre_id': self.env['cre_team_configuration'].search([('type', '=', 'post_sales')], limit=1).id,
                     'user_id': user_id.id if user_id else self.env.user.id,
                     'company_id': self.company_id.id,
+                    'company_name': self.company_id.name,
+                    'vehicle_name': invoice_line.product_id.name,
                     'active': True,
                     'tag_ids': [(6, 0, self.order_id.partner_id.category_id.ids if self.order_id.partner_id else [])],
                     'date_deadline': (today + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
                             today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
-                    'exact_psf_due_date': (today + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
-                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
+                    'model_id': invoice_line.product_id.id,
 
+                    'exact_psf_due_date': (today + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
+                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
+                    'vin_no': vin_no.name if vin_no else None,
+                    'reg_no': reg_no
                 })
             if (
                     self and self.team_id.team_type == 'after_sales' and self.order_id.counter_parts == False and self.type not in [
@@ -104,9 +111,17 @@ class AccountInvoice_inherit(models.Model):
                     'date_deadline': (
                             today + timedelta(days=int(postsale_followup_days))) if postsale_followup_days else (
                             today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
+                    'model_id': self.model.id,
+                    'company_name': self.company_id.name,
+                    'vehicle_name': self.order_id.vehicle_model.name,
+                    'service_type': self.order_id.service_type.id,
+                    'service_option': self.order_id.service_options.id,
+                    'work_type': self.order_id.work_type if self.order_id.work_type else None,
                     'exact_psf_due_date': (
                             today + timedelta(days=int(postsale_followup_days))) if postsale_followup_days else (
-                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
+                            today + timedelta(days=self.env.ref('mail.mail_activity_data_call').days)),
+                    'reg_no': self.order_id.regn_no.license_plate,
+                    'vin_no': self.order_id.vin_no if self.order_id.vin_no else None
                 })
         # activity._onchange_activity_type_id()
         return res

@@ -19,3 +19,4 @@ from . import sales_report_format
 from . import crm_summary_report
 from . import service_vehicle_setup
 from . import ars_stock_quantity_history
+from . import service_due_reminder

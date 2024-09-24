@@ -62,6 +62,7 @@ class ars_configure_settings(models.TransientModel):
         param = self.env['ir.config_parameter'].sudo()
         param.set_param('ars_after_sales.restrict_gp_date', self.restrict_gp_date)
         param.set_param('ars_after_sales.inv_line_unit_price', self.inv_line_unit_price)
+        param.set_param('ars_after_sales.next_service_remainder', self.next_service_remainder)
 
         return res
     @api.multi
@@ -69,10 +70,12 @@ class ars_configure_settings(models.TransientModel):
         res = super(ars_configure_settings, self).get_values()
         restrict_gp_date = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.restrict_gp_date')
         inv_line_unit_price = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.inv_line_unit_price')
+        next_service_remainder = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.next_service_remainder')
 
         res.update(
             restrict_gp_date=restrict_gp_date if restrict_gp_date else False,
-            inv_line_unit_price=inv_line_unit_price if inv_line_unit_price else False
+            inv_line_unit_price=inv_line_unit_price if inv_line_unit_price else False,
+            next_service_remainder=next_service_remainder if next_service_remainder else 0.0
         )
 
         return res

@@ -142,10 +142,13 @@ class ARS_After_sale_order(models.Model):
 
                     invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],
                                              limit=1)
-                    inv_data = order.with_context(
-                        {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
-                    count += 1
-                    if invoice:
+                    # inv_data = order.with_context(
+                    #     {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+                    # print('inv_data', inv_data)
+                    # if invoice and invoice.state == 'draft':
+                    #     invoice = None
+                    # count += 1
+                    if invoice and invoice.state == 'draft':
                         invoice_ref = inv_obj.search([('origin', '=', order.name),
                                                       ('cust_invoice_type', '!=', invoice.cust_invoice_type)])
                         if invoice_ref:
@@ -154,7 +157,8 @@ class ARS_After_sale_order(models.Model):
                                 ref_inv.write({'invoice_reference': invoice.id})
                         products = invoice.invoice_line_ids.mapped('product_id').ids
                         if line.product_id.id not in products:
-                            line.invoice_line_create(invoice.id, line.qty_to_invoice)
+                            if line.qty_to_invoice > 0:
+                                line.invoice_line_create(invoice.id, line.qty_to_invoice)
                             if invoice.amount_untaxed < 0:
                                 invoice.type = 'out_refund'
                                 for line in invoice.invoice_line_ids:
@@ -168,9 +172,16 @@ class ARS_After_sale_order(models.Model):
                             invoice.message_post_with_view('mail.message_origin_link',
                                                            values={'self': invoice, 'origin': order},
                                                            subtype_id=self.env.ref('mail.mt_note').id)
+                        # else:
+                            # inv_data = order.with_context({'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+                            # invoice = inv_obj.create(inv_data)
+                            # invoices[invoice.id] = invoice
                         invoices[invoice.id] = invoice
                     else:
-                        print("invoice created----")
+                        # print("invoice created----")
+                        inv_data = order.with_context(
+                            {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+                        count += 1
                         if order.counter_parts == False:
                             if line.category.name.lower() == 'warranty':
                                 inv_data.update({'cust_invoice_type': 'warranty'})
@@ -183,8 +194,8 @@ class ARS_After_sale_order(models.Model):
                         invoices[invoice.id] = invoice
                         #                         references[invoice] = order
                         # invoices[group_key] = invoice
-                        line.invoice_line_create(invoice.id, line.qty_to_invoice)
-
+                        if line.qty_to_invoice > 0:
+                            line.invoice_line_create(invoice.id, line.qty_to_invoice)
                     invoice.write({'mobile': order.mobile, 'email': order.email,
                                    'reg_no': order.regn_no.id, 'vin': order.vin_no,
                                    'model': order.model.id, 'kilometer': order.mileage_in,

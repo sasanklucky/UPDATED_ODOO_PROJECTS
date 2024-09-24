@@ -299,6 +299,17 @@ class CrmLeadLost(models.TransientModel):
             rec.action_set_lost()
 
 
+    @api.onchange('lost_reason_id')
+    def set_lost_reason_ids(self):
+        leads = self.env['crm.lead'].browse(self.env.context.get('active_ids')).team_id.team_type
+        print(leads,"leadsleadsleadsleadsleadsleadsleads")
+        parent_lost_reasons = self.env['crm.lost.reason'].search([('sale_type', '=', leads), ('active', '=', True)])
+        print(len(parent_lost_reasons))
+        if parent_lost_reasons:
+            return {'domain': {'lost_reason_id': [('id', 'in', parent_lost_reasons.ids)]}}
+        else:
+            return {'domain': {'lost_reason_id': [('id', 'in', False)]}}
+
 
     # @api.depends('lead_id')
     # def get_lost_reason_domain(self):
