@@ -834,7 +834,7 @@
                                        domain="[('serviceadvisor','=',True)]"
                                        attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                 <field name="appointment_date"
-                                       attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                       attrs="{'readonly': [('state','not in', ('draft', 'so'))], 'required': [('state', 'in', ('so','sent'))]}"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
                                        domain="[('serviceadvisor','=',True)]"
                                        options="{'no_create': True, 'no_open': True}"
@@ -1136,7 +1136,7 @@
                     <field name="confirmation_date" string="Order Date"/>
                     <field name="partner_id"/>
                     <field name="user_id" string="Service Advisor"/>
-                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
+                    <field name="mileage_in" string="Kilometer"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>

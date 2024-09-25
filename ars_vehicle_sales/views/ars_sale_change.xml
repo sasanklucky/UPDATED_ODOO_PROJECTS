@@ -40,7 +40,11 @@
                 <field name="priority" position="before">
                     <field name="email_from" required="1"/>
                     <field name="mobile" required="1" string="Mobile"/>
-                    <field name="product_id" string="Model Interested" domain="[('catalog_type.name', '=','Vehicle')]" options="{'no_create':True,'no_open':True}"
+                     <field name="model_id" string="Product Model" domain="[('catalog_type.name', '=','Vehicle')]"
+                           options="{'no_create':True,'no_open':True}"
+                           required="1"/>
+                    <field name="product_id" string="Variant Interested" domain="[('catalog_type.name', '=','Vehicle'),('product_tmpl_id','=',model_id)]"
+                           options="{'no_create':True,'no_open':True}"
                            required="1"/>
                     <field name="source_id" string="Source" required="1" options="{'no_create':True,'no_open':True}"/>
                     <field name="city" required="1" string="City"/>
