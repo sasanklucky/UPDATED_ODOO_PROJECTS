@@ -26,6 +26,9 @@ class ARSModel(models.Model):
     tyre_details = fields.Char(string='Tyre Details')
     front_axle_load = fields.Char(string='Front Axle Load')
     rear_axle_load = fields.Char(string='Rear Axle Load')
+    description_form22 = fields.Text(
+        'Form-22 Description', translate=True,
+        help="The Form-22 Certificate Description")
 
 # class website_module(models.Model)
 #     _inherit='website.menu'
