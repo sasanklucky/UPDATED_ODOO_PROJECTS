@@ -13,6 +13,7 @@
             </field>
         </record>
 
+
         <record id="mail_activity_view_tree_inherit" model="ir.ui.view">
             <field name="name">mail.activity.tree.inherit</field>
             <field name="model">mail.activity</field>
