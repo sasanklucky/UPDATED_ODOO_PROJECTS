@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='next_type_ids']" position="after">
                     <field name="stages"/>
+                    <field name="type"/>
                 </xpath>
             </field>
         </record>
