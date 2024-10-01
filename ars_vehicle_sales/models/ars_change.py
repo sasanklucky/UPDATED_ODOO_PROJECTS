@@ -200,7 +200,7 @@ class ars_sale_crm_lead(models.Model):
             user = self.env.user.id
             new_stage = self.env['crm.stage'].browse(vals['stage_id'])
             booking_stage_id = int(
-                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.pipeline_stages_ids'))
             teams = self.env['crm.team'].search(
                 [('company_id', '=', company), ('team_type', 'in', ['sales']), ('user_id', '=', user)])
             if new_stage.id == booking_stage_id:

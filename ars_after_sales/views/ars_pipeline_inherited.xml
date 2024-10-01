@@ -28,6 +28,9 @@
                 <xpath expr="/form/sheet/group/group[2]/field[@name='kilometer_in']" position="after">
                     <field name="sale_date_to_customer" attrs="{'required': True}"/>
                 </xpath>
+                <xpath expr="/form/sheet/group[2]/group/field[@name='user_id']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
                 <xpath expr="/form/sheet/group[2]/group/field[@name='user_id']" position="after">
                     <field name="service_options" attrs="{'required': True}" options="{'no_create': True, 'no_open': True}"/>
                     <field name="service_type" attrs="{'required': True}" domain="[('service_option_id', '=',service_options)]" options="{'no_create': True,}"/>

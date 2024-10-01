@@ -8,6 +8,8 @@ class MailActivityType(models.Model):
     _inherit = "mail.activity.type"
 
     stages = fields.Many2one('crm.stage')
+    type = fields.Selection([('after_sales', 'After Sales'),
+                                  ('sales', 'Sales')], string='Sales Type')
 
 
 class ARS_MailActivity(models.Model):
