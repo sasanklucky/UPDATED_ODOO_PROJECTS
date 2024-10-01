@@ -66,6 +66,8 @@ class service_history(models.Model):
         for record in self:
             if record.sudo().order.service_type:
                 record.servicetype = record.order.sudo().service_type.name
+            if record.service_type_name:
+                record.servicetype = record.service_type_name
 
     @api.multi
     def _compute_mileage(self):
@@ -73,6 +75,8 @@ class service_history(models.Model):
             print('entering')
             if mileage.order.sudo().mileage_in:
                 mileage.mileage = mileage.order.sudo().mileage_in
+            if mileage.mileage_in:
+                mileage.mileage = mileage.mileage_in
 
 
 class Brand_model(models.Model):

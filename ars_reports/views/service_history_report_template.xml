@@ -91,50 +91,50 @@
                 </table>
                 <br>
                 </br>
-                <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">
-                    <span style="font-size:16px;color:black;font-weight:bold;">
-                        <u>SUMMARY OF SERVICE HISTORY FOR THIS VEHICLE</u>
-                    </span>
-                </div>
-                <span style="font-weight:bold">Total Number of Services Done:</span>
-                <t t-esc="len(doc.service_ids)"/>
+<!--                <div style="font-weight:bold;width:100%;padding: 0px 2px;text-align: center;">-->
+<!--                    <span style="font-size:16px;color:black;font-weight:bold;">-->
+<!--                        <u>SUMMARY OF SERVICE HISTORY FOR THIS VEHICLE</u>-->
+<!--                    </span>-->
+<!--                </div>-->
+<!--                <span style="font-weight:bold">Total Number of Services Done:</span>-->
+<!--                <t t-esc="len(doc.service_ids)"/>-->
             </div>
             <br></br>
-            <table class="table-bordered" name="service_line_table"
-                   style="border:1px solid black;margin-bottom: 2px;width: 100%;">
-                <thead>
-                    <tr style="background-color:#e0e0e0">
-                        <th class="text-center" style="border:1px solid black;">SR Num</th>
-                        <th class="text-center" style="border:1px solid black;">Open Date</th>
-                        <th class="text-center" style="border:1px solid black;">Closed Date</th>
-                        <th class="text-center" style="border:1px solid black;">SR Type</th>
-                        <th class="text-center" style="border:1px solid black;">Odometer Reading</th>
-                        <th class="text-center" style="border:1px solid black;">Servicing Dealer</th>
-                    </tr>
-                </thead>
-                <tbody class="service_line_body">
-                    <tr t-foreach="doc.service_ids" t-as="l">
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.sudo().order"/>
-                        </td>
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.sudo().order.date_order" tz="IST"/>
-                        </td>
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-esc="l.sudo().order.invoice_ids.mapped('create_date')[-1]"/>
-                        </td>
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.sudo().servicetype"/>
-                        </td>
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.sudo().mileage"/>
-                        </td>
-                        <td class="text-center" style="background-color:#FFF;border:1px solid black">
-                            <span t-field="l.sudo().order.company_id.name"/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<!--            <table class="table-bordered" name="service_line_table"-->
+<!--                   style="border:1px solid black;margin-bottom: 2px;width: 100%;">-->
+<!--                <thead>-->
+<!--                    <tr style="background-color:#e0e0e0">-->
+<!--                        <th class="text-center" style="border:1px solid black;">SR Num</th>-->
+<!--                        <th class="text-center" style="border:1px solid black;">Open Date</th>-->
+<!--                        <th class="text-center" style="border:1px solid black;">Closed Date</th>-->
+<!--                        <th class="text-center" style="border:1px solid black;">SR Type</th>-->
+<!--                        <th class="text-center" style="border:1px solid black;">Odometer Reading</th>-->
+<!--                        <th class="text-center" style="border:1px solid black;">Servicing Dealer</th>-->
+<!--                    </tr>-->
+<!--                </thead>-->
+<!--                <tbody class="service_line_body">-->
+<!--                    <tr t-foreach="doc.service_ids" t-as="l">-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-field="l.order"/>-->
+<!--                        </td>-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-field="l.order.date_order" tz="IST"/>-->
+<!--                        </td>-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-esc="l.order.invoice_ids.mapped('create_date')[-1]"/>-->
+<!--                        </td>-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-field="l.servicetype"/>-->
+<!--                        </td>-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-field="l.mileage"/>-->
+<!--                        </td>-->
+<!--                        <td class="text-center" style="background-color:#FFF;border:1px solid black">-->
+<!--                            <span t-field="l.order.company_id.name"/>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                </tbody>-->
+<!--            </table>-->
         </t>
     </template>
     <!--    Detail Service History Tempalate -->

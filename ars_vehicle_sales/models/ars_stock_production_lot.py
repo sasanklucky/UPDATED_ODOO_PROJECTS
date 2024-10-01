@@ -134,7 +134,17 @@ class Picking(models.Model):
     #     return res
     @api.multi
     def button_validate(self):
-        res = super(Picking, self).button_validate()
+        vins = []
+        for stock_production_obj in self.move_line_ids:
+            if stock_production_obj.lot_id:
+                stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
+                                                                    'date_of_ownership': datetime.now(),
+                                                                    'address': self.partner_id.city,
+                                                                    'mobile': self.partner_id.mobile})]
+                if stock_production_obj.move_id.sale_line_id:
+                    stock_production_obj.lot_id.check_new_lotno = True
+
+
         self._cr.commit()
         picking_type = self.picking_type_id
         no_quantities_done = all(
@@ -145,7 +155,9 @@ class Picking(models.Model):
             if not no_quantities_done:
                 lines_to_check = lines_to_check.filtered(
                     lambda line: float_compare(line.qty_done, 0, precision_rounding=line.product_uom_id.rounding))
+
             for line in lines_to_check:
+
                 if self.location_id and self.location_id.usage == 'supplier':
                     if self.origin and 'Return' not in self.origin:
                         vals = {'mvariant_id': line.product_id.id,
@@ -153,10 +165,12 @@ class Picking(models.Model):
                                 'vin_sn': line.lot_id and line.lot_id.name or line.lot_name,
                                 'license_plate': '/',
                                 'engine_number': line.motor_number,
-                                'company_id': line.move_id.company_id.id,
+                                'key_serial_number': line.battery_number,
+                                'company_id': line.move_id.company_id.id or self.env.user.company_id.id,
                                 'vehicle_status': 'new',
                                 'lot_id': line.lot_id and line.lot_id.id,
-                                'driver_id': self.env.user.company_id.partner_id.id
+                                'driver_id': self.env.user.company_id.partner_id.id,
+                                'contact_name': self.env.user.company_id.partner_id.id,
                                 }
                         vin_sn = line.lot_id.name if line.lot_id else line.lot_name
                         existing_lot_numbers = []
@@ -167,12 +181,40 @@ class Picking(models.Model):
                             print(existing_lot_numbers)
                         else:
                             # sold_by_id = self.env.user.company_id.partner_id
-                            res = self.env['fleet.vehicle'].create(vals)
+                            param = self.env['ir.config_parameter'].sudo()
+                            cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
+                            is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
+                            if is_cons_enable and cons_db_name:
+                                consolidation_data = self.check_consolidation_vehicle_card(vin_sn, line)
+                                if consolidation_data:
+                                    wholesale_data = consolidation_data.get('wholesale_data', {})
+                                    if wholesale_data:
+                                        vals.update({'consolidate_vehicle_card_id': consolidation_data.get('vehicle_card_id')})
+                                        vehicle_card = self.env['fleet.vehicle'].create(vals)
+
+                                        wholesale_obj = self.env['wholesale.history'].create({
+                                            'vehicle_id': vehicle_card.id,
+                                            'dealer_name': wholesale_data.get('dealer_name'),
+                                            'so_number': wholesale_data.get('so_number'),
+                                            'so_id': wholesale_data.get('so_id'),
+                                            'delivery_date': wholesale_data.get('delivery_date'),
+                                            'invoice_number': wholesale_data.get('invoice_number'),
+                                            'invoice_id': wholesale_data.get('invoice_id'),
+                                            'po_number': wholesale_data.get('po_number'),
+                                            'transfer_type': wholesale_data.get('transfer_type'),
+                                            'dealer_code': wholesale_data.get('dealer_code')
+                                        })
+                                    else:
+                                        raise ValidationError(_("You can't buy vehicle, Because there is no Selling History "))
+                            else:
+                                vehicle_card = self.env['fleet.vehicle'].create(vals)
                             # res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
                             #                            'date_of_ownership': datetime.now(),
                             #                           'address': self.partner_id.city,
                             #                           'mobile': self.partner_id.mobile,
                             #                           'sold_by': sold_by_id.id})]
+
+
                     elif self.origin and 'Return' in self.origin:
                         vehicles = self.env['fleet.vehicle'].search([('lot_id', '=', line.lot_id.id)])
                         for vehicle in vehicles:
@@ -203,7 +245,7 @@ class Picking(models.Model):
                             #          'customer_ids': [(0, 0, {'custmer_name': self.partner_id.id,
                             #                                   'date_of_ownership': datetime.now(),
                             #                                   'address': self.partner_id.city,
-                            #                                   'mobile': self.partner_id.mobile})]})
+        res = super(Picking, self).button_validate()
         return res
 
 

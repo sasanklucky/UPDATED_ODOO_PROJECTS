@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+
+        <menuitem name="Dealers" id="ac_ars_consolidation_dealer_menu"
+                  parent="base.menu_users" groups="fleet.fleet_group_user"
+                  action="ac_ars_consolidation.ac_ars_consolidation_action_window"/>
+
+        <menuitem name="Service History" id="ac_ars_service_history_menu"
+                  parent="base.menu_users" groups="fleet.fleet_group_user"
+                  action="ac_ars_consolidation.ac_ars_service_history_action_window"/>
+
+    </data>
+</odoo>
