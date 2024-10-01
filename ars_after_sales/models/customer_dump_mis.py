@@ -242,12 +242,12 @@ class activity_inherit(models.Model):
             })
         return res
 
-    # @api.multi
-    # def unlink(self):
-    #     if self.env.user.has_group("base.group_system"):
-    #         return super(activity_inherit, self).unlink()
-    #     else:
-    #         raise ValidationError('You cannot Delete PSF Record.')
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group("base.group_system") and self.invoice_type in ['sales', 'after_sales']:
+            raise ValidationError('You cannot Delete PSF Record.')
+        else:
+            return super(activity_inherit, self).unlink()
 
     @api.multi
     def write(self, vals):
