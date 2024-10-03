@@ -21,7 +21,7 @@
         'views/account_invoice.xml',
         'views/ars_stock_warehouse_views.xml',
         'views/shell_location.xml',
-        'views/reveal_stock_qty_wizard.xml'
+        'views/reveal_stock_qty_wizard.xml',
         # 'views/stock_picking.xml',
         'views/templates.xml',
         'views/menu_items.xml',
