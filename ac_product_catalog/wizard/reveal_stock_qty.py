@@ -293,3 +293,8 @@ class PurchaseOrderLineRevealQty(models.Model):
     _inherit = "purchase.order.line"
 
     ims_reveal_qty = fields.Float(string='IMS Reveal Qty')
+
+class ProductTemplateRevealQty(models.Model):
+    _inherit = "product.template"
+
+    stock_reveal_quantity = fields.Float('Reveal Stock to Dealer',  readonly=True, store=True)
