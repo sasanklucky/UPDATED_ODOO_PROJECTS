@@ -122,6 +122,9 @@ class ARS_product_vehicle(models.Model):
     labor_unit = fields.Float()
     rsa = fields.Selection([('yes', 'YES'), ('no', 'NO')])
     ecb = fields.Selection([('yes', 'YES'), ('no', 'NO')])
+    description_form22 = fields.Text(
+        'Form-22 Description', translate=True,
+        help="The Form-22 Certificate Description")
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
