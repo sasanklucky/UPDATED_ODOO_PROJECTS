@@ -229,8 +229,6 @@ class ARS_After_sale_order(models.Model):
                             'email': order.email,
                             'reg_no': order.regn_no.id,
                             'vin': order.vin_no,
-                            'registration_no': order.fleet_regn_no,
-                            'vin_numb': order.fleet_vin_no.id,
                             'model': order.model.id,
                             'kilometer': order.mileage_in,
                             'doc_type': order.doc_type,
