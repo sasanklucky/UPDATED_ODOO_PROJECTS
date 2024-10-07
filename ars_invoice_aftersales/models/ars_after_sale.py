@@ -105,9 +105,6 @@ class ARS_After_sale_order(models.Model):
 
     @api.multi
     def action_invoice_create(self, grouped=False, final=False):
-        # print("-------invoice create---------------")
-        # import pdb
-        # pdb.set_trace()
         """
         Create the invoice associated to the SO.
         :param grouped: if True, invoices are grouped by SO id. If False, invoices are grouped by
@@ -115,148 +112,323 @@ class ARS_After_sale_order(models.Model):
         :param final: if True, refunds will be generated if necessary
         :returns: list of created invoices
         """
-
         inv_obj = self.env['account.invoice']
         precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
         invoices = {}
-        references = {}
+
         for order in self:
-            # self.env.cr.execute("""select
-            #                         distinct(sl.customer_split)
-            #                         from sale_order_line sl
-            #                         where sl.order_id = %s""", (order.id,))
-            # all_data = self.env.cr.dictfetchall()
-            # for data in all_data:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
-            warranty_invoice, customer_invoice = None, None
+            count = 0
+
+            # Handling after-sales scenario
             if order.sale_aftersales == 'after_sales' and not order.counter_parts:
-                # res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
-                # print("--------after sales-----------")
-                # for data in all_data:
-                count = 0
                 for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
 
-                    # if float_is_zero(line.qty_to_invoice, precision_digits=precision):
-                    #     continue
-                    # if line.customer_split.id == data.get('customer_split'):
+                    # Skip if no quantity to invoice
+                    if float_is_zero(line.qty_to_invoice, precision_digits=precision):
+                        continue
 
-                    invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],
-                                             limit=1)
-                    # inv_data = order.with_context(
-                    #     {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
-                    # print('inv_data', inv_data)
-                    # if invoice and invoice.state == 'draft':
-                    #     invoice = None
-                    # count += 1
-                    if invoice and invoice.state == 'draft':
+                    # Search for an existing draft invoice for the order and customer
+                    invoice = inv_obj.search([('origin', '=', order.name),
+                                              ('partner_id', '=', line.customer_split.id),
+                                              ('state', '=', 'draft')], limit=1)
+
+                    inv_data = order.with_context(
+                        {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+                    count += 1
+
+                    if invoice:
+                        # Reference invoices update
                         invoice_ref = inv_obj.search([('origin', '=', order.name),
                                                       ('cust_invoice_type', '!=', invoice.cust_invoice_type)])
                         if invoice_ref:
                             for ref_inv in invoice_ref:
                                 invoice.write({'invoice_reference': ref_inv.id})
                                 ref_inv.write({'invoice_reference': invoice.id})
-                        products = invoice.invoice_line_ids.mapped('product_id').ids
-                        if line.product_id.id not in products:
-                            if line.qty_to_invoice > 0:
-                                line.invoice_line_create(invoice.id, line.qty_to_invoice)
-                            if invoice.amount_untaxed < 0:
-                                invoice.type = 'out_refund'
-                                for line in invoice.invoice_line_ids:
-                                    line.quantity = -line.quantity
-                            # Use additional field helper function (for account extensions)
-                            for line in invoice.invoice_line_ids:
-                                line._set_additional_fields(invoice)
-                            # Necessary to force computation of taxes. In account_invoice, they are triggered
-                            # by onchanges, which are not triggered when doing a create.
-                            invoice.compute_taxes()
-                            invoice.message_post_with_view('mail.message_origin_link',
-                                                           values={'self': invoice, 'origin': order},
-                                                           subtype_id=self.env.ref('mail.mt_note').id)
-                        # else:
-                            # inv_data = order.with_context({'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
-                            # invoice = inv_obj.create(inv_data)
-                            # invoices[invoice.id] = invoice
+
+                        # Check if product already exists in the invoice line
+                        invoice_line = invoice.invoice_line_ids.filtered(
+                            lambda x: x.product_id.id == line.product_id.id)
+
+                        if invoice_line:
+                            # If product exists, update the quantity
+                            new_qty = invoice_line.quantity + line.qty_to_invoice
+                            invoice_line.write({'quantity': new_qty})
+                        else:
+                            # Otherwise, create a new invoice line
+                            line.invoice_line_create(invoice.id, line.qty_to_invoice)
+
+                        # Adjust for refunds if necessary
+                        if invoice.amount_untaxed < 0:
+                            invoice.type = 'out_refund'
+                            for inv_line in invoice.invoice_line_ids:
+                                inv_line.quantity = -inv_line.quantity
+
+                        # Force recalculation of taxes
+                        invoice.compute_taxes()
+                        invoice.message_post_with_view('mail.message_origin_link',
+                                                       values={'self': invoice, 'origin': order},
+                                                       subtype_id=self.env.ref('mail.mt_note').id)
                         invoices[invoice.id] = invoice
                     else:
-                        # print("invoice created----")
-                        inv_data = order.with_context(
-                            {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
-                        count += 1
-                        if order.counter_parts == False:
+                        # Create a new invoice if no draft invoice is found
+                        if not order.counter_parts:
                             if line.category.name.lower() == 'warranty':
                                 inv_data.update({'cust_invoice_type': 'warranty'})
-                                # print('warranty check')
                             elif line.category.name.lower() == 'customer':
                                 inv_data.update({'cust_invoice_type': 'customer'})
                             elif line.category.name.lower() == 'insurance':
                                 inv_data.update({'cust_invoice_type': 'insurance'})
+
                         invoice = inv_obj.create(inv_data)
                         invoices[invoice.id] = invoice
-                        #                         references[invoice] = order
-                        # invoices[group_key] = invoice
-                        if line.qty_to_invoice > 0:
-                            line.invoice_line_create(invoice.id, line.qty_to_invoice)
-                    invoice.write({'mobile': order.mobile, 'email': order.email,
-                                   'reg_no': order.regn_no.id, 'vin': order.vin_no,
-                                   'model': order.model.id, 'kilometer': order.mileage_in,
-                                   'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
-                                   'delivery_service_advisor': order.delivery_service_advisor.id,
-                                   'delivery_date': order.delivery_date, 'service_options': order.service_options.id,
-                                   'service_type': order.service_type.id})
-                #                     elif group_key in invoices:
-                #                         vals = {}
-                #                         if order.name not in invoices[group_key].origin.split(', '):
-                #                             vals['origin'] = invoices[group_key].origin + ', ' + order.name
-                #                         if order.client_order_ref and order.client_order_ref not in invoices[group_key].name.split(
-                #                                 ', ') and order.client_order_ref != invoices[group_key].name:
-                #                             vals['name'] = invoices[group_key].name + ', ' + order.client_order_ref
-                #                         invoices[group_key].write(vals)
+                        line.invoice_line_create(invoice.id, line.qty_to_invoice)
 
-                #                     if references.get(invoices.get(group_key)):
-                #                         if order not in references[invoices[group_key]]:
-                #                             references[invoice] = references[invoice] | order
-                #
-                #                     invoices[group_key] = invoice
+                    # Update invoice with additional information
+                    invoice.write({
+                        'mobile': order.mobile,
+                        'email': order.email,
+                        'reg_no': order.regn_no.id,
+                        'vin': order.vin_no,
+                        'registration_no': order.fleet_regn_no,
+                        'vin_numb': order.fleet_vin_no.id,
+                        'model': order.model.id,
+                        'kilometer': order.mileage_in,
+                        'doc_type': order.doc_type,
+                        'appointment_date': order.appointment_date,
+                        'delivery_service_advisor': order.delivery_service_advisor.id,
+                        'delivery_date': order.delivery_date,
+                        'service_options': order.service_options.id,
+                        'service_type': order.service_type.id
+                    })
 
-                #                 if not invoices:
-                #                     raise UserError(_('There is no invoiceable line.'))
-                #
-                #                 for invoice in invoices.values():
-                #                     if not invoice.invoice_line_ids:
-                #                         raise UserError(_('There is no invoiceable line.'))
-                #                     # If invoice is negative, do a refund invoice instead
-                #                     if invoice.amount_untaxed < 0:
-                #                         invoice.type = 'out_refund'
-                #                         for line in invoice.invoice_line_ids:
-                #                             line.quantity = -line.quantity
-                #                     # Use additional field helper function (for account extensions)
-                for line1 in invoice.invoice_line_ids:
-                    line1._set_additional_fields(invoice)
-                # Necessary to force computation of taxes. In account_invoice, they are triggered
-                # by onchanges, which are not triggered when doing a create.
+                # Ensure additional fields are set correctly
+                for inv_line in invoice.invoice_line_ids:
+                    inv_line._set_additional_fields(invoice)
+
+                # Force computation of taxes
                 invoice.compute_taxes()
-                # invoice.message_post_with_view('mail.message_origin_link',
-                #        values={'self': invoice, 'origin': order.name},
-                #        subtype_id=self.env.ref('mail.mt_note').id)
+
+                # Update order status
                 order.invoice_status = "invoiced"
+                invoice_catalog = order.order_line.mapped('category')
+                if len(invoice_catalog) == 1 and invoice_catalog.name.lower() == 'warranty':
+                    invoice_data = order._prepare_invoice()
+                    invoice_data.update({
+                        'partner_id': order.partner_id.id,
+                        'partner_shipping_id': order.partner_shipping_id.id
+                    })
+                    in_data = inv_obj.create(invoice_data)
+                    invoices[in_data.id] = in_data
+
+                    # Create invoice lines for warranty category
+                    for invoice_line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
+                        invoice_line.invoice_line_create(in_data.id, invoice_line.qty_delivered)
+                        in_data.write({
+                            'mobile': order.mobile,
+                            'email': order.email,
+                            'reg_no': order.regn_no.id,
+                            'vin': order.vin_no,
+                            'registration_no': order.fleet_regn_no,
+                            'vin_numb': order.fleet_vin_no.id,
+                            'model': order.model.id,
+                            'kilometer': order.mileage_in,
+                            'doc_type': order.doc_type,
+                            'appointment_date': order.appointment_date,
+                            'delivery_service_advisor': order.delivery_service_advisor.id,
+                            'delivery_date': order.delivery_date,
+                            'service_options': order.service_options.id,
+                            'service_type': order.service_type.id
+                        })
+
+                    # Set discount to 100% for warranty invoice lines
+                    for line_2 in in_data.invoice_line_ids:
+                        line_2.update({'discount': 100})
+                        line_2._set_additional_fields(in_data)
+
                 return [inv.id for inv in invoices.values()]
 
-            if order.sale_aftersales != 'after_sales' or order.counter_parts:
+            # Handle non-after sales and counter parts case
+            elif order.sale_aftersales != 'after_sales' or order.counter_parts:
                 res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)
-                rest.write({'mobile': order.mobile, 'email': order.email,
-                            'reg_no': order.regn_no.license_plate, 'vin': order.vin_no,
-                            'model': order.model, 'kilometer': order.mileage_in,
-                            'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
-                            'delivery_date': order.delivery_date,
-                            })
-
+                rest.write({
+                    'mobile': order.mobile,
+                    'email': order.email,
+                    'reg_no': order.regn_no.id,
+                    'vin': order.vin_no,
+                    'model': order.model.id,
+                    'kilometer': order.mileage_in,
+                    'doc_type': order.doc_type,
+                    'appointment_date': order.appointment_date,
+                    'delivery_date': order.delivery_date,
+                })
+                # Update invoice lines with product_template_id
                 for order_line in order.order_line:
                     invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
-                    # invoice.product_template_id = order_line.product_template_id.id
                     for inv_s in invoice:
                         inv_s.product_template_id = order_line.product_template_id.id
+
                 return [inv.id for inv in invoices.values()]
+
+            else:
+                res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
+                return res
+
+    # @api.multi
+    # def action_invoice_create(self, grouped=False, final=False):
+    #     # print("-------invoice create---------------")
+    #     # import pdb
+    #     # pdb.set_trace()
+    #     """
+    #     Create the invoice associated to the SO.
+    #     :param grouped: if True, invoices are grouped by SO id. If False, invoices are grouped by
+    #                     (partner_invoice_id, currency)
+    #     :param final: if True, refunds will be generated if necessary
+    #     :returns: list of created invoices
+    #     """
+    #
+    #     inv_obj = self.env['account.invoice']
+    #     precision = self.env['decimal.precision'].precision_get('Product Unit of Measure')
+    #     invoices = {}
+    #     references = {}
+    #     for order in self:
+    #         # self.env.cr.execute("""select
+    #         #                         distinct(sl.customer_split)
+    #         #                         from sale_order_line sl
+    #         #                         where sl.order_id = %s""", (order.id,))
+    #         # all_data = self.env.cr.dictfetchall()
+    #         # for data in all_data:
+    #         group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
+    #         warranty_invoice, customer_invoice = None, None
+    #         if order.sale_aftersales == 'after_sales' and not order.counter_parts:
+    #             # res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
+    #             # print("--------after sales-----------")
+    #             # for data in all_data:
+    #             count = 0
+    #             for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
+    #
+    #                 # if float_is_zero(line.qty_to_invoice, precision_digits=precision):
+    #                 #     continue
+    #                 # if line.customer_split.id == data.get('customer_split'):
+    #
+    #                 invoice = inv_obj.search([('origin', '=', order.name), ('partner_id', '=', line.customer_split.id)],
+    #                                          limit=1)
+    #                 # inv_data = order.with_context(
+    #                 #     {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+    #                 # print('inv_data', inv_data)
+    #                 # if invoice and invoice.state == 'draft':
+    #                 #     invoice = None
+    #                 # count += 1
+    #                 if invoice and invoice.state == 'draft':
+    #                     invoice_ref = inv_obj.search([('origin', '=', order.name),
+    #                                                   ('cust_invoice_type', '!=', invoice.cust_invoice_type)])
+    #                     if invoice_ref:
+    #                         for ref_inv in invoice_ref:
+    #                             invoice.write({'invoice_reference': ref_inv.id})
+    #                             ref_inv.write({'invoice_reference': invoice.id})
+    #                     products = invoice.invoice_line_ids.mapped('product_id').ids
+    #                     if line.product_id.id not in products:
+    #                         if line.qty_to_invoice > 0:
+    #                             line.invoice_line_create(invoice.id, line.qty_to_invoice)
+    #                         if invoice.amount_untaxed < 0:
+    #                             invoice.type = 'out_refund'
+    #                             for line in invoice.invoice_line_ids:
+    #                                 line.quantity = -line.quantity
+    #                         # Use additional field helper function (for account extensions)
+    #                         for line in invoice.invoice_line_ids:
+    #                             line._set_additional_fields(invoice)
+    #                         # Necessary to force computation of taxes. In account_invoice, they are triggered
+    #                         # by onchanges, which are not triggered when doing a create.
+    #                         invoice.compute_taxes()
+    #                         invoice.message_post_with_view('mail.message_origin_link',
+    #                                                        values={'self': invoice, 'origin': order},
+    #                                                        subtype_id=self.env.ref('mail.mt_note').id)
+    #                     # else:
+    #                         # inv_data = order.with_context({'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+    #                         # invoice = inv_obj.create(inv_data)
+    #                         # invoices[invoice.id] = invoice
+    #                     invoices[invoice.id] = invoice
+    #                 else:
+    #                     # print("invoice created----")
+    #                     inv_data = order.with_context(
+    #                         {'customer_split': line.customer_split.id, 'count_line': count})._prepare_invoice()
+    #                     count += 1
+    #                     if order.counter_parts == False:
+    #                         if line.category.name.lower() == 'warranty':
+    #                             inv_data.update({'cust_invoice_type': 'warranty'})
+    #                             # print('warranty check')
+    #                         elif line.category.name.lower() == 'customer':
+    #                             inv_data.update({'cust_invoice_type': 'customer'})
+    #                         elif line.category.name.lower() == 'insurance':
+    #                             inv_data.update({'cust_invoice_type': 'insurance'})
+    #                     invoice = inv_obj.create(inv_data)
+    #                     invoices[invoice.id] = invoice
+    #                     #                         references[invoice] = order
+    #                     # invoices[group_key] = invoice
+    #                     if line.qty_to_invoice > 0:
+    #                         line.invoice_line_create(invoice.id, line.qty_to_invoice)
+    #                 invoice.write({'mobile': order.mobile, 'email': order.email,
+    #                                'reg_no': order.regn_no.id, 'vin': order.vin_no,
+    #                                'model': order.model.id, 'kilometer': order.mileage_in,
+    #                                'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
+    #                                'delivery_service_advisor': order.delivery_service_advisor.id,
+    #                                'delivery_date': order.delivery_date, 'service_options': order.service_options.id,
+    #                                'service_type': order.service_type.id})
+    #             #                     elif group_key in invoices:
+    #             #                         vals = {}
+    #             #                         if order.name not in invoices[group_key].origin.split(', '):
+    #             #                             vals['origin'] = invoices[group_key].origin + ', ' + order.name
+    #             #                         if order.client_order_ref and order.client_order_ref not in invoices[group_key].name.split(
+    #             #                                 ', ') and order.client_order_ref != invoices[group_key].name:
+    #             #                             vals['name'] = invoices[group_key].name + ', ' + order.client_order_ref
+    #             #                         invoices[group_key].write(vals)
+    #
+    #             #                     if references.get(invoices.get(group_key)):
+    #             #                         if order not in references[invoices[group_key]]:
+    #             #                             references[invoice] = references[invoice] | order
+    #             #
+    #             #                     invoices[group_key] = invoice
+    #
+    #             #                 if not invoices:
+    #             #                     raise UserError(_('There is no invoiceable line.'))
+    #             #
+    #             #                 for invoice in invoices.values():
+    #             #                     if not invoice.invoice_line_ids:
+    #             #                         raise UserError(_('There is no invoiceable line.'))
+    #             #                     # If invoice is negative, do a refund invoice instead
+    #             #                     if invoice.amount_untaxed < 0:
+    #             #                         invoice.type = 'out_refund'
+    #             #                         for line in invoice.invoice_line_ids:
+    #             #                             line.quantity = -line.quantity
+    #             #                     # Use additional field helper function (for account extensions)
+    #             for line1 in invoice.invoice_line_ids:
+    #                 line1._set_additional_fields(invoice)
+    #             # Necessary to force computation of taxes. In account_invoice, they are triggered
+    #             # by onchanges, which are not triggered when doing a create.
+    #             invoice.compute_taxes()
+    #             # invoice.message_post_with_view('mail.message_origin_link',
+    #             #        values={'self': invoice, 'origin': order.name},
+    #             #        subtype_id=self.env.ref('mail.mt_note').id)
+    #             order.invoice_status = "invoiced"
+    #             return [inv.id for inv in invoices.values()]
+    #
+    #         if order.sale_aftersales != 'after_sales' or order.counter_parts:
+    #             res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
+    #             rest = inv_obj.browse(res)
+    #             rest.write({'mobile': order.mobile, 'email': order.email,
+    #                         'reg_no': order.regn_no.license_plate, 'vin': order.vin_no,
+    #                         'model': order.model, 'kilometer': order.mileage_in,
+    #                         'doc_type': order.doc_type, 'appointment_date': order.appointment_date,
+    #                         'delivery_date': order.delivery_date,
+    #                         })
+    #
+    #             for order_line in order.order_line:
+    #                 invoice = rest.invoice_line_ids.filtered(lambda x: x.product_id.id == order_line.product_id.id)
+    #                 # invoice.product_template_id = order_line.product_template_id.id
+    #                 for inv_s in invoice:
+    #                     inv_s.product_template_id = order_line.product_template_id.id
+    #             return [inv.id for inv in invoices.values()]
 
                 # 'product_template_id':order.order_line.product_template_id.id
 
