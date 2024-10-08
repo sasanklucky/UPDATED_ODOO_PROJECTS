@@ -1135,13 +1135,14 @@
                     <field name="name" string="Order Number"/>
                     <field name="confirmation_date" string="Order Date"/>
                     <field name="partner_id"/>
+                    <field name="regn_no"/>
+                    <field name="vin_no"/>
                     <field name="user_id" string="Service Advisor"/>
                     <field name="mileage_in" string="Kilometer"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
                     <field name="work_type"/>
-                    <field name="vin_no"/>
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                 </tree>
