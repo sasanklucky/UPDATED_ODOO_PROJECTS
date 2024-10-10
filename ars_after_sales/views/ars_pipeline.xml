@@ -670,10 +670,10 @@
                       decoration-muted="state=='cancel'">
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Quotation Number"/>
-                    <field name="regn_no" required="1" string="Reg No"/>
-                    <field name="vin_no"/>
                     <field name="date_order" string="Quotation Date"/>
                     <field name="partner_id"/>
+                     <field name="regn_no" required="1" string="Reg No"/>
+                    <field name="vin_no"/>
                     <field name="user_id" required="1" string="Service Advisor"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                     <field name="currency_id" invisible="1"/>
