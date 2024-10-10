@@ -110,7 +110,7 @@ class ars_sale_crm_lead(models.Model):
     # Mandatory fields (street, pan no, zip) when pipline stage is going to booked
     @api.multi
     def write(self, vals):
-        if 'stage_id' in vals or self.stage_id:
+        if 'stage_id' in vals:
             company = self.env.user.company_id.id
             user = self.env.user.id
             # new_stage = self.env['crm.stage'].browse(vals['stage_id'])
@@ -128,6 +128,7 @@ class ars_sale_crm_lead(models.Model):
                     if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
                         raise ValidationError(
                             "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
+            return super(ars_sale_crm_lead, self).write(vals)
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         stage = vals.get('stage_id')
         if stage and booking_stage:
@@ -161,7 +162,7 @@ class ars_sale_crm_lead(models.Model):
             user = self.env.user.id
             new_stage = self.env['crm.stage'].browse(vals['stage_id'])
             booking_stage_id = int(
-                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id'))
+                self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.pipeline_stages_ids'))
             teams = self.env['crm.team'].search(
                 [('company_id', '=', company), ('team_type', 'in', ['sales']), ('user_id', '=', user)])
             if new_stage.id == booking_stage_id:
