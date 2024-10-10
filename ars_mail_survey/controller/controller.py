@@ -58,12 +58,14 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     param = request.env['ir.config_parameter'].sudo()
                     survey_percentage = param.get_param('ars_mail_survey.survey_percentage')
                     if any(star in check_answer for star in ['1 Star', '2 Star', '3 Star']):
+                        mail_activity_model.create_helpdesk_ticket(activity_id)
                         activity_id.sudo().write({'satisfaction_status': 'dissatisfied'})
                     else:
                         activity_id.sudo().write({'satisfaction_status': 'satisfied'})
+                        activity_id.sudo().write({'stages': 'survey_done'})
 
-                    if score < float(survey_percentage):
-                        mail_activity_model.create_helpdesk_ticket(activity_id)
+                    # if score < float(survey_percentage):
+                    #     mail_activity_model.create_helpdesk_ticket(activity_id)
                     #     vals = {
                     #         'name': 'Post Sales Follow up Complaint' if activity_id.invoice_type == 'sales' else 'Post Service Follow up Complaint' if activity_id.invoice_type == 'after_sales' else ' ',
                     #         'user_id': activity_id.user_id.id,
@@ -73,8 +75,8 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     #     }
                     #     request.env['helpdesk.ticket'].sudo().create(vals)
                     #     activity_id.write({'stages':'ticket_created'})
-                    else:
-                        activity_id.write({'stages': 'survey_done'})
+                    # else:
+                    #     activity_id.write({'stages': 'survey_done'})
             else:
                 vals.update({'state': 'skip'})
             user_input.sudo(user=user_id).write(vals)
