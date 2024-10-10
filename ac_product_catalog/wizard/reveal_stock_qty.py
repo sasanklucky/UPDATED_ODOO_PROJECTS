@@ -70,7 +70,7 @@ class PurchaseRevealStockQty(models.Model):
                 for product in products:
                     line = stock_quantities.get(product.default_code)
                     if line:
-                        line['ims_reveal_qty'] = product.stock_reveal_quantity
+                        line['ims_reveal_qty'] = [product.stock_reveal_quantity, product.a_reveal_stock]
                         matched_codes.add(product.default_code)
 
                 missing_codes = [code for code in stock_quantities.keys() if code not in matched_codes]
@@ -93,7 +93,7 @@ class PurchaseRevealStockQty(models.Model):
         return [(0, 0, {
             'product_id': line_item['product_id'],
             'quantity': line_item['quantity'],
-            'ims_reveal_qty': line_item.get('ims_reveal_qty', 0),
+            'ims_reveal_qty': line_item['ims_reveal_qty'][0] if line_item['ims_reveal_qty'][1] else 0,
             'default_code': line_item['default_code']
         }) for line_item in ims_reveal_stock_qty]
 
@@ -179,7 +179,7 @@ class ImsStockRevealWizard(models.TransientModel):
                     'product_id': line_item['product_id'],
                     'default_code': line_item['default_code'],
                     'quantity': line_item['qty_available_line'],
-                    'ims_reveal_qty': line_item.get('ims_reveal_qty', 0)
+                    'ims_reveal_qty': line_item['ims_reveal_qty'][0] if line_item['ims_reveal_qty'][1] else 0,
                 }))
 
             self.purchase_order_line_ids = update_lines
@@ -234,7 +234,7 @@ class ImsStockRevealWizard(models.TransientModel):
                 default_codes = [line['default_code'] for line in purchase_lines if line.get('default_code')]
                 products = ims_product_env.search([('default_code', 'in', default_codes)])
 
-                stock_mapping = {product.default_code: product.stock_reveal_quantity for product in products}
+                stock_mapping = {product.default_code: [product.stock_reveal_quantity, product.a_reveal_stock] for product in products}
 
                 missing_codes = [line['default_code'] for line in purchase_lines if
                                  line['default_code'] not in stock_mapping]
@@ -263,7 +263,7 @@ class ImsStockRevealWizard(models.TransientModel):
                 ])
                 if purchase_order_line:
                     purchase_order_line.write({
-                        'ims_reveal_qty': line_item['ims_reveal_qty']
+                        'ims_reveal_qty': line_item['ims_reveal_qty'][0] if line_item['ims_reveal_qty'][1] else 0
                     })
                 else:
                     raise ValidationError(
@@ -287,7 +287,8 @@ class Product(models.Model):
     _inherit = "product.product"
 
     stock_reveal_quantity = fields.Float('Reveal Stock to Dealer',  readonly=True, store=True)
-
+    a_reveal_stock = fields.Boolean("Allow To Reveal Stock", related="product_tmpl_id.allow_to_reveal_stock",
+                                    store=True)
 
 class PurchaseOrderLineRevealQty(models.Model):
     _inherit = "purchase.order.line"
@@ -298,3 +299,4 @@ class ProductTemplateRevealQty(models.Model):
     _inherit = "product.template"
 
     stock_reveal_quantity = fields.Float('Reveal Stock to Dealer',  readonly=True, store=True)
+    allow_to_reveal_stock = fields.Boolean("Allow To Reveal Stock")

@@ -69,7 +69,7 @@ class ars_sale_crm_lead(models.Model):
                                    ('after_sales', 'After Sales'), ('others', 'Others')])
     model_id = fields.Many2one('product.template', string="Model")
     # enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
-    booking_date = fields.Date(string="Booking Date")
+    booking_date = fields.Datetime(string="Booking Date")
 
     @api.constrains('mobile')
     def check_mobile_with_model(self):
