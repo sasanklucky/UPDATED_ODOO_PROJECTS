@@ -798,7 +798,7 @@ class ARSSaleOrderLine(models.Model):
                 # Adjust this logic based on your actual product and company structure
                 stock_quant = self.env['stock.quant'].search([
                     ('product_id', '=', product.id),
-                    ('location_id.company_id', '=', company.id)
+                    ('location_id.company_id', '=', company.id), ('location_id.usage', 'in', ['internal', 'transit'])
                 ])
 
                 total_qty = sum(stock_quant.mapped('quantity'))
