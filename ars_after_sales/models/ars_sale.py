@@ -156,13 +156,13 @@ class ARS_sale_order(models.Model):
 
 
 
-    # @api.onchange('order_line')
-    # def onchange_identity_ids(self):
-    #     for order in self.order_line:
-    #         line = self.order_line.filtered(lambda l: l.product_id == order.product_id)
-    #         if len(line) > 1:
-    #             raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
-    #             break
+    @api.onchange('order_line')
+    def onchange_identity_ids(self):
+        for order in self.order_line:
+            line = self.order_line.filtered(lambda l: l.product_id == order.product_id)
+            if len(line) > 1:
+                raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
+                break
 
     @api.constrains('mileage_in')
     def _check_mileage_in(self):

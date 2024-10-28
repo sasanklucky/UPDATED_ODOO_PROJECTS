@@ -30,6 +30,7 @@ class ARSModel(models.Model):
         'Form-22 Description', translate=True,
         help="The Form-22 Certificate Description")
 
+
 # class website_module(models.Model)
 #     _inherit='website.menu'
 #
