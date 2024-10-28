@@ -752,9 +752,15 @@ class ARS_sale_order(models.Model):
         if self.env.context.get('count_line') == 0:
             self.env['service.history'].create({
                 'order': self.id,
+                'ro_id': self.id,
+                'ro_number': self.name,
                 'servicetype': self.service_type.name,
                 'date': date.today(),
                 'mileage': self.mileage_in,
+                'dealer_db_name': self.env.cr.dbname,
+                'service_code': self.service_type.code,
+                'service_type_name':self.service_type.name,
+                'mileage_in':self.mileage_in,
                 'next_service_due': next_service_due,
                 'set_reminder': set_reminder,
                 'vehicle_id': vehicle.id,
@@ -983,6 +989,7 @@ class ARS_PurchaseOrder(models.Model):
     @api.multi
     def _create_picking(self):
         StockPicking = self.env['stock.picking']
+        userid = self.env.user
         for order in self:
             if any([ptype in ['product', 'consu'] for ptype in order.order_line.mapped('product_id.type')]):
                 pickings = order.picking_ids.filtered(lambda x: x.state not in ('done', 'cancel'))

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_vehicle_message" model="ir.ui.view">
+        <field name="name">vehicle.message.view.form</field>
+        <field name="model">vehicle.message</field>
+        <field name="arch" type="xml">
+            <form string="Vehicle Message">
+                <group>
+                    <field name='vehicle_message' string="Message"/>
+                </group>
+                <footer>
+                    <button name="vehicle_message_define" string="Done" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vehicle_card_create_message_wizard" model="ir.actions.act_window">
+        <field name="name">Create Vehicle Card  Message</field>
+        <field name="res_model">vehicle.message</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="ac_vehicle_history.view_vehicle_message"/>
+        <field name="view_type">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

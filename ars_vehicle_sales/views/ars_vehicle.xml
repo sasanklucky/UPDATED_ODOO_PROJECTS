@@ -227,7 +227,7 @@
                             <notebook>
                                 <page string="Service History">
                                     <field name="service_ids">
-                                        <tree editable="bottom">
+                                        <tree editable="bottom" default_order="date">
                                             <field name="order" string="RO No"/>
                                             <field name="servicetype" string="Service Type"/>
                                             <field name="date" string="Date"/>

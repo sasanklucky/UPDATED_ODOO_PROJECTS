@@ -12,9 +12,15 @@ class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     region = fields.Many2one('res.region', string="Region")
-    _sql_constraints = [
-        ('unique_mobile', 'UNIQUE(mobile)', "The mobile number must be unique."),
-    ]
+    customer_code = fields.Char('Customer Code', store=True)
+    is_dealer = fields.Boolean('Is Dealer')
+    dealer_code = fields.Char('Dealer Code')
+
+    def generate_customer_code(self):
+        for rec in self:
+            if rec.id and not rec.customer_code:
+                db = rec._cr.dbname
+                rec.customer_code = f"{db}_{rec.id}"
 
 
 

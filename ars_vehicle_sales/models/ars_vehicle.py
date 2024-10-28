@@ -190,11 +190,11 @@ class FleetVehicle(models.Model):
     def write(self, vals):
         if 'driver_id' in vals and 'customer_ids' not in vals and 'date_of_ownership' not in vals:
             res = self.env['res.partner'].browse(vals.get('driver_id'))
-            vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
-                                                  'date_of_ownership': datetime.now(),
-                                                  'address': res.street,
-                                                  'sold_by': self.env.user.company_id.partner_id.id,
-                                                  'mobile': res.mobile})]})
+            # vals.update({'customer_ids': [(0, 0, {'custmer_name': res.id,
+            #                                       'date_of_ownership': datetime.now(),
+            #                                       'address': res.street,
+            #                                       'sold_by': self.env.user.company_id.partner_id.id,
+            #                                       'mobile': res.mobile})]})
         res = super(FleetVehicle, self).write(vals)
         if self.vehicle_status == 'customer' and 'customer_ids' not in vals:
             if not self.customer_ids:

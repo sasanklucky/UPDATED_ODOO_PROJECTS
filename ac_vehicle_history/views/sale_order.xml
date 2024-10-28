@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_service_order_form_inherit_vehicle_history" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.vehicle.history</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="ac_rms.rms_sale_order_view_inherited"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/sheet/div[@name='button_box']/button[@name='action_view_delivery']"
+                   position="before">
+                <button class="oe_stat_button" type="object"
+                        string="Service History"
+                        name="print_service_history_report"
+                        icon="fa-file">
+<!--                        attrs="{'invisible': [('sale_type', 'not in', ('after_sale'))]}">-->
+
+<!--                    <field name="is_vcard_available" invisible="1"/>-->
+                </button>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

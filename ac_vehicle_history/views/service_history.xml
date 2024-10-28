@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+         <record id='ars_vehicle_view_form_service_history' model='ir.ui.view'>
+            <field name="name">ars_vehicle_sale_form_inherit_service_history</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="ars_vehicle_sales.ars_vehicle_view_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='service_ids']/tree/field[@name='set_reminder']" position="after">
+                    <field name="cons_service_history_id" string="Consolidate Service History Id" invisible="1"/>
+                    <field name="service_code" string="Service Type Code" invisible="1"/>
+                    <field name="dealer_db_name" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
