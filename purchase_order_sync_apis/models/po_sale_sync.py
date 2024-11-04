@@ -342,17 +342,19 @@ class PurchaseOrderInheritSync(models.Model):
                         for line_data in rec.order_line:
                             print("line_data=====", line_data)
                             if rec.purchase_type == 'after_sales':
+                                # ('name', '=', line_data.product_id.product_tmpl_id.name),
                                 template_data = env['product.template'].sudo().search(
-                                    [('name', '=', line_data.product_id.product_tmpl_id.name),
-                                     ('default_code', '=', line_data.product_id.default_code)], order='id desc',
+                                    [('default_code', '=', line_data.product_id.default_code)], order='id desc',
                                     limit=1)
                             else:
                                 template_data = env['product.template'].sudo().search(
                                     [('name', '=', line_data.product_id.product_tmpl_id.name)], order='id desc',
                                     limit=1)
+                            # ('name', '=', line_data.product_id.name),
                             product_data = env['product.product'].sudo().search(
-                                [('name', '=', line_data.product_id.name),
-                                 ('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)
+                                [('default_code', '=', line_data.product_id.default_code)], order='id desc', limit=1)
+                            if product_data:
+                                template_data = product_data.product_tmpl_id
                             product_uom = env['product.uom'].sudo().search([('name', '=', line_data.product_uom.name)],
                                                                            order='id desc', limit=1)
                             catalog_data = env['product.catalog'].sudo().search(
@@ -500,7 +502,7 @@ class PurchaseOrderInheritSync(models.Model):
                                         lambda x: x.product_id.id == data_list['product_id'])
                                     cr.execute(f"""
                                         UPDATE sale_order 
-                                        SET sale_type = {"'" + str(data['sale_type'] + "'")},
+                                        SET sale_type = {"'" + (str(data['sale_type']) + "'")},
                                             counter_parts = {data['counter_parts']}
                                         WHERE id ={new_recordds.id};
                                     """)
