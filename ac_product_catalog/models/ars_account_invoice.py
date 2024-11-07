@@ -11,6 +11,8 @@ class ARSCatalogInvoice(models.Model):
 
     ars_invoice_type = fields.Selection([('general', 'General Invoice'), ('vehicle', 'Vehicle Invoice'),
                                          ('after_sales', 'After Sales Invoice')], string='Invoice Type')
+    kilometer = fields.Float(string="Kilometer")
+    kilometer_out = fields.Float(string="Kilometer Out")
 
     @api.onchange('ars_invoice_type','ars_type')
     def default_invoice_type(self):
