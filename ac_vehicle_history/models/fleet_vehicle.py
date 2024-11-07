@@ -11,13 +11,13 @@ class FleetVehicle(models.Model):
     wholesale_ids = fields.One2many('wholesale.history', 'vehicle_id', string="Wholesale History")
     service_type_sequence = fields.Integer(string="Service Type Sequence", compute='compute_service_type_sequence')
 
-    @api.model
-    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        template_result = super(FleetVehicle, self).fields_view_get(view_id=view_id,view_type=view_type, toolbar=toolbar,submenu=submenu)
-        doc = etree.XML(template_result['arch'])
-        doc.set('create', 'false')
-        template_result['arch'] = etree.tostring(doc)
-        return template_result
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+    #     template_result = super(FleetVehicle, self).fields_view_get(view_id=view_id,view_type=view_type, toolbar=toolbar,submenu=submenu)
+    #     doc = etree.XML(template_result['arch'])
+    #     doc.set('create', 'false')
+    #     template_result['arch'] = etree.tostring(doc)
+    #     return template_result
 
     @api.constrains('active')
     def check_vehicle_card(self):
