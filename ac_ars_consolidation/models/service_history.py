@@ -20,7 +20,7 @@ class FleetVehicleConsole(models.Model):
         # line_item = []
         # data = False
         all_service_details = []
-        service_details =[]
+        service_details = []
         try:
             service_orders = self.service_ids.mapped('dealer_db_name')
             for service_db in service_orders:
@@ -32,46 +32,48 @@ class FleetVehicleConsole(models.Model):
                     env = api.Environment(cr, SUPERUSER_ID, {})
                     domain = [('id', '=', services.ro_id)]
                     res_model = env['sale.order'].sudo()
-                    data = res_model.search(domain)
-                    if data:
-                        sr_close_date = data.invoice_ids.mapped('create_date')[-1] if data.invoice_ids else None
-                        res = {
-                            'name': data.name,
-                            'date_order': data.date_order,
-                            'sr_close_date': sr_close_date,
-                            'servicetype':services.servicetype,
-                            'mileage':services.mileage
-                        }
-                        ser_res = {
-                            'name': data.name,
-                            'date_order': data.date_order,
-                            'sr_close_date': sr_close_date,
-                            'servicetype':services.servicetype,
-                            'mileage':services.mileage,
-                            'dealer_name':data.company_id.name
-                        }
-                        cust_voice = []
-                        line_item=[]
-                        for voice in data.customer_voice_sale:
-                            cust_voice.append({'name': voice.name, 'instructions': voice.instructions})
-                        for sol in data.order_line:
-                            line_item.append({'name': sol.product_catalog_id.name,
-                                              'default_code': sol.product_id.default_code,
-                                              'description': sol.name,
-                                              'category_type': sol.category.type,
-                                              'product_uom_qty': sol.product_uom_qty
-                                              })
-                        res.update({'customer_voice': cust_voice, 'order_line': line_item})
-                        all_service_details.append(res)
-                        service_details.append(ser_res)
-            all_service_details = sorted(all_service_details, key=lambda x:x['sr_close_date'])
-            service_details = sorted(service_details, key=lambda x:x['sr_close_date'])
+                    datas = res_model.search(domain)
+                    if datas:
+                        for data in datas:
+                            sr_close_date = data.invoice_ids.mapped('create_date')[-1] if data.invoice_ids else None
+                            res = {
+                                'name': data.name,
+                                'date_order': data.date_order,
+                                'sr_close_date': sr_close_date,
+                                'servicetype': services.servicetype,
+                                'mileage': services.mileage
+                            }
+                            ser_res = {
+                                'name': data.name,
+                                'date_order': data.date_order,
+                                'sr_close_date': sr_close_date,
+                                'servicetype': services.servicetype,
+                                'mileage': services.mileage,
+                                'dealer_name': data.company_id.name
+                            }
+                            cust_voice = []
+                            line_item = []
+                            for voice in data.customer_voice_sale:
+                                cust_voice.append({'name': voice.name, 'instructions': voice.instructions})
+                            for sol in data.order_line:
+                                line_item.append({'name': sol.product_catalog_id.name,
+                                                  'default_code': sol.product_id.default_code,
+                                                  'description': sol.name,
+                                                  'category_type': sol.category.type,
+                                                  'product_uom_qty': sol.product_uom_qty
+                                                  })
+                            res.update({'customer_voice': cust_voice, 'order_line': line_item})
+                            all_service_details.append(res)
+                            service_details.append(ser_res)
+            all_service_details = sorted(all_service_details, key=lambda x: x['sr_close_date'])
+            service_details = sorted(service_details, key=lambda x: x['sr_close_date'])
 
         except Exception as e:
             print(e)
             all_service_details = False
         print(all_service_details, 'all_service_detailsall_service_detailsall_service_details------------------')
-        return {'all_service_details':all_service_details,'service_details':service_details}
+        return {'all_service_details': all_service_details, 'service_details': service_details}
+
 
 class ARS_ServiceHistory(models.Model):
     _inherit = 'service.history'
@@ -79,12 +81,6 @@ class ARS_ServiceHistory(models.Model):
     dealer_id = fields.Many2one('ars.consolidation.setup')
     ro_id = fields.Integer()
     ro_number = fields.Char('RO Reference')
-
-
-
-
-
-
 
     # @api.model
     # def _get_service_history_from_dealers(self):
@@ -143,9 +139,6 @@ class ARS_ServiceHistory(models.Model):
     #         print(res, 'ressssssssssss------------------')
     #         return res
 
-
-
-
     # def _get_service_history_from_dealers(self):
     #     res = {}
     #     cust_voice = []
@@ -175,6 +168,7 @@ class ARS_ServiceHistory(models.Model):
     #     except Exception as e:
     #         print(e)
     #         return False
+
 
 class ARS_OwnershipHistory(models.Model):
     _inherit = 'ownership.history'
