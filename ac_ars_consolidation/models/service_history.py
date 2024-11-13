@@ -30,7 +30,7 @@ class FleetVehicleConsole(models.Model):
                 with contextlib.closing(db.cursor()) as cr:
                     cr.autocommit(True)
                     env = api.Environment(cr, SUPERUSER_ID, {})
-                    domain = [('id', '=', services.ro_id)]
+                    domain = [('id', '=', services.mapped('ro_id'))]
                     res_model = env['sale.order'].sudo()
                     datas = res_model.search(domain)
                     if datas:
@@ -40,15 +40,15 @@ class FleetVehicleConsole(models.Model):
                                 'name': data.name,
                                 'date_order': data.date_order,
                                 'sr_close_date': sr_close_date,
-                                'servicetype': services.servicetype,
-                                'mileage': services.mileage
+                                'servicetype': data.service_options.name,
+                                'mileage': data.mileage_in
                             }
                             ser_res = {
                                 'name': data.name,
                                 'date_order': data.date_order,
                                 'sr_close_date': sr_close_date,
-                                'servicetype': services.servicetype,
-                                'mileage': services.mileage,
+                                'servicetype': data.service_options.name,
+                                'mileage': data.mileage_in,
                                 'dealer_name': data.company_id.name
                             }
                             cust_voice = []
