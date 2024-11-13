@@ -8,6 +8,7 @@ class RepairOrderReport(models.Model):
     _auto = False
 
     dealer_code = fields.Char(string="Dealer Code")
+    invoice_number = fields.Char(string="Invoice Number")
     dealer_id = fields.Many2one('res.company','Dealer Name')
     dealer_state_id = fields.Many2one('res.country.state',string="State",related="dealer_id.state_id")
     dealer_city_id = fields.Char(string="City", related="dealer_id.city")
@@ -101,6 +102,7 @@ class RepairOrderReport(models.Model):
                 SELECT 
                     ROW_NUMBER() OVER (ORDER BY sol.id DESC) AS id,
                     so.id AS order_id,
+                    inv.number as invoice_number,
                     so.partner_id AS customer_id,
                     sol.id AS line_item_id,
                     rs.dealer_code AS dealer_code,
@@ -117,7 +119,7 @@ class RepairOrderReport(models.Model):
                     last_service.ro_type as ro_type,
                     rs.dealer_code AS last_service_dealer, 
                     so.name AS ro_number,  -- Fetching 'name' from 'sale_order' instead
-                    so.appointment_date AS ro_open_date,
+                    so.confirmation_date AS ro_open_date,
                     so.confirmation_date AS last_ro_close_date,
                     inv.create_date AS ro_close_date,
                     so.mileage_in AS odoometer,

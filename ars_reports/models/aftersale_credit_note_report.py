@@ -77,7 +77,7 @@ class AfterSlaesRetailReport(models.Model):
             (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
             (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
             (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
-            (select so.appointment_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
+            (select so.confirmation_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
 
             so.service_type as service_type,
             (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
