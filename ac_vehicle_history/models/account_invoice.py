@@ -61,5 +61,5 @@ class AccountInvoice(models.Model):
                                                 dealer_vehicle_card.sudo().write({'odometer': self.kilometer_out})
             return res
         else:
-            res = super(AccountInvoice, self).action_invoice_open()
+            # res = super(AccountInvoice, self).action_invoice_open()
             return res
