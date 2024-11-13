@@ -739,24 +739,59 @@ class ARS_sale_order(models.Model):
             #             fields.Datetime.from_string(date.today()) + timedelta(days=int(nxt_due))
             res.update({'service_type': self.service_type.id if self.service_type else False,
                         'service_options': self.service_options.id if self.service_options else False, })
+
+        service_typ = self.env['service.type'].search([('id', '=', self.service_type.id), ('sequence', '>=', 0)],
+                                                      limit=1).sequence
+        next_ser_typ = service_typ + 1
+        next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
+
+        remainder = self.env.user.company_id.next_service_remainder
+        remainder_value = int(remainder) if isinstance(remainder, str) else remainder
+
+        service_manual = {
+            days.id: {
+                'next_service': int(days.days) if isinstance(days.days, str) else days.days,
+                'service_remainder': (int(days.days) if isinstance(days.days, str) else days.days) - remainder_value
+            }
+            for days in self.env['service.setup.manual'].search(
+                [('service_type', '=', next.id), ('model_id', '=', self.vehicle_model.id)], limit=1)
+        }
+
+        next_services = [values['next_service'] for values in service_manual.values()]
+        service_remainders = [values['service_remainder'] for values in service_manual.values()]
+
         if not vehicle.service_due:
-            next_service_due = datetime.now().date() + timedelta(days=int(nxt_due))
-            set_reminder = datetime.now().date() + timedelta(days=int(remainder))
+            next_service_due = datetime.now().date() + timedelta(days=int(next_services[0] if next_services else nxt_due))
+            set_reminder = datetime.now().date() + timedelta(days=int(service_remainders[0] if service_remainders else remainder))
         else:
             ser_history = vehicle.service_due
             last_service_history = ser_history.sorted(key=lambda r: r.id)[-1]
+            service_typ = self.env['service.type'].search([('name', '=', last_service_history.service_type_name), ('sequence', '>=', 0)],
+                                                          limit=1).sequence
+            next_ser_typ = service_typ + 1
+            next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
+            service_manual = {
+                days.id: {
+                    'next_service': int(days.days) if isinstance(days.days, str) else days.days,
+                    'service_remainder': (int(days.days) if isinstance(days.days, str) else days.days) - remainder_value
+                }
+                for days in self.env['service.setup.manual'].search(
+                    [('service_type', '=', next.id), ('model_id', '=', self.vehicle_model.id)], limit=1)
+            }
+            next_services = [values['next_service'] for values in service_manual.values()]
+            service_remainders = [values['service_remainder'] for values in service_manual.values()]
             next_service_due = datetime.strptime(last_service_history.next_service_due, '%Y-%m-%d') + timedelta(
-                days=int(nxt_due))
+                days=int(next_services[0] if next_services else nxt_due))
             set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
-                days=int(remainder))
+                days=int(service_remainders[0] if service_remainders else remainder))
         if self.env.context.get('count_line') == 0:
             self.env['service.history'].create({
                 'order': self.id,
                 'servicetype': self.service_type.name,
                 'date': date.today(),
                 'mileage': self.mileage_in,
-                'next_service_due': next_service_due,
-                'set_reminder': set_reminder,
+                'next_service_due': '' if self.service_type.sequence <= 0 else next_service_due,
+                'set_reminder': '' if self.service_type.sequence <= 0 else set_reminder,
                 'vehicle_id': vehicle.id,
             })
         return res

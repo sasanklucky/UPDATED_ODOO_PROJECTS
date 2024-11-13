@@ -680,6 +680,7 @@ class AccountInvoice_inherit(models.Model):
 
     @api.multi
     def action_invoice_open(self):
+        res = super(AccountInvoice_inherit, self).action_invoice_open()
         # lots of duplicate calls to action_invoice_open, so we remove those already open
         warranty_ids = self.env['ars.sale.warranty'].search(
             [('order_id.name', '=', self.origin), ('partner_id', '=', self.partner_id.id)])
@@ -698,6 +699,8 @@ class AccountInvoice_inherit(models.Model):
         for order in self:
             for vin in order.invoice_line_ids.mapped('vin_no'):
                 vehicle_card = self.env['fleet.vehicle'].search([('lot_id', '=', vin.id)])
+                if not order.gate_pass_date:
+                    order.gate_pass_date = datetime.now()
                 if not vehicle_card:
                     vehicle_card = self.env['fleet.vehicle'].search([('vin_sn', '=', vin.name)])
                 if vehicle_card:
@@ -706,10 +709,45 @@ class AccountInvoice_inherit(models.Model):
                          'lot_id': vin.id,
                          'customer_ids': [(0, 0, {'custmer_name': order.partner_id.id,
                                                   'date_of_ownership': order.date_invoice,
+                                                  'delivery_date': order.gate_pass_date,
                                                   'address': order.partner_id.city,
                                                   'sold_by': self.env.user.company_id.partner_id.id,
                                                   'mobile': order.partner_id.mobile})]})
-        res = super(AccountInvoice_inherit, self).action_invoice_open()
+                    if vehicle_card.service_type_sequence == 0:
+                        if vehicle_card.customer_ids:
+                            if vehicle_card.service_type_sequence == 0:
+                                service_typ = self.env['service.type'].search([('sequence', '=', vehicle_card.service_type_sequence)], limit=1)
+                                for v in vehicle_card.service_ids:
+                                    if v.service_type_name == service_typ.name:
+                                        k = self.env['service.history'].search([('id', '=', v.id), ('vehicle_id', '=', vehicle_card.id)])
+                                        next_ser_typ = vehicle_card.service_type_sequence + 1
+                                        next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
+
+                                        remainder = self.env.user.company_id.next_service_remainder
+                                        nxt_due = self.env.user.company_id.next_service_due
+                                        remainder_value = int(remainder) if isinstance(remainder, str) else remainder
+
+                                        service_manual = {
+                                            days.id: {
+                                                'next_service': int(days.days) if isinstance(days.days, str) else days.days,
+                                                'service_remainder': (int(days.days) if isinstance(days.days,
+                                                                                                   str) else days.days) - remainder_value
+                                            }
+                                            for days in self.env['service.setup.manual'].search(
+                                                [('service_type', '=', next.id), ('model_id', '=', vehicle_card.model_id.id)],
+                                                limit=1)
+                                        }
+
+                                        next_services = [values['next_service'] for values in service_manual.values()]
+                                        service_remainders = [values['service_remainder'] for values in service_manual.values()]
+                                        next_service_due = datetime.now().date() + timedelta(
+                                            days=int(next_services[0] if next_services else nxt_due))
+                                        set_reminder = datetime.now().date() + timedelta(
+                                            days=int(service_remainders[0] if service_remainders else remainder))
+                                        k.write({
+                                            'next_service_due': next_service_due,
+                                            'set_reminder': set_reminder
+                                        })
         return res
 
     @api.model
