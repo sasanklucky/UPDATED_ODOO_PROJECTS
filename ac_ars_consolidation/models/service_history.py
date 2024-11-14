@@ -23,6 +23,7 @@ class FleetVehicleConsole(models.Model):
         service_details = []
         try:
             service_orders = self.service_ids.mapped('dealer_db_name')
+            service_orders = list(set(service_orders))
             for service_db in service_orders:
                 services = self.service_ids.filtered(lambda r: r.dealer_db_name == service_db)
                 database = service_db
