@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_qty_reveal_from_ims_wizard" model="ir.ui.view">
+            <field name="name">purchase.ims.stock.reveal.wizard.form</field>
+            <field name="model">ims.stock.reveal.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Quantity Inquiry From IMS">
+                    <group>
+                        <field name="confirmation_message" readonly="1"/>
+                    </group>
+                        <notebook>
+                            <page string="IMS Stock">
+                                <field name="purchase_order_line_ids">
+                                    <tree editable="False" create="0" delete="0">
+                                        <field name="default_code" readonly="True"/>
+                                        <field name="product_id" readonly="True" no_open="True"/>
+                                        <field name="quantity" readonly="True"/>
+                                        <field name="ims_reveal_qty" readonly="True"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                    <footer>
+                        <button string="Update" type="object" name="confirm_action" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Define the action for opening the wizard -->
+        <record id="action_purchase_confirm_wizard" model="ir.actions.act_window">
+            <field name="name">Qty Inquiry From IMS</field>
+            <field name="res_model">ims.stock.reveal.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_qty_reveal_from_ims_wizard"/>
+            <field name="target">new</field>
+            <field name="context">{"default_confirmation_message": "Are you sure you want to confirm this purchase
+                order?"}
+            </field>
+        </record>
+
+        <record id="purchase_order_qty_reveal_parts" model="ir.ui.view">
+            <field name="name">purchase_order_qty_reveal_parts_ims</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header" position="inside">
+                    <button name="stock_reveal_wizard" string="Inquire OEM Stock" type="object" class="btn-primary"/>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']"
+                       position="before">
+                    <field name="ims_reveal_qty" readonly="True"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="view_qty_reveal_from_ims_parts_inquery" model="ir.ui.view">
+            <field name="name">purchase.ims.stock.reveal.parts.inquery</field>
+            <field name="model">ims.stock.reveal.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Quantity Reveal From IMS">
+                    <group>
+                        <field name="product_category"  options="{'no_create': True, 'no_create_edit':True, 'no_open':True}"/>
+                        <field name="show_product_template" invisible="1"/>
+                        <field name="product_template_id" options="{'no_create': True, 'no_create_edit':True, 'no_open':True}"
+                               attrs="{'invisible': [('show_product_template', '=', False)]}"/>
+                        <field name="product_id" widget="many2many_tags"  options="{'no_create': True, 'no_create_edit':True,'no_open':True}"/>
+                    </group>
+                        <notebook>
+                            <page string="IMS Stock">
+                            <field name="purchase_order_line_ids">
+                                <tree editable="False" create="0" delete="0">
+                                    <field name="default_code" readonly="True"/>
+                                    <field name="product_id" readonly="True" no_open="True"/>
+                                    <field name="quantity" readonly="True"/>
+                                    <field name="ims_reveal_qty" readonly="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        </notebook>
+                    <footer>
+                        <button string="Fetch Data" type="object" name="fetch_data_from_other_db"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_parts_inquery_wizard" model="ir.actions.act_window">
+            <field name="name">Qty Inquiry From IMS</field>
+            <field name="res_model">ims.stock.reveal.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_qty_reveal_from_ims_parts_inquery"/>
+            <field name="target">new</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="stock_parts_oem_inquery"
+                  name="Part OEM Inquiry"
+                  parent="ac_parts_management.stock_parts_inventory_operation"
+                  sequence="0" action="ac_product_catalog.action_parts_inquery_wizard"/>
+
+    </data>
+</odoo>

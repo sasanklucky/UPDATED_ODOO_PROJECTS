@@ -15,7 +15,7 @@ class WebsiteSurvey(main.WebsiteSurvey):
         _logger.debug('Incoming data: %s', post)
         page_id = int(post['page_id'])
         questions = request.env['survey.question'].search([('page_id', '=', page_id)])
-
+        tot_questions = request.env['survey.question'].search([('page_id', '=', page_id)])
         # Answer validation
         errors = {}
         for question in questions:
@@ -38,6 +38,10 @@ class WebsiteSurvey(main.WebsiteSurvey):
                 answer_tag = "%s_%s_%s" % (survey.id, page_id, question.id)
                 request.env['survey.user_input_line'].sudo(user=user_id).save_lines(user_input.id, question, post,
                                                                                     answer_tag)
+            check_answer = []
+            for user_input_line in user_input.user_input_line_ids:
+                if user_input_line.value_suggested:
+                    check_answer.append(user_input_line.value_suggested.value)
 
             go_back = post['button_submit'] == 'previous'
             next_page, _, last = request.env['survey.survey'].next_page(user_input, page_id, go_back=go_back)
@@ -53,8 +57,15 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     score = activity_id.response_id.quizz_score / (len(questions) * 100) * 100
                     param = request.env['ir.config_parameter'].sudo()
                     survey_percentage = param.get_param('ars_mail_survey.survey_percentage')
-                    if score < float(survey_percentage):
+                    if any(star in check_answer for star in ['1 Star', '2 Star', '3 Star']):
                         mail_activity_model.create_helpdesk_ticket(activity_id)
+                        activity_id.sudo().write({'satisfaction_status': 'dissatisfied'})
+                    else:
+                        activity_id.sudo().write({'satisfaction_status': 'satisfied'})
+                        activity_id.sudo().write({'stages': 'survey_done'})
+
+                    # if score < float(survey_percentage):
+                    #     mail_activity_model.create_helpdesk_ticket(activity_id)
                     #     vals = {
                     #         'name': 'Post Sales Follow up Complaint' if activity_id.invoice_type == 'sales' else 'Post Service Follow up Complaint' if activity_id.invoice_type == 'after_sales' else ' ',
                     #         'user_id': activity_id.user_id.id,
@@ -64,8 +75,8 @@ class WebsiteSurvey(main.WebsiteSurvey):
                     #     }
                     #     request.env['helpdesk.ticket'].sudo().create(vals)
                     #     activity_id.write({'stages':'ticket_created'})
-                    else:
-                        activity_id.write({'stages': 'survey_done'})
+                    # else:
+                    #     activity_id.write({'stages': 'survey_done'})
             else:
                 vals.update({'state': 'skip'})
             user_input.sudo(user=user_id).write(vals)

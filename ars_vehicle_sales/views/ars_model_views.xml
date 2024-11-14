@@ -311,6 +311,9 @@
                            attrs="{'readonly': [('sales_count', '!=', 0)]}"/>
                     <field name="model_id" string="Model" domain="[('catalog_type.name', '=','Vehicle')]"
                            options="{'no_create': True, 'no_open': True}"
+                           attrs="{'invisible': True}"/>
+                    <field name="model_ids" string="Models" domain="[('catalog_type.name', '=','Vehicle')]"
+                           options="{'no_create': True, 'no_open': True}" widget="many2many_tags"
                            attrs="{'invisible': [('catalog_type_name','not in',['Labor','Parts'])]}"/>
                     <field name="labor_unit" string="Labour Unit"
                            attrs="{'invisible': [('catalog_type_name','!=','Labor')]}"/>
