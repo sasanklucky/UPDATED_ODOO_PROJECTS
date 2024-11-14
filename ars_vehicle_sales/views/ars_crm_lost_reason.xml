@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <field name="name" position="after">
                     <field name="type"/>
+                    <field name="sale_type"/>
                 </field>
             </field>
         </record>

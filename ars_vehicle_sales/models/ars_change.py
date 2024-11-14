@@ -659,3 +659,5 @@ class ARSCrmLostReason(models.Model):
 
     type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
                             help="Type is used to separate Leads and Opportunities")
+    sale_type = fields.Selection([('after_sales', 'After Sales'),
+                                  ('sales', 'Sales')], string='Sales Type')
