@@ -17,6 +17,7 @@
                     <field name="dealer_state_id" />
                     <field name="dealer_city_id" />
                     <field name="ro_number"/>
+                    <field name="invoice_number"/>
                     <field name="customer_id" />
                     <field name="customer_contact" />
                     <field name="customer_state_id" />
