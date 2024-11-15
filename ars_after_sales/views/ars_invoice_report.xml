@@ -25,6 +25,9 @@
                     <span t-if="o.type == 'in_refund'">Vendor Credit Note</span>
                     <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
                     <span t-field="o.number"/>
+                    <br/>
+                    <span t-if="o.type == 'in_invoice'">Vendor Bill Creation Date</span>
+                    <span t-field="o.create_date" t-options="{&quot;format&quot;: &quot;dd/MM/yyyy&quot;, &quot;widget&quot;: &quot;date&quot;}"/>
                 </t>
                 <t t-if="o.type == 'out_invoice'">
                     <!--                <link href="/ac_rms/static/src/css/ars_invoice.css" rel="stylesheet" type="text/css"/>-->

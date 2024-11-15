@@ -2702,6 +2702,16 @@
                                 </div>
                             </group>
                         </group>
+                            <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                             <b>
+                                 <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                                    <span style="color: darkred;">
+                                        Invoice
+                                    </span>
+                                    <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
+                                 </div>
+                            </b>
+                        </div>
                         <field name="sent" invisible="1"/>
                         <notebook colspan="4">
                             <page string="Invoice Lines">
@@ -2834,6 +2844,18 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group" position="inside">
+                <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                    <b>
+                        <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                            <span style="color: darkred;">
+                                Invoice
+                            </span>
+                            <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
+                        </div>
+                    </b>
+                </div>
+            </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']"
                        position="after">
                     <field name="admin_access" invisible="1"/>
@@ -2900,6 +2922,9 @@
                     <!--                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}" />-->
                     <field name="price_unit" force_save="1"
                            attrs="{'readonly': [('admin_access_1', 'not in', [True])]}"/>
+                </xpath>
+                <xpath expr="//form/sheet/group/group[2]//field[@name='origin']" position="after">
+                    <field name="create_date" string="Vendor Bill Creation Date" widget="date" attrs="{'readonly': True}"/>
                 </xpath>
             </field>
         </record>
