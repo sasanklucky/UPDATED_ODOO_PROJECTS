@@ -772,7 +772,7 @@ class SaleOrderRestr(models.Model):
     #     return super(SaleOrderRestr, self).create(vals)
 
     def write(self, vals):
-        if ('name' in vals or self.name) and self.env.context.get('default_sale_type') == 'after_sales':
+        if ('name' in vals or self.name) and self.env.context.get('default_sale_aftersales') == 'after_sales':
             self._check_invoice_status(self.name)
         return super(SaleOrderRestr, self).write(vals)
 
