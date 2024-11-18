@@ -17,4 +17,15 @@ class ResPartner(models.Model):
     ]
 
 
+class EcbRegions(models.Model):
+    _name = 'zone.zone'
+    _rec_name = 'zone_name'
 
+    zone_name = fields.Selection([
+        ('east', 'EAST'),
+        ('west', 'WEST'),
+        ('north', 'NORTH'),
+        ('south', 'SOUTH')
+    ], 'Zone Name')
+
+    responsible_person = fields.Many2one('res.partner', string='Responsible Person')

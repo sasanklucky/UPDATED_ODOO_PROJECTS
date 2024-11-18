@@ -51,11 +51,19 @@
             <field name="auto_delete" eval="True"/>
             <field name="subject">ECB Report</field>
             <field name="lang"></field>
-            <field name="body_html" type="xml">
-                <div>
-                    <p>Hi Sir, Please find the attachment for ECB Report</p>
-                    <br/>
-                </div>
+            <field name="body_html"><![CDATA[<html>
+                % set record = ctx.get('active_id')
+                % set dealer = ctx.get('dealer_name')
+                <p>Dear ${record}</p>
+                </br/>
+                <p>Please find attached the list of customers for whom the charger installation visit needs to be done for the region.</p>
+                <p>Request you to kindly contact the customer first take the address confirmation from then and go for FS.</p>
+                <br/>
+                <br/>
+                <p>Regards,</p>
+                <p>${dealer}</p>
+                </html>
+            ]]>
             </field>
         </record>
     </data>
