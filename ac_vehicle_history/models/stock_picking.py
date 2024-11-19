@@ -242,6 +242,7 @@ class StockPicking(models.Model):
                                         {'driver_id': existing_customer.id, 'contact_name':existing_customer.id, 'vehicle_status': 'customer'})
                                     _logger.info("Ownership history updated consolidation database %s", consolidate_vehicle_card.id)
                         return super(StockPicking, self).button_validate()
+            return super(StockPicking, self).button_validate()
         else:
             res = super(StockPicking, self).button_validate()
             return res
