@@ -4,7 +4,7 @@ from datetime import datetime
 
 class report_epv_sales_enquiry(models.Model):
     _name = 'report_epv_sales_enquiry'
-    _description = 'Report EPV Sales Enquiry  '
+    _description = 'Report EPV Sales Enquiry'
     _auto = False
 
     def get_address(self):
@@ -137,31 +137,60 @@ class report_epv_sales_enquiry(models.Model):
     loan = fields.Selection([('yes', 'Yes'), ('no', 'No')],compute="get_loan_details")
     loan_bank = fields.Char(compute="get_loan_details")
     delivery_date = fields.Char('Delivery Date')
-    @api.model_cr
-    def init(self):
-        tools.drop_view_if_exists(self.env.cr, self._table)
-        print("table name", self._table);
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline 
-            as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,so.id as sale_order_id,
-            case
-            when a.date_deadline - a.create_date::Date <= 30 then 'HOT'
-            when a.date_deadline - a.create_date::Date > 30 and a.date_deadline - a.create_date::Date <= 60 then 'WARM'
-            when a.date_deadline - a.create_date::Date > 60 then 'COLD'
-            else ''
-            end as enquiry_category,
-            case
-                when a.is_test_drive = true then 'yes'
-                when a.is_test_drive = false then 'no'
-            else 'no'
-            end as test_drive,inv.id as invoice_id,
-            a.user_id,a.partner_id,a.title,a.contact_name,
-            a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
-            a.referred as referred,pic.date_done::Date as delivery_date
-            from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
-            left join sale_order so on so.opportunity_id = a.id
-            left join account_invoice inv on inv.order_id = so.id
-            left join stock_picking pic on pic.sale_id = so.id
-            where a.type = 'opportunity'
 
-        )""" % (self._table))
+    @api.multi
+    def sql_querry(self, user):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        print("table name", self._table)
+        print("table name", self.env.uid)
+        if len(user) == 1:
+            company_ids = f"({user[0]})"
+        else:
+            company_ids = tuple(user)
+        self.env.cr.execute(""" CREATE or REPLACE VIEW {table_name} as (
+                    select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline 
+                    as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,so.id as sale_order_id,
+                    case
+                    when a.date_deadline - a.create_date::Date <= 30 then 'HOT'
+                    when a.date_deadline - a.create_date::Date > 30 and a.date_deadline - a.create_date::Date <= 60 then 'WARM'
+                    when a.date_deadline - a.create_date::Date > 60 then 'COLD'
+                    else ''
+                    end as enquiry_category,
+                    case
+                        when a.is_test_drive = true then 'yes'
+                        when a.is_test_drive = false then 'no'
+                    else 'no'
+                    end as test_drive,inv.id as invoice_id,
+                    a.user_id,a.partner_id,a.title,a.contact_name,
+                    a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
+                    a.referred as referred,pic.date_done::Date as delivery_date
+                    from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
+                    left join sale_order so on so.opportunity_id = a.id
+                    left join account_invoice inv on inv.order_id = so.id
+                    left join stock_picking pic on pic.sale_id = so.id
+                    where a.type = 'opportunity'
+            )""".format(table_name=self._table, company_idss=company_ids))
+
+
+class EpvWizard(models.TransientModel):
+    _name = 'epv.report.wiz'
+
+    company_id = fields.Many2many('res.company', string='Company', default=lambda self : self.env.user.company_ids)
+
+    def retrieve_epv_report(self):
+        self.ensure_one()
+        query = self.env['report_epv_sales_enquiry']
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query.sudo().sql_querry(user=comp_ids)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Epv Report',
+            'res_model': 'report_epv_sales_enquiry',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
+

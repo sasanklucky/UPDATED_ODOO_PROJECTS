@@ -65,7 +65,7 @@
             </field>
         </record>
 
-      <record id="report_epv_sales_enquiry_action" model="ir.actions.act_window">
+        <record id="report_epv_sales_enquiry_action" model="ir.actions.act_window">
             <field name="name">EPV Sales Enquiry Report</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">report_epv_sales_enquiry</field>
@@ -73,11 +73,42 @@
             <field name="view_type">form</field>
         </record>
 
+        <record id="view_epv_sales_report_wiz" model="ir.ui.view">
+            <field name="name">Epv sales Report Wizard</field>
+            <field name="model">epv.report.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Choose Companies">
+                    <group>
+                        <group>
+                            <field name="company_id" widget="many2many_tags" readonly="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retrieve_epv_report" string="Get Epv Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="report_epv_sales_enquiry_action_wiz" model="ir.actions.act_window">
+            <field name="name">Epv Sales Enquiry Report Wizard</field>
+            <field name="res_model">epv.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="report_epv_sales_enquiry.view_epv_sales_report_wiz"/>
+            <field name="target">new</field>
+            <field name="context">{'default_compute_at_date': 0}</field>
+        </record>
+
+
         <menuitem id="report_epv_sales_enquiry_menu"
-                name="EPV Sales Enquiry Report1"
-                action="report_epv_sales_enquiry_action"
-                parent="crm.crm_menu_report"
-                sequence="105"/>
+                  name="EPV Sales Enquiry Report1"
+                  action="report_epv_sales_enquiry_action_wiz"
+                  parent="crm.crm_menu_report"
+                  sequence="105"/>
 
     </data>
 </odoo>
