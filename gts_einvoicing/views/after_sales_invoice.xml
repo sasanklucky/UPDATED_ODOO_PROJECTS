@@ -148,6 +148,7 @@
                 <!-- attrs="{'required': [('gen_einvoice', '=', True)], 'readonly': [('state', '!=' , 'draft')], 'invisible': [('gen_einvoice', '!=', True)]}"/>-->
                 <field name="hsn_code" force_save="1"/>
                 <field name="is_service"/>
+                <field name="is_round_off" groups="base.group_no_one"/>
             </xpath>
             <xpath expr="//page[last()]" position="after">
                 <page string="E-Invoicing Bill Details" groups="gts_einvoicing.group_ebill_manager"
