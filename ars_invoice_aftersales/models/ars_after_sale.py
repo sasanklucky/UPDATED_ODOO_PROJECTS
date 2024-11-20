@@ -209,40 +209,43 @@ class ARS_After_sale_order(models.Model):
 
                 # Update order status
                 order.invoice_status = "invoiced"
-                invoice_catalog = order.order_line.mapped('category')
-                if len(invoice_catalog) == 1 and invoice_catalog.name.lower() == 'warranty':
-                    invoice_data = order._prepare_invoice()
-                    invoice_data.update({
-                        'partner_id': order.partner_id.id,
-                        'partner_shipping_id': order.partner_shipping_id.id
-                    })
-                    in_data = inv_obj.create(invoice_data)
-                    invoices[in_data.id] = in_data
-
-                    # Create invoice lines for warranty category
-                    for invoice_line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
-                        invoice_line.invoice_line_create(in_data.id, invoice_line.qty_delivered)
-                        in_data.write({
-                            'mobile': order.mobile,
-                            'email': order.email,
-                            'reg_no': order.regn_no.id,
-                            'vin': order.vin_no,
-                            'model': order.model.id,
-                            'kilometer': order.mileage_in,
-                            'doc_type': order.doc_type,
-                            'appointment_date': order.appointment_date,
-                            'delivery_service_advisor': order.delivery_service_advisor.id,
-                            'delivery_date': order.delivery_date,
-                            'service_options': order.service_options.id,
-                            'service_type': order.service_type.id
-                        })
-
-                    # Set discount to 100% for warranty invoice lines
-                    for line_2 in in_data.invoice_line_ids:
-                        line_2.update({'discount': 100})
-                        line_2._set_additional_fields(in_data)
-
                 return [inv.id for inv in invoices.values()]
+                # invoice_catalog = order.order_line.mapped('category')
+                # if len(invoice_catalog) == 1 and invoice_catalog.name.lower() == 'warranty':
+                #     invoice_data = order._prepare_invoice()
+                #     invoice_data.update({
+                #         'partner_id': order.partner_id.id,
+                #         'partner_shipping_id': order.partner_shipping_id.id
+                #     })
+                #     in_data = inv_obj.create(invoice_data)
+                #     invoices[in_data.id] = in_data
+                #
+                #     # Create invoice lines for warranty category
+                #     for invoice_line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
+                #         invoice_line.invoice_line_create(in_data.id, invoice_line.qty_delivered)
+                #         in_data.write({
+                #             'mobile': order.mobile,
+                #             'email': order.email,
+                #             'reg_no': order.regn_no.id,
+                #             'vin': order.vin_no,
+                #             'registration_no': order.fleet_regn_no,
+                #             'vin_numb': order.fleet_vin_no.id,
+                #             'model': order.model.id,
+                #             'kilometer': order.mileage_in,
+                #             'doc_type': order.doc_type,
+                #             'appointment_date': order.appointment_date,
+                #             'delivery_service_advisor': order.delivery_service_advisor.id,
+                #             'delivery_date': order.delivery_date,
+                #             'service_options': order.service_options.id,
+                #             'service_type': order.service_type.id
+                #         })
+                #
+                #     # Set discount to 100% for warranty invoice lines
+                #     for line_2 in in_data.invoice_line_ids:
+                #         line_2.update({'discount': 100})
+                #         line_2._set_additional_fields(in_data)
+                #
+                # return [inv.id for inv in invoices.values()]
 
             # Handle non-after sales and counter parts case
             elif order.sale_aftersales != 'after_sales' or order.counter_parts:
@@ -713,41 +716,42 @@ class AccountInvoice_inherit(models.Model):
                                                   'address': order.partner_id.city,
                                                   'sold_by': self.env.user.company_id.partner_id.id,
                                                   'mobile': order.partner_id.mobile})]})
-                    if vehicle_card.service_type_sequence == 0:
-                        if vehicle_card.customer_ids:
-                            if vehicle_card.service_type_sequence == 0:
-                                service_typ = self.env['service.type'].search([('sequence', '=', vehicle_card.service_type_sequence)], limit=1)
-                                for v in vehicle_card.service_ids:
-                                    if v.service_type_name == service_typ.name:
-                                        k = self.env['service.history'].search([('id', '=', v.id), ('vehicle_id', '=', vehicle_card.id)])
-                                        next_ser_typ = vehicle_card.service_type_sequence + 1
-                                        next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
-
-                                        remainder = self.env.user.company_id.next_service_remainder
-                                        nxt_due = self.env.user.company_id.next_service_due
-                                        remainder_value = int(remainder) if isinstance(remainder, str) else remainder
-
-                                        service_manual = {
-                                            days.id: {
-                                                'next_service': int(days.days) if isinstance(days.days, str) else days.days,
-                                                'service_remainder': (int(days.days) if isinstance(days.days,
-                                                                                                   str) else days.days) - remainder_value
-                                            }
-                                            for days in self.env['service.setup.manual'].search(
-                                                [('service_type', '=', next.id), ('model_id', '=', vehicle_card.model_id.id)],
-                                                limit=1)
-                                        }
-
-                                        next_services = [values['next_service'] for values in service_manual.values()]
-                                        service_remainders = [values['service_remainder'] for values in service_manual.values()]
-                                        next_service_due = datetime.now().date() + timedelta(
-                                            days=int(next_services[0] if next_services else nxt_due))
-                                        set_reminder = datetime.now().date() + timedelta(
-                                            days=int(service_remainders[0] if service_remainders else remainder))
-                                        k.write({
-                                            'next_service_due': next_service_due,
-                                            'set_reminder': set_reminder
-                                        })
+                    #commented this code in staging_05_06_24 because vehicle history its not present in branch
+                    # if vehicle_card.service_type_sequence == 0:
+                    #     if vehicle_card.customer_ids:
+                    #         if vehicle_card.service_type_sequence == 0:
+                    #             service_typ = self.env['service.type'].search([('sequence', '=', vehicle_card.service_type_sequence)], limit=1)
+                    #             for v in vehicle_card.service_ids:
+                    #                 if v.service_type_name == service_typ.name:
+                    #                     k = self.env['service.history'].search([('id', '=', v.id), ('vehicle_id', '=', vehicle_card.id)])
+                    #                     next_ser_typ = vehicle_card.service_type_sequence + 1
+                    #                     next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
+                    #
+                    #                     remainder = self.env.user.company_id.next_service_remainder
+                    #                     nxt_due = self.env.user.company_id.next_service_due
+                    #                     remainder_value = int(remainder) if isinstance(remainder, str) else remainder
+                    #
+                    #                     service_manual = {
+                    #                         days.id: {
+                    #                             'next_service': int(days.days) if isinstance(days.days, str) else days.days,
+                    #                             'service_remainder': (int(days.days) if isinstance(days.days,
+                    #                                                                                str) else days.days) - remainder_value
+                    #                         }
+                    #                         for days in self.env['service.setup.manual'].search(
+                    #                             [('service_type', '=', next.id), ('model_id', '=', vehicle_card.model_id.id)],
+                    #                             limit=1)
+                    #                     }
+                    #
+                    #                     next_services = [values['next_service'] for values in service_manual.values()]
+                    #                     service_remainders = [values['service_remainder'] for values in service_manual.values()]
+                    #                     next_service_due = datetime.now().date() + timedelta(
+                    #                         days=int(next_services[0] if next_services else nxt_due))
+                    #                     set_reminder = datetime.now().date() + timedelta(
+                    #                         days=int(service_remainders[0] if service_remainders else remainder))
+                    #                     k.write({
+                    #                         'next_service_due': next_service_due,
+                    #                         'set_reminder': set_reminder
+                    #                     })
         return res
 
     @api.model

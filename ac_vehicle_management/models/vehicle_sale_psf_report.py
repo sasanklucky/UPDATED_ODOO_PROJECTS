@@ -54,9 +54,9 @@ class VehicleSalePsfReport(models.Model):
         initcap(to_char(inv.date_invoice, 'month'))  as month,
         CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
         inv.company_id as dealer_name_id,
-        inv.number as invoice_number, 
+        so.name as invoice_number, 
         inv.date_invoice as invoice_date,
-        inv.partner_id as partner_id,
+        so.partner_id as partner_id,
         so.user_id as user_id,
         rp.mobile as mobile,
         rp.city as city,
@@ -75,7 +75,7 @@ class VehicleSalePsfReport(models.Model):
         from  account_invoice inv
         left join account_invoice_line invl on invl.invoice_id = inv.id
         left join sale_order so on inv.order_id=so.id
-        left join res_partner rp on rp.id = inv.partner_id
+        left join res_partner rp on rp.id = so.partner_id
         left join stock_production_lot lot on invl.vin_no = lot.id
         where inv.type='out_invoice'  and inv.state not in ('draft', 'cancel')and 
         inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)

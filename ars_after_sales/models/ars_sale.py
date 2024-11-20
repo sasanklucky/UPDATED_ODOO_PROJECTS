@@ -831,7 +831,7 @@ class AccountInvoiceLine(models.Model):
             # Capture old values before updating
             old_quantity = line.quantity if 'quantity' in vals else None
             old_product = line.product_id if 'product_id' in vals else None
-            old_price = line.price_subtotal if 'price_subtotal' in vals else None
+            old_price = line.price_unit if 'price_unit' in vals else None
 
             # After calling the write method, check if there were any changes
             super(AccountInvoiceLine, line).write(vals)
@@ -846,8 +846,8 @@ class AccountInvoiceLine(models.Model):
                 if old_product is not None and old_product != line.product_id:
                     changes.append(f"Product changed from {old_product.name} to {line.product_id.name}")
 
-                if old_price is not None and old_price != line.price_subtotal:
-                    changes.append(f"Product changed from {old_price} to {line.price_subtotal}")
+                if old_price is not None and old_price != line.price_unit:
+                    changes.append(f"{line.product_id.name} Price changed from {old_price} to {line.price_unit}")
 
         # Post all changes in a single message if there are any
         if changes and self.invoice_id.track_changes:

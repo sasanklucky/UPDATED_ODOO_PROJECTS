@@ -2854,7 +2854,7 @@
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
-                <xpath expr="//form/sheet/group" position="inside">
+                <xpath expr="//form/sheet/group" position="after">
                 <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
                     <b>
                         <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
