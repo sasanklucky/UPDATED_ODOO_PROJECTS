@@ -62,15 +62,20 @@ class StockPicking(models.Model):
         db = sql_db.db_connect(f"{cons_db_name}")
         if is_cons_enable and cons_db_name:
             if self.picking_type_id.code == "incoming":
-                vins = [line.lot_name if line.lot_name else line.lot_id.name
-                        for line in self.move_line_ids if line]
-                if not vins:
-                    raise ValidationError(_('Please add some line'))
-                existing_vehicle = self.env['fleet.vehicle'].sudo().search([('vin_sn', 'in', vins)])
-                if existing_vehicle:
-                    raise ValidationError(_(f"Vehicle Card already exists for VIN: {existing_vehicle.vin_sn}"))
-                res = super(StockPicking, self).button_validate()
-                return res
+                po_id = self.move_lines[0].purchase_line_id.order_id if self.move_lines else False
+                if po_id and po_id.purchase_type == 'vehicle' and po_id.product_catalog_id.name.strip().lower() == 'vehicle':
+                    vins = [line.lot_name if line.lot_name else line.lot_id.name
+                            for line in self.move_line_ids if line]
+                    if not vins:
+                        raise ValidationError(_('Please add some line'))
+                    existing_vehicle = self.env['fleet.vehicle'].sudo().search([('vin_sn', 'in', vins)])
+                    if existing_vehicle:
+                        raise ValidationError(_(f"Vehicle Card already exists for VIN: {existing_vehicle.vin_sn}"))
+                    res = super(StockPicking, self).button_validate()
+                    return res
+                # else:
+                #     res = super(StockPicking, self).button_validate()
+                #     return res
             if self.picking_type_id.code == "outgoing" and self.sale_id.sale_type =="vehicle":
                 vins = [line.lot_name if line.lot_name else line.lot_id.name
                         for line in self.move_line_ids if line]
