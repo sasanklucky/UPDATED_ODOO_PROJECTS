@@ -46,8 +46,52 @@ class FleetVehicle(models.Model):
             # service_type = self.env['service.type'].sudo().search([('name', '=', last_service_history.service_type_name or last_service_history.servicetype)])
             # rec.service_type_sequence = service_type.sequence
 
+    def update_vehicle_service_history(self):
+        ServiceHistory = self.env['service.history']
+        for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
+            service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
+            to_update = service_records.filtered(lambda s: s.order.id)
+            for record in to_update:
+                if record.order.id:  # Ensure order has a valid ID
+                    for sale_q in record.order:
+                        record.write({'ro_id': sale_q.id,
+                                      'servicetype': sale_q.service_type.name,
+                                      'service_type_name': sale_q.service_type.name,
+                                      'service_code': sale_q.service_type.code,
+                                      'dealer_db_name': record.dealer_db_name if record.dealer_db_name else self._cr.dbname,
+                                      'mileage_in': record.mileage_in if record.mileage_in else sale_q.mileage_in,
+                                      'ro_number': record.ro_number if record.ro_number else sale_q.name})
 
+            duplicate_orders = ServiceHistory.read_group(
+                [('vehicle_id', '=', vehicle.id),('order', '!=', False)],  # Filter only records with order.id
+                ['ro_id'],  # Group by order.id
+                ['ro_id']  # Fields to group on
+            )
+            # print(duplicate_orders, 'duplicate_orders')
+            duplicate_order_ids = [
+                group['ro_id']
+                for group in duplicate_orders
+                if group['ro_id_count'] > 1
+            ]
+            # print(duplicate_order_ids)
+            # Remove duplicates
+            for order_id in duplicate_order_ids:
+                duplicates = self.env['service.history'].search([('order', '=', order_id),('vehicle_id', '=', vehicle.id)])
+                duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
+                # Log the IDs to be deleted
+                # print(f"Duplicates to delete: {duplicates_to_delete.ids}")
+                # Unlink duplicates one by one
+                for duplicate in duplicates_to_delete:
+                    # Double-check if the record exists before unlinking
+                    if not duplicate.exists():
+                        # print(f"Record with ID: {duplicate.id} does not exist or was already deleted.")
+                        continue  # Skip to the next record
 
+                    try:
+                        # print(f"Unlinking record with ID: {duplicate.id}")
+                        duplicate.sudo().unlink()
+                    except Exception as e:
+                        print(f"Error unlinking record with ID: {duplicate.id}: {e}")
 
 
 class WholesaleHistory(models.Model):
