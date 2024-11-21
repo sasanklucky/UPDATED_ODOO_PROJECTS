@@ -600,7 +600,7 @@ class ARS_sale_order_line(models.Model):
     def _prepare_invoice_line(self, qty):
         res = super(ARS_sale_order_line, self)._prepare_invoice_line(qty)
         res.update({'vin_no': self.vin_no.id, 'product_template_id': self.product_template_id.id,
-                    'product_catalog_id': self.product_catalog_id.id, 'category': self.category.id})
+                    'product_catalog_id': self.product_catalog_id.id})
         return res
 
 
