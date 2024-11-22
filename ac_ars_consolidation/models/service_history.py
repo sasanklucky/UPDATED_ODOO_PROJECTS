@@ -55,7 +55,7 @@ class FleetVehicleConsole(models.Model):
                             cust_voice = []
                             line_item = []
                             for voice in data.customer_voice_sale:
-                                cust_voice.append({'name': voice.name, 'instructions': voice.instructions})
+                                cust_voice.append({'name': voice.name, 'instructions': voice.instructions.name})
                             for sol in data.order_line:
                                 line_item.append({'name': sol.product_catalog_id.name,
                                                   'default_code': sol.product_id.default_code,
