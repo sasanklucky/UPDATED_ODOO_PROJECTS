@@ -7,3 +7,4 @@ from . import ars_stock_warehouse
 # from . import ars_sale_order
 from . import shell_location
 from . import res_region
+from . import res_bank
