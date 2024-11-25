@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="ac_vehicle_service_history_list">
+            <field name="name">vehicle service history list</field>
+            <field name="model">service.history</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="value"/>
+                    <field name="value2"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <!--
+        <record model="ir.actions.act_window" id="ac_vehicle_service_history.action_window">
+          <field name="name">ac_vehicle_service_history window</field>
+          <field name="res_model">ac_vehicle_service_history.ac_vehicle_service_history</field>
+          <field name="view_mode">tree,form</field>
+        </record>
+        -->
+
+        <!-- server action to the one above -->
+        <!--
+        <record model="ir.actions.server" id="ac_vehicle_service_history.action_server">
+          <field name="name">ac_vehicle_service_history server</field>
+          <field name="model_id" ref="model_ac_vehicle_service_history_ac_vehicle_service_history"/>
+          <field name="state">code</field>
+          <field name="code">
+            action = {
+              "type": "ir.actions.act_window",
+              "view_mode": "tree,form",
+              "res_model": self._name,
+            }
+          </field>
+        </record>
+        -->
+
+        <!-- Top menu item -->
+        <!--
+        <menuitem name="ac_vehicle_service_history" id="ac_vehicle_service_history.menu_root"/>
+        -->
+        <!-- menu categories -->
+        <!--
+        <menuitem name="Menu 1" id="ac_vehicle_service_history.menu_1" parent="ac_vehicle_service_history.menu_root"/>
+        <menuitem name="Menu 2" id="ac_vehicle_service_history.menu_2" parent="ac_vehicle_service_history.menu_root"/>
+        -->
+        <!-- actions -->
+        <!--
+        <menuitem name="List" id="ac_vehicle_service_history.menu_1_list" parent="ac_vehicle_service_history.menu_1"
+                  action="ac_vehicle_service_history.action_window"/>
+        <menuitem name="Server to list" id="ac_vehicle_service_history" parent="ac_vehicle_service_history.menu_2"
+                  action="ac_vehicle_service_history.action_server"/>
+        -->
+    </data>
+</odoo>
