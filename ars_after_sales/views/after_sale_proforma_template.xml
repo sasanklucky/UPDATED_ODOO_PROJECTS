@@ -110,7 +110,7 @@
                             <td>RO Date</td>
                             <td>:</td>
                             <td>
-                                <span t-field="doc.appointment_date"
+                                <span t-field="doc.confirmation_date"
                                       t-field-options='{"format": "d MMMM y"}'></span>
                             </td>
                         </tr>

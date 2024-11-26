@@ -132,7 +132,7 @@ class SalesReportFormat(models.Model):
                     select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
                     a.date_invoice::Date as invoice_date,
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
-                    (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
+                    (select confirmation_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
                     (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
                     al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id,
                     CASE 
