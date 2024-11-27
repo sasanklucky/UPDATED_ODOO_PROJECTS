@@ -252,7 +252,9 @@ class activity_inherit(models.Model):
     @api.multi
     def write(self, vals):
         # Check if the active field is being updated for archiving/unarchiving
-        if 'active' in vals:
+        if 'is_psf' in vals:
+            vals.pop('is_psf',None)
+        elif 'active' in vals:
             if not self.env.user.has_group("base.group_system"):
                 raise ValidationError('You cannot archive or unarchive this record.')
 

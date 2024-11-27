@@ -168,13 +168,15 @@ class AccountInvoice_inherit(models.Model):
                 sale_followup_days = param.get_param('ars_mail_survey.sale_followup_days')
                 due_date = (gate_pass_date + timedelta(days=int(sale_followup_days))) if sale_followup_days else (
                         gate_pass_date + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
-                psf_record.date_deadline = due_date
-                psf_record.active = True
+                # psf_record.date_deadline = due_date
+                # psf_record.active = True
+                psf_record.write({'active': True, 'date_deadline': due_date, 'is_psf': True})
             if psf_record and self.team_id.team_type == 'after_sales':
                 postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
                 due_date = (gate_pass_date + timedelta(
                     days=int(postsale_followup_days))) if postsale_followup_days else (
                         gate_pass_date + timedelta(days=self.env.ref('mail.mail_activity_data_call').days))
-                psf_record.date_deadline = due_date
-                psf_record.active = True
+                # psf_record.date_deadline = due_date
+                # psf_record.active = True
+                psf_record.write({'active':True,'date_deadline':due_date,'is_psf':True})
         return res
