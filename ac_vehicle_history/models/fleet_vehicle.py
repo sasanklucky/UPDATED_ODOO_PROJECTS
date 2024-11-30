@@ -30,6 +30,7 @@ class FleetVehicle(models.Model):
         for rec in self:
             if len(rec.service_ids) >= 1 and len(rec.customer_ids)>=1 and len(rec.insurance_ids) >=1 and len(rec.emission_ids) >=1 and len(rec.wholesale_ids) >=1:
                 raise ValidationError("You Cannot Delete Entries Contains Vehicle Card")
+        return super(FleetVehicle, self).unlink()
 
 
     # @api.depends('service_ids')

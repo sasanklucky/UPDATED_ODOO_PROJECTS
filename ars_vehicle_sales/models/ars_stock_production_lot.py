@@ -135,6 +135,7 @@ class Picking(models.Model):
     @api.multi
     def button_validate(self):
         vins = []
+        po_id = self.move_lines[0].purchase_line_id.order_id if self.move_lines else False
         for stock_production_obj in self.move_line_ids:
             if stock_production_obj.lot_id:
                 stock_production_obj.lot_id.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
@@ -143,8 +144,6 @@ class Picking(models.Model):
                                                                     'mobile': self.partner_id.mobile})]
                 if stock_production_obj.move_id.sale_line_id:
                     stock_production_obj.lot_id.check_new_lotno = True
-
-
         self._cr.commit()
         picking_type = self.picking_type_id
         no_quantities_done = all(
@@ -155,10 +154,8 @@ class Picking(models.Model):
             if not no_quantities_done:
                 lines_to_check = lines_to_check.filtered(
                     lambda line: float_compare(line.qty_done, 0, precision_rounding=line.product_uom_id.rounding))
-
             for line in lines_to_check:
-
-                if self.location_id and self.location_id.usage == 'supplier':
+                if self.location_id and self.location_id.usage == 'supplier' and po_id and po_id.purchase_type == 'vehicle' and po_id.product_catalog_id.name.strip().lower() == 'vehicle':
                     if self.origin and 'Return' not in self.origin:
                         vals = {'mvariant_id': line.product_id.id,
                                 'model_id': line.product_id.product_tmpl_id.id,
@@ -189,7 +186,8 @@ class Picking(models.Model):
                                 if consolidation_data:
                                     wholesale_data = consolidation_data.get('wholesale_data', {})
                                     if wholesale_data:
-                                        vals.update({'consolidate_vehicle_card_id': consolidation_data.get('vehicle_card_id')})
+                                        vals.update(
+                                            {'consolidate_vehicle_card_id': consolidation_data.get('vehicle_card_id')})
                                         vehicle_card = self.env['fleet.vehicle'].create(vals)
 
                                         wholesale_obj = self.env['wholesale.history'].create({
@@ -205,7 +203,8 @@ class Picking(models.Model):
                                             'dealer_code': wholesale_data.get('dealer_code')
                                         })
                                     else:
-                                        raise ValidationError(_("You can't buy vehicle, Because there is no Selling History "))
+                                        raise ValidationError(
+                                            _("You can't buy vehicle, Because there is no Selling History "))
                             else:
                                 vehicle_card = self.env['fleet.vehicle'].create(vals)
                             # res.custumer_ide = [(0, 0, {'custmer_name': self.partner_id.id,
@@ -246,6 +245,10 @@ class Picking(models.Model):
                             #                                   'date_of_ownership': datetime.now(),
                             #                                   'address': self.partner_id.city,
         res = super(Picking, self).button_validate()
+        lines_to_check = self.move_line_ids
+        for line in lines_to_check:
+            if line.lot_id:
+                line.lot_id.write({'motor_number': line.motor_number, 'battery_number': line.battery_number})
         return res
 
 
