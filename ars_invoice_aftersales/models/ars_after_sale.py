@@ -119,7 +119,7 @@ class ARS_After_sale_order(models.Model):
         for order in self:
             group_key = order.id if grouped else (order.partner_invoice_id.id, order.currency_id.id)
             count = 0
-
+            invoice = None
             # Handling after-sales scenario
             if order.sale_aftersales == 'after_sales' and not order.counter_parts:
                 for line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
