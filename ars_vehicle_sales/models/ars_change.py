@@ -574,6 +574,24 @@ class ars_sale_invoice(models.Model):
 
     def ars_action_invoice_open(self):
         for rec in self:
+            given_date_invoice = rec.date_invoice
+            if given_date_invoice and rec.type == 'out_invoice':
+                given_date_obj = datetime.strptime(given_date_invoice, "%Y-%m-%d")
+                date_today = datetime.today()
+                if self.env.user.company_id.restrict_bd_inv:
+                    if given_date_obj.date() < date_today.date():
+                        raise ValidationError(_("Warning: Invoice dates cannot be set to a date in the past"))
+                if given_date_obj > date_today:
+                    raise ValidationError(_("Invoice Date can't be a future date"))
+            given_gate_pass_date = rec.gate_pass_date
+            if given_gate_pass_date:
+                given_date_gate_pass = datetime.strptime(given_gate_pass_date, "%Y-%m-%d")
+                date_today = datetime.today()
+                if self.env.user.company_id.restrict_gp_date:
+                    if given_date_gate_pass.date() < date_today.date():
+                        raise ValidationError(_("Warning: Gate Pass dates cannot be set to a date in the past"))
+                if given_date_gate_pass > date_today:
+                    raise ValidationError(_("Gate Pass Date can't be a future date"))
             rec.action_invoice_open()
             result = rec.action_print_gate_pass()
             if isinstance(result, dict):  # Check if the result is an action dictionary
