@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="ac_ars_service_history_list">
+            <field name="name">Service History</field>
+            <field name="model">service.history</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ro_number"/>
+                    <field name="dealer_id"/>
+                    <field name="servicetype"/>
+                    <field name="date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='ars_vehicle_view_form_inherit2' model='ir.ui.view'>
+            <field name="name">ars_vehicle_view_form_inherit</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="ars_vehicle_sales.ars_vehicle_view_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='customer_ids']/tree/field[@name='sold_by']" position="before">
+                    <field name="dealer_id"/>
+                </xpath>
+                <xpath expr="//field[@name='service_ids']/tree/field[@name='order']" position="after">
+                    <field name="ro_number"  string="RO Reference"/>
+                    <field name="ro_id" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.act_window" id="ac_ars_service_history_action_window">
+            <field name="name">Service History</field>
+            <field name="res_model">service.history</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

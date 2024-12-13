@@ -1,0 +1,74 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="ac_ars_consolidation_list">
+            <field name="name">ars.consolidation.setup</field>
+            <field name="model">ars.consolidation.setup</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="dealer_name"/>
+                    <field name="dealer_code"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ac_ars_consolidation_formdb_connect">
+            <field name="name">ars.consolidation.setup</field>
+            <field name="model">ars.consolidation.setup</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="establish_connection" string="Establish Connection" type="object"
+                                class="oe_highlight"/>
+                        <button name="update_dealer_vehicle_card_details" string="Fetch Vehicle Card Data" type="object"
+                                class="oe_highlight"/>
+                    </header>
+                    <sheet>
+                        <field name="name"/>
+                        <group>
+                            <group>
+                                <field name="dealer_name"/>
+                                <field name="dealer_code"/>
+                                <field name="db_name"/>
+                                <field name="url_ip"/>
+                                <field name="user_name"/>
+                                <field name="password"/>
+                            </group>
+                            <group>
+                                <field name="active"/>
+                                <field name="company_id"/>
+                                <field name="partner_id"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Update Vehicle Card Logs">
+                            <field name="update_log_ids" domain="[('is_updated', '=', False)]">
+                                <tree string="Logs" editable="bottom" create="false" delete="false">
+<!--                                    <field name="name"/>-->
+                                    <field name="status"/>
+                                    <field name="updated_on"/>
+                                    <field name="exception_reason"/>
+                                    <field name="db_name"/>
+                                    <field name="dealer_vehicle_card_id"/>
+                                    <field name="vin_no"/>
+                                    <field name="is_updated"/>
+<!--                                    <field name="active"/>-->
+                                </tree>
+                            </field>
+                        </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="ac_ars_consolidation_action_window">
+            <field name="name">ARS Consolidation Window</field>
+            <field name="res_model">ars.consolidation.setup</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

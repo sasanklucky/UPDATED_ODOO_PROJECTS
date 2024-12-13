@@ -42,6 +42,7 @@
             </field>
         </record>
 
+
         <record id="purchase_order_qty_reveal_parts" model="ir.ui.view">
             <field name="name">purchase_order_qty_reveal_parts_ims</field>
             <field name="model">purchase.order</field>

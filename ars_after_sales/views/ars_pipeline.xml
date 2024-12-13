@@ -670,6 +670,9 @@
                       decoration-muted="state=='cancel'">
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Quotation Number"/>
+
+<!--                    <field name="regn_no" required="1" string="Reg No"/>-->
+
                     <field name="date_order" string="Quotation Date"/>
                     <field name="partner_id"/>
                      <field name="regn_no" required="1" string="Reg No"/>
@@ -1144,6 +1147,7 @@
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
                     <field name="work_type"/>
+<!--                    <field name="vin_no"/>-->
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                 </tree>

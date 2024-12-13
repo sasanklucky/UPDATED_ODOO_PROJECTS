@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="dealer_vehicle_card_fetch_data_form" model="ir.ui.view">
+            <field name="name">vehiclecard.fetch.wizard.form</field>
+            <field name="model">vehiclecard.fetch.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Fetch Vehicle Card Data from Dealer">
+                    <group>
+                        <group>
+                            <field name="dealer_setup_id"/>
+                            <field name="is_service_enable"/>
+                            <field name="is_ownership_enable"/>
+                        </group>
+                        <group>
+                            <field name="is_wholesale_enable"/>
+                            <field name="is_insurance_enable"/>
+                            <field name="is_emission_enable"/>
+                        </group>
+                    </group>
+
+                    <div class="content-group">
+                        <div class="col">
+                            <label class="col-md-3 o_light_label" string="Update Vehicle Card"/>
+                            <field name="is_update_vehicle_card" attrs="{'invisible': [('is_update_vehicle_card_compare', '=', True)]}"/>
+                        </div>
+                        <div class="col">
+                            <label class="col-md-3 o_light_label" string="Update Vehicle Card With Comparison"/>
+                            <field name="is_update_vehicle_card_compare" attrs="{'invisible': [('is_update_vehicle_card', '=', True)]}"/>
+                        </div>
+                    </div>
+                    <footer>
+                        <button name="fetch_vehicle_from_the_dealer" type="object"  string="Update Vehicle Card" class="btn-primary" attrs="{'invisible': [('is_update_vehicle_card_compare', '=', True)]}"/>
+                        <button name="fetch_missing_vehicle_details" type="object"  string="Update Missing Vehicle Card" class="btn-primary" attrs="{'invisible': [('is_update_vehicle_card', '=', True)]}"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_dealer_vehicle_card_fetch_data" model="ir.actions.act_window">
+            <field name="name">Fetch Vehicle Card Details</field>
+            <field name="res_model">vehiclecard.fetch.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ac_ars_consolidation.dealer_vehicle_card_fetch_data_form"/>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

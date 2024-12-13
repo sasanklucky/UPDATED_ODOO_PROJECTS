@@ -131,8 +131,8 @@ class ARS_account_invoice(models.Model):
     reg_no = fields.Many2one('fleet.vehicle', string="Regn No")
     vin = fields.Char(string="VIN")
     model = fields.Many2one('product.product', string="Model Variant")
-    kilometer = fields.Float(string="Kilometer", required=True)
-    kilometer_out = fields.Float(string="Kilometer Out", required=True)
+    kilometer = fields.Float(string="Kilometer")
+    kilometer_out = fields.Float(string="Kilometer Out")
     delivery_service_advisor = fields.Many2one('res.users')
     doc_type = fields.Selection([
         ('appointment', 'Appointment'),

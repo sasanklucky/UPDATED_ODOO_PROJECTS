@@ -196,9 +196,10 @@
                                                     <tr>
                                                         <td class="py-1" style="border: none; padding: 0px 2px;">Motor No</td>
                                                         <td class="py-1" style="border: none; padding: 0px 2px;">: 
-                                                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">
-                                                                <t t-esc="relation.engine_number"/>
-                                                            </t>
+<!--                                                            <t t-foreach="request.env['fleet.vehicle'].sudo().search([('driver_id','=',doc.partner_id.id),('mvariant_id','=',ord_lin.product_id.id),('vehicle_status','=','customer')],limit=1)" t-as="relation">-->
+<!--                                                                <t t-esc="relation.engine_number"/>-->
+<!--                                                            </t>-->
+                                                            <t t-if="ord_lin.vin_no.motor_number"><t t-esc="ord_lin.vin_no.motor_number"/></t>
                                                         </td>
                                                     </tr>
                                                     <tr>

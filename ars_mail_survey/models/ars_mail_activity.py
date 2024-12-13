@@ -59,7 +59,7 @@ class ARS_MailActivity(models.Model):
                 score = rec.response_id.quizz_score / (len(questions) * 100) * 100
                 rec.survey_percentage = float("%.2f" % score)
                 rec.write({'survey_marks': float("%.2f" % score)})
-                rec.write({'satisfaction_status': 'satisfied' if rec.survey_marks >= 60 else 'dissatisfied'})
+                # rec.write({'satisfaction_status': 'satisfied' if rec.survey_marks >= 60 else 'dissatisfied'})
                 # except ZeroDivisionError:
                 #     rec.survey_percentage = 0
 

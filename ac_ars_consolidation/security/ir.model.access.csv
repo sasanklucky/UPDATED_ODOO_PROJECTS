@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ac_ars_consolidation_ac_ars_consolidation,ac_ars_consolidation.ac_ars_consolidation,model_ac_ars_consolidation_ac_ars_consolidation,,1,0,0,0

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="0">
+
+        <menuitem id="menu_vehicle_card_create"
+                  name="Create Vehicle Card"
+                  action="action_vehicle_card_creation_wizard"
+                  parent="ars_after_sales.menu_aftersales_operation"
+                  sequence="2"/>
+
+    </data>
+</odoo>

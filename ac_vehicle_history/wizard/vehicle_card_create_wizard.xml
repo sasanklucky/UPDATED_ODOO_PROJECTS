@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="vehicle_card_creation_wizard" model="ir.ui.view">
+            <field name="name">vehiclecard.creation.wizard.form</field>
+            <field name="model">vehiclecard.creation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Vehicle Card Creation">
+                    <group>
+                        <field name='vin_no' string="Vin Number"/>
+                    </group>
+                    <footer>
+                        <button name="create_vehicle_card" string="Create Vehicle Card" type="object"
+                                class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_vehicle_card_creation_wizard" model="ir.actions.act_window">
+            <field name="name">Create Vehicle Card</field>
+            <field name="res_model">vehiclecard.creation.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ac_vehicle_history.vehicle_card_creation_wizard"/>
+            <field name="view_type">form</field>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

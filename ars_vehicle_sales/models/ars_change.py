@@ -489,6 +489,8 @@ class ars_sale_invoice(models.Model):
 
     delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
     after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
+    model = fields.Many2one('product.product', string="Model Variant")
+
 
     @api.constrains('gate_pass_date')
     def gate_pass_date_validation(self):
@@ -715,3 +717,4 @@ class ARSCrmLostReason(models.Model):
                             help="Type is used to separate Leads and Opportunities")
     sale_type = fields.Selection([('after_sales', 'After Sales'),
                                   ('sales', 'Sales')], string='Sales Type')
+
