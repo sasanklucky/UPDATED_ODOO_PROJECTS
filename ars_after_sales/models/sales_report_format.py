@@ -91,6 +91,7 @@ class SalesReportFormat(models.Model):
     dealer_code = fields.Char(related="company_id.dealer_code", string="Dealer No_")
     warehouse_id = fields.Many2one('stock.warehouse', 'Location Code')
     product_id = fields.Many2one('product.product', 'Product Id')
+    category_id = fields.Char('Category')
     part_number = fields.Char(related="product_id.default_code", string="Part Number")
     part_description = fields.Char(related="product_id.product_tmpl_id.name", string="Part Description")
     hsn_code = fields.Char(related="product_id.product_tmpl_id.l10n_in_hsn_code", string="HSN / SAC")
@@ -131,9 +132,15 @@ class SalesReportFormat(models.Model):
                     select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
                     a.date_invoice::Date as invoice_date,
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
-                    (select appointment_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
+                    (select confirmation_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
                     (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
-                    al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id
+                    al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id,
+                    CASE 
+                    WHEN al.category IS NOT NULL THEN 
+                        (SELECT name FROM order_line_category WHERE id = al.category)
+                    ELSE 
+                        a.cust_invoice_type
+                    END as category_id
                     from account_invoice a join account_invoice_line al on a.id = al.invoice_id
                     where a.type = 'out_invoice' 
                     and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc OFFSET 0)

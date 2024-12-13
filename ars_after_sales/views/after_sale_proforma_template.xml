@@ -75,7 +75,9 @@
                         <td>:</td>
                         <td>
                             <t t-if="doc.regn_no">
-                                <span t-esc="doc.regn_no.customer_ids.mapped('date_of_ownership')[0]"/>
+                                <t t-if="doc.regn_no.customer_ids">
+                                    <span t-esc="doc.regn_no.customer_ids.mapped('date_of_ownership')[0]"/>
+                                </t>
                             </t>
                         </td>
                     </tr>
@@ -108,7 +110,7 @@
                             <td>RO Date</td>
                             <td>:</td>
                             <td>
-                                <span t-field="doc.appointment_date"
+                                <span t-field="doc.confirmation_date"
                                       t-field-options='{"format": "d MMMM y"}'></span>
                             </td>
                         </tr>

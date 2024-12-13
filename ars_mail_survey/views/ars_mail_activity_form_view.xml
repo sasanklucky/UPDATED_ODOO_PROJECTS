@@ -8,9 +8,11 @@
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='next_type_ids']" position="after">
                     <field name="stages"/>
+                    <field name="type"/>
                 </xpath>
             </field>
         </record>
+
 
         <record id="mail_activity_view_tree_inherit" model="ir.ui.view">
             <field name="name">mail.activity.tree.inherit</field>

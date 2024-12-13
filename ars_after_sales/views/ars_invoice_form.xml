@@ -1,6 +1,6 @@
 <odoo>
-  <data>
-    <record id="invoice_form_sales_inherit" model="ir.ui.view">
+    <data>
+        <record id="invoice_form_sales_inherit" model="ir.ui.view">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
@@ -9,11 +9,11 @@
                     <field name="service_type" required="1" options="{'no_create': True, 'no_open': True}"/>
                     <field name="service_options" required="1" options="{'no_create': True, 'no_open': True}"/>
                 </xpath>
-                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="after">
+                <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='quantity']"
+                       position="after">
                     <field name="vin_no"/>
-               </xpath>
+                </xpath>
             </field>
-    </record>
-
-  </data>
+        </record>
+    </data>
 </odoo>

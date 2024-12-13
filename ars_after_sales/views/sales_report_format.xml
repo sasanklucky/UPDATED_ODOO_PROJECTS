@@ -18,6 +18,7 @@
                     <field name="part_description"/>
                     <field name="hsn_code"/>
                     <field name="part_type"/>
+                    <field name="category_id"/>
                     <field name="invoice_no"/>
                     <field name="invoice_state" string="Invoice Status"/>
                     <field name="invoice_date"/>

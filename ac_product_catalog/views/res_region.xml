@@ -52,5 +52,46 @@
                   action="ac_product_catalog.action_region"
                   parent="contacts.menu_localisation"
                   sequence="2"/>
+
+        <record model="ir.ui.view" id="ac_zone_list">
+            <field name="name">ac_zone_list</field>
+            <field name="model">zone.zone</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="zone_name"/>
+                    <field name="responsible_person"/>
+                </tree>
+            </field>
+        </record>
+
+         <record model="ir.ui.view" id="ac_zone_form">
+            <field name="name">ac_zone_form</field>
+            <field name="model">zone.zone</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="zone_name" required="1"/>
+                            <field name="responsible_person" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_zone" model="ir.actions.act_window">
+            <field name="name">Zone</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">zone.zone</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ac_zone_list"/>
+            <field name="help">Zone wise data
+            </field>
+        </record>
+
+        <menuitem id="menu_zone"
+                  action="ac_product_catalog.action_zone"
+                  parent="contacts.menu_localisation"
+                  sequence="2"/>
     </data>
 </odoo>

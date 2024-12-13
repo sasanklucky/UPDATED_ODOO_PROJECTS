@@ -397,6 +397,8 @@ class ARS_MailActivity(models.Model):
             print('Helooo', self.env.context.get('default_res_model'))
             print('Helooo', self.env.context)
             res_id = self.env.context.get('default_res_model')
+            rec_id = self.env.context.get('default_res_id')
+            user_ids = self.env['crm.lead'].search([('id', '=', rec_id)]).team_id.team_type
             fields = self.env['mail.activity'].fields_get()
             product_template_fields_attrs = {}
             for key, val in fields.items():
@@ -411,5 +413,19 @@ class ARS_MailActivity(models.Model):
                         for node in doc.xpath(f"//field[@name='{field_name}']"):
                             node.set('attrs', "{'%s': 1}" % attr)
                             setup_modifiers(node, res_result['fields'][field_name])
+                    if field_name in ['activity_type_id']:
+                        print("INSIDE")
+                        if user_ids == 'sales':
+                            print("SALES")
+                            activity_ids = self.env['mail.activity.type'].search([('type', '=', 'sales')])
+                            for node in doc.xpath("//field[@name='activity_type_id']"):
+                                user_filter = "[('id', 'in'," + str(activity_ids.ids) + " )]"
+                                node.set('domain', user_filter)
+                        if user_ids == 'after_sales':
+                            print("after_sales")
+                            activity_ids = self.env['mail.activity.type'].search([('type', '=', 'after_sales')])
+                            for node in doc.xpath("//field[@name='activity_type_id']"):
+                                user_filter = "[('id', 'in'," + str(activity_ids.ids) + " )]"
+                                node.set('domain', user_filter)
                     res_result['arch'] = etree.tostring(doc)
         return res_result

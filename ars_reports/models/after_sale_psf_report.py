@@ -59,7 +59,7 @@ class AfterSaleReport(models.Model):
         initcap(to_char(inv.date_invoice, 'month')) as month,
         inv.company_id as dealer_name_id,
         inv.number as invoice_number, 
-        so.appointment_date::date as ro_open_date,
+        so.confirmation_date::date as ro_open_date,
         inv.origin as ro_number,
         inv.date_invoice as invoice_date,
         inv.create_date::date as ro_close_date,

@@ -2,7 +2,7 @@ from odoo import models, fields, tools, api, _
 from collections import defaultdict
 from datetime import datetime
 from datetime import date
-
+from odoo.exceptions import ValidationError
 
 class activity_log_report(models.Model):
     _name = 'activity_log_report'
@@ -242,6 +242,24 @@ class activity_inherit(models.Model):
             })
         return res
 
+    @api.multi
+    def unlink(self):
+        if not self.env.user.has_group("base.group_system") and self.invoice_type in ['sales', 'after_sales']:
+            raise ValidationError('You cannot Delete PSF Record.')
+        else:
+            return super(activity_inherit, self).unlink()
+
+    @api.multi
+    def write(self, vals):
+        # Check if the active field is being updated for archiving/unarchiving
+        if 'is_psf' in vals:
+            vals.pop('is_psf',None)
+        elif 'active' in vals:
+            if not self.env.user.has_group("base.group_system"):
+                raise ValidationError('You cannot archive or unarchive this record.')
+
+        # Call the original write method
+        return super(activity_inherit, self).write(vals)
 
     # def action_feedback(self, feedback=False):
     #     message = self.env['mail.message']

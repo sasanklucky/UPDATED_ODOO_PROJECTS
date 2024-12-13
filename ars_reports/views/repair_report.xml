@@ -213,8 +213,8 @@
                             </td>
                             <td style="text-align:left;padding: 3px 2px;" class="lborder">RO Date</td>
                             <td style="text-align:left;padding: 3px 2px;" class="rborder" colspan="2">
-                                <t t-if="doc.appointment_date">
-                                    <span t-esc="((datetime.datetime.strptime(doc.appointment_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
+                                <t t-if="doc.confirmation_date">
+                                    <span t-esc="((datetime.datetime.strptime(doc.confirmation_date,'%Y-%m-%d %H:%M:%S'))+ datetime.timedelta(hours=5,minutes=30)).strftime('%d-%m-%Y %H:%M:%S')"/>
                                 </t>
                                 <t t-else="">
                                     &amp;nbsp;

@@ -19,6 +19,13 @@ class ARS_crm_lead(models.Model):
         if not re.match(pattern, self.mobile):
             raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
 
+    stage_name = fields.Char(compute='_compute_stage_name', store=True)
+
+    @api.depends('stage_id')
+    def _compute_stage_name(self):
+        for record in self:
+            record.stage_name = record.stage_id.name if record.stage_id else ''
+
     def update_model_info(self):
         crm_lead = self.search([('vehicle_line', '!=', False)])
         for record in crm_lead:
@@ -139,6 +146,7 @@ class ARS_crm_lead(models.Model):
     type_lead = fields.Selection([
         ('appointment', 'Appointment'),
         ('walkin', 'Walk In'),
+        ('p&d', 'P&D'),
     ], string='Type', default='appointment')
     user_id = fields.Many2one('res.users', default=False)
     hr_emp_cat = fields.Many2one('hr.employee.category')
@@ -250,11 +258,19 @@ class ARS_crm_lead(models.Model):
     # After Sales Menu - On Click Of New Estimation Button In Appointment Form View
     @api.multi
     def action_set_new_appointment(self):
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        if sale_team.team_type != 'after_sales':
+            raise UserError(_('User Not Belongs to After Sales chanel'))
         if not self.partner_id:
             raise UserError(_('Please Enter The Customer Name'))
+        if not self.customer_voice:
+            raise UserError(_('Please Enter The Customer Voice'))
         orderid = self.env['sale.order']
         action_rec = self.env.ref('ars_after_sales.sale_action_quotations_new1')
         view = self.env.ref('ars_after_sales.view_order_form_inherit')
+        crm_stage = self.env['crm.stage'].search([('category_stage', '=', 'after_sales'),
+                                                  ('name', '=', 'Estimation'),
+                                                  ('team_id.company_id.id', '=', self.company_id.id)])
         for record in self:
             record.is_estimation = 'Estimation'
             if action_rec:
@@ -271,6 +287,9 @@ class ARS_crm_lead(models.Model):
                                                                        count, record.partner_id.id)
                         order_line.append((0, 0, data))
                         count += 1
+                warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', record.regn_no.company_id.id), ('ars_type', 'in', ['after_sales'])])
+                customer_voice = self.env['customer.voice'].search([('customer_voice_id', '=', record.id)])
+
                 order_id = orderid.create({'opportunity_id': self.id,
                                            'partner_id': record.partner_id.id,
                                            'customer_voice_sale': voiceline,
@@ -285,11 +304,22 @@ class ARS_crm_lead(models.Model):
                                            'order_line': order_line,
                                            'mobile': record.mobile,
                                            'email': record.email_from,
+                                           'sale_type': 'parts',
+                                           'sale_aftersales': 'after_sales',
+                                           'warehouse_id': warehouse_id.id,
+                                           'service_options': record.service_options.id,
+                                           'service_type': record.service_type.id,
                                            # 'main_process_id':record.main_process_id.id,
                                            # 'cre_work-_flow':record.cre_work_flow,
                                            # 'sa_work_flow':record.sa_work_flow,
                                            # 'gate_in_time':record.sec_at_gatetime
                                            })
+                cust_vals = {
+                    'name': customer_voice.name,
+                    'instructions': customer_voice.instructions.id,
+                    'customer_voice_id': order_id.id
+                }
+                self.env['customer.voice'].create(cust_vals)
                 # di = {'record_id':record,'order_id':order_id}
 
                 sale_msg_id = self.env['mail.message'].search([('res_id', '=', order_id.id)], limit=1)
@@ -309,6 +339,7 @@ class ARS_crm_lead(models.Model):
                         track_msg_log = track_msg_id.copy(default=msg_values).id
                 # action['view_id'] = view.id
                 action['res_id'] = order_id.id
+                record.stage_id = crm_stage.id
                 return action
 
     @api.model
@@ -767,7 +798,7 @@ class ARSSaleOrderLine(models.Model):
                 # Adjust this logic based on your actual product and company structure
                 stock_quant = self.env['stock.quant'].search([
                     ('product_id', '=', product.id),
-                    ('location_id.company_id', '=', company.id)
+                    ('location_id.company_id', '=', company.id), ('location_id.usage', 'in', ['internal', 'transit'])
                 ])
 
                 total_qty = sum(stock_quant.mapped('quantity'))

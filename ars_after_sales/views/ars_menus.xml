@@ -275,7 +275,7 @@
                   parent="crm_aftersales"
                   sequence="0"/>
         <menuitem id="menu_aftersales_opportunities"
-                  name="Opportunities"
+                  name="Service Reminder"
                   action="ars_after_sales.action_crm_lead_opportunities_appointment"
                   parent="crm_aftersales"
                   sequence="1"/>

@@ -670,7 +670,9 @@
                       decoration-muted="state=='cancel'">
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Quotation Number"/>
+
 <!--                    <field name="regn_no" required="1" string="Reg No"/>-->
+
                     <field name="date_order" string="Quotation Date"/>
                     <field name="partner_id"/>
                      <field name="regn_no" required="1" string="Reg No"/>
@@ -820,7 +822,7 @@
                             <separator string="Service Details" colspan="4"/>
                             <group>
                                 <field name="doc_type" string="Visit Type" required="1"
-                                       attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                       attrs="{'readonly': ['|',('state','not in', ('draft', 'so')), ('doc_type', 'in', ('p&amp;d', 'P&amp;D'))]}"/>
                                 <field name="pick_up_drop"/>
                                 <field name="work_type" string="Work Type"
                                        attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
@@ -836,7 +838,7 @@
                                        domain="[('serviceadvisor','=',True)]"
                                        attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
                                 <field name="appointment_date"
-                                       attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
+                                       attrs="{'readonly': [('state','not in', ('draft', 'so'))], 'required': [('state', 'in', ('so','sent'))]}"/>
                                 <field name="delivery_service_advisor" string="Advisor for Delivery"
                                        domain="[('serviceadvisor','=',True)]"
                                        options="{'no_create': True, 'no_open': True}"
@@ -1140,7 +1142,7 @@
                     <field name="regn_no"/>
                     <field name="vin_no"/>
                     <field name="user_id" string="Service Advisor"/>
-                    <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
+                    <field name="mileage_in" string="Kilometer"/>
                     <field name="currency_id" invisible="1"/>
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
@@ -1179,10 +1181,12 @@
                                               'default_campaign_id': campaign_id,
                                               'default_medium_id': medium_id,
                                               'default_source_id': source_id,
-                                              'default_opportunity_id': active_id}"/>/>
+                                              'default_opportunity_id': active_id}"
+                                attrs="{'invisible': [('stage_name', 'not in', ['Appointment'])]}"
+                        />
                         <button name="action_set_won" string="Mark Won"
                                 type="object" class="oe_highlight"
-                                attrs="{'invisible': ['|', ('active','=',False), ('probability', '=', 100)]}"/>
+                                attrs="{'invisible': ['|', ('active','=',False), ('stage_name', 'in', ['Appointment', 'Service Due', 'Estimation', 'Confirmation Call'])]}"/>
                         <button name="%(crm.crm_lead_lost_action)d" string="Mark Lost"
                                 type="action" class="oe_highlight"
                                 context="{'default_lead_id': active_id}"
@@ -1289,6 +1293,7 @@
                                 <field name="mobile" string="Mobile"/>
                                 <field name="email_from" string="Email" widget="email"/>
                                 <field name="priority" widget="priority"/>
+                                <field name="stage_name" invisible="1"/>
 
                                 <!--<label for="regn_no" string="Regn No"/>-->
                                 <!--<div class="parent">-->
@@ -1355,7 +1360,7 @@
                         <div>
                             <field name="customer_voice">
                                 <tree editable="bottom">
-                                    <field name="name"/>
+                                    <field name="name" required="1"/>
                                     <field name="instructions"/>
                                 </tree>
                             </field>
@@ -2828,11 +2833,43 @@
             </field>
         </record>
 
+        <record id="invoice_from_inherited_modified_status" model="ir.ui.view">
+            <field name="name">account.form.modified.status</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group" position="after">
+                    <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                         <b>
+                             <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                                <span style="color: darkred;">
+                                    Invoice
+                                </span>
+                                <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
+                             </div>
+                        </b>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
         <record id="invoice_form_gate_pass_inherit" model="ir.ui.view">
             <field name="name">account.invoice.form</field>
             <field name="model">account.invoice</field>
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group" position="after">
+                <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                    <b>
+                        <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                            <span style="color: darkred;">
+                                Invoice
+                            </span>
+                            <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
+                        </div>
+                    </b>
+                </div>
+            </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']"
                        position="after">
                     <field name="admin_access" invisible="1"/>
@@ -2899,6 +2936,9 @@
                     <!--                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access', 'not in', [True])]}" />-->
                     <field name="price_unit" force_save="1"
                            attrs="{'readonly': [('admin_access_1', 'not in', [True])]}"/>
+                </xpath>
+                <xpath expr="//form/sheet/group/group[2]//field[@name='origin']" position="after">
+                    <field name="create_date" string="Vendor Bill Creation Date" widget="date" attrs="{'readonly': True}"/>
                 </xpath>
             </field>
         </record>

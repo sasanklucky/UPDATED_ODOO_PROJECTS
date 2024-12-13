@@ -71,6 +71,44 @@ class ars_sale_crm_lead(models.Model):
     # enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     booking_date = fields.Datetime(string="Booking Date")
 
+    @api.constrains('mobile')
+    def check_mobile_with_model(self):
+        company_id = self.env.user.company_id.id
+        user = self.env.user.id
+        crm_team = self.env['crm.team'].search([('company_id', '=', company_id), ('team_type', 'in', ['sales']), ('member_ids', 'in', user)])
+        if crm_team:
+            if self.type == 'lead':
+                if self.mobile:
+                    mobile = self.mobile.strip()
+                    existing_lead = self.env['crm.lead'].search([('mobile','=',mobile),('id','!=', self.id)])
+                    if existing_lead:
+                        product_id = []
+                        for lead in existing_lead:
+                            for lead_line in lead.vehicle_line:
+                                product_id.append(lead_line.product_id.id)
+                        for line in self.vehicle_line:
+                            if line.product_id.id in product_id:
+                                raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+            if self.type == 'opportunity':
+                existing_lead = self.env['crm.lead'].search([('mobile', '=', self.mobile), ('id','!=', self.id)])
+                if existing_lead:
+                    if self.product_id:
+                        product_id = []
+                        for lead in existing_lead:
+                            for lead_line in lead.vehicle_line:
+                                product_id.append(lead_line.product_id.id)
+                        if self.product_id.id  in product_id:
+                            raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+                    else:
+                        product_id = []
+                        for lead in existing_lead:
+                            for lead_line in lead.vehicle_line:
+                                product_id.append(lead_line.product_id.id)
+                        for line in self.vehicle_line:
+                            if line.product_id.id in product_id:
+                                raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+
+
     @api.onchange('stage_id')
     def _set_booking_date(self):
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
@@ -463,9 +501,9 @@ class ars_sale_invoice(models.Model):
                 date_today = datetime.today()
                 if self.env.user.company_id.restrict_gp_date:
                     if given_date_obj.date() < date_today.date():
-                        raise ValidationError(_("Warning: Gate Pass dates cannot be set to a date in the past"))
+                        raise ValidationError(_("Warning: Gate pass date can't be set to a date in the past"))
                 if given_date_obj > date_today:
-                    raise ValidationError(_("Gate Pass Date can't be a future date"))
+                    raise ValidationError(_("Warning: Gate pass date can't be a future date"))
 
     @api.constrains('date_invoice')
     def invoice_date_validation(self):
@@ -476,9 +514,9 @@ class ars_sale_invoice(models.Model):
                 date_today = datetime.today()
                 if self.env.user.company_id.restrict_bd_inv:
                     if given_date_obj.date() < date_today.date():
-                        raise ValidationError(_("Warning: Invoice dates cannot be set to a date in the past"))
+                        raise ValidationError(_("Warning: Invoice date can't be set to a date in the past"))
                 if given_date_obj > date_today:
-                    raise ValidationError(_("Invoice Date can't be a future date"))
+                    raise ValidationError(_("Warning: Invoice date can't be a future date"))
 
     @api.multi
     def invoice_print(self):
@@ -538,6 +576,24 @@ class ars_sale_invoice(models.Model):
 
     def ars_action_invoice_open(self):
         for rec in self:
+            given_date_invoice = rec.date_invoice
+            if given_date_invoice and rec.type == 'out_invoice':
+                given_date_obj = datetime.strptime(given_date_invoice, "%Y-%m-%d")
+                date_today = datetime.today()
+                if self.env.user.company_id.restrict_bd_inv:
+                    if given_date_obj.date() < date_today.date():
+                        raise ValidationError(_("Warning: Invoice date can't be set to a date in the past"))
+                if given_date_obj > date_today:
+                    raise ValidationError(_("Warning: Invoice date can't be a future date"))
+            given_gate_pass_date = rec.gate_pass_date
+            if given_gate_pass_date:
+                given_date_gate_pass = datetime.strptime(given_gate_pass_date, "%Y-%m-%d")
+                date_today = datetime.today()
+                if self.env.user.company_id.restrict_gp_date:
+                    if given_date_gate_pass.date() < date_today.date():
+                        raise ValidationError(_("Warning: Gate pass date can't be set to a date in the past"))
+                if given_date_gate_pass > date_today:
+                    raise ValidationError(_("Warning: Gate pass date can't be a future date"))
             rec.action_invoice_open()
             result = rec.action_print_gate_pass()
             if isinstance(result, dict):  # Check if the result is an action dictionary
@@ -659,3 +715,6 @@ class ARSCrmLostReason(models.Model):
 
     type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity'), ],
                             help="Type is used to separate Leads and Opportunities")
+    sale_type = fields.Selection([('after_sales', 'After Sales'),
+                                  ('sales', 'Sales')], string='Sales Type')
+

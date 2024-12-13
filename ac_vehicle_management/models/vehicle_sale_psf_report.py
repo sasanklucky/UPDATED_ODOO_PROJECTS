@@ -54,7 +54,7 @@ class VehicleSalePsfReport(models.Model):
         initcap(to_char(inv.date_invoice, 'month'))  as month,
         CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
         inv.company_id as dealer_name_id,
-        inv.number as invoice_number, 
+        so.name as invoice_number, 
         inv.date_invoice as invoice_date,
         so.partner_id as partner_id,
         so.user_id as user_id,
@@ -307,8 +307,15 @@ class VehicleSalePsfReport(models.Model):
                     rsa_attachment = self.export_xls_ecb(param=True)
                     users = record.mail_list_ids
                     template.attachment_ids = [(4, rsa_attachment.id)] if rsa_attachment else False
-                    template.send_mail(self.id, email_values={'recipient_ids': [(4, user.id) for user in users],
-                                                              }, force_send=True)
+                    for user in users:
+                        template.with_context(active_id=user.name.title(),
+                                              dealer_name=self.env.user.company_id.name).send_mail(self.id,
+                                                                                                   email_values={
+                                                                                                       'recipient_ids': [
+                                                                                                           (
+                                                                                                               4,
+                                                                                                               user.id)],
+                                                                                                   }, force_send=True)
                 else:
                     mail_values = {
                         'subject': record.mail_subject,
@@ -340,27 +347,27 @@ class VehicleSalePsfReport(models.Model):
         justify.set_align('justify')
         format1.set_align('center')
         red_mark.set_align('center')
-        sheets.merge_range(0, 0, 2, 23, 'ECB Report ', format0)
-        sheets.write(3, 0, 'Sl No', format21)
-        sheets.write(3, 1, 'Month', format21)
-        sheets.write(3, 2, 'Year', format21)
-        sheets.write(3, 3, 'Dealer Name', format21)
-        sheets.write(3, 4, 'Invoice Date', format21)
-        sheets.write(3, 5, 'Invoice Number', format21)
-        sheets.write(3, 6, 'Sales Person', format21)
-        sheets.write(3, 7, 'Customer Name', format21)
-        sheets.write(3, 8, 'Customer Mobile', format21)
-        sheets.write(3, 9, 'Customer City', format21)
-        sheets.write(3, 10, 'Customer Phone', format21)
-        sheets.write(3, 11, 'Customer Pan No.', format21)
-        sheets.write(3, 12, 'VIN', format21)
-        sheets.write(3, 13, 'Model', format21)
-        sheets.write(3, 14, 'Untaxed Amount', format21)
-        sheets.write(3, 15, 'Tax', format21)
-        sheets.write(3, 16, 'Total', format21)
-        sheets.write(3, 17, 'Delivery Date', format21)
-        sheets.write(3, 18, 'Delivery Address 1', format21)
-        sheets.write(3, 19, 'Delivery Address 2', format21)
+        sheets.merge_range(0, 0, 2, 13, 'ECB Report ', format0)
+        sheets.write(3, 0, 'Sl No.', format21)
+        sheets.write(3, 1, 'Dealer Name', format21)
+        sheets.write(3, 2, 'Dealer Location', format21)
+        sheets.write(3, 3, 'Customer Name', format21)
+        sheets.write(3, 4, 'Booking Ref No.', format21)
+        sheets.write(3, 5, 'Booking Date', format21)
+        sheets.write(3, 6, 'Variant', format21)
+        sheets.write(3, 7, 'Customer Address', format21)
+        sheets.write(3, 8, 'Customer City', format21)
+        sheets.write(3, 9, 'PIN Code', format21)
+        sheets.write(3, 10, 'Customer Contact No.', format21)
+        sheets.write(3, 11, 'ECB Contact Person', format21)
+        sheets.write(3, 12, 'ECB Email', format21)
+        sheets.write(3, 13, 'ECB Mobile', format21)
+        # sheets.write(3, 14, 'Untaxed Amount', format21)
+        # sheets.write(3, 15, 'Tax', format21)
+        # sheets.write(3, 16, 'Total', format21)
+        # sheets.write(3, 17, 'Delivery Date', format21)
+        # sheets.write(3, 18, 'Delivery Address 1', format21)
+        # sheets.write(3, 19, 'Delivery Address 2', format21)
 
         date = str(datetime.now().date())
         dateval = datetime.strptime(date, "%Y-%m-%d")
@@ -372,26 +379,29 @@ class VehicleSalePsfReport(models.Model):
         column = 0
         sl = 0
         for record in records:
+            partner_address = record.partner_id.street + ','+ record.partner_id.street2
             sheets.write(row, column, sl + 1, format11)
-            sheets.write(row, column + 1, record.month, format11)
-            sheets.write(row, column + 2, record.year, format11)
-            sheets.write(row, column + 3, record.dealer_name_id.name, format12)
-            sheets.write(row, column + 4, record.invoice_date, format11)
-            sheets.write(row, column + 5, record.invoice_number, format11)
-            sheets.write(row, column + 6, record.user_id.name, format12)
-            sheets.write(row, column + 7, record.partner_id.name, format11)
-            sheets.write(row, column + 8, record.mobile, format11)
-            sheets.write(row, column + 9, record.city, format11)
-            sheets.write(row, column + 10, record.phone, format11)
-            sheets.write(row, column + 11, record.pan_no, format11)
-            sheets.write(row, column + 12, record.vin, format11)
-            sheets.write(row, column + 13, record.product_template_id.name, format11)
-            sheets.write(row, column + 14, record.amount_untaxed, format11)
-            sheets.write(row, column + 15, record.amount_tax, format11)
-            sheets.write(row, column + 16, record.amount_total, format11)
-            sheets.write(row, column + 17, record.delivery_date, format11)
-            sheets.write(row, column + 18, record.delivery_address1, format12)
-            sheets.write(row, column + 19, record.delivery_address2, format12)
+            sheets.write(row, column + 1, record.dealer_name_id.name, format11)
+            sheets.write(row, column + 2, record.dealer_name_id.dealer_zone, format11)
+            sheets.write(row, column + 3, record.partner_id.name, format12)
+            sheets.write(row, column + 4, record.invoice_number, format11)
+            sheets.write(row, column + 5, datetime.strptime(record.invoice_date, "%Y-%m-%d").strftime(
+                '%d/%m/%Y') if record.invoice_date else '', format11)
+            sheets.write(row, column + 6, record.product_template_id.name, format12)
+            sheets.write(row, column + 7, partner_address, format11)
+            sheets.write(row, column + 8, record.city, format11)
+            sheets.write(row, column + 9, record.partner_id.zip if record.partner_id.zip else '', format11)
+            sheets.write(row, column + 10, record.mobile if record.mobile else '', format11)
+            for ecb_rec in self.env['zone.zone'].search([('zone_name', '=', record.dealer_name_id.dealer_zone)], limit=1):
+                sheets.write(row, column + 11, ecb_rec.responsible_person.name if ecb_rec else '', format11)
+                sheets.write(row, column + 12, ecb_rec.responsible_person.email if ecb_rec else '', format11)
+                sheets.write(row, column + 13, ecb_rec.responsible_person.mobile if ecb_rec else '', format11)
+            # sheets.write(row, column + 14, record.amount_untaxed, format11)
+            # sheets.write(row, column + 15, record.amount_tax, format11)
+            # sheets.write(row, column + 16, record.amount_total, format11)
+            # sheets.write(row, column + 17, record.delivery_date, format11)
+            # sheets.write(row, column + 18, record.delivery_address1, format12)
+            # sheets.write(row, column + 19, record.delivery_address2, format12)
 
             sl = sl + 1
             row = row + 1
@@ -401,8 +411,8 @@ class VehicleSalePsfReport(models.Model):
             data = output.read()
             output.close()
             data = base64.encodebytes(data)
-            doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'ECB_report_' + str(datetime.now().date()) + '.xls',
-                                                       'datas_fname': 'ECB_report_' + str(datetime.now().date()) + '.xls',
+            doc_id = self.env['ir.attachment'].create({'datas': data, 'name': 'ECB_report_' + str(datetime.now().strftime('%d/%m/%Y')) + '.xls',
+                                                       'datas_fname': 'ECB_report_' + str(datetime.now().strftime('%d/%m/%Y')) + '.xls',
                                                        })
             if param is not None:
                 return doc_id

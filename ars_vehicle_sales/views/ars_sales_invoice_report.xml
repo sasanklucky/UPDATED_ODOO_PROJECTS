@@ -69,11 +69,11 @@
                                         <table class="table table-sm" style="margin-bottom:0">
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px; width:40%">Lessee/Ship To</td>
-                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.partner_id.name"/></td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px; width:60%">: <span t-field="doc.partner_shipping_id.name"/></td>
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">Email Id</td>
-                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_id.email"/></td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span t-field="doc.partner_shipping_id.email"/></td>
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">Ship To</td>
@@ -92,7 +92,7 @@
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">Phone No.</td>
-                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span  t-field="doc.mobile"/></td>
+                                                <td class="py-1" style="border: none; padding: 0px 2px;">: <span  t-field="doc.partner_shipping_id.mobile"/></td>
                                             </tr>
                                             <tr>
                                                 <td class="py-1" style="border: none; padding: 0px 2px;">PAN</td>

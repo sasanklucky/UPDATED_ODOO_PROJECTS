@@ -768,6 +768,104 @@ class ARS_sale_order(models.Model):
         return res
 
 
+
+class SaleOrderRestr(models.Model):
+    _inherit = 'sale.order'
+
+    # @api.model
+    # def create(self, vals):
+    #     self._check_invoice_status(self.name)
+    #     return super(SaleOrderRestr, self).create(vals)
+
+    def write(self, vals):
+        if ('name' in vals or self.name) and self.env.context.get('default_sale_aftersales') == 'after_sales':
+            self._check_invoice_status(self.name)
+        return super(SaleOrderRestr, self).write(vals)
+
+    def _check_invoice_status(self, order_name):
+        # Find the invoices associated with this sale order by name
+        invoices = self.env['account.invoice'].search([
+            ('origin', '=', order_name),
+            ('state', 'not in', ['draft','cancel'])  # Ensure invoice is not in draft state
+        ])
+
+        if invoices:
+            raise UserError(
+                "An invoice has been created and is not in draft state. You cannot modify this Sale Order.")
+
+class AccountInvoiceTrack(models.Model):
+    _inherit = 'account.invoice'
+
+    track_changes = fields.Boolean(default=False)
+    modified_invoice_status = fields.Selection([('modified', 'Modified'),('not_modified', 'Not Modified')], string='Invoice Modified')
+
+    @api.multi
+    def write(self, vals):
+        for invoice in self:
+            # Check if the invoice is moving out of the draft state for the first time
+            if 'state' in vals and vals['state'] != 'draft' and not invoice.track_changes:
+                # Set track_changes to True once invoice is no longer in draft
+                invoice.track_changes = True
+
+        # Call the original write method
+        return super(AccountInvoiceTrack, self).write(vals)
+
+
+class AccountInvoiceLine(models.Model):
+    _inherit = 'account.invoice.line'
+
+    @api.model
+    def create(self, vals):
+        invoice_line = super(AccountInvoiceLine, self).create(vals)
+
+        # Only log if tracking is enabled for the invoice
+        if invoice_line.invoice_id.track_changes:
+            message = f"New product added: {invoice_line.product_id.name}, Quantity: {invoice_line.quantity}"
+            invoice_line.invoice_id.message_post(
+                body=message,
+                subtype="mail.mt_note"
+            )
+            invoice_line.invoice_id.write({'modified_invoice_status': 'modified'})
+
+        return invoice_line
+
+    @api.multi
+    def write(self, vals):
+        changes = []  # List to store all changes for a single post
+
+        for line in self:
+            # Capture old values before updating
+            old_quantity = line.quantity if 'quantity' in vals else None
+            old_product = line.product_id if 'product_id' in vals else None
+            old_price = line.price_unit if 'price_unit' in vals else None
+
+            # After calling the write method, check if there were any changes
+            super(AccountInvoiceLine, line).write(vals)
+
+            if line.invoice_id.track_changes:
+                # Track quantity change
+                if old_quantity is not None and old_quantity != line.quantity:
+                    changes.append(
+                        f"Product {line.product_id.name} quantity changed from {old_quantity} to {line.quantity}")
+
+                # Track product change
+                if old_product is not None and old_product != line.product_id:
+                    changes.append(f"Product changed from {old_product.name} to {line.product_id.name}")
+
+                if old_price is not None and old_price != line.price_unit:
+                    changes.append(f"{line.product_id.name} Price changed from {old_price} to {line.price_unit}")
+
+        # Post all changes in a single message if there are any
+        if changes and self.invoice_id.track_changes:
+            self.invoice_id.message_post(
+                body="<br/>".join(changes),
+                subtype="mail.mt_note"
+            )
+            self.invoice_id.write({'modified_invoice_status': 'modified'})
+
+        return True
+
+
 class ARSPurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
     _description = 'Purchase Order Line'
