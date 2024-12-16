@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_master_menu_restriction,access_master_menu_restriction,model_master_menu_restriction,base.group_user,1,1,1,0
+access_menu_restrict_aftersales,access_menu_restrict_aftersales,model_menu_restrict_aftersales,base.group_user,1,1,1,0
+access_menu_restrict_vehiclesales,access_menu_restrict_vehiclesales,model_menu_restrict_vehiclesales,base.group_user,1,1,1,0
+access_menu_restrict_othersales,access_menu_restrict_othersales,model_menu_restrict_othersales,base.group_user,1,1,1,0
+,,,,,,,
+access_model_shell_location_id,access_model_shell_location,ac_product_catalog.model_shell_location,base.group_user,1,1,1,0
+access_rights_wizard,access_rights_wizard,model_access_rights_wizard,base.group_user,1,1,1,1
