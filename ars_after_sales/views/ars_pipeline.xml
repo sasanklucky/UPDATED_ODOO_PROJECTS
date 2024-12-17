@@ -888,6 +888,7 @@
                                                 <field name="product_id" domain="product_id_domain" string="Variant"
                                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
+                                                       options="{'no_create':True, 'no_open':True}"
                                                 />
                                                 <field name="layout_category_id" groups="sale.group_sale_layout"/>
                                                 <field name="invoice_status" invisible="1"/>
@@ -901,7 +902,9 @@
                                                             name="product_uom_qty" class="oe_inline"/>
                                                     <field name="product_uom" groups="product.group_uom"
                                                            class="oe_inline oe_no_button"
-                                                           attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
+                                                           attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
+                                                           options="{'no_create':True, 'no_open':True}"
+                                                    />
                                                 </div>
                                                 <label for="qty_delivered" string="Delivered Quantity"
                                                        attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
@@ -967,6 +970,7 @@
                                         <field name="product_id" domain="product_id_domain" string="Variant"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                                                context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
+                                               options="{'no_create':True, 'no_open':True}"
                                         />
                                         <field name="qty_available_line"/>
                                         <field name="layout_category_id" groups="sale.group_sale_layout"/>
@@ -984,7 +988,7 @@
                                         <field name="product_uom"
                                                attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                                context="{'company_id': parent.company_id}"
-                                               groups="product.group_uom" options='{"no_open": True}'/>
+                                               groups="product.group_uom" options='{"no_open": True, "no_create":True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="admin_access" invisible="1"/>
@@ -1613,8 +1617,8 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//tree/field[@name='price_unit']" position="before">
-                    <field name="product_uom"/>
-                    <field name="category" required="1"/>
+                    <field name="product_uom" options='{"no_open": True, "no_create":True}'/>
+                    <field name="category" required="1" options='{"no_open": True, "no_create":True}'/>
                 </xpath>
 
             </field>
@@ -1948,6 +1952,7 @@
                                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
                                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                                                        force_save="1"
+                                                       options="{'no_create': True, 'no_open': True}"
                                                 />
                                                 <field name="layout_category_id" groups="sale.group_sale_layout"/>
                                                 <field name="invoice_status" invisible="1"/>
@@ -1961,7 +1966,9 @@
                                                             name="product_uom_qty" class="oe_inline"/>
                                                     <field name="product_uom" groups="product.group_uom"
                                                            class="oe_inline oe_no_button"
-                                                           attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"/>
+                                                           attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
+                                                           options='{"no_open": True, "no_create":True}'
+                                                    />
                                                 </div>
                                                 <label for="qty_delivered" string="Delivered Quantity"
                                                        attrs="{'invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
@@ -2015,6 +2022,7 @@
                                                domain="[('categ_id.name','in', ('Labor','Accessories','Parts'))]"
                                                attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                                                context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                                               options="{'no_create': True, 'no_open': True}"
                                         />
                                         <field name="layout_category_id" groups="sale.group_sale_layout"/>
                                         <field name="name"/>
@@ -2030,7 +2038,7 @@
                                         <field name="product_uom"
                                                attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                                context="{'company_id': parent.company_id}"
-                                               groups="product.group_uom" options='{"no_open": True}'/>
+                                               groups="product.group_uom" options='{"no_open": True, "no_create": True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="price_unit"
@@ -2714,7 +2722,7 @@
                                        attrs="{'required': True}">
                                     <tree string="Invoice Lines" editable="bottom">
                                         <field name="sequence" widget="handle"/>
-                                        <field name="product_id" domain="[('sale_ok','=',True)]"/>
+                                        <field name="product_id" domain="[('sale_ok','=',True)]" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="origin" invisible="1"/>
                                         <field name="is_rounding_line" invisible="1"/>
                                         <field name="name"/>
@@ -2928,7 +2936,7 @@
                 </xpath>
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
                     <field name="product_catalog_id" string="Catalog Type"/>
-                    <field name="product_template_id" string="Product"/>
+                    <field name="product_template_id" string="Product" options="{'no_create':True, 'no_open':True}"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="replace">
                     <!--                    <field name="admin_access" invisible="1"/>-->
@@ -3012,8 +3020,8 @@
                     <separator string="Service Details" colspan="2"/>
                 </xpath>
                 <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='product_id']" position="before">
-                    <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required='1'/>
-                    <field name="product_template_id" options="{'no_create': True, 'no_open': True}" required='1'/>
+                    <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}" required="1"/>
+                    <field name="product_template_id" options="{'no_create': True, 'no_open': True}" required="1"/>
                 </xpath>
             </field>
         </record>
@@ -3105,13 +3113,13 @@
                                         <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}"
                                                required='1'/>
                                         <field name="product_id_domain" invisible="1"/>
-                                        <field name="product_template_id" domain="product_id_domain"/>
-                                        <field name="product_id" domain="product_id_domain" string="Variant"/>
+                                        <field name="product_template_id" domain="product_id_domain" options="{'no_create':True, 'no_open':True}"/>
+                                        <field name="product_id" domain="product_id_domain" string="Variant" options="{'no_create': True, 'no_open': True}"/>
                                         <field name="name"/>
                                         <field name="product_uom_qty"/>
                                         <field name="qty_delivered"/>
-                                        <field name="product_uom"/>
-                                        <field name="category"/>
+                                        <field name="product_uom" options='{"no_open": True, "no_create:True"}'/>
+                                        <field name="category" options='{"no_open": True, "no_create":True}'/>
                                         <field name="price_unit"/>
                                         <field name="qty_invoiced" invisible="1"/>
                                         <field name="company_id"/>

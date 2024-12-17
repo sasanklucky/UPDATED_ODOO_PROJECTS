@@ -30,7 +30,7 @@
                 </xpath>
 
                 <xpath expr="//tree/field[@name='currency_id']" position="after">
-                    <field name="customer_split" domain="[('id','in',cust_filter_ids)]" required="1"/>
+                    <field name="customer_split" domain="[('id','in',cust_filter_ids)]" required="1" options='{"no_open": True, "no_create":True}'/>
                     <field name="cust_filter_ids" invisible="1"/>
                     <field name="split_type"/>
                 </xpath>
@@ -84,6 +84,7 @@
                     <field name="product_id" domain="[('categ_id.name','in', ('Labor','Accessories','Parts'))]"
                                         attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                                         context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                                        options="{'no_create': True, 'no_open': True}"
                                        />
                     <field name="layout_category_id" groups="sale.group_sale_layout"/>
                     <field name="product_template_id"/>
@@ -101,7 +102,7 @@
                     <field name="product_uom"
                         attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                         context="{'company_id': parent.company_id}"
-                        groups="product.group_uom" options='{"no_open": True}'/>
+                        groups="product.group_uom" options='{"no_open": True, "no_create":True}'/>
                     <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="price_unit"
                         attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
@@ -115,7 +116,7 @@
                     <field name="invoice_status" invisible="1"/>
                     <field name="customer_lead" invisible="1"/>
                     <field name="currency_id" invisible="1"/>
-                    <field name="customer_split" />
+                    <field name="customer_split" options='{"no_open": True, "no_create":True}'/>
                     <field name="split_type" />
                 </tree>
             </field>

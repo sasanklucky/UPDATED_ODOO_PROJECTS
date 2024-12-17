@@ -93,12 +93,11 @@
                     <page string="Model Intrested">
                         <field name="vehicle_line">
                             <tree name="CrmLeadLine" string="Crm Lead Lines" editable="bottom">
-                                <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]"
-                                       options="{'no_create':True}"/>
-                                <field name="product_template_id" options="{'no_create':True}"/>
+                                <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]" options="{'no_create':True, 'no_open':True}"/>
+                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}"/>
                                 <field name="product_id" string="Variant"
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
-                                       options="{'no_create':True}"
+                                       options="{'no_create':True, 'no_open':True}"
                                        context="{'form_view_ref':'product.product_normal_form_view'}"/>
                                 <field name="name"/>
                             </tree>
@@ -278,11 +277,11 @@
                             <tree name="SaleOrderLine" string="Sales Order Lines" editable="bottom">
                                 <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]"
                                        options="{'no_create':True}"/>
-                                <field name="product_template_id" options="{'no_create':True}"/>
+                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}"/>
                                 <field name="product_id" string="Variant"
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
                                        context="{'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
-                                       options="{'no_create':True}"/>
+                                       options="{'no_create':True, 'no_open':True}"/>
                                 <field name="name"/>
                             </tree>
                         </field>
@@ -395,6 +394,7 @@
                     <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
+                           options="{'no_create':True, 'no_open':True}"
                     />
                     <field name="qty_available_line"/>
                     <field name="admin_access" invisible="1"/>
@@ -402,8 +402,7 @@
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="replace">
-                    <field name="price_unit" force_save="1"
-                           attrs="{'readonly': [('admin_access_sale', 'not in', [True])]}"/>
+                    <field name="price_unit" force_save="1" attrs="{'readonly': [('admin_access_sale', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//notebook/page[2]/group/group[@name='sales_person']/field[@name='user_id']"
                        position="replace">
@@ -460,8 +459,13 @@
                     <field name="product_template_id" domain="product_id_domain"/>
                     <field name="product_id" domain="product_id_domain" string="Variant"
                            attrs="{'readonly': [('state', 'in', ('purchase', 'to approve','done', 'cancel'))]}"
-                           context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"/>
+                           context="{'partner_id':parent.partner_id, 'quantity':product_qty,'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
+                           options="{'no_create':True, 'no_open':True}"
+                    />
                     <field name="qty_available_line"/>
+                </xpath>
+                <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='product_uom']" position="replace">
+                    <field name="product_uom" groups="product.group_uom" attrs="{'readonly': [('state', 'in', ('purchase', 'done', 'cancel'))]}" options="{'no_create':True, 'no_open':True}" force_save="1"/>
                 </xpath>
                 <xpath expr="//notebook/page/field[@name='order_line']/tree" position="attributes">
                     <attribute name="default_order">sl_no asc</attribute>
