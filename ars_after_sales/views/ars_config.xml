@@ -344,10 +344,10 @@
                                    attrs="{'readonly':[('state','=','done')]}">
                                 <tree string="Warranty Lines" editable="top" create="false">
                                     <!--<field name="product_updatable" invisible="1"/>-->
-                                    <field name="product_id" readonly="1"/>
+                                    <field name="product_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="name" readonly="1"/>
                                     <field name="product_uom_qty" string="Ordered Qty" readonly="1"/>
-                                    <field name="product_uom" options='{"no_open": True}' readonly="1"/>
+                                    <field name="product_uom" options='{"no_open": True, "no_create":True}' readonly="1"/>
                                     <field name="ars_std_price" readonly="1"/>
                                     <field name="ars_warranty_price" required="1"/>
                                     <field name="tax_id" widget="many2many_tags" readonly="1"/>
