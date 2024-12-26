@@ -788,8 +788,8 @@ class SaleOrderRestr(models.Model):
             ('origin', '=', order_name),
             ('state', 'not in', ['draft','cancel'])  # Ensure invoice is not in draft state
         ])
-
-        if invoices:
+        config_parameter = self.env.user.company_id.service_ro_invoice_cre_restrict
+        if invoices and config_parameter:
             raise UserError(
                 "An invoice has been created and is not in draft state. You cannot modify this Sale Order.")
 

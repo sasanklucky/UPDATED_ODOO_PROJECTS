@@ -86,6 +86,18 @@
                         </div>
                     </div>
 
+                     <h2>Ro Invoice Restriction Setup</h2>
+                    <div class="row mt16 o_settings_container" id="unit_price_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="service_ro_invoice_cre_restrict"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Restrict editing of service orders by enabling permission." for="service_ro_invoice_cre_restrict"/>
+                            </div>
+                        </div>
+                    </div>
+
                     <h2>Report Setup</h2>
                     <div class="row mt16 o_settings_container" id="ars_settings">
                         <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">

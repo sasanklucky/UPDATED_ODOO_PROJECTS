@@ -19,6 +19,7 @@ class ars_company(models.Model):
     restrict_gp_date = fields.Boolean()
     inv_line_unit_price = fields.Boolean()
     marine_policy_no = fields.Text(string="Marine Policy Number")
+    service_ro_invoice_cre_restrict = fields.Boolean()
 
     @api.constrains('mobile')
     def mobile_validation(self):
@@ -55,6 +56,7 @@ class ars_configure_settings(models.TransientModel):
     restrict_bd_inv = fields.Boolean(related="company_id.restrict_bd_inv")
     restrict_gp_date = fields.Boolean(related="company_id.restrict_gp_date")
     inv_line_unit_price = fields.Boolean(related="company_id.inv_line_unit_price")
+    service_ro_invoice_cre_restrict = fields.Boolean(related="company_id.service_ro_invoice_cre_restrict")
 
     @api.multi
     def set_values(self):
@@ -63,6 +65,7 @@ class ars_configure_settings(models.TransientModel):
         param.set_param('ars_after_sales.restrict_gp_date', self.restrict_gp_date)
         param.set_param('ars_after_sales.inv_line_unit_price', self.inv_line_unit_price)
         param.set_param('ars_after_sales.next_service_remainder', self.next_service_remainder)
+        param.set_param('ars_after_sales.service_ro_invoice_cre_restrict', self.service_ro_invoice_cre_restrict)
 
         return res
     @api.multi
@@ -71,11 +74,13 @@ class ars_configure_settings(models.TransientModel):
         restrict_gp_date = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.restrict_gp_date')
         inv_line_unit_price = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.inv_line_unit_price')
         next_service_remainder = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.next_service_remainder')
+        service_ro_invoice_cre_restrict = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.service_ro_invoice_cre_restrict')
 
         res.update(
             restrict_gp_date=restrict_gp_date if restrict_gp_date else False,
             inv_line_unit_price=inv_line_unit_price if inv_line_unit_price else False,
-            next_service_remainder=next_service_remainder if next_service_remainder else 0.0
+            next_service_remainder=next_service_remainder if next_service_remainder else 0.0,
+            service_ro_invoice_cre_restrict=service_ro_invoice_cre_restrict if service_ro_invoice_cre_restrict else False,
         )
 
         return res
