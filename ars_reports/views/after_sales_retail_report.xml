@@ -28,6 +28,7 @@
                     <field name="vin"/>
                     <field name="registration_no"/>
                     <field name="model"/>
+                    <field name="selling_dealer"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
                     <field name="ro_number"/>
