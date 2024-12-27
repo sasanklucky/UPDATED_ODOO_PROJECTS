@@ -1126,6 +1126,14 @@ class ARS_PurchaseOrder(models.Model):
             product_catalog = self.env['product.catalog'].search([], limit=1)
         self.product_catalog_id = product_catalog.id
 
+    @api.onchange('order_line')
+    def onchange_identity_ids(self):
+        for order in self.order_line:
+            line = self.order_line.filtered(lambda l: l.product_id == order.product_id)
+            if len(line) > 1:
+                raise ValidationError(_('(%s) Duplicate Entry') % (line[1].product_id.name))
+                break
+
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type',
                                          compute='_get_default_product_catalog')
 
