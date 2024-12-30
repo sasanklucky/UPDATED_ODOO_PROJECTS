@@ -28,7 +28,6 @@
                     <field name="vin"/>
                     <field name="registration_no"/>
                     <field name="model"/>
-                    <field name="selling_dealer"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
                     <field name="ro_number"/>
@@ -65,6 +64,7 @@
                     <field name="bill_to_customer_gst"/>
                     <field name="e_invoice_generated"/>
                     <field name="irn_no"/>
+                    <field name="selling_dealer"/>
                 </tree>
             </field>
         </record>
