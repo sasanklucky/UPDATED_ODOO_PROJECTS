@@ -31,6 +31,7 @@
                     <field name="amount_total" string="Total"/>
                     <field name="service_options_id" string="Service Options"/>
                     <field name="service_type_id" string="Service Type"/>
+                    <field name="selling_dealer" string="Selling Dealer"/>
                     <field name="doc_type" string="Type"/>
                     <field name="user_id" string="Service Advisor"/>
                     <field name="reg_no" string="Reg No."/>
