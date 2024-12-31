@@ -166,7 +166,6 @@ class ars_sale_crm_lead(models.Model):
                     if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
                         raise ValidationError(
                             "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
-            return super(ars_sale_crm_lead, self).write(vals)
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         stage = vals.get('stage_id')
         if stage and booking_stage:
