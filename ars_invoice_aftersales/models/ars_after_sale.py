@@ -676,10 +676,10 @@ class ARS_split_invoice(models.Model):
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
 
-    invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
-    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
-                                          ('customer', 'Customer Invoice'),
-                                          ('insurance', 'Insurance Invoice')], string='Type')
+    # invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
+    # cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
+    #                                       ('customer', 'Customer Invoice'),
+    #                                       ('insurance', 'Insurance Invoice')], string='Type')
 
     @api.multi
     def action_invoice_open(self):
