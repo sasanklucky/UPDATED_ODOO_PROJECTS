@@ -81,6 +81,12 @@
                   sequence="6"
                   groups="base.group_no_one"/>
 
+        <menuitem id="stock_closing_report_menu"
+                  name="Stock Closing Report"
+                  parent="ac_parts_management.stock_parts_reporting"
+                  sequence="4"
+                  action="ars_after_sales.action_stock_closing"/>
+
 
     </data>
 </odoo>
