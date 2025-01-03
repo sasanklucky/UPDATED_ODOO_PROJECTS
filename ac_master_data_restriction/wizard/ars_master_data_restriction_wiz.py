@@ -1657,7 +1657,7 @@ class SaleOrderRestrictMasterData(models.Model):
         fields = self.env['sale.order'].fields_get()
         default_attrs = {key: 'readonly' for key in fields.keys()}
         default_options = {key: 'no_open' for key in fields.keys()}
-
+        user = self.env['res.users'].browse(int(self.env.context.get('uid')))
         def apply_restriction():
             # doc.set('create', 'true')
             # doc.set('edit', 'true')
@@ -1738,10 +1738,18 @@ class SaleOrderRestrictMasterData(models.Model):
             if current_menu_id in menus_to_restrict['menus_need_restrict'] and current_window_model in \
                     menus_to_restrict['model_need_restrict']:
                 print('menus restrict')
-                doc.set('create', 'true')
+                if user:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
                 doc.set('edit', 'true')
             elif current_window_model not in menus_to_restrict['model_need_restrict']:
-                doc.set('create', 'true')
+                if user:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
                 doc.set('edit', 'true')
             else:
                 apply_restriction()
@@ -1794,6 +1802,11 @@ class SaleOrderRestrictMasterData(models.Model):
         #         print('No current model or template action ID')
 
         # Update the view architecture
+        if user:
+            if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                doc.set('create', 'true')
+            else:
+                doc.set('create', 'false')
         result['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return result
 
