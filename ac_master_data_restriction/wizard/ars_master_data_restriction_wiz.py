@@ -1738,20 +1738,23 @@ class SaleOrderRestrictMasterData(models.Model):
             if current_menu_id in menus_to_restrict['menus_need_restrict'] and current_window_model in \
                     menus_to_restrict['model_need_restrict']:
                 print('menus restrict')
-                if user:
-                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
-                        doc.set('create', 'true')
-                    else:
-                        doc.set('create', 'false')
+                if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                    doc.set('create', 'true')
+                else:
+                    doc.set('create', 'false')
                 doc.set('edit', 'true')
             elif current_window_model not in menus_to_restrict['model_need_restrict']:
+                if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                    doc.set('create', 'true')
+                else:
+                    doc.set('create', 'false')
+                doc.set('edit', 'true')
+            else:
                 if user:
-                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button") and current_menu_id in menus_to_restrict['menus_need_restrict']:
                         doc.set('create', 'true')
                     else:
                         doc.set('create', 'false')
-                doc.set('edit', 'true')
-            else:
                 apply_restriction()
         # Step 4
         filtered_data_have_models_in_group_and_have_menus_and_no_users = {
@@ -1777,6 +1780,11 @@ class SaleOrderRestrictMasterData(models.Model):
         if not menus_to_restrict['menus_in_group'] and not menus_to_restrict['user_in_groups'] and menus_to_restrict[
             'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
+                if user:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button") and current_window_model in menus_to_restrict['model_need_restrict']:
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
                 apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
@@ -1802,11 +1810,11 @@ class SaleOrderRestrictMasterData(models.Model):
         #         print('No current model or template action ID')
 
         # Update the view architecture
-        if user:
-            if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
-                doc.set('create', 'true')
-            else:
-                doc.set('create', 'false')
+        # if user:
+        #     if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+        #         doc.set('create', 'true')
+        #     else:
+        #         doc.set('create', 'false')
         result['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return result
 
