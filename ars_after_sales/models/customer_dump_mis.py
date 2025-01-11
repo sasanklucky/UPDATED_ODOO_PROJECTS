@@ -183,11 +183,38 @@ class customer_dump_mis_report(models.Model):
                 a.referred AS referred,
                 CASE WHEN a.is_test_drive = True THEN 'YES' ELSE 'NO' END AS test_drive,
                 act1.summary AS note_1,
-                act1.note AS remarks_1,
+                -- act1.note AS remarks_1,
+                regexp_replace(
+                regexp_replace(
+                    regexp_replace(
+                       regexp_replace(
+                          regexp_replace(act1.note,'&lt;', '<', 'g'),
+                          '&gt;', '>', 'g'),
+                       '&amp;', '&', 'g'),
+                    '&quot;', '"', 'g'),
+                    '<[^>]*>', '', 'g') AS remarks_1,
                 act2.summary AS note_2,
-                act2.note AS remarks_2,
+                --act2.note 
+                regexp_replace(
+                regexp_replace(
+                    regexp_replace(
+                       regexp_replace(
+                          regexp_replace(act2.note,'&lt;', '<', 'g'),
+                          '&gt;', '>', 'g'),
+                       '&amp;', '&', 'g'),
+                    '&quot;', '"', 'g'),
+                    '<[^>]*>', '', 'g') AS remarks_2,
                 act3.summary AS note_3,
-                act3.note AS remarks_3,
+                --act3.note 
+                regexp_replace(
+                regexp_replace(
+                    regexp_replace(
+                       regexp_replace(
+                          regexp_replace(act3.note,'&lt;', '<', 'g'),
+                          '&gt;', '>', 'g'),
+                       '&amp;', '&', 'g'),
+                    '&quot;', '"', 'g'),
+                    '<[^>]*>', '', 'g') AS remarks_3,
                 act1.write_date AS activity_cr_date_1,
                 act2.write_date AS activity_cr_date_2,
                 act3.write_date AS activity_cr_date_3,
