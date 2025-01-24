@@ -7,7 +7,6 @@ from lxml import etree
 class FleetVehicle(models.Model):
     _inherit = 'fleet.vehicle'
 
-    consolidate_vehicle_card_id = fields.Integer(string='consolidate_vehicle_card_id')
     wholesale_ids = fields.One2many('wholesale.history', 'vehicle_id', string="Wholesale History")
     service_type_sequence = fields.Integer(string="Service Type Sequence", compute='compute_service_type_sequence')
 
