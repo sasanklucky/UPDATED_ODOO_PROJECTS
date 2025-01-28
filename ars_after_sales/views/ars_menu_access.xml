@@ -444,11 +444,11 @@
 
 		</record>
 
-		<record model="ir.ui.menu" id="ars_after_sales.menu_warranty_page">
+<!--		<record model="ir.ui.menu" id="ars_after_sales.menu_warranty_page">-->
 
-			<field name="groups_id" eval="[(4, ref('group_warranty_manager')),(4, ref('group_warranty_approval'))]"/>
+<!--			<field name="groups_id" eval="[(4, ref('group_warranty_manager')),(4, ref('group_warranty_approval'))]"/>-->
 
-		</record>
+<!--		</record>-->
 
 
 </odoo>

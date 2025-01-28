@@ -79,7 +79,7 @@
 <td style="width:14%;text-align:center;">${order.ars_std_price or ''}</td>
 <td style="width:20%;text-align:center;">${order.ars_warranty_price or ''}</td>
 <td style="width:20%;text-align:center;">${order.wrn_price_subtotal or ''}</td>
-<td style="width:10%;text-align:center;">${order.apr_action=='approved' and 'Approved' or order.apr_action=='reject' and 'Reject' or order.apr_action=='hold' and 'Hold' or order.apr_action=='re_submission' and 'Re-Submission' or ''}</td>
+<td style="width:10%;text-align:center;">${order.apr_action=='approved' and 'Approved' or order.apr_action=='reject' and 'Reject' or order.apr_action=='re_submit' and 'Re-Submit' or order.apr_action=='re_submission' and 'Re-Submission' or ''}</td>
 </tr>
 </tbody></table>
 % endfor

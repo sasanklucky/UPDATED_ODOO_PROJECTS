@@ -33,8 +33,11 @@ class ARS_sale_order_line(models.Model):
     ars_warranty_price = fields.Float('Warranty Price')
     ars_std_price = fields.Float('Base Price')
     apr_action = fields.Selection(
-        [('approved', 'Approved'), ('reject', 'Reject'), ('hold', 'Hold'), ('re_submission', 'Re Submission')],
+        [('approved', 'Approved'),('re_submit', 'Re-Submit'), ('reject', 'Reject')],
         string='Action')
+    # apr_action = fields.Selection(
+    #     [('approved', 'Approved'), ('reject', 'Reject'), ('hold', 'Hold'), ('re_submission', 'Re Submission')],
+    #     string='Action')
     price_subtotal = fields.Monetary(compute='_compute_amount', string='Subtotal', readonly=True, store=True)
     price_tax = fields.Float(compute='_compute_amount', string='Taxes', readonly=True, store=True)
     price_total = fields.Monetary(compute='_compute_amount', string='Total', readonly=True, store=True)
@@ -97,20 +100,56 @@ class ARS_sale_order_line(models.Model):
                 if vendor_price_dict:
                     if self.customer_split.id in vendor_price_dict:
                         self.price_unit = vendor_price_dict[self.customer_split.id]
+                        self.ars_warranty_price = vendor_price_dict[self.customer_split.id]
+                        self.ars_std_price = vendor_price_dict[self.customer_split.id]
 
-    @api.multi
-    @api.onchange('customer_split')
-    def CustomerSplit_Change(self):
-        res = {}
-        self.ensure_one()
-        # print('customer onchange', self.customer_split)
-        if self.customer_split and self.product_id:
-            res = self.customer_split.property_product_pricelist.with_context().get_product_price_rule(self.product_id,
-                                                                                                       1.0,
-                                                                                                       self.customer_split)
-            self.price_unit = res[0]
-            self.ars_warranty_price = res[0]
-            self.ars_std_price = res[0]
+    @api.onchange('price_unit')
+    def _onchange_price_unit_update_std_price(self):
+        if self.category and self.category.name.lower() == 'warranty' and self.price_unit:
+            # Update ars_std_price only when category is 'warranty'
+            self.ars_std_price = self.price_unit
+            self.ars_warranty_price = self.price_unit
+
+    # @api.onchange('price_unit')
+    # def _onchange_price_unit_update_std_price(self):
+    #     if self.price_unit and self._origin.id:
+    #         self.ars_std_price = self.price_unit
+    #         self.ars_warranty_price = self.price_unit
+
+    @api.model
+    def create(self, vals):
+        if 'ars_std_price' not in vals and 'price_unit' in vals:
+            vals['ars_std_price'] = vals['price_unit']
+        return super(ARS_sale_order_line, self).create(vals)
+
+    @api.model
+    def write(self, values):
+        if 'apr_action' in values and values['apr_action'] == 're_submit':
+            values.update({'split_type': 1, 'customer_split': False})
+
+        return super(ARS_sale_order_line, self).write(values)
+
+#//
+    # @api.model
+    # def create(self, vals):
+    #     if 'ars_std_price' in vals:
+    #         vals['price_unit'] = vals['ars_std_price']
+    #     return super(ARS_sale_order_line, self).create(vals)
+    # //
+
+    # @api.multi
+    # @api.onchange('customer_split')
+    # def CustomerSplit_Change(self):
+    #     res = {}
+    #     self.ensure_one()
+    #     print('customer onchange', self.customer_split)
+    #     if self.customer_split and self.product_id:
+    #         res = self.customer_split.property_product_pricelist.with_context().get_product_price_rule(self.product_id,
+    #                                                                                                    1.0,
+    #                                                                                                    self.customer_split)
+    #         self.price_unit = res[0]
+    #         self.ars_warranty_price = res[0]
+    #         self.ars_std_price = res[0]
 
     @api.model
     def write(self, values):
@@ -118,12 +157,12 @@ class ARS_sale_order_line(models.Model):
         msg = ''
         priceDict = {}
         context = self._context
-        # print('order line context', self._context)
+        print('order line context', self._context)
         for ol in self:
             priceDict[ol.id] = ol.price_unit
-        if 'apr_action' in values and values.get('apr_action') == 'reject':
+        if 'apr_action' in values and values.get('apr_action') in ['re_submit','reject'] :
             values.update({'customer_split': False})
-        if 'apr_action' in values and not self.customer_split and values.get('apr_action') == 'approved':
+        elif 'apr_action' in values and not self.customer_split and values.get('apr_action') == 'approved':
             params = context.get('params')
             if params.get('model') == 'ars.sale.warranty':
                 warranty = self.env['ars.sale.warranty'].search_read([('id', '=', params.get('id'))],

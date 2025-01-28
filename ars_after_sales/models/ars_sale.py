@@ -97,6 +97,8 @@ class ARS_sale_order(models.Model):
     vehicle_count = fields.Integer("Vehicle", compute='_compute_vehicle_count')
     customer_voice_sale = fields.One2many("customer.voice", 'cust_sale', ondelete='cascade')
     regn_no = fields.Many2one('fleet.vehicle', string="Regn No")
+    fleet_vin_no = fields.Many2one('fleet.vehicle', string="Vin No", limit=100000)
+    fleet_regn_no = fields.Char(string='Reg No')
     # doc_no = fields.Char(string='Doc.No')
     doc_type = fields.Selection([('appointment', 'Appointment'),
                                  ('walkin', 'Walkin'),
@@ -138,8 +140,13 @@ class ARS_sale_order(models.Model):
     service_options = fields.Many2one('service.options', 'Service Options')
     work_type = fields.Selection([('mechanical', 'Mechanical'), ('body_paint', 'Body & Paint'), ('labour', 'Labour')])
     sold_by = fields.Many2one('res.partner')
+    # repeat_repair = fields.Selection([('yes', 'Yes'), ('no', 'No')], string="Repeat Repair")
+    admin_access = fields.Boolean(compute="_check_if_admin", string="Admin Access")
+    sale_confirm = fields.Boolean(default=False)
+    sap_no = fields.Char(string="SAP")
     sale_order_number = fields.Char('SO Number', copy=False)
-    admin_access = fields.Boolean(compute="_check_if_admin")
+    reject = fields.Boolean(default=False, copy=False, string="Rejected", track_visibility='onchange')
+
 
     @api.multi
     @api.depends('order_line')

@@ -4,7 +4,7 @@
 		<record model="ir.module.category" id="module_category_ars_user_right">
             <field name="name">ARS User Rights</field>
             <field name="sequence">103</field>
-            
+
         </record>
 		<record model="ir.module.category" id="module_category_ars_access_right">
             <field name="name">ARS Rights</field>
@@ -32,7 +32,7 @@
 	        <field name="comment">Show Aftersale LaborsPricelist sub menus to Aftersale LaborsPricelist user</field>
 	    	<field name="category_id" ref="module_category_ars_access_right"/>
 		</record>
-    
+
 	<!-- spare user -->
 		<record id="group_spare" model="res.groups">
 	        <field name="name">Spare User</field>
@@ -42,7 +42,28 @@
 	    </record>
 
 	<!-- End Spare user -->
-	<!-- Warranty Groups -->
+		<!-- Warranty Groups -->
+
+		<record model="ir.module.category" id="module_warranty_access_ars_user_right">
+			<field name="name">Warranty</field>
+			<field name="sequence">109</field>
+		</record>
+
+		<record id="ars_sale_warranty_user" model="res.groups">
+			<field name="name">User</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+			<field name="comment">Access Warranty User</field>
+			<field name="category_id" ref="module_warranty_access_ars_user_right"/>
+		</record>
+
+
+		<record id="ars_sale_warranty_manager" model="res.groups">
+			<field name="name">Manager</field>
+			<field name="users" eval="[(4, ref('base.user_root'))]"/>
+			<field name="comment">Access Warranty Manager</field>
+			<field name="category_id" ref="module_warranty_access_ars_user_right"/>
+<!--			<field name="implied_ids" eval="[(4, ref('ars_after_sales.group_warranty_access'))]"/>-->
+		</record>
 	<record id="group_warranty_manager" model="res.groups">
 	        <field name="name">Warranty Manager</field>
 	        <field name="users" eval="[(4, ref('base.user_root'))]"/>
@@ -65,7 +86,7 @@
 	        <field name="comment">Show Aftersale menus to Aftersale user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 	<!-- aftersale user for parts-->
 		<record id="group_aftersale_parts_user" model="res.groups">
 	        <field name="name">Aftersale Parts</field>
@@ -73,7 +94,7 @@
 	        <field name="comment">Show Aftersale sub menus to Aftersale parts user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 
 	<!-- aftersale user for catalog-->
@@ -83,7 +104,7 @@
 	        <field name="comment">Show Aftersale Catalog menus to Aftersale parts user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 
 		<!-- aftersale Invoice -->
@@ -93,7 +114,7 @@
 	        <field name="comment">Show Aftersale Invoice menus to Aftersale user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 		<!-- Sales Invoice -->
 		<record id="group_sale_invoice" model="res.groups">
@@ -102,7 +123,7 @@
 	        <field name="comment">Show sale Invoice menus to sale user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 	<!-- Inventory Menu For Sales -->
 		<record id="group_inventory_sales" model="res.groups">
 	        <field name="name">Inventory Sales</field>
@@ -110,7 +131,7 @@
 	        <field name="comment">Show Inventory menu to Sales user</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 	<!-- Inventory Catalog Menu -->
 		<record id="group_inventory_catalog" model="res.groups">
 	        <field name="name">Inventory Catalog</field>
@@ -118,7 +139,7 @@
 	        <field name="comment">Show Inventory Catalog menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 
 
@@ -129,7 +150,7 @@
 	        <field name="comment">Show Sale Menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	    
+
 
 
 
@@ -141,7 +162,7 @@
 	        <field name="comment">Show purchase Menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	    
+
 
 	<!-- End Menu user -->
 
@@ -152,7 +173,7 @@
 	        <field name="comment">To show the menu crm sales</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	   
+
 
 	<!-- CRM AfterSales User  -->
 	<record id="group_crm_aftersale" model="res.groups">
@@ -161,7 +182,7 @@
 	        <field name="comment">To show the menu crm aftersales</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	    
+
 
 	<!-- End CRM Sale user -->
 	<!-- CRM Top Menu  -->
@@ -172,7 +193,7 @@
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
 
-		
+
 
 	<!-- End CRM Sale user -->
 	<!--  hide product menu -->
@@ -183,7 +204,7 @@
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
 
-		
+
 	<!-- End product menu -->
 
 	<!-- hide invoice menu -->
@@ -201,8 +222,8 @@
 	        <field name="comment">To hide part menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	   
-		
+
+
 	<!-- End part menu -->
 	 <!-- hide Labors menu -->
 		<record id="group_Labors" model="res.groups">
@@ -220,7 +241,7 @@
 	        <field name="comment">To hide accessories menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	    
+
 	<!-- End Accessories menu -->
 
 	<!-- hide vehicle menu -->
@@ -230,7 +251,7 @@
 	        <field name="comment">To hide Vehicle menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 	<!-- End Accessories menu -->
 
 
@@ -241,7 +262,7 @@
 	        <field name="comment">To hide Vehicle Sales menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!-- show vehicle menu for invoice -->
 		<record id="group_sales_invoice" model="res.groups">
@@ -250,7 +271,7 @@
 	        <field name="comment">To hide Invoice menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!-- show vehicle menu for sales -->
 		<record id="group_parts_aftersales" model="res.groups">
@@ -259,7 +280,7 @@
 	        <field name="comment">To hide Parts Aftersales menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!--Show Dashboard -->
 		<record id="group_ars_dashboard" model="res.groups">
@@ -268,7 +289,7 @@
 	        <field name="comment">To hide Dashboard menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!--Show Reporting -->
 		<record id="group_ars_reporting" model="res.groups">
@@ -277,7 +298,7 @@
 	        <field name="comment">To hide Reporting menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!--Show Configuration -->
 		<record id="group_ars_configuration" model="res.groups">
@@ -286,7 +307,7 @@
 	        <field name="comment">To hide Configuration menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!-- hide menus -->
 		<record id="group_ars_aftersales" model="res.groups">
@@ -295,7 +316,7 @@
 	        <field name="comment">To hide Vehicle menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!-- hide Sale catalog menus -->
 		<record id="group_sales_catalog" model="res.groups">
@@ -304,7 +325,7 @@
 	        <field name="comment">To hide Sales Catalog menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-		
+
 
 	<!-- hideing purchase menu inside invoicing -->
 		<record id="group_invoicing_purchases" model="res.groups">
@@ -313,10 +334,10 @@
 	        <field name="comment">To hide order to invoicing purchase menu</field>
 	        <field name="category_id" ref="module_category_ars_access_right"/>
 	    </record>
-	    
 
 
-	    
+
+
 	<!-- Record Rules - Saleschannel - Aftersales filter in invoice list view -->
 
 	<!--<record id="aftersale_personal_rule" model="ir.rule">-->
@@ -412,7 +433,7 @@
 	        <field name="category_id" ref="module_category_ars_user_right"/>
 	        <field name="implied_ids" eval="[(4, ref('group_sales_invoice')),(4, ref('group_sale_invoice')),(4, ref('group_show_sale_menu')),(4, ref('group_vehicle_sales')),(4, ref('group_sales_catalog')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_show_purchase_menu')),(4, ref('group_ars_reporting'))]"/>
 	    </record>
-	    
+
 	    <record id="group_sales_manager" model="res.groups">
 	        <field name="name">Sales Manager</field>
 	        <field name="category_id" ref="module_category_ars_user_right"/>
@@ -448,7 +469,7 @@
 	        <field name="category_id" ref="module_category_ars_user_right"/>
 	        <field name="implied_ids" eval="[(4, ref('group_show_purchase_menu')),(4, ref('group_ars_aftersales')),(4, ref('group_accessories')),(4, ref('group_vehicle')),(4, ref('group_product')),(4, ref('group_show_sale_menu')),(4, ref('group_sales_catalog')),(4, ref('group_vehicle_sales')),(4, ref('group_inventory_sales'))]"/>
 	    </record>
-    <!-- end -->    
+    <!-- end -->
 </data>
 
 </odoo>

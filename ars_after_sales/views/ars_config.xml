@@ -325,11 +325,15 @@
         <field name="arch" type="xml">
             <form string="Warranty Claims">
                 <header>
-                    <button name="set_aligment" string="Set Warranty Alignment" states="draft,inprocess,processed"
-                            type="object" class="btn-primary" groups="ars_after_sales.group_warranty_manager"/>
-                    <button name="action_approval_send" string="Send for Approval" states="draft,inprocess,processed"
+                    <button name="open_alignment_wizard" type="object" string="Set Warranty Alignment" states="processed"
+                            class="btn-primary" />
+
+<!--                    <button name="set_process" string="Set Warranty Alignment" states="draft,draft_process,inprocess,processed"-->
+<!--                            type="object" class="btn-primary" groups="ars_after_sales.group_warranty_manager"/>-->
+                    <button name="action_approval_send" string="Send for Email Approval" states="draft,draft_process,re_submit,inprocess,processed"
                             type="object" groups="ars_after_sales.group_warranty_manager"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,inprocess,processed,done"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,draft_process,re_submit,inprocess,processed,done"/>
+
                 </header>
                 <sheet>
                     <div class="oe_title">
@@ -351,21 +355,23 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Warranty Lines">
-                            <field name="order_lines" nolabel="1" options="{'no_create': True}"
-                                   attrs="{'readonly':[('state','=','done')]}">
-                                <tree string="Warranty Lines" editable="top" create="false">
+                        <page string="Warranty Lines" attrs="{'invisible': [('state', '=', 'inprocess')]}">
+                            <field name="order_lines" nolabel="1" options="{'no_create': True}">
+<!--                                   attrs="{'readonly':[('state','=','done')]}">-->
+                                <tree string="Warranty Lines" editable="top" create="false" delete="false"
+                                      decoration-success="apr_action == 'approved'"
+                                      decoration-danger="apr_action == 'reject'">
                                     <!--<field name="product_updatable" invisible="1"/>-->
                                     <field name="product_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
                                     <field name="name" readonly="1"/>
                                     <field name="product_uom_qty" string="Ordered Qty" readonly="1"/>
                                     <field name="product_uom" options='{"no_open": True, "no_create":True}' readonly="1"/>
                                     <field name="ars_std_price" readonly="1"/>
-                                    <field name="ars_warranty_price" required="1"/>
+                                    <field name="ars_warranty_price" required="1" readonly="1"/>
                                     <field name="tax_id" widget="many2many_tags" readonly="1"/>
                                     <field name="discount" groups="sale.group_discount_per_so_line" readonly="1"/>
                                     <field name="wrn_price_subtotal" widget="monetary"/>
-                                    <field name="apr_action" required="1"
+                                    <field name="apr_action" required="1" readonly="1"
                                            groups="ars_after_sales.group_warranty_approval"/>
                                 </tree>
                             </field>
@@ -396,13 +402,14 @@
         <field name="name">view_warranty_tree</field>
         <field name="model">ars.sale.warranty</field>
         <field name="arch" type="xml">
-            <tree string="Warranty Claims">
-                <field name="name"/>
-                <field name="order_id"/>
-                <field name="order_date"/>
-                <field name="partner_id"/>
-                <field name="user_id"/>
-                <field name="state"/>
+            <tree string="Warranty Claims" default_order='id desc'>
+                <field name="child_warrenty_ref_tree" readonly="1" invisible="0"/>
+<!--                <field name="child_warrenty_ref_form" readonly="1" invisible="1"/>-->
+<!--                <field name="order_id"/>-->
+<!--&lt;!&ndash;                <field name="order_date"/>&ndash;&gt;-->
+<!--                <field name="partner_id"/>-->
+<!--                <field name="user_id"/>-->
+<!--                <field name="state"/>-->
             </tree>
         </field>
     </record>
@@ -411,8 +418,37 @@
         <field name="name">Warranty Claims</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">ars.sale.warranty</field>
+        <field name="context">{'active_model':'ars.sale.warranty'}
+            </field>
         <field name="view_type">form</field>
         <field name="view_id" ref="view_warranty_tree"/>
+        <field name="domain">[('state', '=', ['draft', 'draft_process', 're_submit'])]</field>
+    </record>
+
+    <record id="view_ars_sale_warranty_alignment_wizard_form" model="ir.ui.view">
+        <field name="name">ars.sale.warranty.alignment.wizard.form</field>
+        <field name="model">ars.sale.warranty.alignment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Warranty Alignment Wizard">
+                <group>
+                    <field name="warranty_id" invisible="1"/>
+                    <field name="message" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="set_alignment" string="Process Alignment" type="object" class="btn-primary"/>
+                    <button name="cancel_alignment" string="Cancel" type="object" class="btn-secondary"/>
+
+<!--                    <button string="Cancel" class="btn-secondary" special="cancel"/>-->
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ars_sale_warranty_alignment_wizard" model="ir.actions.act_window">
+        <field name="name">Warranty Alignment Wizard</field>
+        <field name="res_model">ars.sale.warranty.alignment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
     </record>
 
     <menuitem id="menu_warranty_page"

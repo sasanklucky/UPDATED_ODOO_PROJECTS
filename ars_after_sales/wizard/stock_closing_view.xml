@@ -42,6 +42,9 @@
                 <field name="standard_price" string="Cost Price"/>
                 <field name="parts_value" sum="Value"/>
             </field>
+            <field name="uom_id" position="after">
+                <field name="shell_location" string="Shelf Location" widget="many2many_tags"/>
+            </field>
             <field name="lst_price" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
