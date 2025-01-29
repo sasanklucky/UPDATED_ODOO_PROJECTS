@@ -199,7 +199,7 @@ class StockPicking(models.Model):
                                     _(f"Wholesale history not exists in consolidation for VIN: {rec.vin_sn}"))
                             if rec.vehicle_status != 'new':
                                 raise ValidationError(_(f"Vehicle status not new for VIN: {rec.vin_sn}"))
-                            if rec.driver_id.name.strip() != self.partner_id.name.strip():
+                            if rec.driver_id.dealer_code != self.partner_id.dealer_code:
                                 raise ValidationError(
                                     _(f"Dealer not same in picking and consolidation for VIN: {rec.vin_sn}"))
                             if rec.customer_ids:
@@ -213,7 +213,7 @@ class StockPicking(models.Model):
                         for rec in fleet_obj_:
                             if rec.vehicle_status != 'new':
                                 raise ValidationError(_(f"Vehicle status not new for VIN: {rec.vin_sn}"))
-                            if rec.driver_id.name.strip() != self.partner_id.name.strip():
+                            if rec.driver_id.dealer_code != self.partner_id.dealer_code:
                                 raise ValidationError(
                                     _(f"Dealer not same in picking and vehicle card for VIN: {rec.vin_sn}"))
                             if rec.customer_ids:
