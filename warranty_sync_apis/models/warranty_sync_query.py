@@ -431,8 +431,20 @@ class ArsSaleWarrentySync(models.Model):
 
                                 break
 
-                        k = env['warranty.claim.config'].sudo().search(
-                            [('warranty_claim_list', '=', rec.claim_id.warranty_claim_list)], limit=1).id
+                        if env.registry.get('warranty.claim.config'):
+                            k = env['warranty.claim.config'].sudo().search(
+                                [('warranty_claim_list', '=', rec.claim_id.warranty_claim_list)], limit=1).id
+                        else:
+                            query = """
+                                SELECT id FROM warranty_claim_config 
+                                WHERE warranty_claim_list = %s 
+                                LIMIT 1
+                            """
+                            params = (rec.claim_id.warranty_claim_list,)
+
+                            env.cr.execute(query, params)
+                            result = env.cr.fetchone()
+                            k = result[0] if result else None
 
                         attachments = []
                         attachment_Obj = env['ir.attachment'].sudo()
