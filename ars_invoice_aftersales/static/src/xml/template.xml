@@ -46,7 +46,7 @@
       document.getElementsByClassName("taxamount_value")[0].value = taxamount_parent;
   };
 
-    };
+
     function onsubtotal_change(value,record){
       var total_percent_value = document.getElementsByClassName("subtotal")[0].value;
       var total_percent_splited = total_percent_value.split('%');
