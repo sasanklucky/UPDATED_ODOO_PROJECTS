@@ -175,7 +175,7 @@ class Picking(models.Model):
                             line.lot_id.write({'motor_number': line.motor_number})
                         if self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
                             existing_lot_numbers.extend([vin_sn])
-                            print(existing_lot_numbers)
+                            # print(existing_lot_numbers)
                         else:
                             # sold_by_id = self.env.user.company_id.partner_id
                             param = self.env['ir.config_parameter'].sudo()
@@ -262,7 +262,7 @@ class StockMove(models.Model):
         vals = super(StockMove, self)._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
         lot_id = vals.get('lot_id')
         if lot_id:
-            veh_card = self.env['fleet.vehicle'].browse(lot_id)
+            veh_card = self.env['fleet.vehicle'].search([('lot_id', '=',lot_id)])
             vals.update({'motor_number': veh_card.engine_number,
                          'battery_number': veh_card.key_serial_number})
         return vals

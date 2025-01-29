@@ -806,9 +806,7 @@ class AccountInvoiceTrack(models.Model):
     track_changes = fields.Boolean(default=False)
     modified_invoice_status = fields.Selection([('modified', 'Modified'),('not_modified', 'Not Modified')], string='Invoice Modified')
     invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
-    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
-                                          ('customer', 'Customer Invoice'),
-                                          ('insurance', 'Insurance Invoice')], string='Type')
+
 
     @api.multi
     def write(self, vals):

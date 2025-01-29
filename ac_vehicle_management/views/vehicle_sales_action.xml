@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="0">
 
         <record id="vehicle_sale_action_quotations" model="ir.actions.act_window">
             <field name="name">Quotations</field>
@@ -7,8 +7,16 @@
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
             <field name="view_id" ref="sale.view_quotation_tree"/>
-            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
-            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
+            <field name="domain">['|','&amp;',
+                ('sale_aftersales', '=', 'sales'),
+                ('sale_type', '=', 'vehicle'),
+                ('transfer_type', '=', 'external_transfer'),
+                '&amp;',
+                ('sale_aftersales', '=', 'sales'),
+                ('sale_type', '=', 'vehicle'),
+                ('transfer_type', '=', False)]
+            </field>
+            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales','default_transfer_type':'external_transfer'}</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="search_view_id" ref="sale.sale_order_view_search_inherit_quotation"/>
             <field name="help" type="html">
@@ -29,9 +37,20 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
             <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
-            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
-            <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),
-                                ('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]
+            <field name="context">{'default_sale_type': 'vehicle','default_sale_aftersales':'sales','default_transfer_type':'external_transfer'}</field>
+            <field name="domain">
+            ['|',
+                '&amp;','&amp;','&amp;',
+                    ('state', 'not in', ('draft', 'sent', 'cancel')),
+                    ('sale_aftersales', '=', 'sales'),
+                    ('sale_type', '=', 'vehicle'),
+                    ('transfer_type', '=', False),
+                '&amp;','&amp;','&amp;',
+                    ('state', 'not in', ('draft', 'sent', 'cancel')),
+                    ('sale_aftersales', '=', 'sales'),
+                    ('sale_type', '=', 'vehicle'),
+                    ('transfer_type', '=', 'external_transfer')
+            ]
             </field>
             <field name="help" type="html">
                 <p class="oe_view_nocontent_create">
@@ -46,6 +65,27 @@
             </field>
         </record>
 
+        <record id="vehicle_sale_action_internal_orders" model="ir.actions.act_window">
+            <field name="name">Internal Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sale.order</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="search_view_id" ref="sale.sale_order_view_search_inherit_sale"/>
+            <field name="context">{'default_sale_type':
+                'vehicle','default_sale_aftersales':'sales','default_transfer_type':'internal_transfer'}
+            </field>
+            <field name="domain">[('sale_aftersales','=',
+                'sales'),('sale_type','=','vehicle'),('transfer_type','=','internal_transfer')]
+            </field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Create an Internal Order.
+                </p>
+            </field>
+        </record>
+
+
         <record id="vehicle_sale_action_orders_to_invoice" model="ir.actions.act_window">
             <field name="name">Orders to Invoice</field>
             <field name="type">ir.actions.act_window</field>
@@ -53,7 +93,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar,graph,pivot,kanban</field>
             <field name="context">{'create': False,'default_sale_type': 'vehicle'}</field>
-            <field name="domain">[('invoice_status','=','to invoice'),('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
+            <field name="domain">[('invoice_status','=','to invoice'),('sale_aftersales','=',
+                'sales'),('sale_type','=','vehicle')]
+            </field>
             <field name="search_view_id" ref="sale.view_sales_order_filter"/>
             <field name="help" type="html">
                 <p>
@@ -72,8 +114,11 @@
             <field name="res_model">sale.order</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar,graph,pivot,kanban</field>
-            <field name="domain">[('invoice_status','=','upselling'),('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>
-            <field name="context">{'create': False,'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}</field>
+            <field name="domain">[('invoice_status','=','upselling'),('sale_aftersales','=',
+                'sales'),('sale_type','=','vehicle')]
+            </field>
+            <field name="context">{'create': False,'default_sale_type': 'vehicle','default_sale_aftersales':'sales'}
+            </field>
             <field name="search_view_id" ref="sale.view_sales_order_filter"/>
             <field name="help" type="html">
                 <p>
@@ -98,7 +143,7 @@
             <field name="view_id"></field>  <!-- force empty -->
             <field name="search_view_id" ref="sale.view_order_product_search"/>
             <field name="context">{'search_default_Sales':1, 'group_by_no_leaf':1,'group_by':[]}</field>
-<!--            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>-->
+            <!--            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','vehicle')]</field>-->
             <field name="help">This report performs analysis on your quotations and sales orders. Analysis check your
                 sales revenues and sort it by different group criteria (salesman, partner, product, etc.) Use this
                 report to perform analysis on sales not having invoiced yet. If you want to analyse your turnover, you

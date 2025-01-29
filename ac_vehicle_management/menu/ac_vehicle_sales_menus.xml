@@ -23,6 +23,12 @@
                   parent="vehicle_sale_order_menu"
                   sequence="2" groups="sales_team.group_sale_salesman"/>
 
+        <menuitem id="menu_vehicle_sale_internal_order"
+                  name="Internal Orders"
+                  action="vehicle_sale_action_internal_orders"
+                  parent="vehicle_sale_order_menu"
+                  sequence="3" groups="sales_team.group_sale_manager"/>
+
         <menuitem id="menu_vehicle_sale_sale_invoicing"
                   name="Vehicle Invoicing"
                   parent="vehicle_sale_menu_root"
