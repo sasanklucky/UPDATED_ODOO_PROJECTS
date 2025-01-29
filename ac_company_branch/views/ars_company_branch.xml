@@ -9,8 +9,8 @@
         <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
+                       required="0" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -22,8 +22,8 @@
         <field name="inherit_id" ref="ars_after_sales.crm_case_form_view_leads_inherit"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
+                       required="0" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -36,7 +36,7 @@
             <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
             <field name="arch" type="xml">
                 <field name="company_id" position="after">
-                    <field name="branch_id" readonly="1" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
+                    <field name="branch_id" readonly="0" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
                 </field>
             </field>
         </record>
@@ -50,8 +50,8 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
+                       required="0" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -62,8 +62,8 @@
         <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
+                       required="0" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -78,7 +78,7 @@
         <field name="arch" type="xml">
             <field name="company_id" position="after">
                 <field name="branch_id" domain="[('company_id', '=', company_id)]"
-                       readonly="1" options="{'no_create': True,'no_open': True}"/>
+                       readonly="0" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -92,7 +92,7 @@
         <field name="inherit_id" ref="product.product_template_form_view"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                       options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -110,7 +110,7 @@
                 <field name="company_id" invisible="1"/>
             </xpath>
             <xpath expr="//form/sheet/group/group/group[2]" position="inside">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                       options="{'no_create': True,'no_open': True}"/>
             </xpath>
         </field>
@@ -125,7 +125,7 @@
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -138,7 +138,7 @@
         <field name="inherit_id" ref="stock.view_production_lot_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -151,8 +151,7 @@
         <field name="inherit_id" ref="account.action_invoice_tree1"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
     </record>
@@ -165,8 +164,7 @@
 
             <xpath expr="//page[@name='other_info']//field[@name='company_id']"
                    position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                      required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </xpath>
         </field>
      </record>
@@ -178,8 +176,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='other_info']//field[@name='company_id']"
                    position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </xpath>
         </field>
     </record>
@@ -191,7 +188,7 @@
         <field name="inherit_id" ref="account.invoice_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -203,7 +200,7 @@
         <field name="inherit_id" ref="account.invoice_supplier_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -217,7 +214,7 @@
         <field name="arch" type="xml">
             <xpath expr="//page[@name='other_info']//field[@name='company_id']"
                    position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </xpath>
         </field>
@@ -231,7 +228,7 @@
         <field name="inherit_id" ref="product.product_pricelist_view"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -242,14 +239,18 @@
     <record id="view_res_users_form_inherit_branch" model="ir.ui.view">
         <field name="name">res.users.form.inherit.branch</field>
         <field name="model">res.users</field>
-        <field name="inherit_id" ref="base.view_users_simple_form"/>
+        <field name="inherit_id" ref="base.view_users_form"/>
         <field name="arch" type="xml">
-            <field name="company_id" position="after">
-                <group>
-                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"
-                           options="{'no_create': True,'no_open': True}"/>
-                </group>
-            </field>
+            <xpath expr="//form/sheet/div[@class='oe_title']/group/field[@name='partner_id']" position="after">
+                <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"
+                       options="{'no_create': True,'no_open': True}"/>
+            </xpath>
+            <!--            <field name="company_id" position="after">-->
+            <!--                <group>-->
+            <!--                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"-->
+            <!--                           options="{'no_create': True,'no_open': True}"/>-->
+            <!--                </group>-->
+            <!--            </field>-->
         </field>
     </record>
 
@@ -342,7 +343,7 @@
         <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -370,7 +371,7 @@
         <field name="inherit_id" ref="website.view_website_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -382,7 +383,7 @@
         <field name="inherit_id" ref="website.view_website_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -396,8 +397,8 @@
         <field name="inherit_id" ref="purchase.purchase_order_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                      required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
+                      options="{'no_create': True,'no_open': True}"/>
             </field>
 
         </field>
@@ -411,8 +412,8 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='company_id']"
                        position="after">
-                    <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                    <field name="branch_id" domain="[('company_id', '=', company_id)]"
+                        options="{'no_create': True,'no_open': True}"/>
                 </xpath>
             </field>
     </record>
@@ -427,7 +428,7 @@
         <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -440,7 +441,7 @@
         <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -455,7 +456,7 @@
         <field name="inherit_id" ref="product.product_supplierinfo_form_view"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -470,7 +471,7 @@
         <field name="inherit_id" ref="account.view_move_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -487,7 +488,7 @@
         <field name="inherit_id" ref="account.view_move_line_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -503,8 +504,7 @@
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
-                       required="1" options="{'no_create': True,'no_open': True}"/>
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
             </field>
 
         </field>
@@ -518,7 +518,7 @@
         <field name="inherit_id" ref="stock.view_inventory_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -533,7 +533,7 @@
         <field name="inherit_id" ref="stock_production_lot_multi_company.view_production_lot_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -548,7 +548,7 @@
         <field name="inherit_id" ref="stock.view_warehouse"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -563,7 +563,7 @@
         <field name="inherit_id" ref="stock.view_location_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -576,7 +576,7 @@
         <field name="inherit_id" ref="stock.view_location_tree2"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -594,7 +594,7 @@
         <field name="inherit_id" ref="stock.stock_location_route_form_view"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -608,7 +608,7 @@
         <field name="inherit_id" ref="stock.view_procurement_rule_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
 
@@ -622,7 +622,7 @@
         <field name="inherit_id" ref="stock.view_procurement_rule_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -650,7 +650,7 @@
         <field name="inherit_id" ref="account.view_account_supplier_payment_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -664,7 +664,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -678,7 +678,7 @@
         <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -692,7 +692,7 @@
         <field name="inherit_id" ref="account.view_account_payment_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -706,7 +706,7 @@
         <field name="inherit_id" ref="purchase.purchase_order_line_form2"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -762,7 +762,7 @@
         <field name="inherit_id" ref="account.view_account_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -776,7 +776,7 @@
         <field name="inherit_id" ref="account.view_account_list"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -790,7 +790,7 @@
         <field name="inherit_id" ref="account.view_tax_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -803,7 +803,7 @@
         <field name="inherit_id" ref="account.view_tax_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -817,7 +817,7 @@
         <field name="inherit_id" ref="account.view_account_position_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -830,7 +830,7 @@
         <field name="inherit_id" ref="account.view_account_position_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -845,7 +845,7 @@
         <field name="inherit_id" ref="account.view_account_bank_journal_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -858,7 +858,7 @@
         <field name="inherit_id" ref="account.view_account_bank_journal_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -873,7 +873,7 @@
         <field name="inherit_id" ref="account.view_account_journal_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -886,7 +886,7 @@
         <field name="inherit_id" ref="account.view_account_journal_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -914,7 +914,7 @@
         <field name="inherit_id" ref="account_reports.view_account_financial_report_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -928,7 +928,7 @@
         <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -940,7 +940,7 @@
         <field name="inherit_id" ref="hr_payroll.view_hr_payslip_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -954,7 +954,7 @@
         <field name="inherit_id" ref="hr_payroll.view_hr_employee_grade_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -966,7 +966,7 @@
         <field name="inherit_id" ref="hr_payroll.view_hr_payroll_structure_list_view"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -980,7 +980,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -994,7 +994,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_contribution_register_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1006,7 +1006,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_contribution_register_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1020,7 +1020,7 @@
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1047,7 +1047,7 @@
         <field name="inherit_id" ref="base.view_attachment_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1061,7 +1061,7 @@
         <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1074,7 +1074,7 @@
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1088,7 +1088,7 @@
         <field name="inherit_id" ref="hr_payroll.hr_contract_form_inherit"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1102,7 +1102,7 @@
         <field name="inherit_id" ref="hr.view_department_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1115,7 +1115,7 @@
         <field name="inherit_id" ref="hr.view_department_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1128,7 +1128,7 @@
         <field name="inherit_id" ref="ars_after_sales.view_labour_group_tree"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1141,7 +1141,7 @@
         <field name="inherit_id" ref="hr_recruitment.crm_case_form_view_job"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1154,7 +1154,7 @@
         <field name="inherit_id" ref="hr.view_hr_job_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>
@@ -1167,7 +1167,7 @@
         <field name="inherit_id" ref="stock.view_warehouse_orderpoint_form"/>
         <field name="arch" type="xml">
             <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="1"
+                <field name="branch_id" domain="[('company_id', '=', company_id)]" readonly="0"
                        options="{'no_create': True,'no_open': True}"/>
             </field>
         </field>

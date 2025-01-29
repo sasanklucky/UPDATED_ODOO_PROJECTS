@@ -37,9 +37,9 @@ class ARS_crm_lead(models.Model):
     def update_booking_date(self):
         cr = self.env.cr
         for res in self:
-            query = f"""select date::Date from mail_message mm
+            query = f"""select date from mail_message mm
                         join mail_tracking_value mtv on mm.id = mtv.mail_message_id
-                        where mm.res_id = {res.id} and mm.model = 'crm.lead' and mtv.new_value_char ilike 'Booked' 
+                        where mm.res_id = {res.id} and mm.model = 'crm.lead' and mtv.new_value_char ilike '%Booked%' 
                         limit 1
                     """
             cr.execute(query)
