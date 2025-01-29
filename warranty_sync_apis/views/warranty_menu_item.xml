@@ -1,0 +1,64 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <menuitem id="menu_warranty_main" name="Warranty" sequence="10"/>
+
+    <menuitem id="menu_warranty_submenu" name="Warranty" parent="menu_warranty_main" sequence="1"
+            groups="ars_after_sales.ars_sale_warranty_manager"/>
+
+    <menuitem id="menu_config_submenu" name="Configuration" parent="menu_warranty_main" sequence="2"/>
+
+    <menuitem id="menu_warranty_claims"
+              name="Warranty Claims"
+              parent="menu_warranty_submenu"
+              action="ars_after_sales.action_warranty_page"
+              sequence="1"
+              groups="ars_after_sales.ars_sale_warranty_manager"
+              />
+
+    <record id="action_warranty_processed" model="ir.actions.act_window">
+        <field name="name">Warranty Approved</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ars.sale.warranty</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="ars_after_sales.view_warranty_tree"/>
+        <field name="domain">[('state', '=', 'processed')]</field>
+    </record>
+
+
+    <menuitem id="menu_warranty_claims_approved"
+              name="Warranty Approved"
+              parent="menu_warranty_submenu"
+              action="action_warranty_processed"
+              sequence="2"/>
+
+
+    <record id="action_warranty_rejected" model="ir.actions.act_window">
+        <field name="name">Warranty Rejected</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ars.sale.warranty</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="ars_after_sales.view_warranty_tree"/>
+        <field name="domain">[('state', '=', 'inprocess')]</field>
+    </record>
+
+
+    <menuitem id="menu_warranty_claims_reject"
+              name="Warranty Rejected"
+              parent="menu_warranty_submenu"
+              action="action_warranty_rejected"
+              sequence="3"/>
+
+
+    <menuitem
+            id="warranty_claim_config"
+            action="action_warranty_claim_config_view"
+            parent="warranty_sync_apis.menu_config_submenu"
+            sequence="1"
+            name="Warranty Claim Type"
+            groups="base.group_no_one"
+            />
+
+</odoo>

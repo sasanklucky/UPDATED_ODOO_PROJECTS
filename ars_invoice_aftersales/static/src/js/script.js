@@ -21,6 +21,8 @@ var DataSplit = Dialog.extend({
             var customer = [];
             var amt_value = [];
             var per_t = [];
+            var tax_t = [];
+            var tax_amount = [];
             $(".select_class :selected").map(function(i, el) {
 
                 customer.push($(el).val());
@@ -32,6 +34,14 @@ var DataSplit = Dialog.extend({
 			$(".percentage_value").each(function() {
 
 				per_t.push($(this).val());
+			 });
+			$(".tax_value").each(function() {
+
+				tax_t.push($(this).val());
+			 });
+                $(".taxamount_value").each(function() {
+
+				tax_amount.push($(this).val());
 			 });
            /* if(p_obj){
             	for (var i=0; i< n; i++)
@@ -54,46 +64,59 @@ var DataSplit = Dialog.extend({
             //});
             //console.log($(e.currentTarget).parent().find('#select_class'));
 //             console.log(customer);
-//             console.log(amt_value);
-//             console.log(res);
-//             console.log(order);
-//             console.log(per_t);
-            this.split_data(customer,amt_value,res,order,per_t);
+//             console.log("Deleted Percent:", amt_value);
+//             console.log("Percentage:", per_t);
+//             console.log("Tax:",tax_t);
+//             console.log(tax_amount);
+            this.split_data(customer,amt_value,res,order,per_t,tax_t,tax_amount);
         },
         'click .plus': function(e) {
             var ele = $(e.currentTarget).closest('.d_clone').clone(true);
-            ele.find('.plus-symbol').replaceWith('<div class="col-xs-2 minus-symbol"><img class="minus" src="ars_invoice_aftersales/static/src/img/minus.png" style="width: 18px;height: 29px;"/></div>')
+            ele.find('.plus-symbol').replaceWith('<div class="col-xs-1 minus-symbol"><img class="minus" src="ars_invoice_aftersales/static/src/img/minus.png" style="width: 18px;height: 29px;"/></div>')
             //$(e.currentTarget).closest('.d_clone').after(ele);
             ele.find('.percentage_value').val('0%');
             ele.find('.subtotal_value').val('0');
+            ele.find('.tax_value').val('0%');
+            ele.find('.taxamount_value').val('0');
             $(ele).insertAfter($('.d_clone').last());
         },
+
         'click .minus-symbol': function(e) {
 
             var total_percent = $(".percent")[0].value;
             var total_subtotal = $(".subtotal")[0].value;
+            var total_tax = $(".tax")[0].value;
+            var total_taxamount = $(".taxamountvl")[0].value;
             var changed_subtotal = $('input[class=subtotal_value]').val();
             var changed_percent = $('input[class=percentage_value]').val();
+//            var changed_tax = $('input[class=percentage_value]').val();
+            var changed_taxamount = $('input[class=taxamount_value]').val();
             //var deleted_percent = $('input:hidden[class=percentage_value]').val();
             var deleted_percent  = $(e.currentTarget).parent().find('.percentage_value').val();
             //var deleted_subtotal = $('input:hidden[class=subtotal_value]').val();
             var deleted_subtotal  = $(e.currentTarget).parent().find('.subtotal_value').val();
+            var deleted_taxamount  = $(e.currentTarget).parent().find('.taxamount_value').val();
             var after_split_del_percent = deleted_percent.replace(/\%/g,'');
             var after_split_changed_percent = changed_percent.replace(/\%/g,'');
             var int_after_split_changed_percent = parseInt(after_split_changed_percent)
             var int_after_split_del_percent = parseInt(after_split_del_percent)
             var int_del_subtotal = parseInt(deleted_subtotal);
+            var int_del_taxamount = parseInt(deleted_taxamount);
             var int_changed_subtotal = parseInt(changed_subtotal);
+            var int_changed_taxamount = parseInt(changed_taxamount);
             int_after_split_changed_percent += int_after_split_del_percent
             var concat_percent = int_after_split_changed_percent + '%'
             document.getElementsByClassName("percentage_value")[0].value = concat_percent;
             //$('input[class=percentage_value]').val(concat_percent);
             int_changed_subtotal += int_del_subtotal
+            int_changed_taxamount += int_del_taxamount
             //$('input[class=subtotal_value]').val(int_changed_subtotal);
            document.getElementsByClassName("subtotal_value")[0].value = int_changed_subtotal;
+           document.getElementsByClassName("taxamount_value")[0].value = int_changed_taxamount;
            if(deleted_percent){
                 $(e.currentTarget).parent().remove();
            }
+
 
 
 
@@ -155,12 +178,12 @@ var DataSplit = Dialog.extend({
         var buttn2 = '<button class="btn btn-sm btn-primary" data-dismiss="modal"><span>Close</span></button>'
         this.$('.box-1').empty().append(
             $("<div/>").addClass('o_field_tree_structure')
-                       .append(QWeb.render('split_invoice_data', {'order_id':records[0].order_id,'res_ids':records[0].line_ids,'customer_val': records[0].customers,'percent_val':'100%','subtotal_val':records[0].price_subtotal,'button1':buttn1,'button2':buttn2, 'debug': self.getSession().debug}))
+                       .append(QWeb.render('split_invoice_data', {'order_id':records[0].order_id,'res_ids':records[0].line_ids,'customer_val': records[0].customers,'percent_val':'100%','subtotal_val':records[0].price_subtotal,'tax_val':records[0].tax_id,'taxamount_val':records[0].order_amount_total,'button1':buttn1,'button2':buttn2, 'debug': self.getSession().debug}))
         );
 
     },
 
-    split_data: function(customers,amt,res,order,per) {
+    split_data: function(customers,amt,res,order,per,tax,taxamount) {
         //alert(customers);
         //alert(amt);
         //alert(res);
@@ -173,9 +196,12 @@ var DataSplit = Dialog.extend({
                     res_ids:res,
                     order:order,
                     per:per,
+                    tax:tax,
+                    taxamount:taxamount,
                 },
             })
             .done(function (records) {
+            console.log(records.invoice_ids)
                 if(records.status){
                 	$('.o_technical_modal').hide();
                 	$('.modal-backdrop').css('display','none');
@@ -185,7 +211,8 @@ var DataSplit = Dialog.extend({
                         views: [[false, 'list'], [false, 'form']],
                         type: 'ir.actions.act_window',
                         view_type: "list",
-                        view_mode: "list"
+                        view_mode: "list",
+                        domain: [['id', 'in', records.invoice_ids]],
                     });
                 }
 

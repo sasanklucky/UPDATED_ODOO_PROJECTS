@@ -19,6 +19,7 @@ class ars_company(models.Model):
     restrict_gp_date = fields.Boolean()
     inv_line_unit_price = fields.Boolean()
     marine_policy_no = fields.Text(string="Marine Policy Number")
+    service_ro_invoice_cre_restrict = fields.Boolean()
 
     @api.constrains('mobile')
     def mobile_validation(self):
@@ -55,6 +56,7 @@ class ars_configure_settings(models.TransientModel):
     restrict_bd_inv = fields.Boolean(related="company_id.restrict_bd_inv")
     restrict_gp_date = fields.Boolean(related="company_id.restrict_gp_date")
     inv_line_unit_price = fields.Boolean(related="company_id.inv_line_unit_price")
+    service_ro_invoice_cre_restrict = fields.Boolean(related="company_id.service_ro_invoice_cre_restrict")
 
     @api.multi
     def set_values(self):
@@ -63,6 +65,7 @@ class ars_configure_settings(models.TransientModel):
         param.set_param('ars_after_sales.restrict_gp_date', self.restrict_gp_date)
         param.set_param('ars_after_sales.inv_line_unit_price', self.inv_line_unit_price)
         param.set_param('ars_after_sales.next_service_remainder', self.next_service_remainder)
+        param.set_param('ars_after_sales.service_ro_invoice_cre_restrict', self.service_ro_invoice_cre_restrict)
 
         return res
     @api.multi
@@ -71,11 +74,13 @@ class ars_configure_settings(models.TransientModel):
         restrict_gp_date = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.restrict_gp_date')
         inv_line_unit_price = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.inv_line_unit_price')
         next_service_remainder = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.next_service_remainder')
+        service_ro_invoice_cre_restrict = self.env['ir.config_parameter'].sudo().get_param('ars_after_sales.service_ro_invoice_cre_restrict')
 
         res.update(
             restrict_gp_date=restrict_gp_date if restrict_gp_date else False,
             inv_line_unit_price=inv_line_unit_price if inv_line_unit_price else False,
-            next_service_remainder=next_service_remainder if next_service_remainder else 0.0
+            next_service_remainder=next_service_remainder if next_service_remainder else 0.0,
+            service_ro_invoice_cre_restrict=service_ro_invoice_cre_restrict if service_ro_invoice_cre_restrict else False,
         )
 
         return res
@@ -238,15 +243,15 @@ class ars_sale_warranty(models.Model):
     partner_id = fields.Many2one('res.partner', 'Customer')
     regn_no = fields.Many2one('fleet.vehicle', 'Reg No.')
     model_id = fields.Many2one('product.product', 'Model')
-    vin_no = fields.Char('VIN No.')
+    vin_no = fields.Char('VIN')
     order_id = fields.Many2one('sale.order', 'Service Document')
     order_lines = fields.Many2many('sale.order.line', 'warranty_order_line_rel', )
     vendors = fields.Many2many('res.partner', 'fleet_vehicle_model_vendors', string='Order Lines')
-    order_date = fields.Datetime(related='order_id.confirmation_date')
+    # order_date = fields.Datetime(related='order_id.confirmation_date')
     user_id = fields.Many2one(related='order_id.user_id')
 
     state = fields.Selection(
-        [('draft', 'Draft'), ('inprocess', 'In-Process'), ('processed', 'Processed'), ('done', 'Done'),
+        [('draft', 'Draft'), ('draft_process', 'In-Process'), ('re_submit','Re-Submit'), ('inprocess', 'Rejected'), ('processed', 'Processed'), ('done', 'Done'),
          ('cancel', 'Cancel')], default='draft', string='State')
     amount_untaxed = fields.Monetary(string='Untaxed Amount', store=True, readonly=True, compute='_amount_all',
                                      track_visibility='onchange')
@@ -260,34 +265,69 @@ class ars_sale_warranty(models.Model):
     base_url = fields.Char('Base URl',
                            default=lambda self: self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
 
+    child_warrenty_ref_tree = fields.Char('Dealer Name')
+
+
+    @api.model
+    def create(self, vals):
+        if 'order_id' in vals:
+            order = self.env['sale.order'].browse(vals['order_id'])
+            vals['child_warrenty_ref_tree'] = order.company_id.name if order.company_id else ''
+        return super(ars_sale_warranty, self).create(vals)
+
+    def write(self, vals):
+        for rec in self:
+            if 'order_id' in vals or not rec.child_warrenty_ref_tree:
+                order = self.env['sale.order'].browse(vals.get('order_id', rec.order_id.id))
+                vals['child_warrenty_ref_tree'] = order.company_id.name if order.company_id else ''
+        return super(ars_sale_warranty, self).write(vals)
+
+    # @api.depends('order_id.company_id.name')
+    # def _compute_child_warrenty_ref_form(self):
+    #     for rec in self:
+    #         # if rec.order_id.company_id:
+    #         rec.child_warrenty_ref_form = rec.order_id.company_id.name
+    #         # else:
+    #         #     rec.child_warrenty_ref_form = rec.order_id.company_id.name
+
+
     @api.multi
-    def set_aligment(self):
+    def set_process(self):
         for wr in self:
             for ol in wr.order_lines:
                 if ol.category and ol.category.name.lower() == 'warranty' and ol.ars_warranty_price != ol.price_unit:
                     ol.price_unit = ol.ars_warranty_price
+                    print('ol.price_unit', ol.price_unit, ol.ars_warranty_price, 'ol.ars_warranty_price')
         return True
 
     @api.multi
     def write(self, vals):
         for vl in self:
-            if self.state == 'cancel':
+            if vl.state == 'cancel':
                 vals['state'] = 'draft'
 
         res = super(ars_sale_warranty, self).write(vals)
+
         for wc in self:
             state = vals.get('state', 'draft')
             for ol in wc.order_lines:
                 if not ol.apr_action:
-                    state = 'draft'
+                    if wc.sync_warranty:
+                        state = 'draft_process'
+                    else:
+                        state = 'draft'
                     break
-                elif ol.apr_action in ('hold', 'reject', 're_submission'):
+                elif ol.apr_action == 're_submit':
+                    state = 're_submit'
+                    break
+                elif ol.apr_action == 'reject':
                     state = 'inprocess'
                     break
-
                 elif ol.apr_action == 'approved':
                     state = 'processed'
-            self._cr.execute("update ars_sale_warranty set state=%s where id=%s", (state, wc.id))
+
+            self._cr.execute("UPDATE ars_sale_warranty SET state=%s WHERE id=%s", (state, wc.id))
+
         return res
 
     @api.multi
@@ -326,3 +366,65 @@ class ars_sale_warranty(models.Model):
             'target': 'new',
             'context': ctx,
         }
+
+    # def set_aligment(self):
+    #     for wr in self:
+    #         for ol in wr.order_lines:
+    #             if ol.category and ol.category.name.lower() == 'warranty':
+    #                 if ol.apr_action == 'reject' and ol.ars_warranty_price != ol.price_unit:
+    #                     ol.price_unit = ol.ars_warranty_price
+    #                     print('ol.price_unit', ol.price_unit, ol.ars_warranty_price, 'ol.ars_warranty_price')
+    #                     raise UserError(
+    #                         "Allocated Warranty Amount12 of %s." % ol.ars_warranty_price)
+    #     return True
+
+
+    def open_alignment_wizard(self):
+        m = []
+        for ol in self.order_lines:
+            if ol.category and ol.category.name.lower() == 'warranty':
+                if ol.apr_action == 'approved' and ol.ars_warranty_price != ol.price_unit:
+                    # ol.price_unit = ol.ars_warranty_price
+                    print('ol.price_unit', ol.price_unit, ol.ars_warranty_price, 'ol.ars_warranty_price')
+                    m.append(
+                    "Requested Amount of %s. \n Allocated Warranty Amount of %s."
+                    % (ol.ars_std_price, ol.ars_warranty_price)
+                )
+
+        message = "\n\n".join(m)
+
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Warranty Alignment Wizard',
+            'res_model': 'ars.sale.warranty.alignment.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_warranty_id': self.id,
+                        'default_message': message,
+                        'active_id': self.id,},
+        }
+
+
+class ArsSaleWarrantyAlignmentWizard(models.TransientModel):
+    _name = 'ars.sale.warranty.alignment.wizard'
+
+    warranty_id = fields.Many2one('ars.sale.warranty', string="Warranty")
+    message = fields.Char(string="Message")
+
+    def set_alignment(self):
+        error_messages = []
+        for ol in self.warranty_id.order_lines:
+            if ol.category and ol.category.name.lower() == 'warranty':
+                if ol.apr_action == 'approved' and ol.ars_warranty_price != ol.price_unit:
+                    ol.price_unit = ol.ars_warranty_price
+                    print('Updated price_unit:', ol.price_unit, 'ars_warranty_price:', ol.ars_warranty_price)
+
+        if error_messages:
+            raise UserError("\n".join(error_messages))
+
+        return True
+
+
+    def cancel_alignment(self):
+        return {'type': 'ir.actions.act_window_close'}

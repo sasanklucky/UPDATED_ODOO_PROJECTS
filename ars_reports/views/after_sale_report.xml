@@ -36,6 +36,7 @@
                     <field name="reg_no" string="Reg No."/>
                     <field name="model" string="Model"/>
                     <field name="delivery_date" string="Delivery Date"/>
+                    <field name="selling_dealer" string="Selling Dealer"/>
                 </tree>
             </field>
         </record>

@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+warrenty_sync_log_access,warrenty_sync_log,model_warrenty_sync_log,,1,1,1,0
+warranty_sync_check_wizard_access,warranty_sync_check_wizard,model_warranty_sync_check_wizard,,1,1,1,0
+
+access_warranty_claim_config,warranty_claim_config,model_warranty_claim_config,,1,1,1,0

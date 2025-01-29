@@ -78,8 +78,8 @@ class SaleOrder(models.Model):
                         with contextlib.closing(db.cursor()) as cr:
                             cr.autocommit(True)
                             env = api.Environment(cr, SUPERUSER_ID, {})
-                            cons_vehicle_card = env['fleet.vehicle'].sudo().search([('vin_sn', '=', vehicle.vin_sn), ('license_plate', '=', vehicle.license_plate)],limit=1)
-                            if vehicle.consolidate_vehicle_card_id:
+                            cons_vehicle_card = env['fleet.vehicle'].sudo().search([('vin_sn', '=', vehicle.vin_sn)], limit=1)
+                            if not cons_vehicle_card and vehicle.consolidate_vehicle_card_id != 0:
                                 cons_vehicle_card = env['fleet.vehicle'].sudo().browse(vehicle.consolidate_vehicle_card_id)
                             dealer_code = self.env.user.company_id.dealer_code
                             dealer_id = env['ars.consolidation.setup'].sudo().search([('dealer_code','=',dealer_code)], limit=1)
