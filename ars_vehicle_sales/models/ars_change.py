@@ -8,6 +8,8 @@ from odoo.exceptions import UserError
 from odoo.addons import decimal_precision as dp
 from openerp.exceptions import UserError, ValidationError
 from ast import literal_eval
+from lxml import etree
+
 
 class arsCompany(models.Model):
     _inherit = 'res.company'
@@ -237,6 +239,28 @@ class ars_sale_crm_sale(models.Model):
 
     bank_account = fields.Many2one('res.bank', string="Financer")
     sale_aftersales = fields.Char('Team Type')
+    transfer_type = fields.Selection(
+        [('internal_transfer', 'Internal Transfer'), ('external_transfer', 'External Transfer')],
+        string="Transfer Type")
+
+    @api.model
+    def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):
+        res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        transfer_type = self.env.context.get('default_transfer_type')
+        if transfer_type:
+            if transfer_type == 'internal_transfer':
+                domain = [('is_dealer', '=', True)]
+                doc = etree.XML(res['arch'])
+                for node in doc.xpath("//field[@name='partner_id']"):
+                    node.set('domain', str(domain))
+                res['arch'] = etree.tostring(doc, encoding='unicode')
+            else:
+                domain = []
+                doc = etree.XML(res['arch'])
+                for node in doc.xpath("//field[@name='partner_id']"):
+                    node.set('domain', str(domain))
+                res['arch'] = etree.tostring(doc, encoding='unicode')
+        return res
 
     @api.depends('amount_total')
     def _compute_amount_total_words(self):
@@ -489,6 +513,9 @@ class ars_sale_invoice(models.Model):
     delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
     after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
     model = fields.Many2one('product.product', string="Model Variant")
+    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
+                                          ('customer', 'Customer Invoice'),
+                                          ('insurance', 'Insurance Invoice')], string='Type')
 
 
     @api.constrains('gate_pass_date')

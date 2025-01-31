@@ -64,6 +64,7 @@
                     <field name="bill_to_customer_gst"/>
                     <field name="e_invoice_generated"/>
                     <field name="irn_no"/>
+                    <field name="selling_dealer"/>
                 </tree>
             </field>
         </record>

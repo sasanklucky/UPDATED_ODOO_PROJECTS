@@ -1,3 +1,5 @@
+from email.policy import default
+
 from odoo import models, fields, api, _
 from datetime import datetime, timedelta
 from datetime import date
@@ -25,11 +27,11 @@ class ARS_After_sale_order(models.Model):
             self.create_warranty_order()
             if self.mileage_in == 0:
                 raise ValidationError('Please enter the Kilometer')
-            vehicle = self.env['service.setup.manual'].search([('model_id','=',self.regn_no.model_id.id),
+            vehicle = self.env['service.setup.manual'].search([('model_id','=',self.fleet_vin_no.model_id.id),
                                                                ('service_type','=',self.service_type.id)])
             if vehicle:
-                if self.regn_no.customer_ids:
-                    customer_ids_fleet = self.regn_no.customer_ids[-1]  # selecting the last record of one2many field customer_ids
+                if self.fleet_vin_no.customer_ids:
+                    customer_ids_fleet = self.fleet_vin_no.customer_ids[-1]  # selecting the last record of one2many field customer_ids
                     if customer_ids_fleet.date_of_ownership:
                         date_ownership = fields.Date.from_string(customer_ids_fleet.date_of_ownership)  # assigning the value of date of ownership to a varaible
                         current_date = date.today()
@@ -77,6 +79,26 @@ class ARS_After_sale_order(models.Model):
 
             for v in vendors.keys():
                 warranty_ids = self.env['ars.sale.warranty'].search([('order_id', '=', od.id), ('partner_id', '=', v)])
+
+                # If a warranty exists and it's in draft state, just update it
+                # if warranty_ids and all(w.state == 'draft_process' for w in warranty_ids):
+                if warranty_ids and all(w.state == 'draft'for w in warranty_ids):
+                    warnVals = {
+                        'partner_id': v,
+                        'regn_no': od.regn_no.id if od.regn_no else False,
+                        'model_id': od.model.id if od.model else False,
+                        'vin_no': od.vin_no or '',
+                        'order_id': od.id,
+                        'order_lines': [(6, 0, vendors.get(v))]
+                    }
+                    warranty_ids.write(warnVals)
+                    print(f'Updated warranty for vendor {v} in draft state: {warnVals}')
+                    continue
+
+                if warranty_ids and any(w.state in ['inprocess', 'processed'] for w in warranty_ids):
+                    print(f'Skipping creation for vendor {v} as there are existing warranties in-process or processed.')
+                    continue
+
                 warnVals = {'partner_id': v,
                             'regn_no': od.regn_no and od.regn_no.id,
                             'model_id': od.model and od.model.id,
@@ -91,9 +113,176 @@ class ARS_After_sale_order(models.Model):
                     if not warranty_ids:
                         warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
                         self.env['ars.sale.warranty'].create(warnVals)
+                        print('999999', warnVals, not warranty_ids)
                     else:
                         warranty_ids.write(warnVals)
         return True
+
+    @api.multi
+    def write(self, vals):
+
+        # existing_order_lines = {line.id: line for line in self.order_line}
+
+        if 'order_line' in vals:
+
+            for order in self:
+                # Search for existing warranties that meet the specific conditions
+                existing_warranties_draft = self.env['ars.sale.warranty'].search([
+                    ('order_id', '=', order.id),
+                    ('state', '=', 'draft_process'),
+                    # ('sync_count', '=', 1),
+                    ('Warranty_sync_reject', '=', False)
+                ])
+
+                if existing_warranties_draft:
+                    raise ValidationError(
+                        "Waiting for TM Approval."
+                    )
+
+            if 'order_line' in vals:
+                for order in self:
+                    existing_warranties = self.env['ars.sale.warranty'].search([
+                        ('order_id', '=', order.id)
+                    ])
+
+                    modified_order_line_ids = set()
+                    for command in vals.get('order_line', []):
+                        if command[0] == 1:
+                            modified_order_line_ids.add(command[1])
+
+                    for warranty in existing_warranties:
+
+                        modified_order_lines = warranty.order_lines.filtered(
+                            lambda line: line.id in modified_order_line_ids
+                        )
+
+                        approved_modified_order_lines = modified_order_lines.filtered(
+                            lambda line: line.apr_action == 'approved'
+                        )
+
+                        if approved_modified_order_lines and not warranty.Warranty_sync_reject:
+                            raise ValidationError(
+                                "Claim is already Approved."
+                            )
+
+                        non_approved_modified_order_lines = modified_order_lines.filtered(
+                            lambda line: line.apr_action != 'approved'
+                        )
+
+                        if non_approved_modified_order_lines and warranty.Warranty_sync_reject:
+                            continue
+
+
+        res = super(ARS_After_sale_order, self).write(vals)
+
+        # Check if order lines are being updated (new line is added)
+        if 'order_line' in vals:
+            for order in self:
+                vendors = {}
+                existing_order_line_ids = set()
+
+                # Collect new order lines that are associated with 'Warranty' category
+                for ol in order.order_line:
+                    if ol.category and ol.category.name == 'Warranty':
+                        if ol.customer_split:
+                            vendor_id = ol.customer_split.id
+                            if vendor_id not in vendors:
+                                vendors[vendor_id] = []
+                            vendors[vendor_id].append(ol.id)
+
+                existing_warranties = self.env['ars.sale.warranty'].search([
+                    ('order_id', '=', order.id),
+                    ('state', 'in', ['re_submit', 'inprocess', 'processed', 'done'])
+                ])
+                for warranty in existing_warranties:
+                    existing_order_line_ids.update(warranty.order_lines.ids)
+
+                draft_warranties = self.env['ars.sale.warranty'].search([
+                    ('order_id', '=', order.id),
+                    ('state', '=', 'draft')
+                ])
+
+                for vendor_id, order_line_ids in vendors.items():
+                    # Filter new order lines that are not already associated with existing warranties
+                    new_order_line_ids = [ol_id for ol_id in order_line_ids
+                                          if ol_id not in existing_order_line_ids and
+                                          self.env['sale.order.line'].browse(ol_id).apr_action not in ['approved',
+                                                                                                       'reject']
+                                          # self.env['sale.order.line'].browse(ol_id).apr_action != 'approved'
+                                          ]
+                    if draft_warranties:
+                        # Add new order lines to existing draft warranties
+                        for draft_warranty in draft_warranties:
+                            # Update existing draft warranty with new order lines
+                            draft_warranty.order_lines = [(4, ol_id) for ol_id in new_order_line_ids]
+                            print(
+                                f'Updated draft warranty {draft_warranty.id} with new order lines: {new_order_line_ids}')
+                        continue
+
+                    if new_order_line_ids:
+                        warnVals = {
+                            'partner_id': vendor_id,
+                            'regn_no': order.regn_no.id if order.regn_no else False,
+                            'model_id': order.model.id if order.model else False,
+                            'vin_no': order.vin_no or '',
+                            'order_id': order.id,
+                            'order_lines': [(6, 0, new_order_line_ids)],  # Only add new order lines
+                        }
+
+                        # If no vendors found for a partner, cancel the warranty
+                        if not new_order_line_ids:
+                            warnVals.update({'state': 'cancel'})
+
+                            # Create a new warranty record with a sequence number
+                        warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+                        self.env['ars.sale.warranty'].create(warnVals)
+                        print(f'Created new warranty record: {warnVals}')
+                    else:
+                        print(f'Skipping creation: No new order lines for partner {vendor_id}')
+
+                    # After handling warranty, update warranty states if needed
+            self.update_warranty_state_on_order_line_change()
+
+        return res
+
+
+    def update_warranty_state_on_order_line_change(self):
+        print('Starting update_warranty_state_on_order_line_change')
+        for order in self:
+            service_order_lines = order.order_line.filtered(lambda line: line.category.name == 'Warranty')
+            print('SERVICE STATE:', service_order_lines)
+
+            warranty_ids = self.env['ars.sale.warranty'].search(
+                [('order_id', '=', order.id), ('state', '=', 're_submit')]
+            )
+            print('WARRANTY IDS:', warranty_ids)
+
+            if warranty_ids:
+                for warranty in warranty_ids:
+                    if warranty.sync_count == 1:
+                        # Update hide_sync to False when sync_count is 1
+                        warranty.write({
+                            'hide_sync': False
+                        })
+                    print(f'Updated warranty {warranty.id} to draft and hide_sync set to False.')
+                    print('warranty state:', warranty.state, 'hide_sync:', warranty.hide_sync)
+            else:
+                print('No warranties found in process.')
+
+        return True
+
+    @api.multi
+    def action_cancel(self):
+        res = super(ARS_After_sale_order, self).action_cancel()
+
+        for order in self:
+            warranties = self.env['ars.sale.warranty'].search([('order_id', '=', order.id)])
+
+            for warranty in warranties:
+                warranty.write({'hide_sync': True})
+                print(f'Updated warranty {warranty.id} - hide_sync set to True.')
+
+        return res
 
     @api.multi
     def action_split(self):
@@ -489,6 +678,28 @@ class ARS_sale_order_line(models.Model):
     #     for customer in self:
     #         customer.customer_split = customer.order_id.partner_id.id
 
+    @api.depends('invoice_lines.invoice_id.state', 'invoice_lines.quantity')
+    def _get_invoice_qty(self):
+        """
+        Compute the quantity invoiced. If case of a refund, the quantity invoiced is decreased. Note
+        that this is the case only if the refund is generated from the SO and that is intentional: if
+        a refund made would automatically decrease the invoiced quantity, then there is a risk of reinvoicing
+        it automatically, which may not be wanted at all. That's why the refund has to be created from the SO
+        """
+        for line in self:
+            qty_invoiced = 0.0
+            for invoice_line in line.invoice_lines:
+                if invoice_line.invoice_id.state != 'cancel':
+                    if invoice_line.invoice_id.type == 'out_invoice':
+                        if invoice_line.split_type == 'split':
+                            qty_invoiced = invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                        else:
+                            qty_invoiced += invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+                    elif invoice_line.invoice_id.type == 'out_refund':
+                        qty_invoiced -= invoice_line.uom_id._compute_quantity(invoice_line.quantity, line.product_uom)
+            line.qty_invoiced = qty_invoiced
+
+
     """ Product line varient """
     product_varient_ids = fields.Many2many('product.attribute.value', 'order_line_attribute_rel', 'order_id',
                                            'attribute_id', string='Attribute')
@@ -569,6 +780,61 @@ class ARS_sale_order_line(models.Model):
     split_type = fields.Integer(compute='_get_customer_invoice_count', default=1)
     cust_filter_ids = fields.Many2many('res.partner', compute='_filter_partner', string='Customer Filter')
 
+
+    # amount tax total
+    order_amount_total = fields.Monetary(
+        string="Total With Tax",
+        compute="_compute_total_with_tax",
+        store=True,
+        currency_field="currency_id"
+    )
+
+    @api.depends('price_unit', 'tax_id', 'product_uom_qty', 'discount')
+    def _compute_total_with_tax(self):
+        for line in self:
+            tax_amount = 0.0
+            subtotal = 0.0
+
+            if line.tax_id:
+                # Adjust the price for the discount
+                discounted_price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
+
+                # Compute taxes based on the discounted price
+                taxes = line.tax_id.compute_all(
+                    discounted_price,
+                    currency=line.order_id.currency_id,
+                    quantity=line.product_uom_qty,
+                    product=line.product_id,
+                    partner=line.order_id.partner_id
+                )
+
+                tax_amount = sum(t['amount'] for t in taxes['taxes'])  # Tax total
+                # print('tax_amount', tax_amount)
+                subtotal = taxes['total_excluded']
+                # print(subtotal, 'subtotal')
+
+            line.price_subtotal = subtotal
+            line.amount_tax = tax_amount
+            line.order_amount_total = subtotal + tax_amount
+            # print('line.order_amount_total', line.order_amount_total)
+
+    # is_visible = fields.Boolean()
+
+    @api.depends('order_line.price_subtotal', 'order_line.tax_id', 'order_line.discount')
+    def _compute_amounts(self):
+        for order in self:
+            total_tax_included = total_tax_excluded = 0.0
+
+            for line in order.order_line:
+                total_tax_included += line.price_subtotal + line.amount_tax
+                total_tax_excluded += line.price_subtotal
+
+            # Update fields
+            order.amount_untaxed = total_tax_excluded
+            order.amount_tax = total_tax_included - total_tax_excluded
+            order.amount_total = total_tax_included
+            # print('order.amount_total', order.amount_total,order.amount_tax, order.amount_untaxed)
+
     @api.multi
     def invoice_line_create(self, invoice_id, qty):
         """ Create an invoice line. The quantity to invoice can be positive (invoice) or negative (refund).
@@ -618,17 +884,23 @@ class ARS_account_invoice_line(models.Model):
         if self.invoice_line_tax_ids:
             taxes = self.invoice_line_tax_ids.compute_all(price, currency, self.quantity, product=self.product_id,
                                                           partner=self.invoice_id.partner_id)
-        if self.split_type == 'split':
-            self.price_subtotal = price_subtotal_signed = self.split_amount
-        else:
-            self.price_subtotal = price_subtotal_signed = taxes['total_excluded'] if taxes else self.quantity * price
-        self.price_total = taxes['total_included'] if taxes else self.price_subtotal
-        if self.invoice_id.currency_id and self.invoice_id.currency_id != self.invoice_id.company_id.currency_id:
-            price_subtotal_signed = self.invoice_id.currency_id.with_context(
-                date=self.invoice_id._get_currency_rate_date()).compute(price_subtotal_signed,
-                                                                        self.invoice_id.company_id.currency_id)
-        sign = self.invoice_id.type in ['in_refund', 'out_refund'] and -1 or 1
-        self.price_subtotal_signed = price_subtotal_signed * sign
+
+            self.price_subtotal = taxes['total_excluded'] if taxes else self.quantity * price
+            self.price_total = taxes['total_included'] if taxes else self.price_subtotal
+
+            sign = self.invoice_id.type in ['in_refund', 'out_refund'] and -1 or 1
+            self.price_subtotal_signed = self.price_subtotal * sign
+        # if self.split_type == 'split':
+        #     self.price_subtotal = price_subtotal_signed = self.split_amount
+        # else:
+        #     self.price_subtotal = price_subtotal_signed = taxes['total_excluded'] if taxes else self.quantity * price
+        # self.price_total = taxes['total_included'] if taxes else self.price_subtotal
+        # if self.invoice_id.currency_id and self.invoice_id.currency_id != self.invoice_id.company_id.currency_id:
+        #     price_subtotal_signed = self.invoice_id.currency_id.with_context(
+        #         date=self.invoice_id._get_currency_rate_date()).compute(price_subtotal_signed,
+        #                                                                 self.invoice_id.company_id.currency_id)
+        # sign = self.invoice_id.type in ['in_refund', 'out_refund'] and -1 or 1
+        # self.price_subtotal_signed = price_subtotal_signed * sign
 
     split_amount = fields.Float('Split Amount')
     split_type = fields.Char('Split Type')
@@ -662,9 +934,25 @@ class ARS_split_invoice(models.Model):
         records = self.env['sale.order.line'].browse(record_ids)
         self.percentage = '100%'
 
+    @api.multi
+    @api.onchange('tax')
+    def split_tax(self):
+        record_ids = self._context.get('active_ids')
+        taxes = self.env['sale.order.line'].browse(record_ids[0])
+        self.tax = taxes.order_id.tax_id.id
+
+    @api.multi
+    @api.onchange('tax_amount')
+    def split_taxamount(self):
+        record_ids = self._context.get('active_ids')
+        untax = self.env['sale.order.line'].browse(record_ids[0])
+        self.customer = untax.order_id.order_amount_total
+
     customer = fields.Many2one('res.partner')
     percentage = fields.Char()
     amount = fields.Char()
+    tax = fields.Char()
+    tax_amount = fields.Char()
 
     @api.multi
     def action_draft_invoice(self):
@@ -676,10 +964,10 @@ class ARS_split_invoice(models.Model):
 class AccountInvoice_inherit(models.Model):
     _inherit = "account.invoice"
 
-    invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
-    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
-                                          ('customer', 'Customer Invoice'),
-                                          ('insurance', 'Insurance Invoice')], string='Type')
+    # invoice_reference = fields.Many2one('account.invoice', string='Invoice Reference')
+    # cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
+    #                                       ('customer', 'Customer Invoice'),
+    #                                       ('insurance', 'Insurance Invoice')], string='Type')
 
     @api.multi
     def action_invoice_open(self):
@@ -706,52 +994,53 @@ class AccountInvoice_inherit(models.Model):
                     order.gate_pass_date = datetime.now()
                 if not vehicle_card:
                     vehicle_card = self.env['fleet.vehicle'].search([('vin_sn', '=', vin.name)])
-                if vehicle_card:
+                if vehicle_card and not order.partner_id.is_dealer:
                     vehicle_card.write(
                         {'driver_id': order.partner_id.id, 'vehicle_status': 'customer',
                          'lot_id': vin.id,
-                         'customer_ids': [(0, 0, {'custmer_name': order.partner_id.id,
-                                                  'date_of_ownership': order.date_invoice,
-                                                  'delivery_date': order.gate_pass_date,
-                                                  'address': order.partner_id.city,
-                                                  'sold_by': self.env.user.company_id.partner_id.id,
-                                                  'mobile': order.partner_id.mobile})]})
+                         # 'customer_ids': [(0, 0, {'custmer_name': order.partner_id.id,
+                         #                          'date_of_ownership': order.date_invoice,
+                         #                          'delivery_date': order.gate_pass_date,
+                         #                          'address': order.partner_id.city,
+                         #                          'sold_by': self.env.user.company_id.partner_id.id,
+                         #                          'mobile': order.partner_id.mobile})]
+                         })
                     #commented this code in staging_05_06_24 because vehicle history its not present in branch
-                    # if vehicle_card.service_type_sequence == 0:
-                    #     if vehicle_card.customer_ids:
-                    #         if vehicle_card.service_type_sequence == 0:
-                    #             service_typ = self.env['service.type'].search([('sequence', '=', vehicle_card.service_type_sequence)], limit=1)
-                    #             for v in vehicle_card.service_ids:
-                    #                 if v.service_type_name == service_typ.name:
-                    #                     k = self.env['service.history'].search([('id', '=', v.id), ('vehicle_id', '=', vehicle_card.id)])
-                    #                     next_ser_typ = vehicle_card.service_type_sequence + 1
-                    #                     next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
-                    #
-                    #                     remainder = self.env.user.company_id.next_service_remainder
-                    #                     nxt_due = self.env.user.company_id.next_service_due
-                    #                     remainder_value = int(remainder) if isinstance(remainder, str) else remainder
-                    #
-                    #                     service_manual = {
-                    #                         days.id: {
-                    #                             'next_service': int(days.days) if isinstance(days.days, str) else days.days,
-                    #                             'service_remainder': (int(days.days) if isinstance(days.days,
-                    #                                                                                str) else days.days) - remainder_value
-                    #                         }
-                    #                         for days in self.env['service.setup.manual'].search(
-                    #                             [('service_type', '=', next.id), ('model_id', '=', vehicle_card.model_id.id)],
-                    #                             limit=1)
-                    #                     }
-                    #
-                    #                     next_services = [values['next_service'] for values in service_manual.values()]
-                    #                     service_remainders = [values['service_remainder'] for values in service_manual.values()]
-                    #                     next_service_due = datetime.now().date() + timedelta(
-                    #                         days=int(next_services[0] if next_services else nxt_due))
-                    #                     set_reminder = datetime.now().date() + timedelta(
-                    #                         days=int(service_remainders[0] if service_remainders else remainder))
-                    #                     k.write({
-                    #                         'next_service_due': next_service_due,
-                    #                         'set_reminder': set_reminder
-                    #                     })
+                    if vehicle_card.service_type_sequence == 0:
+                        if vehicle_card.customer_ids:
+                            if vehicle_card.service_type_sequence == 0:
+                                service_typ = self.env['service.type'].search([('sequence', '=', vehicle_card.service_type_sequence)], limit=1)
+                                for v in vehicle_card.service_ids:
+                                    if v.service_type_name == service_typ.name:
+                                        k = self.env['service.history'].search([('id', '=', v.id), ('vehicle_id', '=', vehicle_card.id)])
+                                        next_ser_typ = vehicle_card.service_type_sequence + 1
+                                        next = self.env['service.type'].search([('sequence', '=', next_ser_typ)], limit=1)
+
+                                        remainder = self.env.user.company_id.next_service_remainder
+                                        nxt_due = self.env.user.company_id.next_service_due
+                                        remainder_value = int(remainder) if isinstance(remainder, str) else remainder
+
+                                        service_manual = {
+                                            days.id: {
+                                                'next_service': int(days.days) if isinstance(days.days, str) else days.days,
+                                                'service_remainder': (int(days.days) if isinstance(days.days,
+                                                                                                   str) else days.days) - remainder_value
+                                            }
+                                            for days in self.env['service.setup.manual'].search(
+                                                [('service_type', '=', next.id), ('model_id', '=', vehicle_card.model_id.id)],
+                                                limit=1)
+                                        }
+
+                                        next_services = [values['next_service'] for values in service_manual.values()]
+                                        service_remainders = [values['service_remainder'] for values in service_manual.values()]
+                                        next_service_due = datetime.now().date() + timedelta(
+                                            days=int(next_services[0] if next_services else nxt_due))
+                                        set_reminder = datetime.now().date() + timedelta(
+                                            days=int(service_remainders[0] if service_remainders else remainder))
+                                        k.write({
+                                            'next_service_due': next_service_due,
+                                            'set_reminder': set_reminder
+                                        })
         return res
 
     @api.model

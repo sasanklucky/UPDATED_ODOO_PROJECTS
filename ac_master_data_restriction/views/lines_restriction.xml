@@ -31,5 +31,11 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="group_custom_enable_create_button" model="res.groups">
+        <field name="name">Enable create button</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+<!--        <field name="implied_ids" eval="[(4, ref('base.group_system'))]"/> &lt;!&ndash; Optional: Inherit permissions from System group &ndash;&gt;-->
+    </record>
     </data>
 </odoo>

@@ -49,11 +49,11 @@ class Ac_ars(http.Controller):
         warranty_stage = []
         approved_count = 0
         reject_count = 0
-        hold_count = 0
+        re_submit_count = 0
         re_submission_count = 0
         war_approved = {}
         war_reject = {}
-        war_hold = {}
+        war_re_submit = {}
         war_re_submission = {}
         for line_id in sale_obj.order_line:
             if line_id.apr_action:
@@ -61,8 +61,8 @@ class Ac_ars(http.Controller):
                     approved_count += 1
                 elif line_id.apr_action == 'reject':
                     reject_count += 1
-                elif line_id.apr_action == 'hold':
-                    hold_count += 1
+                elif line_id.apr_action == 're_submit':
+                    re_submit_count += 1
                 elif line_id.apr_action == 're_submission':
                     re_submission_count += 1
         if approved_count:
@@ -71,9 +71,9 @@ class Ac_ars(http.Controller):
         if reject_count:
             war_reject.update({'colors': '#DB3838', 'reject_count': reject_count, 'stages': 'Reject'})
             warranty_stage.append(war_reject)
-        if hold_count:
-            war_hold.update({'colors': '#1E90FF', 'hold_count': hold_count, 'stages': 'Hold'})
-            warranty_stage.append(war_hold)
+        if re_submit_count:
+            war_re_submit.update({'colors': '#1E90FF', 're_submit_count': re_submit_count, 'stages': 'Re-Submit'})
+            warranty_stage.append(war_re_submit)
         if re_submission_count:
             war_re_submission.update({'colors': '#C37373', 're_submission_count': re_submission_count, 'stages': 'Re Submission'})
             warranty_stage.append(war_re_submission)

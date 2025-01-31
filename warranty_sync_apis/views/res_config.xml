@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_warranty_db_settings" model="ir.ui.view">
+        <field name="name">ars_config_warranty_db_inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="warranty_sync_apis" string="Warranty Sync API Configuration" data-key="warranty_sync_apis">                   
+                    <h2>Warranty Sync API's Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="warranty_sync_apis_settings">
+                        <div class="col-xs-12 o_setting_box" id="warranty_sync_apis_settings">
+                            <br></br>
+                            <div class="o_setting_right_pane">
+                                <label string="Warranty sync API Configurations" attrs="{'invisible': [('warrenty_company_type', '=','is_child_company')]}"/>
+                                <div class="text-muted">
+                                    Warranty Sync API Configurations (Here Warranty will Sync to parent)
+                                </div>
+                                <div class="content-group">
+                                    <div class="row">
+                                        <label class="col-md-3" string="Company Type"/>
+                                        <field name="warrenty_company_type" string="Connection Type" id='warrenty_company_type_id'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Parent's DB name"/>
+                                        <field name="warrenty_sync_db" string="Parent's DB name" id='warrenty_sync_db'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable Parent sync"/>
+                                        <field name="enable_sync_to_parent" string="Enable Parent sync" id='enable_sync_to_parent'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable Child sync"/>
+                                        <field name="enable_sync_to_child" string="Enable Child sync" id='enable_sync_to_child'/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button name="redirect_sync_warranty_to_parent" string="Sync Warranty to Parent" type="object" class="btn-primary"/>
+                                </div>
+                                <br></br>
+                                <div>
+                                    <button name="redirect_sync_warranty_to_child" string="Sync Warranty to Child" type="object" class="btn-primary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_warranty_config_settings" model="ir.actions.act_window">
+        <field name="name">Warranty API Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_warranty_db_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'warranty_sync_apis'}</field>
+    </record>
+
+</odoo>

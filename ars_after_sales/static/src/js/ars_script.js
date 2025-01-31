@@ -18,8 +18,8 @@ odoo.define('ars_after_sales', function (require) {
                 $(this).parent().find('.btn-lg').removeClass('green')
                 $(this).addClass('green')
             }
-            if ($(this).hasClass('hold')){
-                vals['apr_action'] = 'hold'
+            if ($(this).hasClass('re_submit')){
+                vals['apr_action'] = 're_submit'
                 $(this).parent().find('.btn-lg').removeClass('green')
                 $(this).addClass('green')
             }
