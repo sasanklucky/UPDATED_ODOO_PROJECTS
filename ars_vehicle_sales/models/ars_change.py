@@ -73,42 +73,42 @@ class ars_sale_crm_lead(models.Model):
     # enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
     booking_date = fields.Datetime(string="Booking Date")
 
-    @api.constrains('mobile')
-    def check_mobile_with_model(self):
-        company_id = self.env.user.company_id.id
-        user = self.env.user.id
-        crm_team = self.env['crm.team'].search([('company_id', '=', company_id), ('team_type', 'in', ['sales']), ('member_ids', 'in', user)])
-        if crm_team:
-            if self.type == 'lead':
-                if self.mobile:
-                    mobile = self.mobile.strip()
-                    existing_lead = self.env['crm.lead'].search([('mobile','=',mobile),('id','!=', self.id)])
-                    if existing_lead:
-                        product_id = []
-                        for lead in existing_lead:
-                            for lead_line in lead.vehicle_line:
-                                product_id.append(lead_line.product_id.id)
-                        for line in self.vehicle_line:
-                            if line.product_id.id in product_id:
-                                raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
-            if self.type == 'opportunity':
-                existing_lead = self.env['crm.lead'].search([('mobile', '=', self.mobile), ('id','!=', self.id)])
-                if existing_lead:
-                    if self.product_id:
-                        product_id = []
-                        for lead in existing_lead:
-                            for lead_line in lead.vehicle_line:
-                                product_id.append(lead_line.product_id.id)
-                        if self.product_id.id  in product_id:
-                            raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
-                    else:
-                        product_id = []
-                        for lead in existing_lead:
-                            for lead_line in lead.vehicle_line:
-                                product_id.append(lead_line.product_id.id)
-                        for line in self.vehicle_line:
-                            if line.product_id.id in product_id:
-                                raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+    # @api.constrains('mobile')
+    # def check_mobile_with_model(self):
+    #     company_id = self.env.user.company_id.id
+    #     user = self.env.user.id
+    #     crm_team = self.env['crm.team'].search([('company_id', '=', company_id), ('team_type', 'in', ['sales']), ('member_ids', 'in', user)])
+    #     if crm_team:
+    #         if self.type == 'lead':
+    #             if self.mobile:
+    #                 mobile = self.mobile.strip()
+    #                 existing_lead = self.env['crm.lead'].search([('mobile','=',mobile),('id','!=', self.id)])
+    #                 if existing_lead:
+    #                     product_id = []
+    #                     for lead in existing_lead:
+    #                         for lead_line in lead.vehicle_line:
+    #                             product_id.append(lead_line.product_id.id)
+    #                     for line in self.vehicle_line:
+    #                         if line.product_id.id in product_id:
+    #                             raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+    #         if self.type == 'opportunity':
+    #             existing_lead = self.env['crm.lead'].search([('mobile', '=', self.mobile), ('id','!=', self.id)])
+    #             if existing_lead:
+    #                 if self.product_id:
+    #                     product_id = []
+    #                     for lead in existing_lead:
+    #                         for lead_line in lead.vehicle_line:
+    #                             product_id.append(lead_line.product_id.id)
+    #                     if self.product_id.id  in product_id:
+    #                         raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
+    #                 else:
+    #                     product_id = []
+    #                     for lead in existing_lead:
+    #                         for lead_line in lead.vehicle_line:
+    #                             product_id.append(lead_line.product_id.id)
+    #                     for line in self.vehicle_line:
+    #                         if line.product_id.id in product_id:
+    #                             raise ValidationError(_(f"This Mobile Number already Exist with same Model, These all are the existing lead ids.{existing_lead.ids}"))
 
 
     @api.onchange('stage_id')
