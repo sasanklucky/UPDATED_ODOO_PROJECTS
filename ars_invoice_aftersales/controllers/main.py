@@ -9,6 +9,8 @@ class Split(http.Controller):
         selected_id = 0
         selected_ids = []
         price_subtotal = 0
+        tax_id = 0
+        order_amount_total = 0
         line_datas_id = False
         customer_name = ''
         partners = '<select  class="form-control select_class">'
@@ -19,6 +21,8 @@ class Split(http.Controller):
                 for line_data in line_datas:
                     customer_name = line_data.order_id.partner_id.name
                     price_subtotal += line_data.price_subtotal
+                    tax_id = line_data.tax_id.name
+                    order_amount_total = line_data.order_amount_total
             partner_obj = request.env['res.partner'].search([('customer','=',True)])
             for partner in partner_obj:
                 if customer_name == partner.name:
@@ -27,19 +31,22 @@ class Split(http.Controller):
                     partners += '<option value='+str(partner.id)+'>' + partner.name if partner.name else 'Unknown' + '</option>'
             partners += '</select>'
 
-        return [{'customers': partners, 'customer_name': customer_name,'price_subtotal':price_subtotal,'line_ids':line_datas_id,'order_id':line_datas[0].order_id.id}]
+        return [{'customers': partners, 'customer_name': customer_name,'price_subtotal':price_subtotal,'line_ids':line_datas_id,'tax_id':tax_id,'order_amount_total':order_amount_total,'order_id':line_datas[0].order_id.id}]
 
     @http.route(['/ars_invoice_aftersales/split/get_data'], type='json', auth="user", website=True, csrf=False)
     def split_invoice_data(self, **kwargs):
         partners = ''
         order_id = ''
         inv_obj = request.env['account.invoice']
-        if kwargs.get('res_ids') and kwargs.get('customers') and kwargs.get('amt'):
+        invoice_ids = []
+        if kwargs.get('res_ids') and kwargs.get('customers') and kwargs.get('amt') and kwargs.get('tax') and kwargs.get('taxamount'):
             res_ids = kwargs.get('res_ids')
             res_id = res_ids.split(',')
             customers = kwargs.get('customers')
             amt = kwargs.get('amt')
             percent = kwargs.get('per')
+            tax = kwargs.get('tax')
+            taxamount = kwargs.get('taxamount')
             ir_property_obj = request.env['ir.property']
             if kwargs.get('order'):
                 order_id = request.env['sale.order'].browse(int(kwargs.get('order')))
@@ -67,14 +74,18 @@ class Split(http.Controller):
                                  'product_template_id': res.product_template_id.id,
                                  'product_id': res.product_id.id,
                                  'name': res.name,
+                                 # 'picking_type_id': res.picking_type_id.id,
                                  'quantity': res.product_uom_qty,
                                  'price_unit': res.price_unit,
+                                 'uom_id': res.product_uom.id,
+                                 # 'product_uom': product_id.uom_id.id,
+                                 'discount': float(100 - float(percent_value[0])),
                                  'sale_line_ids': [(6, 0, [res.id])],
                                  'account_analytic_id': order_id.analytic_account_id.id or False,
                                  'account_id': account_idd,
                                  'invoice_line_tax_ids': [[6, 0, res.tax_id.ids]],
-                                 'price_subtotal': ((int(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
-                                 'split_amount': ((int(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
+                                 'price_subtotal': ((float(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
+                                 'split_amount': ((float(percent_value[0]) * res.price_subtotal) / 100) if res.price_subtotal > 0 else 0,
                                  'split_type': 'split'
                                  }
                     invoice_line = [0, 0, line_data]
@@ -103,7 +114,19 @@ class Split(http.Controller):
                     'service_options': order_id.service_options.id,
                 }
                 context = {'type': 'out_invoice', 'journal_type': 'sale', 'default_ars_invoice_type': 'after_sales'}
-                request.env['account.invoice'].with_context(context).create(vals)
+                created_invoice = request.env['account.invoice'].with_context(context).create(vals)
+                invoice_ids.append(created_invoice.id)
+
+        if not invoice_ids:
+            return {'status': False, 'error': 'No invoices were created.'}
+
+        return {
+            'status': True,
+            'invoice_ids': invoice_ids,
+        }
+
+
+
         # action = {'type': 'ir.actions.act_window_close'}
 
-        return {'status':True}
+        # return {'status':True}

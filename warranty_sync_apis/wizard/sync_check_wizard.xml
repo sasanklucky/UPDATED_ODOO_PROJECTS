@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="warranty_sync_check_wizard_view" model="ir.ui.view">
+            <field name="name">Warranty Sync Check Wizard</field>
+            <field name="model">warranty_sync_check_wizard</field>
+            <field name="arch" type="xml">
+               <form>
+                   <sheet>
+                       <group>
+                           <group>
+                               <field name="sync_status_ids" style="pointer-events:none;">
+                                    <tree create='false' edit='false' delete='false'>
+                                        <field name="name" string="Reference" readonly="1"/>
+                                        <field name="partner_id" readonly="1"/>
+                                        <field name="order_id" readonly="1"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="sync_warranty" readonly="1"/>
+                                        <field name="order_date" readonly="1"/>
+                                        <field name="user_id" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                       </group>
+                    </sheet>
+                   <footer>
+                        <button string="Sync Now" name="warranty_sync_now" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                   </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_warranty_sync_check_wizard" model="ir.actions.act_window">
+            <field name="name">Warranty Sync Check</field>
+            <field name="res_model">warranty_sync_check_wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="warranty_sync_check_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="warranty_sync_checkparent_to_child_wizard_froms" model="ir.ui.view">
+            <field name="name">warranty_sync_checkparent_to_child_wizard.form</field>
+            <field name="model">warranty_sync_checkparent_to_child_wizard</field>
+            <field name="arch" type="xml">
+              <form>
+                   <sheet>
+                       <group>
+                           <group>
+                               <field name="sync_status_ids" style="pointer-events:none;">
+                                    <tree create='false' edit='false' delete='false'>
+                                        <field name="name" string="Reference" readonly="1"/>
+                                        <field name="partner_id" readonly="1"/>
+                                        <field name="order_id" readonly="1"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="parent_sync" string='Ready to sync' readonly="1"/>
+                                        <field name="child_warrenty_ref"/>
+                                        <field name="order_date" readonly="1"/>
+                                        <field name="user_id" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                       </group>
+                    </sheet>
+                   <footer>
+                        <button string="Sync Now" name="warranty_sync_now" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                   </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_warranty_sync_checkparent_to_child_wizard" model="ir.actions.act_window">
+            <field name="name">warranty_sync_checkparent_to_child_wizard action</field>
+            <field name="res_model">warranty_sync_checkparent_to_child_wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="warranty_sync_checkparent_to_child_wizard_froms"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

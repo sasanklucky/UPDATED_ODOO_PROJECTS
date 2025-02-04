@@ -271,10 +271,17 @@ class activity_inherit(models.Model):
 
     @api.multi
     def unlink(self):
-        if not self.env.user.has_group("base.group_system") and self.invoice_type in ['sales', 'after_sales']:
-            raise ValidationError('You cannot Delete PSF Record.')
-        else:
-            return super(activity_inherit, self).unlink()
+        print(self.env.context, 'DEFUNLINK')
+        params = self.env.context.get('params')
+        restricted_types = ['sales', 'after_sales']
+        is_mail_activity = params and params.get('model') == 'mail.activity'
+        is_restricted_user = not self.env.user.has_group("base.group_system")
+
+        if is_restricted_user and self.invoice_type in restricted_types:
+            if params is None or is_mail_activity:
+                raise ValidationError('You cannot Delete PSF Record.')
+
+        return super(activity_inherit, self).unlink()
 
     @api.multi
     def write(self, vals):

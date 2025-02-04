@@ -64,7 +64,7 @@ class AfterSlaesRetailReport(models.Model):
     bill_to_customer_gst = fields.Char(string="Bill to Customer GST")
     e_invoice_generated = fields.Char(string="E-Invoice Generated")
     irn_no = fields.Char(string="IRN Number")
-
+    selling_dealer = fields.Char(string="Selling Dealer")
 
     @api.model_cr
     def init(self):
@@ -78,6 +78,7 @@ class AfterSlaesRetailReport(models.Model):
             so.vin_no as vin,
             so.regn_no as registration_no,
             so.model as model,
+            rp2.name as selling_dealer,
             inv.id as invoice_id,
             inv.create_date as ro_close_date,
             inv.cust_invoice_type as cust_invoice_type,
@@ -114,6 +115,7 @@ class AfterSlaesRetailReport(models.Model):
             left join sale_order so on so.id = inv.order_id
             left join res_company rs on rs.id = so.company_id
 			left join res_partner rp on inv.partner_id = rp.id
+			left join res_partner rp2 on so.sold_by = rp2.id
             where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
         )""" % (self._table))
 

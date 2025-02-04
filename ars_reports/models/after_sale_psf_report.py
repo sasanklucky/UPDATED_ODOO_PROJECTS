@@ -39,6 +39,7 @@ class AfterSaleReport(models.Model):
     model = fields.Many2one('product.product', string="Model")
     delivery_date = fields.Date(string="Delivery Date")
     ro_ageing = fields.Integer('Ro Ageing', compute='ro_ageing_compute')
+    selling_dealer = fields.Char(string="Selling Dealer")
 
     @api.depends('ro_close_date', 'ro_open_date')
     def ro_ageing_compute(self):
@@ -74,6 +75,7 @@ class AfterSaleReport(models.Model):
         inv.amount_total as amount_total,
         so.service_options as service_options_id,
         so.service_type as service_type_id,
+        rp2.name as selling_dealer,
         ru.id as user_id,
         so.doc_type as doc_type,
         inv.reg_no as reg_no,
@@ -83,6 +85,7 @@ class AfterSaleReport(models.Model):
         left join res_partner rp on rp.id = so.partner_id 
         left join res_users ru on ru.id = so.user_id 
         left join res_company rc on ru.company_id = rc.id
+        left join res_partner rp2 on so.sold_by = rp2.id
         where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales'
         and rp.opt_out = 'False' )""" % (
             self._table))

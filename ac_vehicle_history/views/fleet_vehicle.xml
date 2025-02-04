@@ -29,6 +29,9 @@
             <xpath expr="//field[@name='transmission']" position="after">
                 <field name="service_type_sequence" />
             </xpath>
+            <xpath expr="//field[@name='location']" position="after">
+                <field name="po_ref" />
+            </xpath>
 
 
 

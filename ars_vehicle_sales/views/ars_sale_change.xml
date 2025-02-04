@@ -82,6 +82,9 @@
                            domain="[('salesperson', '=', True)]" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                     <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
                 </field>
+                <field name="company_id" position="after">
+                    <field name="transfer_type" attrs="{'readonly': True}" groups="base.group_no_one"/>
+                </field>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='tax_id']" position="after">
                     <field name="price_tax" string="Tax Price"/>
                 </xpath>

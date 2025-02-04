@@ -175,7 +175,7 @@ class Picking(models.Model):
                             line.lot_id.write({'motor_number': line.motor_number})
                         if self.env['fleet.vehicle'].search([('vin_sn', '=', vin_sn)]):
                             existing_lot_numbers.extend([vin_sn])
-                            print(existing_lot_numbers)
+                            # print(existing_lot_numbers)
                         else:
                             # sold_by_id = self.env.user.company_id.partner_id
                             param = self.env['ir.config_parameter'].sudo()
@@ -258,6 +258,17 @@ class StockMove(models.Model):
     product_template_id = fields.Many2one('product.template', string='Product')
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
 
+    def _prepare_move_line_vals(self, quantity=None, reserved_quant=None):
+        vals = super(StockMove, self)._prepare_move_line_vals(quantity=quantity, reserved_quant=reserved_quant)
+        lot_id = vals.get('lot_id')
+        if lot_id:
+            veh_card = self.env['fleet.vehicle'].search([('lot_id', '=',lot_id)])
+            vals.update({'motor_number': veh_card.engine_number,
+                         'battery_number': veh_card.key_serial_number})
+        return vals
+
+
+
     @api.multi
     @api.onchange('product_catalog_id')
     def onchange_product_based_on_catalog(self):
@@ -323,14 +334,20 @@ class StockMoveLine(models.Model):
             else:
                 return False
 
-    @api.onchange('lot_id', 'motor_number')
-    def _update_motor_number(self):
-        if not self.motor_number and self.lot_id:
+    # @api.onchange('lot_id', 'motor_number')
+    # def _update_motor_number(self):
+    #     if not self.motor_number and self.lot_id:
+    #         self.motor_number = self.lot_id.motor_number
+    #     if not self.lot_id and self.motor_number:
+    #         lot = self.env['stock.production.lot'].search([('motor_number', '=', self.motor_number)], limit=1)
+    #         self.lot_id = lot.id
+
+
+    @api.onchange('lot_id')
+    def update_motor_number(self):
+        if self.lot_id:
             self.motor_number = self.lot_id.motor_number
-        if not self.lot_id and self.motor_number:
-            lot = self.env['stock.production.lot'].search([('motor_number', '=', self.motor_number)], limit=1)
-            self.lot_id = lot.id
-        #
+            self.battery_number = self.lot_id.battery_number
 
 
 #     @api.constrains('lot_name', 'lot_id')
