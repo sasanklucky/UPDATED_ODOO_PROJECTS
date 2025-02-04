@@ -67,7 +67,8 @@ class StockPicking(models.Model):
         if is_cons_enable and cons_db_name:
             is_po = self.move_lines[0].purchase_line_id if self.move_lines else False
             is_so = self.move_lines[0].sale_line_id if self.move_lines else False
-            if 'Return of' in self.origin and self.picking_type_id.code == "outgoing" and is_po:
+            po_order = is_po.order_id if self.move_lines else False
+            if 'Return of' in self.origin and self.picking_type_id.code == "outgoing" and is_po and po_order and po_order.purchase_type == 'vehicle' and po_order.product_catalog_id.name.strip().lower() == 'vehicle':
                 vins = []
                 for line in self.move_line_ids:
                     # if int(line.qty_done) == 0:
@@ -153,7 +154,7 @@ class StockPicking(models.Model):
                                 _logger.error(f"Failed to delete record with ID {rec.id}: {e}")
                                 raise ValidationError(_("Failed to delete record with ID %s: %s" % (rec.id, e)))
                     return res
-            if 'Return of' in self.origin and self.picking_type_id.code == "incoming" and is_so:
+            if 'Return of' in self.origin and self.picking_type_id.code == "incoming" and is_so and self.sale_id.sale_type == 'vehicle':
                 vins = []
                 for line in self.move_line_ids:
                     # if int(line.qty_done) == 0:
