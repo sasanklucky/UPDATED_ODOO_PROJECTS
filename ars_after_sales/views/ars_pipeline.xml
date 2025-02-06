@@ -3161,5 +3161,38 @@
                   id="ARS_instructions_menu_1_list"
                   parent="crm.crm_menu_config"
                   action="ARS_instructions_action_window"/>
+
+
+
+
+<!--        CRM LEAD Medium value depends on source value-->
+
+        <record id="utm_medium_form_view" model="ir.ui.view">
+            <field name="name">UTM Medium</field>
+            <field name="model">utm.medium</field>
+            <field name="inherit_id" ref="utm.utm_medium_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="source_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="utm_medium_list_view" model="ir.ui.view">
+            <field name="name">UTM Medium List</field>
+            <field name="model">utm.medium</field>
+            <field name="inherit_id" ref="utm.utm_medium_view_tree"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="source_id"/>
+                </xpath>
+
+            </field>
+        </record>
+
+
     </data>
 </odoo>

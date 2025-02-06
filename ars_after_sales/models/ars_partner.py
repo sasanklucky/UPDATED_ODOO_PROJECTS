@@ -90,3 +90,29 @@ class ARSPartner(models.Model):
 #         if res_details:
 #             raise ValidationError(_('Allready Mobile Number Exists.'))
 #
+
+
+
+
+
+# CRM Medium value depends on source value
+class UTMMedium(models.Model):
+    _inherit = "utm.medium"
+
+    source_id = fields.Many2one("utm.source", string="Source")
+
+
+class CRMLead(models.Model):
+    _inherit = "crm.lead"
+
+    source_id = fields.Many2one("utm.source", string="Source")
+    medium_id = fields.Many2one(
+        "utm.medium",
+        string="Medium",
+        domain="[('source_id', '=', source_id)]",
+        help="Only show mediums linked to the selected source"
+    )
+
+    @api.onchange('source_id')
+    def _onchange_source_id(self):
+        self.medium_id = False
