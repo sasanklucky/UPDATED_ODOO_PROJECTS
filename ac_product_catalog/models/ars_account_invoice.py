@@ -13,6 +13,9 @@ class ARSCatalogInvoice(models.Model):
                                          ('after_sales', 'After Sales Invoice')], string='Invoice Type')
     kilometer = fields.Float(string="Kilometer")
     kilometer_out = fields.Float(string="Kilometer Out")
+    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
+                                          ('customer', 'Customer Invoice'),
+                                          ('insurance', 'Insurance Invoice')], string='Type')
 
     @api.onchange('ars_invoice_type','ars_type')
     def default_invoice_type(self):
@@ -69,6 +72,7 @@ class ARSCatalogInvoice(models.Model):
         res['product_catalog_id'] = line.product_catalog_id
         return res
 
+
 class ARSaccount_journal(models.Model):
     _inherit = "account.journal"
 
@@ -76,6 +80,8 @@ class ARSaccount_journal(models.Model):
                                  ('after_sales', 'Parts/After Sales')], string='Journal Type')
 
 
+class UtmSource(models.Model):
+    _inherit = "utm.source"
 
-
+    active = fields.Boolean(default=True)
 
