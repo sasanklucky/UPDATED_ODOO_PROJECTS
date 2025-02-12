@@ -3076,51 +3076,51 @@ class ArsSaleWarranty(models.Model):
 class ResPartnerCreateRestrict(models.Model):
     _inherit = 'res.partner'
 
-    restrict_name_chnage = fields.Boolean("Name Change", compute="_compute_boolean", default=False)
+    # restrict_name_chnage = fields.Boolean("Name Change", compute="_compute_boolean", default=False)
 
     #
-    @api.onchange('name')
-    def _compute_boolean(self):
-        print('function')
-        user = self.env['res.users'].browse(self.env.uid)
-        for rec in self:
-            if rec.id:
-                sale_order = self.env['sale.order'].search([('partner_id.id', '=', rec.id)])
-                purchase_order = self.env['purchase.order'].search([('partner_id.id', '=', rec.id)])
-            else:
-                sale_order = self.env['sale.order'].search([('partner_id.name', '=', rec.name)])
-                purchase_order = self.env['purchase.order'].search([('partner_id.name', '=', rec.name)])
-            # group_dic = {}
-            config_group_records = self.env['res.config.settings'].sudo().search([], order='create_date desc', limit=1)
-            keys_to_attrs = {
-                'genral_sales': ('gsale_res_gr_ids', 'gsale_restrict_master_data'),
-                'after_sales': ('asale_res_gr_ids', 'asale_restrict_master_data'),
-                'vehicle_sales': ('vsale_res_gr_ids', 'vsale_restrict_master_data'),
-                'other_sales': ('others_res_gr_ids', 'other_restrict_master_data')
-            }
-
-            # Use dictionary comprehension to build the group_dic
-            group_dic = {
-                key: [
-                    any(user in group.users for groups in config_group_records for group in getattr(groups, attrs[0])),
-                    getattr(user.company_id, attrs[1])
-                ]
-                for key, attrs in keys_to_attrs.items()
-            }
-
-            print(group_dic, 'keys_to_attrs')
-            checking_access = []
-            for department, access in group_dic.items():
-                if access[1]:
-                    if access[0]:
-                        checking_access.append(access[1])
-            print(any(checking_access), checking_access)
-            if (sale_order or purchase_order) and any(checking_access):
-                rec.restrict_name_chnage = False
-            elif (not sale_order or not purchase_order) and any(checking_access):
-                rec.restrict_name_chnage = False
-            else:
-                rec.restrict_name_chnage = True
+    # @api.onchange('name')
+    # def _compute_boolean(self):
+    #     print('function')
+    #     user = self.env['res.users'].browse(self.env.uid)
+    #     for rec in self:
+    #         if rec.id:
+    #             sale_order = self.env['sale.order'].search([('partner_id.id', '=', rec.id)])
+    #             purchase_order = self.env['purchase.order'].search([('partner_id.id', '=', rec.id)])
+    #         else:
+    #             sale_order = self.env['sale.order'].search([('partner_id.name', '=', rec.name)])
+    #             purchase_order = self.env['purchase.order'].search([('partner_id.name', '=', rec.name)])
+    #         # group_dic = {}
+    #         config_group_records = self.env['res.config.settings'].sudo().search([], order='create_date desc', limit=1)
+    #         keys_to_attrs = {
+    #             'genral_sales': ('gsale_res_gr_ids', 'gsale_restrict_master_data'),
+    #             'after_sales': ('asale_res_gr_ids', 'asale_restrict_master_data'),
+    #             'vehicle_sales': ('vsale_res_gr_ids', 'vsale_restrict_master_data'),
+    #             'other_sales': ('others_res_gr_ids', 'other_restrict_master_data')
+    #         }
+    #
+    #         # Use dictionary comprehension to build the group_dic
+    #         group_dic = {
+    #             key: [
+    #                 any(user in group.users for groups in config_group_records for group in getattr(groups, attrs[0])),
+    #                 getattr(user.company_id, attrs[1])
+    #             ]
+    #             for key, attrs in keys_to_attrs.items()
+    #         }
+    #
+    #         print(group_dic, 'keys_to_attrs')
+    #         checking_access = []
+    #         for department, access in group_dic.items():
+    #             if access[1]:
+    #                 if access[0]:
+    #                     checking_access.append(access[1])
+    #         print(any(checking_access), checking_access)
+    #         if (sale_order or purchase_order) and any(checking_access):
+    #             rec.restrict_name_chnage = False
+    #         elif (not sale_order or not purchase_order) and any(checking_access):
+    #             rec.restrict_name_chnage = False
+    #         else:
+    #             rec.restrict_name_chnage = True
                 # raise ValidationError(_("Invalid User Access. Please check."))
 
     @api.model

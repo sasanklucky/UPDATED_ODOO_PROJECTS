@@ -181,19 +181,19 @@
     <menuitem action="ars_action_restrict_access_others" id="ars_restrict_menu_access_other"
               parent="ars_restrict_menu_access" sequence="4" string="Other sales"/>
 
-    <record id="res_partner_readonly_field" model="ir.ui.view">
-        <field name="name">res_partner_readonly_field</field>
-        <field name="model">res.partner</field>
-        <field name="inherit_id" ref="base.view_partner_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <field name="restrict_name_chnage"/>
-            </xpath>
-            <xpath expr="//field[@name='name']" position="attributes">
-                <attribute name="attrs">{'readonly': [('restrict_name_chnage', '=', True)]}</attribute>
-            </xpath>
-        </field>
-    </record>
+<!--    <record id="res_partner_readonly_field" model="ir.ui.view">-->
+<!--        <field name="name">res_partner_readonly_field</field>-->
+<!--        <field name="model">res.partner</field>-->
+<!--        <field name="inherit_id" ref="base.view_partner_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//field[@name='name']" position="after">-->
+<!--                <field name="restrict_name_chnage"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='name']" position="attributes">-->
+<!--                <attribute name="attrs">{'readonly': [('restrict_name_chnage', '=', True)]}</attribute>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
 
     <record id="view_sale_order_line_custom_form" model="ir.ui.view">
         <field name="name">sale.order.line.custom.form</field>
