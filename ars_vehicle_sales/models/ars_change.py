@@ -513,9 +513,7 @@ class ars_sale_invoice(models.Model):
     delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
     after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
     model = fields.Many2one('product.product', string="Model Variant")
-    cust_invoice_type = fields.Selection([('warranty', 'Warranty Invoice'),
-                                          ('customer', 'Customer Invoice'),
-                                          ('insurance', 'Insurance Invoice')], string='Type')
+
 
 
     @api.constrains('gate_pass_date')
