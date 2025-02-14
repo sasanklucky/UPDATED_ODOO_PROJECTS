@@ -118,9 +118,9 @@
                     <attribute name="invisible">1</attribute>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
-                    <field name="source_id" options="{'no_create': True, 'no_open': True}" string="Source *"/>
+                    <field name="source_id" options="{'no_create': True, 'no_open': True}" string="Source *" attrs="{'required': True}"/>
                     <field name="campaign_id" options="{'no_create': False, 'no_open': False}"/>
-                    <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="medium_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': True}"/>
                     <field name="referred"/>
                 </xpath>
 
