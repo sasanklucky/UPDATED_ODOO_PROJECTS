@@ -133,9 +133,9 @@ class WebsiteAPIController(http.Controller):
                 print(dealer_setup_obj,'dealer_setup_objdealer_setup_obj')
                 if not dealer_setup_obj:
                     raise ValidationError("Dealer code not found in consolidated database. Please contact DMS Team.")
-                url = dealer_setup_obj.url_ip.strip()
-                if not url.startswith(('http://', 'https://')):
-                    raise ValidationError("URL must start with 'http://' or 'https://'")
+                # url = dealer_setup_obj.url_ip.strip()
+                # if not url.startswith(('http://', 'https://')):
+                #     raise ValidationError("URL must start with 'http://' or 'https://'")
 
                 db_name = dealer_setup_obj.db_name
                 username = dealer_setup_obj.user_name
