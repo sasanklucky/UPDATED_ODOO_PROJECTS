@@ -51,9 +51,9 @@
 				<td><t t-esc="'%.2f' %wrn.wrn_price_subtotal"/></td>
 				<td><input name="comment" class="form-control o_website_form_input"/></td>
 				<td><span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green approved btn-lg o_website_form_send' if wrn.apr_action == 'approved' else 'btn btn-primary approved btn-lg o_website_form_send' ">Approved</span>
-				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green hold btn-lg o_website_form_send' if wrn.apr_action == 'hold' else 'btn btn-primary hold btn-lg o_website_form_send' ">Hold</span>
+				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green re_submit btn-lg o_website_form_send' if wrn.apr_action == 're_submit' else 'btn btn-primary re_submit btn-lg o_website_form_send' ">Re-Submit</span>
 				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green reject btn-lg o_website_form_send' if wrn.apr_action == 'reject' else 'btn btn-primary reject btn-lg o_website_form_send' ">Reject</span>
-				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green resub btn-lg o_website_form_send' if wrn.apr_action == 're_submission' else 'btn btn-primary resub btn-lg o_website_form_send' ">Re-Submission</span>
+<!--				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green resub btn-lg o_website_form_send' if wrn.apr_action == 're_submission' else 'btn btn-primary resub btn-lg o_website_form_send' ">Re-Submission</span>-->
 				</td>
 				</tr>
 			</tbody>

@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+        <record id="warranty_sync_form_inherit" model="ir.ui.view">
+            <field name="name">ars.sale.warranty.sync.inherit.form</field>
+            <field name="model">ars.sale.warranty</field>
+            <field name="inherit_id" ref="ars_after_sales.view_warranty_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group/field[@name='order_id']"
+                       position="after">
+                    <field name="hide_warranty_sync_button" invisible='1'/>
+                    <field name="sync_warranty" readonly='1' attrs="{'invisible': [('hide_warranty_sync_button','!=',True)]}"/>
+                    <field name="child_warrenty_id_ref" readonly='1'/>
+                    <field name="child_warrenty_ref" readonly='1'/>
+                    <field name="child_warrenty_ref_tree" readonly='1' invisible="1"/>
+<!--                    <field name="child_warrenty_ref_form" readonly='1' invisible="1"/>-->
+                    <field name="child_db" readonly='1'/>
+                    <field name="order_date" invisible="1"/>
+                    <field name="confirmation_date" invisible="1"/>
+                    <field name="order_id_ref" string='Child service doc' readonly='1'/>
+                    <field name="hide_sync" invisible='1' readonly='1'/>
+                    <field name="hide_parent_sync_button" invisible='1'/>
+                    <field name="parent_sync" string='Ready to sync from NSC' attrs="{'invisible': [('hide_parent_sync_button','!=',True)]}"/>
+                    <field name="sync_count" invisible="1"/>
+                    <field name="closure_date" invisible="1" string="Date of Closure"/>
+                    <field name="Warranty_sync_reject" invisible="1"/>
+                    <field name="reject_date" readonly="1" attrs="{'invisible': [('any_line_rejected', '=', False)]}"/>
+                    <field name="hide_sync_lines" invisible="1"/>
+<!--                    <field name="file_attachment_id" invisible="1"/>-->
+<!--                    <field name="file_attachment"/>-->
+                </xpath>
+
+                <xpath expr="//form/sheet/group/group/field[@name='vin_no']" position="after">
+                    <field name="any_line_rejected" invisible="1"/>
+                    <field name="reject_reason" readonly="1" attrs="{'invisible': [('any_line_rejected', '=', False)]}"/>
+                </xpath>
+
+                <xpath expr="//form/sheet/group/group/field[@name='order_id_ref']" position="after">
+                    <field name="claim_id" required="1" options="{'no_create': True, 'no_edit': True, 'no_open': True}" />
+                </xpath>
+
+                <xpath expr="//form/header"
+                       position="inside">
+                       <field name="hide_sync" invisible='1'/>
+                       <button class="oe_highlight" name="call_warrenty_sync"
+                        string="Send to OEM" type="object"
+                               attrs="{'invisible': [('state', '=', 'inprocess')], 'invisible': [('hide_sync','=',True)]}"/>
+                </xpath>
+
+                <xpath expr="//form/header"
+                       position="inside">
+                       <field name="check_parent_sync" invisible='1'/>
+                       <button class="oe_highlight" name="call_warrenty_sync_to_child"
+                        string="Send to Child" type="object" attrs="{'invisible': [('check_parent_sync','=',False)]}"
+                        />
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Warranty Reject Lines" attrs="{'invisible': [('state', '!=', 'inprocess')]}">
+                        <group>
+                            <field name="warranty_order_lines" nolabel="1"  widget="one2many_list" options="{'no_create': True}">
+                                <tree editable="bottom" create="false" delete="false"
+                                decoration-danger="apr_action == 'reject'">
+                                    <field name="warranty_id" invisible="1" readonly="1"/>
+                                    <field name="product_catalog_id" readonly="1"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="product_uom_qty" readonly="1"/>
+                                    <field name="product_uom" readonly="1"/>
+                                    <field name="ars_std_price" readonly="1"/>
+                                    <field name="ars_warranty_price" readonly="1"/>
+                                    <field name="reject_reason" readonly="1"/>
+                                    <field name="reject_date" readonly="1"/>
+                                    <field name="reject_by" invisible="1" readonly="1"/>
+                                    <field name="reject_by_name" readonly="1"/>
+                                    <field name="apr_action" readonly="1" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+
+
+
+                 <xpath expr="//notebook" position="inside">
+                    <page string='Log' groups="base.group_no_one">
+                        <group>
+                            <field name="sync_log_details_ids" readonly='1' >
+                                <tree string="log_details" readonly='1' >
+                                    <field name="warrenty_record" readonly='1' />
+                                    <field name="warrenty_sequence" readonly='1' />
+                                    <field name="payload" readonly='1' />
+                                    <field name="status" readonly='1' />
+                                    <field name="sync_message" readonly='1' />
+                                </tree>
+                            </field>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string='Attachment'>
+                        <group>
+                            <field name="file_attachment_id" string="Document" widget="many2many_binary"  attrs="{'readonly': [('state','=','draft_process')]}" />
+<!--                            <field name="file_attachment" string="Document"  attrs="{'readonly': [('state','=','draft_process')]}" />-->
+                        </group>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+
+    <record id="view_warranty_tree_inherit" model="ir.ui.view">
+        <field name="name">ars.sale.warranty.sync.tree</field>
+        <field name="model">ars.sale.warranty</field>
+        <field name="inherit_id" ref="ars_after_sales.view_warranty_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='child_warrenty_ref_tree']"
+                   position="after">
+                <field name="model_name" readonly="1"/>
+                <field name="vin_no" readonly="1"/>
+                <field name="order_date" string="RO Open Date" readonly="1"/>
+                <field name="claim_id" readonly='1'/>
+                <field name="name" string="Warranty Claim Number" readonly="1"/>
+                <field name="state" readonly="1"/>
+                <field name="closure_date" readonly='1'/>
+<!--            <xpath expr="//field[@name='state']"-->
+<!--                   position="after">-->
+<!--                <field name="sync_warranty" readonly='1'/>-->
+<!--                <field name="order_date"/>-->
+<!--                <field name="child_warrenty_ref" readonly='1'/>-->
+<!--                <field name="child_db" readonly='1'/>-->
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_reject_lines_wizard_form" model="ir.ui.view">
+        <field name="name">reject.lines.wizard.form</field>
+        <field name="model">reject.lines.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reject Reason">
+                <group>
+                    <field name="reject_reason"/>
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_reject" class="oe_highlight"/>
+                    <button string="Cancel" class="oe_link" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+<!--    -->
+
+     <record id="view_warranty_claim_config_form" model="ir.ui.view">
+        <field name="name">warranty.claim.config.form</field>
+        <field name="model">warranty.claim.config</field>
+        <field name="arch" type="xml">
+            <form string="Claim Type">
+                <group>
+                    <field name="warranty_claim_list"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_warranty_claim_config_tree" model="ir.ui.view">
+        <field name="name">warranty.claim.config.tree</field>
+        <field name="model">warranty.claim.config</field>
+        <field name="arch" type="xml">
+            <tree string="Claim Type">
+                <field name="warranty_claim_list"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_warranty_claim_config_view" model="ir.actions.act_window">
+        <field name="name">Claim Type</field>
+        <field name="res_model">warranty.claim.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_warranty_claim_config_tree"/>
+    </record>
+
+<!--    <menuitem-->
+<!--            id="warranty_claim_config"-->
+<!--            action="action_warranty_claim_config_view"-->
+<!--            parent="menu_config_submenu"-->
+<!--            sequence="1"-->
+<!--            name="Warranty Claim Type"-->
+<!--            groups="base.group_system"/>-->
+
+
+
+</odoo>

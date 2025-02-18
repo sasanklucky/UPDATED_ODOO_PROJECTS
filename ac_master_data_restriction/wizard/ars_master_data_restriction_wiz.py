@@ -257,6 +257,31 @@ class masterDatarestrictionByproductTemplate(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -425,6 +450,31 @@ class ResUserCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -589,6 +639,31 @@ class ResCompanyCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -758,6 +833,31 @@ class FleetVehicleCreateRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -928,6 +1028,31 @@ class SourceMenuCreateRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1098,6 +1223,31 @@ class UtmMediumCreateMenuRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1268,6 +1418,31 @@ class ServiceOptionCreateMenuRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1438,6 +1613,31 @@ class ServiceTypeCreateMenuRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1608,6 +1808,31 @@ class ServiceSetupManualMenuCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1657,7 +1882,7 @@ class SaleOrderRestrictMasterData(models.Model):
         fields = self.env['sale.order'].fields_get()
         default_attrs = {key: 'readonly' for key in fields.keys()}
         default_options = {key: 'no_open' for key in fields.keys()}
-
+        user = self.env['res.users'].browse(int(self.env.context.get('uid')))
         def apply_restriction():
             # doc.set('create', 'true')
             # doc.set('edit', 'true')
@@ -1738,12 +1963,23 @@ class SaleOrderRestrictMasterData(models.Model):
             if current_menu_id in menus_to_restrict['menus_need_restrict'] and current_window_model in \
                     menus_to_restrict['model_need_restrict']:
                 print('menus restrict')
-                doc.set('create', 'true')
+                if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                    doc.set('create', 'true')
+                else:
+                    doc.set('create', 'false')
                 doc.set('edit', 'true')
             elif current_window_model not in menus_to_restrict['model_need_restrict']:
-                doc.set('create', 'true')
+                if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                    doc.set('create', 'true')
+                else:
+                    doc.set('create', 'false')
                 doc.set('edit', 'true')
             else:
+                if user:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button") and current_menu_id in menus_to_restrict['menus_need_restrict']:
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
                 apply_restriction()
         # Step 4
         filtered_data_have_models_in_group_and_have_menus_and_no_users = {
@@ -1769,7 +2005,50 @@ class SaleOrderRestrictMasterData(models.Model):
         if not menus_to_restrict['menus_in_group'] and not menus_to_restrict['user_in_groups'] and menus_to_restrict[
             'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
+                if user:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button") and current_window_model in menus_to_restrict['model_need_restrict']:
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+                        doc.set('create', 'true')
+                    else:
+                        doc.set('create', 'false')
+                    doc.set('edit', 'true')
+                else:
+                    if user:
+                        if user.has_group(
+                                "ac_master_data_restriction.group_custom_enable_create_button") and current_menu_id in \
+                                menus_to_restricts['menus_need_restrict']:
+                            doc.set('create', 'true')
+                        else:
+                            doc.set('create', 'false')
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -1794,6 +2073,11 @@ class SaleOrderRestrictMasterData(models.Model):
         #         print('No current model or template action ID')
 
         # Update the view architecture
+        # if user:
+        #     if user.has_group("ac_master_data_restriction.group_custom_enable_create_button"):
+        #         doc.set('create', 'true')
+        #     else:
+        #         doc.set('create', 'false')
         result['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return result
 
@@ -1931,6 +2215,31 @@ class ProductTemplateCreateMenuRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Check access permissions
         # for department, access_menus in group_dic.items():
         #     if unrestricted_access:
@@ -2105,6 +2414,31 @@ class ProductPricelistMenuCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -2271,6 +2605,31 @@ class MenuRestrictionPurchase(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -2434,6 +2793,31 @@ class CrmLeadRestrictNoOpen(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -2631,6 +3015,31 @@ class ArsSaleWarranty(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -2667,51 +3076,51 @@ class ArsSaleWarranty(models.Model):
 class ResPartnerCreateRestrict(models.Model):
     _inherit = 'res.partner'
 
-    restrict_name_chnage = fields.Boolean("Name Change", compute="_compute_boolean", default=False)
+    # restrict_name_chnage = fields.Boolean("Name Change", compute="_compute_boolean", default=False)
 
     #
-    @api.onchange('name')
-    def _compute_boolean(self):
-        print('function')
-        user = self.env['res.users'].browse(self.env.uid)
-        for rec in self:
-            if rec.id:
-                sale_order = self.env['sale.order'].search([('partner_id.id', '=', rec.id)])
-                purchase_order = self.env['purchase.order'].search([('partner_id.id', '=', rec.id)])
-            else:
-                sale_order = self.env['sale.order'].search([('partner_id.name', '=', rec.name)])
-                purchase_order = self.env['purchase.order'].search([('partner_id.name', '=', rec.name)])
-            # group_dic = {}
-            config_group_records = self.env['res.config.settings'].sudo().search([], order='create_date desc', limit=1)
-            keys_to_attrs = {
-                'genral_sales': ('gsale_res_gr_ids', 'gsale_restrict_master_data'),
-                'after_sales': ('asale_res_gr_ids', 'asale_restrict_master_data'),
-                'vehicle_sales': ('vsale_res_gr_ids', 'vsale_restrict_master_data'),
-                'other_sales': ('others_res_gr_ids', 'other_restrict_master_data')
-            }
-
-            # Use dictionary comprehension to build the group_dic
-            group_dic = {
-                key: [
-                    any(user in group.users for groups in config_group_records for group in getattr(groups, attrs[0])),
-                    getattr(user.company_id, attrs[1])
-                ]
-                for key, attrs in keys_to_attrs.items()
-            }
-
-            print(group_dic, 'keys_to_attrs')
-            checking_access = []
-            for department, access in group_dic.items():
-                if access[1]:
-                    if access[0]:
-                        checking_access.append(access[1])
-            print(any(checking_access), checking_access)
-            if (sale_order or purchase_order) and any(checking_access):
-                rec.restrict_name_chnage = False
-            elif (not sale_order or not purchase_order) and any(checking_access):
-                rec.restrict_name_chnage = False
-            else:
-                rec.restrict_name_chnage = True
+    # @api.onchange('name')
+    # def _compute_boolean(self):
+    #     print('function')
+    #     user = self.env['res.users'].browse(self.env.uid)
+    #     for rec in self:
+    #         if rec.id:
+    #             sale_order = self.env['sale.order'].search([('partner_id.id', '=', rec.id)])
+    #             purchase_order = self.env['purchase.order'].search([('partner_id.id', '=', rec.id)])
+    #         else:
+    #             sale_order = self.env['sale.order'].search([('partner_id.name', '=', rec.name)])
+    #             purchase_order = self.env['purchase.order'].search([('partner_id.name', '=', rec.name)])
+    #         # group_dic = {}
+    #         config_group_records = self.env['res.config.settings'].sudo().search([], order='create_date desc', limit=1)
+    #         keys_to_attrs = {
+    #             'genral_sales': ('gsale_res_gr_ids', 'gsale_restrict_master_data'),
+    #             'after_sales': ('asale_res_gr_ids', 'asale_restrict_master_data'),
+    #             'vehicle_sales': ('vsale_res_gr_ids', 'vsale_restrict_master_data'),
+    #             'other_sales': ('others_res_gr_ids', 'other_restrict_master_data')
+    #         }
+    #
+    #         # Use dictionary comprehension to build the group_dic
+    #         group_dic = {
+    #             key: [
+    #                 any(user in group.users for groups in config_group_records for group in getattr(groups, attrs[0])),
+    #                 getattr(user.company_id, attrs[1])
+    #             ]
+    #             for key, attrs in keys_to_attrs.items()
+    #         }
+    #
+    #         print(group_dic, 'keys_to_attrs')
+    #         checking_access = []
+    #         for department, access in group_dic.items():
+    #             if access[1]:
+    #                 if access[0]:
+    #                     checking_access.append(access[1])
+    #         print(any(checking_access), checking_access)
+    #         if (sale_order or purchase_order) and any(checking_access):
+    #             rec.restrict_name_chnage = False
+    #         elif (not sale_order or not purchase_order) and any(checking_access):
+    #             rec.restrict_name_chnage = False
+    #         else:
+    #             rec.restrict_name_chnage = True
                 # raise ValidationError(_("Invalid User Access. Please check."))
 
     @api.model
@@ -2848,6 +3257,31 @@ class ResPartnerCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3019,6 +3453,31 @@ class ResPartnerTitleCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3190,6 +3649,31 @@ class ResPartnerCategoryCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3361,6 +3845,31 @@ class ResPartnerBankCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3532,6 +4041,31 @@ class ResBankCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3703,6 +4237,31 @@ class ResCountryCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -3874,6 +4433,31 @@ class ResCountryStateCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4045,6 +4629,31 @@ class ResCountryGroupCreateRestrict(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4212,6 +4821,31 @@ class StockPickingRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4379,6 +5013,31 @@ class productUomRestriction(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4570,6 +5229,31 @@ class updateStockOnHandQty(models.TransientModel):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4741,6 +5425,31 @@ class CrmLostReason(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Loop through groups and apply restrictions
         # for department, users_access_menus in group_dic.items():
         #     if current_window_model and current_menu_id:
@@ -4911,6 +5620,31 @@ class ProductCatagory(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Update the view architecture
         product_cat['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return product_cat
@@ -5051,6 +5785,31 @@ class AccountInvoice(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Update the view architecture
         account_invoice_template['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return account_invoice_template
@@ -5193,6 +5952,31 @@ class HelpdeskCategory(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Update the view architecture
         helpdesk_category['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return helpdesk_category
@@ -5336,6 +6120,31 @@ class HelpdeskCategoryOne(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Update the view architecture
         helpdesk_category_1['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return helpdesk_category_1
@@ -5478,6 +6287,31 @@ class MasterRestrictionComplintSource(models.Model):
                     'menus_need_restrict']:
             if current_window_model in menus_to_restrict['model_need_restrict']:
                 apply_restriction()
+            menus_to_restricts = {'menus_need_restrict': list(
+                set(model_item for value_list in filtered_data_have_models_in_group_and_have_menus_and_users.values()
+                    for
+                    entry in value_list if
+                    'menus_in_group' in entry for model_item in entry['menus_in_group']
+                    )
+            ), 'model_need_restrict': list(
+                set(model_item for value_list in
+                    filtered_data_have_models_in_group_and_have_menus_and_users.values() for
+                    entry in value_list if
+                    'models_in_group' in entry for model_item in entry['models_in_group']
+                    )), 'menus_in_group': False, 'user_in_groups': False, }
+            if not menus_to_restricts['menus_in_group'] and not menus_to_restricts['user_in_groups'] and \
+                    menus_to_restrict[
+                        'menus_need_restrict']:
+                if current_menu_id in menus_to_restricts['menus_need_restrict'] and current_window_model in \
+                        menus_to_restricts['model_need_restrict']:
+                    print('menus restrict')
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                elif current_window_model not in menus_to_restricts['model_need_restrict']:
+                    doc.set('create', 'true')
+                    doc.set('edit', 'true')
+                else:
+                    apply_restriction()
         # Update the view architecture
         helpdesk_category_1['arch'] = etree.tostring(doc, pretty_print=True, encoding='unicode')
         return helpdesk_category_1

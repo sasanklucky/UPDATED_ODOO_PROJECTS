@@ -28,15 +28,32 @@
       var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value;
       var parent_percent_splited = parent_percent_value.replace(/\%/g,'');
       var subtotal_parent = parseInt(total_subtotal_value) * parseInt(parent_percent_splited) / 100;
-      document.getElementsByClassName("subtotal_value")[0].value = subtotal_parent;
 
-    };
+      var subtotalInput = record.parentNode.nextSibling.nextSibling.querySelector("input.subtotal_value");
+      if (subtotalInput) {
+          subtotalInput.value = total_parent_subtotal;
+      }
+
+      var total_taxamount_value = document.getElementsByClassName("taxamountvl")[0].value;
+      var total_parent_taxamount = parseInt(total_taxamount_value) * parseInt(int_value) / 100;
+      var taxamount_parent = parseInt(total_taxamount_value) * parseInt(parent_percent_splited) / 100;
+      var taxAmountInput = record.parentNode.parentNode.querySelector("input.taxamount_value");
+      if (taxAmountInput) {
+          taxAmountInput.value = total_parent_taxamount;
+      }
+
+      document.getElementsByClassName("subtotal_value")[0].value = subtotal_parent;
+      document.getElementsByClassName("taxamount_value")[0].value = taxamount_parent;
+  };
+
+
     function onsubtotal_change(value,record){
-      var total_percent_value = document.getElementsByClassName("percent")[0].value;
+      var total_percent_value = document.getElementsByClassName("subtotal")[0].value;
       var total_percent_splited = total_percent_value.split('%');
       var subtotal_value = document.getElementsByClassName("subtotal_value");
       var total_subtotal_value = document.getElementsByClassName("subtotal")[0].value;
-      var subtotal = 0
+      var subtotal = 0;
+
       for(var i=0;i &lt; subtotal_value.length;i++){
           if(i &gt; 0){
             var int_subtotal = parseInt(subtotal_value[i].value);
@@ -48,29 +65,205 @@
 
       var percent_val = parseInt(value) * 100/ parseInt(total_subtotal_value);
       var round_percent = parseFloat(percent_val).toFixed(2);
-      record.parentNode.nextSibling.parentElement.childNodes[3].childNodes[3].value =  String(round_percent) + '%' ;
+
+      var percentage_input = record.parentNode.nextSibling.parentElement.querySelector("input.percentage_value");
+      if (percentage_input) {
+          percentage_input.value = String(round_percent) + '%';
+      }
+
       var fst_subtotal = document.getElementsByClassName("subtotal_value")[0].value;
       var fst_percent_val = parseInt(fst_subtotal) * 100/ parseInt(total_subtotal_value);
       var fst_concat_percent = parseFloat(fst_percent_val).toFixed(2);
-      document.getElementsByClassName("percentage_value")[0].value = String(fst_concat_percent) + '%' ;
-    }
+
+      document.getElementsByClassName("percentage_value")[0].value = String(fst_concat_percent) + '%';
+
+      var total_taxamount_value = parseInt(document.getElementsByClassName("taxamountvl")[0].value);
+
+      var taxAmountInput = record.parentNode.parentNode.querySelector("input.taxamount_value");
+      if (taxAmountInput) {
+          var tax_for_row = (total_taxamount_value * percent_val) / 100;
+          taxAmountInput.value = tax_for_row.toFixed(1);
+      }
+
+      var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value.replace('%', '');
+      var taxamount_parent = (total_taxamount_value * parseFloat(parent_percent_value)) / 100;
+      document.getElementsByClassName("taxamount_value")[0].value = taxamount_parent.toFixed(1);
+
+      console.log("Tax Amount for Row: ", tax_for_row);
+      console.log("Parent Tax Amount: ", taxamount_parent);
+
+<!--      var total_taxamount_value = document.getElementsByClassName("taxamountvl")[0].value;-->
+<!--      var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value;-->
+<!--      var parent_percent_splited = parent_percent_value.replace(/\%/g, '');-->
+
+<!--      var subtotal_parent = parseInt(total_percent_value) * parseInt(parent_percent_splited) / 100;-->
+
+<!--      var splited_value = value.replace(/\%/g, '');-->
+<!--      var int_value = parseInt(splited_value);-->
+<!--      var total_parent_taxamount = parseInt(total_taxamount_value)/ 100;-->
+<!--      var taxamount_parent = parseInt(total_taxamount_value) * parseInt(parent_percent_splited) / 100;-->
+
+<!--      var taxAmountInput = record.parentNode.parentNode.querySelector("input.taxamount_value");-->
+<!--      if (taxAmountInput) {-->
+<!--          taxAmountInput.value = total_parent_taxamount;-->
+<!--      }-->
+
+<!--      document.getElementsByClassName("taxamount_value")[0].value = taxamount_parent;-->
+  };
+
+    function ontaxamount_change(value,record){
+      var total_percent_value = document.getElementsByClassName("taxamountvl")[0].value;
+      var total_percent_splited = total_percent_value.split('%');
+      var taxamount_value = document.getElementsByClassName("taxamount_value");
+      var total_taxamount_value = document.getElementsByClassName("taxamountvl")[0].value;
+      var taxamountvl = 0;
+
+      for(var i=0;i &lt; taxamount_value.length;i++){
+          if(i &gt; 0){
+            var int_taxamount = parseInt(taxamount_value[i].value);
+            taxamountvl += int_taxamount
+          }
+      }
+      var remaining_taxamount = parseInt(total_taxamount_value) - taxamountvl;
+      document.getElementsByClassName("taxamount_value")[0].value = remaining_taxamount;
+
+      var percent_val = parseInt(value) * 100 / parseInt(total_percent_value);
+      var round_percent = parseFloat(percent_val).toFixed(2);
+
+      var percentage_input = record.parentNode.nextSibling.parentElement.querySelector("input.percentage_value");
+      if (percentage_input) {
+          percentage_input.value = String(round_percent) + '%';
+      }
+
+      var fst_taxamount = document.getElementsByClassName("taxamount_value")[0].value;
+      var fst_percent_val = parseInt(fst_taxamount) * 100 / parseInt(total_taxamount_value);
+      var fst_concat_percent = parseFloat(fst_percent_val).toFixed(2);
+
+      document.getElementsByClassName("percentage_value")[0].value = String(fst_concat_percent) + '%';
+
+      var percent_val = (parseInt(value) / total_taxamount_value) * 100;
+      var round_percent = percent_val.toFixed(2);
+
+      var percentage_input = record.parentNode.nextSibling.parentElement.querySelector("input.percentage_value");
+      if (percentage_input) {
+          percentage_input.value = String(round_percent) + '%';
+      }
+
+      var total_subtotal_value = parseInt(document.getElementsByClassName("subtotal")[0].value);
+      var subtotal_for_row = (total_subtotal_value * percent_val) / 100;
+
+      var subtotalInput = record.parentNode.parentNode.querySelector("input.subtotal_value");
+      if (subtotalInput) {
+          subtotalInput.value = subtotal_for_row.toFixed(2);
+      }
+
+      var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value.replace('%', '');
+      var subtotal_parent = (total_subtotal_value * parseFloat(parent_percent_value)) / 100;
+
+      document.getElementsByClassName("subtotal_value")[0].value = subtotal_parent.toFixed(2);
+
+      console.log("Tax Amount for Row: ", value);
+      console.log("Subtotal for Row: ", subtotal_for_row);
+      console.log("Parent Subtotal: ", subtotal_parent);
+
+<!--      var total_subtotal_value = document.getElementsByClassName("subtotal")[0].value;-->
+<!--      var parent_percent_value = document.getElementsByClassName("percentage_value")[0].value;-->
+<!--      var parent_percent_splited = parent_percent_value.replace(/\%/g, '');-->
+
+<!--      var subtotal_parent = parseInt(total_taxamount_value) * parseInt(parent_percent_splited) / 100;-->
+
+
+<!--      var splited_value = value.replace(/\%/g, '');-->
+<!--      var int_value = parseInt(splited_value);-->
+<!--      var total_parent_subtotal = parseInt(total_subtotal_value)/ 100;-->
+<!--      var subtotal_parent = parseInt(total_subtotal_value) * parseInt(parent_percent_splited) / 100;-->
+
+<!--      var subtotalInput = record.parentNode.parentNode.querySelector("input.subtotal_value");-->
+<!--      if (subtotalInput) {-->
+<!--          subtotalInput.value = total_parent_subtotal;-->
+<!--      }-->
+
+<!--      document.getElementsByClassName("subtotal_value")[0].value = subtotal_parent;-->
+  };
+
+
+<!--    function ontaxamount_change(value,record){-->
+<!--      var total_percent_value = document.getElementsByClassName("percent")[0].value;-->
+<!--      var total_percent_splited = total_percent_value.split('%');-->
+<!--      var taxamount_value = document.getElementsByClassName("taxamount_value");-->
+<!--      var total_taxamount_value = document.getElementsByClassName("taxamountvl")[0].value;-->
+<!--      var taxamountvl = 0-->
+<!--      for(var i=0;i &lt; taxamount_value.length;i++){-->
+<!--          if(i &gt; 0){-->
+<!--            var int_taxamount = parseInt(taxamount_value[i].value);-->
+<!--            taxamountvl += int_taxamount-->
+<!--          }-->
+<!--      }-->
+<!--      var remaining_taxamount = parseInt(total_taxamount_value) - taxamountvl;-->
+<!--      document.getElementsByClassName("taxamount_value")[0].value = remaining_taxamount;-->
+
+<!--      var percent_val = parseInt(value) * 100/ parseInt(total_taxamount_value);-->
+<!--      var round_percent = parseFloat(percent_val).toFixed(2);-->
+<!--      record.parentNode.nextSibling.parentElement.childNodes[5].childNodes[5].value =  String(round_percent) + '%' ;-->
+<!--      var fst_taxamount = document.getElementsByClassName("taxamount_value")[0].value;-->
+<!--      var fst_percent_val = parseInt(fst_taxamount) * 100/ parseInt(total_taxamount_value);-->
+<!--      var fst_concat_percent = parseFloat(fst_percent_val).toFixed(5);-->
+<!--      document.getElementsByClassName("percentage_value")[0].value = String(fst_concat_percent) + '%' ;-->
+
+<!--    };-->
+
   </script>
   <div class="hidden" id="res_ids"><t t-raw="res_ids"/></div>
   <div class="hidden" id="order_id"><t t-raw="order_id"/></div>
-  <div class="col-xs-12 d_clone">
-
-    <div class="col-xs-4 div1">
+  <div class="col-xs-12 d_clone" style="padding: 10px;font-size: 15px;">
+    <div  class="col-xs-3 div1">
+      <span>
+        <b>Customer</b>
+      </span>
+    </div>
+    <div class="col-xs-2 div2">
+      <span>
+       <b> Percentage(%) </b>
+      </span>
+    </div>
+    <div class="col-xs-2 div3">
+      <span>
+        <b>Un-Tax Amount</b>
+      </span>
+    </div>
+    <div class="col-xs-2 div4">
+      <span>
+        <b> Tax </b>
+      </span>
+    </div>
+    <div class="col-xs-2 div5">
+      <span>
+        <b> Taxable Amount </b>
+      </span>
+    </div>
+  </div>
+  <div class="col-xs-12 d_clone" style="padding: 5px;">
+    <div class="col-xs-3 div1">
       <t t-raw="customer_val"/>
     </div>
-    <div class="col-xs-3 div2">
+    <div class="col-xs-2 div2">
       <input type="hidden" class="subtotal" t-att-value="subtotal_val"/>
+      <input type="hidden" class="taxamountvl" t-att-value="taxamount_val"/>
       <input class="percentage_value" type="text" t-att-value="percent_val" onkeyup="onpercent_change(this.value,this)"/>
     </div>
-    <div class="col-xs-3 div3">
+    <div class="col-xs-2 div3">
       <input type="hidden" class="percent" t-att-value="percent_val"/>
       <input class="subtotal_value" type="text" t-att-value="subtotal_val" onkeyup="onsubtotal_change(this.value,this)"/>
     </div>
-    <div class="col-xs-2 plus-symbol">
+    <div class="col-xs-2 div4">
+      <input type="text" class="tax" t-att-value="tax_val" t-att-disabled="'true'"/>
+      <input class="tax_value" type="hidden" t-att-value="tax_val" t-att-disabled="'true'"/>
+    </div>
+    <div class="col-xs-2 div5">
+      <input type="hidden" class="percent" t-att-value="percent_val"/>
+      <input class="taxamount_value" type="text" t-att-value="taxamount_val" onkeyup="ontaxamount_change(this.value,this)"/>
+    </div>
+    <div class="col-xs-1 plus-symbol">
       <img class="plus" src="ars_invoice_aftersales/static/src/img/blue-plus-sign-hi.png" style="width: 14px;height: 12px;"/>
     </div>
   </div>

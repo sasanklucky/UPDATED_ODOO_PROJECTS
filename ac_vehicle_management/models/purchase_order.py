@@ -18,3 +18,24 @@ class ProductVehicleSaleForm(models.Model):
 
     certificate_number = fields.Char('Certificate No')
     horn_level = fields.Char('Horn Level')
+
+
+class CrmSequence(models.Model):
+    _inherit = 'crm.lead'
+
+    crm_sequence = fields.Char(string="Sequence reference", readonly=True, copy=False)
+    source_reference = fields.Char(string="Source reference", readonly=True, copy=False)
+
+    @api.model
+    def create(self, vals):
+        # Create the lead first to get the lead ID
+        lead = super(CrmSequence, self).create(vals)
+
+        # Fetch the dealer code from the user's company
+        user = self.env.user
+        dealer_code = user.company_id.dealer_code if user.company_id.dealer_code else 'N/A'
+
+        # Assign the sequence
+        lead.crm_sequence = 'ENQ/{}/{}'.format(dealer_code, lead.id)
+
+        return lead

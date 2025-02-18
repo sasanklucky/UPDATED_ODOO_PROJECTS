@@ -18,5 +18,16 @@
         <!--     </t> -->
         <!--   </dl> -->
         <!-- </template> -->
+        <record id="crm_sequence_enquiry" model="ir.ui.view">
+            <field name="name">Crm Sequence</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page[@name='extra']/group/group[2]/field[@name='company_id']" position="after">
+                    <field name="crm_sequence"/>
+                    <field name="source_reference"/>
+                </xpath>
+            </field>
+        </record>
     </data>
 </odoo>

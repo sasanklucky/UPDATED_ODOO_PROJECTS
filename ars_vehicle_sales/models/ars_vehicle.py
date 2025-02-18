@@ -68,6 +68,8 @@ class FleetVehicle(models.Model):
     license_plate = fields.Char(required=False, help='License plate number of the vehicle (i = plate number for a car)')
     driver_id = fields.Many2one('res.partner', 'Customer', track_visibility="onchange", help='Customer of the vehicle',
                                 copy=False)
+    consolidate_vehicle_card_id = fields.Integer(string='consolidate_vehicle_card_id')
+
     # engine_type_code = fields.Char(string='Engine Type Code', related="product_id.product_tmpl_id.engine_type_code")
     # no_of_cylinder = fields.Char(string='No of Cylinder', related="product_id.product_tmpl_id.no_of_cylinder")
     # cylinder_capacity = fields.Char(string='Cylinder Capacity', related="product_id.product_tmpl_id.cylinder_capacity")

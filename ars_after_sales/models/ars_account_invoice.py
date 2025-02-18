@@ -12,6 +12,10 @@ class ARS_account_invoice(models.Model):
     service_options = fields.Many2one('service.options', 'Service Options')
     product_model = fields.Many2one('product.template', related="model.product_tmpl_id", store=True, string='Model')
     admin_access = fields.Boolean(compute="_check_if_admin")
+    e_invoice_status = fields.Selection([('generated', 'Generated'), ('not generated', 'Not Generated'),
+                                         ('cancel', 'Cancelled'), ('exception', 'Exception')],
+                                        string='E Invoice Status',
+                                        default='not generated', copy=False)
     
     @api.constrains('mobile')
     def mobile_validation(self):

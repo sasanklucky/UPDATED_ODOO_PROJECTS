@@ -27,6 +27,8 @@
         'views/fleet_vehicle.xml',
         'views/service_type.xml',
         'views/service_history.xml',
+        'report/service_history_menu.xml',
+        'report/service_hist.xml',
 
     ],
     # only loaded in demonstration mode

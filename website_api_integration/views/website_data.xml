@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+         <record model="ir.ui.view" id="ac_ars_website_data_tree">
+            <field name="name">website.raw.info</field>
+            <field name="model">website.raw.info</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="request_data"/>
+                    <field name="request_time"/>
+                    <field name="response_data"/>
+                    <field name="response_time"/>
+                </tree>
+            </field>
+        </record>
+
+         <record model="ir.ui.view" id="ac_ars_website_data_form">
+            <field name="name">website.raw.info</field>
+            <field name="model">website.raw.info</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="request_data"/>
+                                <field name="request_time"/>
+                            </group>
+                            <group>
+                                 <field name="response_data"/>
+                                <field name="response_time"/>
+                                <field name="lead_status"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+          <record model="ir.actions.act_window" id="ac_ars_website_data_action_window">
+            <field name="name">ARS Website Data Window</field>
+            <field name="res_model">website.raw.info</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+          <menuitem name="Website Request Data" id="ac_ars_website_data_menu"
+                  parent="base.menu_custom"
+                  action="website_api_integration.ac_ars_website_data_action_window"/>
+
+    </data>
+</odoo>

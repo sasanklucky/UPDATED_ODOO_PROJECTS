@@ -47,6 +47,7 @@
                            options="{'no_create':True,'no_open':True}"
                            required="1"/>
                     <field name="source_id" string="Source" required="1" options="{'no_create':True,'no_open':True}"/>
+                    <field name="medium_id" string="Medium" required="1" options="{'no_create':True,'no_open':True}"/>
                     <field name="city" required="1" string="City"/>
                 </field>
             </field>
@@ -81,6 +82,9 @@
                     <field name="user_id" required="1" options="{'no_create': True, 'no_open':True}"
                            domain="[('salesperson', '=', True)]" attrs="{'readonly':[('state','in',['sale','done'])]}"/>
                     <field name="bank_account" options="{'no_create': True,'no_edit':True,'no_open':True}"/>
+                </field>
+                <field name="company_id" position="after">
+                    <field name="transfer_type" attrs="{'readonly': True}" groups="base.group_no_one"/>
                 </field>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='tax_id']" position="after">
                     <field name="price_tax" string="Tax Price"/>
@@ -172,6 +176,7 @@
                     <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
                 </field>
                 <field name="medium_id" position="attributes">
+                    <attribute name="required">True</attribute>
                     <attribute name="options">{'no_create': True, 'no_open': True}</attribute>
                 </field>
                 <field name="campaign_id" position="attributes">

@@ -16,7 +16,7 @@ class ARS_crm_lead(models.Model):
     @api.constrains('mobile')
     def mobile_validation(self):
         pattern = r'^[1-9]\d{9}$'
-        if not re.match(pattern, self.mobile):
+        if not re.match(pattern, self.mobile) if self.mobile  else True:
             raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
 
     stage_name = fields.Char(compute='_compute_stage_name', store=True)
