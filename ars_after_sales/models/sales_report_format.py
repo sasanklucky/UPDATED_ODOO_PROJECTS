@@ -117,7 +117,7 @@ class SalesReportFormat(models.Model):
     utgst_amount = fields.Float(compute="get_utgst_amount", string='UTGST')
     vat_amount = fields.Float(compute="get_vat_amount", string='VAT')
     total_amount = fields.Float(compute="get_total_amount", string='Total')
-    service_advisor = fields.Many2one('res.users', 'Service Advisor', related="invoice_id.user_id")
+    service_advisor = fields.Many2one('res.users', 'Sales Person', related="invoice_id.user_id")
 
     repair_date = fields.Date('Repair Order Date')
     doc_type = fields.Selection([
