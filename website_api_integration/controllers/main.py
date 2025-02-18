@@ -237,6 +237,7 @@ class WebsiteAPIController(http.Controller):
                             'lead_token': unique_token,
                             'country_id': country_obj.id,
                             'phone': phone or False,
+                            'model_id': product.product_tmpl_id.id,
                             'zip': customer_data.get('zip') or False,
                             'source_reference': source_reference,
                             'team_id': team_type.id,
