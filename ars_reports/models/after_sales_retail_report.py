@@ -65,6 +65,7 @@ class AfterSlaesRetailReport(models.Model):
     e_invoice_generated = fields.Char(string="E-Invoice Generated")
     irn_no = fields.Char(string="IRN Number")
     selling_dealer = fields.Char(string="Selling Dealer")
+    service_advisor = fields.Many2one('res.users', 'Service Advisor', related='order_id.user_id')
 
     @api.model_cr
     def init(self):
