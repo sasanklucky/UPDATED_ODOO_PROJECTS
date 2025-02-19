@@ -29,13 +29,13 @@ class CRMMenuRestrict(models.Model):
                     raise UserError(f"CRM pipeline modifications are only allowed before {till_date}. "
                                     f"Editing outside this period is restricted for the Model {model_id.name}. "
                                     f"Please contact the support team for assistance")
-            elif 'model_id' in vals and model_id.id != vals['model_id']:
-                res = super(CRMMenuRestrict, self).write(vals)
-                return res
-            else:
+            elif 'model_id' in vals and model_id.id == vals['model_id']:
                 raise UserError(f"CRM pipeline modifications are only allowed before {till_date}. "
                                 f"Editing outside this period is restricted for the Model {model_id.name}. "
                                 f"Please contact the support team for assistance")
+            else:
+                res = super(CRMMenuRestrict, self).write(vals)
+                return res
         elif restrict_crm and booking_stage_id and self.stage_id == booking_stage_id:
             raise UserError("Booked date is not selected or updated. Please contact the support team for assistance")
         else:
