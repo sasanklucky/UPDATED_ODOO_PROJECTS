@@ -214,10 +214,14 @@ class WebsiteAPIController(http.Controller):
                             created_partner = partner_obj
 
                         # source_obj = env['utm.source'].sudo().search([('name', 'ilike', 'Digital Activity')], limit=1)
-                        search_terms = ['%Digital Activity%', '%DigitalActivity%']
+                        search_terms = ['%BYD Digital%', '%BYDDigital%']
                         query = "SELECT * FROM utm_source WHERE name ILIKE ANY (%s::text[]) LIMIT 1;"
                         env.cr.execute(query, (search_terms,))  # Pass list directly, not tuple
                         source_obj = env.cr.fetchone()
+                        search_medium = ['%BYD Web Portal%', '%BYDWebPortal%']
+                        query_medium = "SELECT * FROM utm_medium WHERE name ILIKE ANY (%s::text[]) LIMIT 1;"
+                        env.cr.execute(query_medium, (search_medium,))  # Pass list directly, not tuple
+                        medium_obj = env.cr.fetchone()
                         product = env['product.product'].sudo().search([('default_code', '=', model_code)], limit=1)
                         if not product:
                             raise ValueError('Please make sure the model code is belongs to this dealer.')
@@ -230,13 +234,15 @@ class WebsiteAPIController(http.Controller):
                             'partner_id': created_partner.id,
                             'email_from': email_from,
                             'contact_name': customer_name,
-                            'source_id': source_obj[0],
+                            'source_id': source_obj[0] if source_obj else None,
+                            'medium_id': medium_obj[0] if medium_obj else None,
                             'mobile': mobile,
                             'street': customer_data.get('street'),
                             'city': city,
                             'lead_token': unique_token,
                             'country_id': country_obj.id,
                             'phone': phone or False,
+                            'model_id': product.product_tmpl_id.id,
                             'zip': customer_data.get('zip') or False,
                             'source_reference': source_reference,
                             'team_id': team_type.id,
