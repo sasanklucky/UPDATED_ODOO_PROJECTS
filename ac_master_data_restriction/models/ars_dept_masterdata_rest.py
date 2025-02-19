@@ -67,6 +67,8 @@ class arsCompanyMasterDataRestriction(models.Model):
     asale_restrict_master_data = fields.Boolean()
     other_restrict_master_data = fields.Boolean()
     edit_access_partner_name = fields.Boolean()
+    model_id = fields.Many2one('product.template')
+    crm_restrict_till_date = fields.Date()
     # gsale_res_gr_ids = fields.Many2many('res.groups', string='G Sale Master Data', widget="many2many_tags")
     # asale_res_gr_ids = fields.Many2many('res.groups', string='A sale Master Data', widget="many2many_tags")
     # vsale_res_gr_ids = fields.Many2many('res.groups', string='V Sale Master Data', widget="many2many_tags")
@@ -96,6 +98,10 @@ class arsConfigMaterDataRestriction(models.TransientModel):
     others_res_gr_ids = fields.Many2many('res.groups', 'res_config_others_res_gr_rel', 'res_id', 'config_id',
                                          string='Others Master Data')
 
+    restrict_crm_lead = fields.Boolean("Restrict lead by conditions")
+    model_id = fields.Many2one('product.template', string="Model", related="company_id.model_id")
+    till_date = fields.Date(related="company_id.crm_restrict_till_date")
+
     def set_values(self):
         res = super(arsConfigMaterDataRestriction, self).set_values()
         param = self.env['ir.config_parameter'].sudo()
@@ -113,7 +119,8 @@ class arsConfigMaterDataRestriction(models.TransientModel):
 
         param.set_param('ars_after_sales.other_restrict_master_data', self.other_restrict_master_data)
         param.set_param('ars_after_sales.others_res_gr_ids', self.others_res_gr_ids.ids)
-
+        param.set_param('ars_after_sales.restrict_crm_lead', self.restrict_crm_lead)
+        # param.set_param('ars_after_sales.model_id', self.model_id.id if self.model_id else False)
         return res
 
     @api.model
@@ -126,6 +133,8 @@ class arsConfigMaterDataRestriction(models.TransientModel):
         vs_bool = fetch_details.get_param('ars_after_sales.vsale_restrict_master_data')
         as_bool = fetch_details.get_param('ars_after_sales.asale_restrict_master_data')
         os_bool = fetch_details.get_param('ars_after_sales.other_restrict_master_data')
+        crm_restrict = fetch_details.get_param('ars_after_sales.restrict_crm_lead')
+        # model_id = fetch_details.get_param('ars_after_sales.model_id')
 
         # Retrieve Many2many fields as lists of IDs separately for each group field
         gs_mamy2many = fetch_details.get_param('ars_after_sales.gsale_res_gr_ids')
@@ -142,6 +151,7 @@ class arsConfigMaterDataRestriction(models.TransientModel):
             vsale_restrict_master_data=vs_bool,
             asale_restrict_master_data=as_bool,
             other_restrict_master_data=os_bool,
+            restrict_crm_lead = crm_restrict,
         )
         return res
 
