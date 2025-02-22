@@ -24,6 +24,7 @@
         'views/vehicle_sales_action.xml',
         'views/vehicle_sale_psf_report.xml',
         'views/automation_email_conf.xml',
+        'views/templates.xml',
         'data/psf_rms_email_template.xml',
         'data/psf_rsa_cron_job.xml',
         'menu/ac_vehicle_sales_menus.xml',

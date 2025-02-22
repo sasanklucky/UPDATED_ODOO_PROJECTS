@@ -12,7 +12,7 @@
     'depends': ['base','account'],
     # always loaded
     'data': [
-
+        'views/credit_note_button.xml',
     ],
     'assets': {
 

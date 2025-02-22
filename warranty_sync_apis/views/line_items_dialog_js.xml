@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+    <template id="sp_line_item_split_assets" inherit_id="web.assets_backend" name="SP line item Assets">
+      <xpath expr="." position="inside">
+          <script src='/warranty_sync_apis/static/src/js/action_split_line_item.js'></script>
+          <script src='/warranty_sync_apis/static/src/js/dailogbox.js'></script>
+      </xpath>
+    </template>
+
+</data>
+</odoo>

@@ -417,7 +417,7 @@ class ArsSaleWarrantyAlignmentWizard(models.TransientModel):
         for ol in self.warranty_id.order_lines:
             if ol.category and ol.category.name.lower() == 'warranty':
                 if ol.apr_action == 'approved' and ol.ars_warranty_price != ol.price_unit:
-                    ol.price_unit = ol.ars_warranty_price
+                    # ol.price_unit = ol.ars_warranty_price
                     print('Updated price_unit:', ol.price_unit, 'ars_warranty_price:', ol.ars_warranty_price)
 
         if error_messages:

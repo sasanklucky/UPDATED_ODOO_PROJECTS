@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import AccessError, UserError, RedirectWarning, ValidationError, Warning
 
 class AccountInvoiceLineModify(models.Model):
     _inherit = 'account.invoice.line'
@@ -37,3 +38,19 @@ class Accounting(models.Model):
                         # Link the credit note line to the sale order line
                         sale_order_line.invoice_lines = [(4, credit_line.id)]
         return new_invoices
+
+
+    @api.multi
+    def action_custom_refund(self):
+        user = self.env['res.users'].browse(int(self.env.context.get('uid')))
+        for rec in self:
+            if (
+                    rec.ars_invoice_type == 'vehicle'
+                    and rec.type == 'out_invoice'
+                    and not user.has_group("credit_note.group_custom_access_credit_note")
+            ):
+                raise AccessError(
+                    _('You are not authorized to generate a credit note for this invoice.'))
+
+            # If all checks pass, open the Credit Note wizard
+        return self.env.ref('account.action_account_invoice_refund').read()[0]

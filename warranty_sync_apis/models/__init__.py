@@ -4,3 +4,4 @@ from . import warrenty_sync_log
 # from . import warrenty_sync_child
 from . import warrenty_sync_parent
 from . import warranty_sync_query
+from . import sale_order_inv_split
