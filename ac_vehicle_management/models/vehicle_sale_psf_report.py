@@ -54,7 +54,7 @@ class VehicleSalePsfReport(models.Model):
         initcap(to_char(inv.date_invoice, 'month'))  as month,
         CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
         inv.company_id as dealer_name_id,
-        so.name as invoice_number, 
+        inv.number as invoice_number, 
         inv.date_invoice as invoice_date,
         so.partner_id as partner_id,
         so.user_id as user_id,
