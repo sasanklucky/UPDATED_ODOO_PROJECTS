@@ -4,4 +4,3 @@ warranty_sync_check_wizard_access,warranty_sync_check_wizard,model_warranty_sync
 
 access_warranty_claim_config,warranty_claim_config,model_warranty_claim_config,,1,1,1,0
 access_warranty_split_line_item,warranty_split_line_item,model_warranty_split_line_item,,1,1,1,1
-access_split_line_items,split_line_items,model_split_line_items,,1,1,1,1
