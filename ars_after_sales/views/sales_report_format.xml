@@ -42,6 +42,7 @@
                     <!--                    <field name="utgst_amount"/>-->
                     <!--                    <field name="vat_amount"/>-->
                     <field name="total_amount"/>
+                    <field name="service_advisor"/>
                 </tree>
             </field>
         </record>

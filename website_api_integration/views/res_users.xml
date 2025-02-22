@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+         <record id="res_user_website_api_form_inherit" model="ir.ui.view">
+            <field name="name">res.users.form.inherit.website.api</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_form"/>
+            <field name="arch" type="xml">
+                <!-- add state field in header -->
+                <xpath expr="//header" position="inside">
+                    <button string="Generate Web API Key"
+                                type="object" name="generate_web_api_key_for_user"
+                                attrs="{'invisible': [('state', '!=', 'active')]}"/>
+
+                </xpath>
+
+                <xpath expr="//group[@name='messaging']" position="after">
+                    <group string="Web API KEY">
+                        <field name ="web_api_key" readonly="1"/>
+                        <field name = "web_api_expiry_time"  readonly="1"/>
+                    </group>
+                 </xpath>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

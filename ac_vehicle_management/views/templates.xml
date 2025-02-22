@@ -18,8 +18,7 @@
         <!--     </t> -->
         <!--   </dl> -->
         <!-- </template> -->
-
-            <record id="crm_sequence_enquiry" model="ir.ui.view">
+        <record id="crm_sequence_enquiry" model="ir.ui.view">
             <field name="name">Crm Sequence</field>
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>

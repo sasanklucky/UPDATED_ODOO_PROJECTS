@@ -19,6 +19,7 @@ class ProductVehicleSaleForm(models.Model):
     certificate_number = fields.Char('Certificate No')
     horn_level = fields.Char('Horn Level')
 
+
 class CrmSequence(models.Model):
     _inherit = 'crm.lead'
 
