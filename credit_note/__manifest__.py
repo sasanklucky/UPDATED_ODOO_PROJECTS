@@ -9,7 +9,7 @@
     'website': "https://www.autochip.in",
     'category': 'Uncategorized',
     'version': '0.11',
-    'depends': ['base','account'],
+    'depends': ['base','account', 'ars_after_sales'],
     # always loaded
     'data': [
         'views/credit_note_button.xml',
