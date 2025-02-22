@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <data>
-
+    <data noupdate="0">
         <!-- model.name tree view -->
         <record id="ars_stock_ageing_tree" model="ir.ui.view">
             <field name="name">stock_ageing_report</field>
@@ -51,49 +50,24 @@
             </field>
         </record>
 
-        <!--        <record id="stock_ageing_search" model="ir.ui.view">-->
-        <!--            <field name="name">stock_ageing_search</field>-->
-        <!--            <field name="model">stock.ageing.report</field>-->
-        <!--            <field name="arch" type="xml">-->
-        <!--                <search>-->
-        <!--                    <field name="name" filter_domain="['|', ('name','ilike',self), ('parts_category','ilike',self)]" string="Product Name"/>-->
-        <!--&lt;!&ndash;                    <field name="default_code" filter_domain="[('default_code','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="template_id" filter_domain="[('template_id','ilike',self)]"/>&ndash;&gt;-->
+        <record id="ars_parts_stock_ageing_tree" model="ir.ui.view">
+            <field name="name">parts_stock_ageing_report</field>
+            <field name="model">ars.parts.stock.ageing.report</field>
+            <field name="arch" type="xml">
+                <tree string="Parts Stock Ageing Report" create="false" import="false" delete="false">
+                    <field name="sap_no"/>
+                    <field name="product_description"/>
+                    <field name="location_id"/>
+                    <field name="quantity"/>
+                    <field name="ndp_without_gst"/>
+                    <field name="total_ndp"/>
+                    <field name="company_id"/>
+                    <field name="last_received_date"/>
+                    <field name="ageing_days"/>
+                </tree>
+            </field>
+        </record>
 
-        <!--&lt;!&ndash;                    <field name="parts_category" filter_domain="[('parts_category','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="name" filter_domain="[('name','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="product_id" filter_domain="[('product_id','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="location_id" filter_domain="[('location_id','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="company_id" string="Dealer Name" filter_domain="['|',('company_id','ilike',self)]"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="computed_quantity" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="mrp_price"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="list_price"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="quantity"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="stock_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_90" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_180" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_365" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_730" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="greater_730" invisible="1"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="compute_days_90"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_90_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="compute_days_180"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_180_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="compute_days_365"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_365_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="compute_days_730"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="days_730_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="compute_greater_730"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="greater_730_value"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="name" filter_domain="['|', ('name','ilike',self), ('res_model','ilike',self)]"&ndash;&gt;-->
-        <!--&lt;!&ndash;                           string="Action"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <field name="view_type"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    <group expand="0" string="Group By" colspan="4">&ndash;&gt;-->
-        <!--&lt;!&ndash;                        <filter string="View Type" domain="[]" context="{'group_by':'view_type'}"/>&ndash;&gt;-->
-        <!--&lt;!&ndash;                    </group>&ndash;&gt;-->
-        <!--                </search>-->
-        <!--            </field>-->
-        <!--        </record>-->
         <record id="view_stock_aging_report" model="ir.ui.view">
             <field name="name">Stock Ageing Report</field>
             <field name="model">stock.ageing.report.wiz</field>
@@ -107,11 +81,32 @@
                     <footer>
                         <button name="retrieve_stock_qty" string="Retrieve the Stock Quantities" type="object"
                                 class="btn-primary"/>
-<!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
                     </footer>
                 </form>
             </field>
         </record>
+
+        <record id="view_parts_stock_aging_report" model="ir.ui.view">
+            <field name="name">Parts Stock Ageing Report</field>
+            <field name="model">parts.stock.ageing.report.wiz</field>
+            <field name="arch" type="xml">
+                <form string="">
+                    <group>
+                        <group>
+                            <field name="company_id" widget="many2many_tags" readonly="1"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retrieve_stock_qty" string="Retrieve the Parts Stock Quantities" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
         <record id="action_stock_quantity_history2" model="ir.actions.act_window">
             <field name="name">Stock Ageing Report</field>
             <field name="res_model">stock.ageing.report.wiz</field>
@@ -122,6 +117,17 @@
             <field name="context">{'default_compute_at_date': 0, 'parts_inventory': True}</field>
         </record>
 
+        <record id="action_parts_stock_quantity_history2" model="ir.actions.act_window">
+            <field name="name">Parts Stock Ageing Report</field>
+            <field name="res_model">parts.stock.ageing.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_parts_stock_aging_report"/>
+            <field name="target">new</field>
+            <field name="context">{'default_compute_at_date': 0, 'parts_inventory': True}</field>
+        </record>
+
+
         <record id="ars_stock_ageing_report_action" model="ir.actions.act_window">
             <field name="name">Stock Ageing Report</field>
             <field name="type">ir.actions.act_window</field>
@@ -130,9 +136,24 @@
             <field name="view_type">form</field>
         </record>
 
+        <record id="ars_parts_stock_ageing_report_action" model="ir.actions.act_window">
+            <field name="name">Parts Stock Ageing Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">ars.parts.stock.ageing.report</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+        </record>
+
+
         <menuitem id="ars_menu_stock_ageing_report"
                   name="Stock Ageing Report"
                   action="action_stock_quantity_history2"
+                  parent="ars_after_sales.menu_aftersales_reporting"
+                  sequence="99"/>
+
+        <menuitem id="ars_menu_parts_stock_ageing_report"
+                  name="Parts Stock Ageing Report"
+                  action="action_parts_stock_quantity_history2"
                   parent="ars_after_sales.menu_aftersales_reporting"
                   sequence="99"/>
 
