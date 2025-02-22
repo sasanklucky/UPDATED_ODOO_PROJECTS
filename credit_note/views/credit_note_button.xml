@@ -3,9 +3,9 @@
     <record id="account_invoice_form_inherit_credit_note" model="ir.ui.view">
         <field name="name">account.invoice.form.inherit.credit.note</field>
         <field name="model">account.invoice</field>
-        <field name="inherit_id" ref="ars_after_sales.invoice_form_inherit"/>
+        <field name="inherit_id" ref="account.invoice_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//button[@name='%(account.action_account_invoice_refund)d']" position="replace">
+            <xpath expr="//button[@name='194']" position="replace">
                 <button name="action_custom_refund" type="object" string="Add Credit Note" groups="account.group_account_invoice"
                         attrs="{'invisible': ['|', ('type', '=', 'out_refund'), ('state', 'not in', ('open','paid'))]}"/>
             </xpath>
