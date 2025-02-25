@@ -3046,6 +3046,12 @@
                     <field name="reg_no"/>
                     <field name="vin"/>
                 </xpath>
+                <xpath expr="//field[@name='amount_total_signed']" position="before">
+                    <field name="amount_untaxed"/>
+                    <field name="amount_tax"/>
+                </xpath>
+                <xpath expr="//field[@name='residual_signed']" position="replace">
+                </xpath>
             </field>
         </record>
         <record id="action_invoice_sal_tree1" model="ir.actions.act_window">
