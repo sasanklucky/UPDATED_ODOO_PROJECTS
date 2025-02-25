@@ -103,7 +103,7 @@ class ARSAfterSaleOrder(models.Model):
             'product_template_id':line.product_template_id.id,
             'product_id': line.product_id.id,
             'uom_id':line.product_uom.id,
-            'quantity': line.qty_delivered,
+            'quantity': line.qty_delivered if not line.product_catalog_id.name == 'Labor' else line.product_uom_qty,
             'price_unit': price,
             'name': line.name,
             'split_type': 'split',
