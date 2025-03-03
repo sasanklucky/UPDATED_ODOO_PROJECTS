@@ -15,11 +15,12 @@
     'website': 'https://github.com/OCA/web',
     'license': 'AGPL-3',
     'depends': [
-        'web',
+        'web', 'ars_after_sales'
     ],
     "data": [
         'security/groups.xml',
         'views/web_export_view_view.xml',
+        'views/xlsx_config_setup.xml',
     ],
     'qweb': [
         "static/src/xml/web_export_view_template.xml",
