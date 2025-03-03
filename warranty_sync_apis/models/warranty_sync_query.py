@@ -1,4 +1,5 @@
 from odoo import api, fields, models, registry, SUPERUSER_ID, sql_db, _, exceptions
+import re
 from datetime import datetime, timedelta
 import time
 import psycopg2
@@ -26,7 +27,188 @@ class WarrentySaleOrderLineInheritSync(models.Model):
     child_warrenty_id_ref = fields.Char(string='Parent Reference')
     sync_to_parent = fields.Boolean(string="Synced to Parent", default=False)
     Warranty_sync_reject = fields.Boolean('')
+    # warrant_split_line_ids = fields.One2many("warranty.split.line.item", "order_line_to_split_id", string="Line Items Split", ondelete='cascade')
+    # Many/many field to link sale.order.line with warranty.split.line.item
+    warranty_split_partner_ids = fields.Many2many(
+        'warranty.split.line.item',  # Target model
+        'sale_order_line_warranty_split_rel',  # Relation table name
+        'sale_order_line_id',  # Column for this model's ID (sale.order.line)
+        'warranty_split_line_item_id',  # Column for the target model's ID (warranty.split.line.item)
+        string='Warranty Split Partners'
+    )
 
+    @api.model
+    def fetch_data_orders_line(self, **kwargs):
+        order_lines = self.env['sale.order.line'].browse(kwargs.get('selected_ids'))
+        print(self.env.context, 'contextcontextcontext')
+        context_lib = self.env.context
+        data = []
+        product_price = self.env['product.template']
+        purchase_partner_price = self.env['product.supplierinfo']
+        customers = self.env['res.partner'].search([('customer', '=', True)])  # Fetch all customers
+
+        for line in order_lines:
+            warranty_partner_id = line.customer_split
+            partner = line.order_id.partner_id
+            unit_price = 0
+            purchase_partner_info = None
+            if context_lib.get('default_split_price_by') == 'do_split_sale_price':
+                unit_price = [v for product_pri in product_price.search_read([('id', '=', line.product_template_id.id)],['list_price']) for k, v in product_pri.items() if k == 'list_price']
+            elif context_lib.get('default_split_price_by') == 'do_split_purchase_price':
+                # purchase_partner_info = purchase_partner_price.search_read([('name', '=', warranty_partner_id.id)])
+                pr_unit_price = product_price.search_read([('id', '=', line.product_template_id.id)], ['seller_ids'])
+                purchase_partner_info = purchase_partner_price.search_read([('id', 'in', pr_unit_price[0].get('seller_ids'))], ['name', 'product_templ_id', 'price'])
+                unit_price =[price for price in [v if v == line.price_unit else 0 for i in purchase_partner_info for k, v in i.items() if k == 'price'] if price!=0]
+            print(unit_price)
+            part1, perc1, part2, perc2, totals = self.calculate_percentage(unit_price[0], line.ars_warranty_price)
+            print(part1, perc1, part2, perc2)
+            split_data = [
+                {
+                    'sale_order_line': line.product_id.name,
+                    'line_id': line.id,
+                    'product_id': line.product_id.id,
+                    'customer_id': warranty_partner_id.id if warranty_partner_id else False,
+                    'customer_name': warranty_partner_id.name if warranty_partner_id else '',
+                    'percentage': f"{perc1}%",
+                    'subtotal': part1,
+                    'tax': line.tax_id.name,
+                    'tax_ids': [tax.id for tax in line.tax_id],
+                    'taxable_amount': self.calculate_tax(part1, line.tax_id.name),
+                    'customers_list': [{'id': c.id, 'name': c.name} for c in customers],  # Send as dicts
+                    'category_id': line.category.id,
+                    'totals' : totals
+                },
+                {
+                    'sale_order_line': line.product_id.name,
+                    'product_id': line.product_id.id,
+                    'line_id': line.id,
+                    'customer_id': partner.id if partner else False,
+                    'customer_name': partner.name if partner else '',
+                    'percentage': f"{perc2}%",
+                    'subtotal': part2,
+                    'tax': line.tax_id.name,
+                    'tax_ids': [tax.id for tax in line.tax_id],
+                    'taxable_amount': self.calculate_tax(part2, line.tax_id.name),
+                    'customers_list': [{'id': c.id, 'name': c.name} for c in customers],  # Send as dicts
+                    'category_id': self.env['order.line.category'].search([('name', '=', 'Customer')], limit=1).id,
+                    'totals': totals
+                },
+            ]
+            data.extend(split_data)
+
+        return data
+
+    @staticmethod
+    def calculate_percentage(total, part1):
+        part2 = total - part1  # Calculate the second part
+        perc1 = round((part1 / total) * 100, 2)
+        perc2 = round((part2 / total) * 100, 2)
+        totals = total
+        return round(part1,2), round(perc1,2), round(part2,2), round(perc2, 2), round(totals)
+
+    @staticmethod
+    def calculate_tax(base_amount, tax_string):
+        """
+        Calculate IGST or CGST & SGST based on the given tax string.
+
+        :param base_amount: The taxable amount.
+        :param tax_string: Tax type and percentage (e.g., "GST 18%" or "IGST 18%").
+        :return: Dictionary with tax details.
+        """
+        # Extract tax type (GST or IGST) and percentage
+        match = re.match(r'(\w+)\s*(\d+)%', tax_string)
+        if not match:
+            return {"Error": "Invalid tax format. Use 'GST 18%' or 'IGST 18%'"}
+
+        tax_type, tax_rate = match.groups()
+        tax_rate = float(tax_rate)
+
+        if tax_type.upper() == "IGST":
+            # Apply IGST
+            igst_amount = (tax_rate * base_amount) / 100
+            return round(igst_amount,2)
+
+        elif tax_type.upper() == "GST":
+            # Apply CGST & SGST (each half of GST)
+            cgst_sgst_rate = tax_rate / 2
+            cgst_amount = (cgst_sgst_rate * base_amount) / 100
+            sgst_amount = (cgst_sgst_rate * base_amount) / 100
+            return round(cgst_amount + sgst_amount, 2)
+        else:
+            return 0
+
+    @api.model
+    def create_data_orders_line(self, grouped_data):
+        warranty_split_model = self.env['warranty.split.line.item']
+
+        for sale_order_line, records in grouped_data.items():
+            for record in records:
+                vals = {
+                    'order_line_to_split_id': record.get('line_id'),  # Link to sale.order.line
+                    'product_id': record.get('product_id'),
+                    'category': record.get('category_id'),
+                    'discount': record.get('percentage'),  # Assuming 'percentage' is quantity
+                    'customer_split_id': record.get('customer_id'),
+                    'price_unit': record.get('subtotal'),
+                    'tax_amount': record.get('taxable_amount'),
+                    'tax_id': [(6, 0, [int(record.get('tax_ids'))])] if record.get('tax_ids') else False,
+                    # Handling tax_id Many2many
+                }
+                # Create the record in warranty.split.line.item
+                warranty_split_record = warranty_split_model.create(vals)
+                sale_order_line = self.env['sale.order.line'].browse(record.get('line_id'))
+                sale_order_line.write({
+                    'warranty_split_partner_ids': [(4, warranty_split_record.id)]
+                })
+
+        return True
+
+class WarrantySplitLineItmes(models.Model):
+    _name = 'warranty.split.line.item'
+
+    order_line_to_split_id = fields.Many2one("sale.order.line", string="Sale Order Line To Split", ondelete='cascade')
+    product_id = fields.Many2one("product.product", string="Product")
+    category = fields.Many2one('order.line.category', string="Category")
+    quantity = fields.Float(string="Quantity")
+    discount = fields.Float(string="Discount(%)")
+    tax_id = fields.Many2many("account.tax", string="Taxes")
+    price_unit = fields.Float(string="Unit Price")
+    tax_amount = fields.Float(string="Tax Price")
+    customer_split_id = fields.Many2one("res.partner", string="Customer")
+
+
+class ArsSaleWarrantyAlignmentWizardInherit(models.TransientModel):
+    _inherit = 'ars.sale.warranty.alignment.wizard'
+
+    # split_percentage = fields.Float(string="Split Percentage", help="Enter the percentage to split the amount to customer")
+    split_line_amount = fields.Selection([('do_split_sale_price', 'Split with sale price.'), ('do_split_purchase_price', 'Split with purchase price.')], string="Split Line Amount", default='do_split_sale_price' ,required=True)
+
+    def set_alignment(self):
+        res = super(ArsSaleWarrantyAlignmentWizardInherit, self).set_alignment()
+        if self.split_line_amount == 'do_split_sale_price' or self.split_line_amount == 'do_split_purchase_price':
+            print(self.split_line_amount, 'self.split_line_amount11')
+            if self.split_line_amount == 'do_split_sale_price':
+                for ol in self.warranty_id.order_lines:
+                    if ol.category and ol.category.name.lower() == 'warranty':
+                        if ol.apr_action == 'approved' and ol.ars_warranty_price != ol.price_unit:
+                            list_price = self.env['product.template'].search([('id', '=', ol.product_template_id.id)], limit=1)
+                            if list_price:
+                                ol.price_unit = list_price.list_price
+                            else:
+                                raise ValidationError(_(f"{list_price.name} product doesn't existed."))
+
+            filtered_order_line_ids = self.warranty_id.order_lines.filtered(lambda line: line.apr_action == 'approved' and line.ars_warranty_price != line.price_unit).ids
+            if len(filtered_order_line_ids) >= 1:
+                action = self.env.ref('warranty_sync_apis.action_warranty_split_line').read()[0]
+                action.update({'domain': [('id', 'in', filtered_order_line_ids)],
+                               'context': {
+                                   'default_split_price_by': self.split_line_amount,  # Passing the split percentage
+                                   'custom_flag': True,  # Example of adding a custom flag
+                               },
+                               })
+                return action
+        else:
+            return res
 
 class ArsSaleWarrentySync(models.Model):
     _inherit = "ars.sale.warranty"

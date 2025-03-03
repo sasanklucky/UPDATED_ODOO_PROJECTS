@@ -6,7 +6,9 @@
 
 import json
 import odoo.http as http
-from odoo.http import request
+from openerp.exceptions import UserError, ValidationError
+from odoo import  _
+from odoo.http import request, Response
 from odoo.addons.web.controllers.main import ExcelExport
 
 
@@ -32,3 +34,17 @@ class ExcelExportView(ExcelExport):
             ],
             cookies={'fileToken': token}
         )
+
+
+    @http.route('/web/export/get_allowed_models', type='json', auth='user')
+    def get_allowed_models(self):
+        # Fetch the latest configuration settings
+        config_group_records = request.env['res.config.settings'].sudo().search([], order='create_date desc',
+                                                                                limit=1)
+
+        # Get restricted models
+        mode_restrict = [group.model.strip() for groups in config_group_records for group in
+                         groups.xlsx_model_restrict
+                         if group.model]
+
+        return mode_restrict

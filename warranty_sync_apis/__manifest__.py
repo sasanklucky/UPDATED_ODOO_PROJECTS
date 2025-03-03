@@ -17,8 +17,14 @@
              'views/res_config.xml',
              'views/warrenty.xml',
              'views/sync_log.xml',
+             'views/warranty_lines_split.xml',
              'views/warranty_menu_item.xml',
+             'views/line_items_dialog_js.xml',
              'wizard/sync_check_wizard.xml',
+    ],
+    'qweb':[
+        'static/src/xml/dailog_box_template.xml',
+        'static/src/xml/split_line_item.xml'
     ],
    'installable': True,
    'application': True,

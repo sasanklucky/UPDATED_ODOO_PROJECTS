@@ -316,7 +316,7 @@ class ARS_After_sale_order(models.Model):
                     # Skip if no quantity to invoice
                     if float_is_zero(line.qty_to_invoice, precision_digits=precision):
                         continue
-
+                    # if not line.warranty_split_partner_ids:
                     # Search for an existing draft invoice for the order and customer
                     invoice = inv_obj.search([('origin', '=', order.name),
                                               ('partner_id', '=', line.customer_split.id),
@@ -388,55 +388,18 @@ class ARS_After_sale_order(models.Model):
                         'service_options': order.service_options.id,
                         'service_type': order.service_type.id
                     })
+                    # if invoice:
+                    # Ensure additional fields are set correctly
+                    for inv_line in invoice.invoice_line_ids:
+                        inv_line._set_additional_fields(invoice)
 
-                # Ensure additional fields are set correctly
-                for inv_line in invoice.invoice_line_ids:
-                    inv_line._set_additional_fields(invoice)
-
-                # Force computation of taxes
-                invoice.compute_taxes()
+                    # Force computation of taxes
+                    invoice.compute_taxes()
 
                 # Update order status
                 order.invoice_status = "invoiced"
                 return [inv.id for inv in invoices.values()]
-                # invoice_catalog = order.order_line.mapped('category')
-                # if len(invoice_catalog) == 1 and invoice_catalog.name.lower() == 'warranty':
-                #     invoice_data = order._prepare_invoice()
-                #     invoice_data.update({
-                #         'partner_id': order.partner_id.id,
-                #         'partner_shipping_id': order.partner_shipping_id.id
-                #     })
-                #     in_data = inv_obj.create(invoice_data)
-                #     invoices[in_data.id] = in_data
-                #
-                #     # Create invoice lines for warranty category
-                #     for invoice_line in order.order_line.sorted(key=lambda l: l.qty_to_invoice < 0):
-                #         invoice_line.invoice_line_create(in_data.id, invoice_line.qty_delivered)
-                #         in_data.write({
-                #             'mobile': order.mobile,
-                #             'email': order.email,
-                #             'reg_no': order.regn_no.id,
-                #             'vin': order.vin_no,
-                #             'registration_no': order.fleet_regn_no,
-                #             'vin_numb': order.fleet_vin_no.id,
-                #             'model': order.model.id,
-                #             'kilometer': order.mileage_in,
-                #             'doc_type': order.doc_type,
-                #             'appointment_date': order.appointment_date,
-                #             'delivery_service_advisor': order.delivery_service_advisor.id,
-                #             'delivery_date': order.delivery_date,
-                #             'service_options': order.service_options.id,
-                #             'service_type': order.service_type.id
-                #         })
-                #
-                #     # Set discount to 100% for warranty invoice lines
-                #     for line_2 in in_data.invoice_line_ids:
-                #         line_2.update({'discount': 100})
-                #         line_2._set_additional_fields(in_data)
-                #
-                # return [inv.id for inv in invoices.values()]
 
-            # Handle non-after sales and counter parts case
             elif order.sale_aftersales != 'after_sales' or order.counter_parts:
                 res = super(ARS_After_sale_order, self).action_invoice_create(grouped=False, final=False)
                 rest = inv_obj.browse(res)

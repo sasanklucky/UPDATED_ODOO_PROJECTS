@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_sms_api_sms_api,sms_api.sms_api,model_sms_record,base.user_root,1,1,1,1
+access_sms_api_sms_api1,sms_api.sms_api1,model_sms_configure,base.user_root,1,1,1,1
+

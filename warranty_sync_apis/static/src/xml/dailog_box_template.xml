@@ -1,0 +1,77 @@
+<templates id="template_dialog" xml:space="preserve">
+    <div class="split_line_invoice" t-name="split_order_line_data">
+        <div class="modal-header">
+            <h4 class="modal-title">Split Order Line Items</h4>
+        </div>
+        <div class="modal-body">
+            <div class="loading-spinner" style="display: none; text-align: center; padding: 20px;">
+                <i class="fa fa-spinner fa-spin fa-3x"></i>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Customer</th>
+                        <th>Percentage (%)</th>
+                        <th>Un-Tax Amount</th>
+                        <th>Tax</th>
+                        <th>Taxable Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody class="split-line-body">
+                    <!-- Rows will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary save-button">Create Split Data</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+
+    <t t-name="split_order_line_header">
+        <tr class="sale-order-line-header">
+            <td colspan="7"><strong><t t-esc="sale_order_line"/></strong></td>
+        </tr>
+    </t>
+
+    <t t-name="split_order_line_data_row">
+        <tr>
+            <td><input type="hidden" class="product_id" t-att-value="product_id"/>
+                <input type="hidden" class="line_id" t-att-value="line_id"/>
+                <input type="hidden" class="tax_ids" t-att-value="tax_ids"/>
+                <input type="hidden" class="category_id" t-att-value="category_id"/>
+            </td>
+            <td>
+                <select class="form-control customer_select">
+                    <t t-foreach="customers_list" t-as="customer">
+                        <option t-att-value="customer.id" t-att-selected="customer.id == customer_id and 'selected' or None">
+                            <t t-esc="customer.name"/>
+                        </option>
+                    </t>
+                </select>
+            </td>
+            <td>
+                <input class="form-control percentage_value" type="text" t-att-value="percent_val" t-att-disabled="'true'"/>
+            </td>
+            <td>
+                <input class="form-control subtotal_value" type="text" t-att-value="subtotal_val" t-att-disabled="'true'"/>
+            </td>
+            <td>
+                <input class="form-control tax_value" type="text" t-att-value="tax_val" t-att-disabled="'true'"/>
+            </td>
+            <td>
+                <input class="form-control taxamount_value" type="text" t-att-value="taxamount_val" t-att-disabled="'true'"/>
+            </td>
+            <td>
+                <t t-if="is_first">
+                    <button type="button" class="btn btn-success add-row">+</button>
+                </t>
+                <t t-else="">
+                    <button type="button" class="btn btn-danger remove-row">−</button>
+                </t>
+            </td>
+        </tr>
+    </t>
+</templates>

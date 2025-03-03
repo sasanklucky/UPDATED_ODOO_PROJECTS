@@ -1,4 +1,5 @@
 from odoo import models, fields, tools, api, _
+from datetime import datetime,date
 
 
 class stock_ageing_report(models.Model):
@@ -84,7 +85,6 @@ class stock_ageing_report(models.Model):
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):
         print('hello')
-
 
     @api.multi
     def sql_querry(self, user):
@@ -179,10 +179,11 @@ class stock_ageing_report(models.Model):
     -- 			join stage2_calculations on stage2_calculations.id = stage1_calculations.id
         )""".format(table_name=self._table, company_idss=company_ids))
 
+
 class stockWizard(models.TransientModel):
     _name = 'stock.ageing.report.wiz'
 
-    company_id = fields.Many2many('res.company', string='Company', default=lambda self : self.env.user.company_ids)
+    company_id = fields.Many2many('res.company', string='Company', default=lambda self: self.env.user.company_ids)
 
     def retrieve_stock_qty(self):
         self.ensure_one()
@@ -195,6 +196,122 @@ class stockWizard(models.TransientModel):
             'type': 'ir.actions.act_window',
             'name': 'Stock Ageing Report',
             'res_model': 'ars.stock.ageing.report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
+
+
+class Parts_stock_ageing_report(models.Model):
+    _name = 'ars.parts.stock.ageing.report'
+    _description = 'Parts Stock Ageing Report'
+    _auto = False
+
+    sl_no = fields.Integer()
+    company_id = fields.Many2one('res.company')
+    sap_no = fields.Char('Sap Number')
+    product_description = fields.Char('Product Description')
+    location_id = fields.Many2one('stock.location', string="Location")
+    quantity = fields.Float()
+    ndp_without_gst = fields.Float('NDP WITHOUT GST')
+    total_ndp = fields.Float(compute="calculate_total_ndp")
+    last_received_date = fields.Date()
+    ageing_days = fields.Integer(compute="compute_ageing_days")
+
+
+    def compute_ageing_days(self):
+        for rec in self:
+            if rec.last_received_date:
+                print(type(rec.last_received_date), date.today())
+                last_received_date = datetime.strptime(rec.last_received_date, '%Y-%m-%d').date()
+                if last_received_date < datetime.today().date():
+                    rec.ageing_days = (datetime.today().date() - last_received_date).days
+                else:
+                    rec.ageing_days = 0
+
+
+
+    def calculate_total_ndp(self):
+        for record in self:
+            if record.quantity and record.ndp_without_gst:
+                record.total_ndp = record.quantity * record.ndp_without_gst
+            else:
+                record.total_ndp = 0.0
+
+
+    # template_id = fields.Many2one('product.template', 'Part Desc')
+    # name = fields.Char('Part Desc')
+    # parts_category = fields.Char(string='Part Category Desc')
+    # product_id = fields.Many2one('product.product', 'Product')
+    #
+    #
+    # greater_730_stock_bal = fields.Integer(string='>730 days Stock')
+    # greater_730_stock_val = fields.Float(compute="get_stock_value", string='>730 days Stock Value')
+    # days_730_stock_bal = fields.Integer(string='366-730 days Stock Qty')
+
+    @api.multi
+    def sql_querry(self, user):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        print("table name", self._table)
+        print("table name", self.env.uid)
+        if len(user) == 1:
+            company_ids = f"({user[0]})"
+        else:
+            company_ids = tuple(user)
+        self.env.cr.execute(""" 
+                    CREATE or REPLACE VIEW {table_name} as (
+                    SELECT 
+                    row_number() over() as id,
+                    t.id as template_id,
+                    t.default_code as sap_no,
+                    t.name as product_description,
+                    s.location_id as location_id,
+                    s.company_id as company_id,
+                    --l.name as location,
+                    s.product_id as product_id,
+                    COALESCE((select sum(quantity) from stock_quant sq1 where sq1.location_id = s.location_id and sq1.product_id = s.product_id),0) as quantity,
+                    (SELECT prop.value_float FROM ir_property prop 
+                     WHERE prop.res_id = 'product.product,' || p.id
+                     ORDER BY prop.id DESC
+                     LIMIT 1) AS ndp_without_gst,
+					(select ai.date_invoice FROM purchase_order_line pol 
+					left JOIN purchase_order po ON po.id = pol.order_id
+					left JOIN account_invoice_purchase_order_rel aipo ON aipo.purchase_order_id = po.id
+					left JOIN account_invoice ai ON ai.id = aipo.account_invoice_id 
+					left JOIN account_invoice_line ail ON ail.invoice_id = ai.id 
+					where pol.product_id = t.id
+					order by ai.date_invoice desc limit 1) as last_received_date
+                    
+                    from product_template t
+                    left join product_product p on t.id = p.product_tmpl_id
+                    left join stock_quant s on s.product_id = p.id
+                    left join stock_location l on s.location_id = l.id 
+                    left join product_catalog pc on t.catalog_type = pc.id
+-- 					left join RankedInvoices ri on s.product_id = ri.product_id 
+                    --left join ir_property prop on prop.res_id = 'product.product,' || p.id ORDER BY p.id, prop.id;
+                    where l.usage = 'internal' and pc.name = 'Parts' and t.active = True 
+                    order by product_id asc
+                    )
+        """.format(table_name=self._table, company_idss=company_ids))
+
+
+class PartsStockWizard(models.TransientModel):
+    _name = 'parts.stock.ageing.report.wiz'
+
+    company_id = fields.Many2many('res.company', string='Company', default=lambda self: self.env.user.company_ids)
+
+    def retrieve_stock_qty(self):
+        self.ensure_one()
+        query = self.env['ars.parts.stock.ageing.report']
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query.sudo().sql_querry(user=comp_ids)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Parts Stock Ageing Report',
+            'res_model': 'ars.parts.stock.ageing.report',
             'view_mode': 'tree',
             'view_type': 'form',
             'context': self.env.context,

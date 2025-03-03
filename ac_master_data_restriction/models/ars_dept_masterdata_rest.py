@@ -67,7 +67,7 @@ class arsCompanyMasterDataRestriction(models.Model):
     asale_restrict_master_data = fields.Boolean()
     other_restrict_master_data = fields.Boolean()
     edit_access_partner_name = fields.Boolean()
-    model_id = fields.Many2one('product.template')
+    model_ids = fields.Many2many('product.template')
     crm_restrict_till_date = fields.Date()
     # gsale_res_gr_ids = fields.Many2many('res.groups', string='G Sale Master Data', widget="many2many_tags")
     # asale_res_gr_ids = fields.Many2many('res.groups', string='A sale Master Data', widget="many2many_tags")
@@ -99,7 +99,7 @@ class arsConfigMaterDataRestriction(models.TransientModel):
                                          string='Others Master Data')
 
     restrict_crm_lead = fields.Boolean("Restrict lead by conditions")
-    model_id = fields.Many2one('product.template', string="Model", related="company_id.model_id")
+    model_ids = fields.Many2many('product.template', string="Model", related="company_id.model_ids")
     till_date = fields.Date(related="company_id.crm_restrict_till_date")
 
     def set_values(self):
