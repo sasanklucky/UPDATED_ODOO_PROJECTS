@@ -31,66 +31,56 @@ odoo.define('web_export_view', function (require) {
         },
 
         on_sidebar_export_treeview_xls: function () {
-            // Select the first list of the current (form) view
-            // or assume the main view is a list view and use that
-            var view = this.getParent(),
-                children = view.getChildren();
-            var c = crash_manager;
+    var self = this;
+    var view = this.getParent();
 
-            if (children) {
-                children.every(function (child) {
-                    if (child.field && child.field.type === 'one2many') {
-                        view = child.viewmanager.views.list.controller;
-                        return false;
-                    }
-                    if (child.field && child.field.type === 'many2many') {
-                        view = child.list_view;
-                        return false;
-                    }
-                    return true;
-                });
+    // Fetch allowed models from the Python method
+    return this._rpc({
+        route: '/web/export/get_allowed_models',
+        params: {},
+    }).then(function (mode_restrict) {
+        console.log(mode_restrict, 'mode_restrict', view.modelName);
+        if (mode_restrict.includes(view.modelName)) {
+            self.do_warn(
+                _t("Export Restricted"),
+                _t("You are not allowed to export data for this model.")
+            );
+            return;
+        }
+
+        // Proceed with export logic
+        var children = view.getChildren();
+        var c = crash_manager;
+        var export_columns_keys = [];
+        var export_columns_names = [];
+        var column_index = 0;
+        var column_header_selector = '';
+        var isGrouped = view.renderer.state.groupedBy.length > 0;
+        $.each(view.renderer.columns, function () {
+            if (this.tag === 'field' &&
+                (this.attrs.widget === undefined || this.attrs.widget !== 'handle')) {
+                export_columns_keys.push(column_index);
+                var css_selector_index = isGrouped ? column_index + 1 : column_index;
+                column_header_selector = '.o_list_view > thead > tr> th:not([class*="o_list_record_selector"]):eq(' + css_selector_index + ')';
+                export_columns_names.push(view.$el.find(column_header_selector)[0].textContent);
             }
-            var export_columns_keys = [];
-            var export_columns_names = [];
-            var column_index = 0;
-            var column_header_selector = '';
-            var isGrouped = view.renderer.state.groupedBy.length > 0;
-            $.each(view.renderer.columns, function () {
-                if (this.tag === 'field' &&
-                    (this.attrs.widget === undefined ||
-                        this.attrs.widget !== 'handle')) {
-                    export_columns_keys.push(column_index);
-                    var css_selector_index = isGrouped
-                        ? column_index+1 : column_index;
-                    column_header_selector = '.o_list_view > thead > tr> ' +
-                        'th:not([class*="o_list_record_selector"]):eq(' +
-                        css_selector_index + ')';
-                    export_columns_names.push(
-                        view.$el.find(column_header_selector)[0].textContent);
-                }
-                ++column_index;
-            });
-            var export_rows = [];
-            $.blockUI();
-            if (children) {
-                // Find only rows with data
-                view.$el.find('.o_list_view > tbody > tr.o_data_row:' +
-                    'has(.o_list_record_selector input[type=checkbox]:checked)')
-                    .each(function () {
-                        var $row = $(this);
-                        var export_row = [];
-                        $.each(export_columns_keys, function () {
-                            var $cell = $row.find(
-                                'td.o_data_cell:eq('+this+')');
-                            var $cellcheckbox = $cell.find(
-                                '.o_checkbox input:checkbox');
-                            if ($cellcheckbox.length) {
-                                export_row.push(
-                                    $cellcheckbox.is(":checked")
-                                        ? _t("True") : _t("False")
-                                );
-                            } else {
-                                var text = $cell.text().trim();
+            ++column_index;
+        });
+
+        var export_rows = [];
+        $.blockUI();
+        if (children) {
+            view.$el.find('.o_list_view > tbody > tr.o_data_row:has(.o_list_record_selector input[type=checkbox]:checked)')
+                .each(function () {
+                    var $row = $(this);
+                    var export_row = [];
+                    $.each(export_columns_keys, function () {
+                        var $cell = $row.find('td.o_data_cell:eq(' + this + ')');
+                        var $cellcheckbox = $cell.find('.o_checkbox input:checkbox');
+                        if ($cellcheckbox.length) {
+                            export_row.push($cellcheckbox.is(":checked") ? _t("True") : _t("False"));
+                        } else {
+                            var text = $cell.text().trim();
                                 var is_number =
                                     $cell.hasClass('o_list_number') &&
                                     !$cell.hasClass('o_float_time_cell');
@@ -118,19 +108,21 @@ odoo.define('web_export_view', function (require) {
                     });
             }
 
-            session.get_file({
-                url: '/web/export/xls_view',
-                data: {
-                    data: JSON.stringify({
-                        model: view.modelName,
-                        headers: export_columns_names,
-                        rows: export_rows,
-                    }),
-                },
-                complete: $.unblockUI,
-                error: c.rpc_error.bind(c),
-            });
-        },
+        session.get_file({
+            url: '/web/export/xls_view',
+            data: {
+                data: JSON.stringify({
+                    model: view.modelName,
+                    headers: export_columns_names,
+                    rows: export_rows,
+                }),
+            },
+            complete: $.unblockUI,
+            error: c.rpc_error.bind(c),
+        });
+    });
+},
+
 
     });
 });
