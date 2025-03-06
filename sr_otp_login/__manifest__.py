@@ -30,18 +30,13 @@
         ],
     'data': [
 
-        
+        'views/assets.xml',
         'views/res_company_view.xml',
         'views/general_settings_view.xml',
         'views/otp.xml',
        
     ],
     'qweb': [],
-    'assets': {
-        'web.assets_frontend': [
-            'sr_otp_login/static/src/js/otp_timer.js',
-        ],
-    },
     'installable': True,
     'application': True,
     'auto_install': False,
@@ -49,5 +44,3 @@
     'author': 'Seeroo IT Solutions',
     'website': 'https://www.seeroo.com',
 }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

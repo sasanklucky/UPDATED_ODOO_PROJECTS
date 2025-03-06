@@ -13,6 +13,7 @@ import requests
 
 import passlib.context
 import math, random
+import werkzeug.utils
 
 
 def generateOTP():
@@ -54,12 +55,17 @@ class OAuthLoginOtp(AuthSignupHome):
 
                         # Send OTP and log SMS process
                         try:
-                            self.send_otp_via_sms(user.partner_id.mobile, otp)
-                            _logger.info("OTP sent successfully.")
+                            if user.partner_id.mobile:
+                                self.send_otp_via_sms(user.partner_id.mobile, otp)
+                                _logger.info("OTP sent successfully.")
+                            else:
+                                raise Exception("User don't have registered mobile number. please contact dms.")
                             self.send_otp_via_email(email, otp)
                         except Exception as sms_error:
                             _logger.error(f"Failed to send OTP: {sms_error}")
-                            return request.render('web.login', {'error': 'Failed to send OTP. Please try again.'})
+                            request.session['toast_error'] = str(sms_error)
+                            # return request.render('odoo_web_login.login', {'error': sms_error})
+                            return werkzeug.utils.redirect('/web/login')
 
                         # Mark OTP as sent in the session
                         request.session['otp_sent'] = True
@@ -70,13 +76,21 @@ class OAuthLoginOtp(AuthSignupHome):
                     request.session['user_email'] = email
                     request.session['user_password'] = password
                     _logger.info("Redirecting to OTP verification page.")
-                    return request.render('sr_otp_login.otp_verification_template', {'email': email, 'mobile': f"OTP Successfully Send To {'*' * 6}{user.partner_id.mobile[-4:]} & "})
+                    if user.partner_id.mobile and email:
+                        request.session['toast_success'] = str(f"OTP Successfully Send To {'*' * 6}{user.partner_id.mobile[-4:]} & {email}")
+                        return request.render('sr_otp_login.otp_verification_template', {'email': email, 'mobile': f"OTP Successfully Send To {'*' * 6}{user.partner_id.mobile[-4:]} & "})
+                    else:
+                        raise Exception(f"User don't have registered mobile number. please contact dms." if not user.partner_id.mobile else f"User don't have registered mail. please contact dms." if not email else f"")
                 else:
                     _logger.warning("User not found.")
-                    return request.render('odoo_web_login.login', {'error': 'Invalid email or password.'})
+                    request.session['toast_error'] = str("Invalid email or password.")
+                    # return request.render('odoo_web_login.login', {'error': 'Invalid email or password.'})
+                    return werkzeug.utils.redirect('/web/login')
             except Exception as login_error:
                 _logger.error(f"Error during login: {login_error}")
-                return request.render('odoo_web_login.login', {'error': 'Invalid email or password.'})
+                request.session['toast_error'] = str("Invalid email or password.")
+                # return request.render('odoo_web_login.login', {'error': login_error})
+                return werkzeug.utils.redirect('/web/login')
 
         _logger.info("Default login flow (GET request).")
         return super(OAuthLoginOtp, self).web_login(*args, **kw)
@@ -223,6 +237,7 @@ class OAuthLoginOtp(AuthSignupHome):
                 password = request.session.get('user_password')
                 if not password:
                     # Session password is missing (could be due to timeout)
+                    request.session['toast_error'] = str("Session expired. Please log in again.")
                     return request.render('sr_otp_login.otp_verification_template',
                                           {'email': email, 'error': 'Session expired. Please log in again.'})
 
@@ -238,10 +253,12 @@ class OAuthLoginOtp(AuthSignupHome):
 
                 except Exception as e:
                     # Handle failed authentication due to incorrect credentials or other issues
+                    request.session['toast_error'] = str("Authentication failed, please try again.")
                     return request.render('sr_otp_login.otp_verification_template',
                                           {'email': email, 'error': 'Authentication failed, please try again.'})
             else:
                 # Incorrect OTP
+                request.session['toast_error'] = str("Invalid OTP. Please try again.")
                 return request.render('sr_otp_login.otp_verification_template',
                                       {'email': email, 'error': 'Invalid OTP. Please try again.'})
 
@@ -371,3 +388,25 @@ Team Seeroo""" % otp
 
         response = request.render('sr_otp_login.request_otp', {})
         return response
+
+    @http.route("/get_toast_messages", type="json", auth="public")
+    def get_toast_messages(self):
+        _logger.info(f"Session Data Before Fetch: {request.session.items()}")  # Debugging
+
+        error_msg = request.session.get("toast_error", "")
+        success_msg = request.session.get("toast_success", "")
+        message = {"error": error_msg, "success": success_msg}
+        _logger.info(f"Session Data After Fetch: {request.session.items()}")  # Debugging
+        return message
+
+    @http.route("/clear_toast_messages", type="json", auth="public")
+    def clear_toast_messages(self, **kwargs):
+        if kwargs:
+            if kwargs.get('msg_typ') == 'error':
+                request.session.pop("toast_error", None)
+            if kwargs.get('msg_typ') == 'success':
+                request.session.pop("toast_success", None)
+        else:
+            request.session.pop("toast_error", None)
+            request.session.pop("toast_success", None)
+        return {"status": "cleared"}

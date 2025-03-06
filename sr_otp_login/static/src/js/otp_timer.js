@@ -1,48 +1,76 @@
 odoo.define('sr_otp_login.otp_timer', function (require) {
     "use strict";
 
-    var ajax = require('web.ajax');  // Odoo Ajax helper
+    var ajax = require('web.ajax');
 
-    // Ensure DOM is fully loaded
     $(document).ready(function () {
         let timer = 60;
-        const resendButton = $('#resend_otp_button');  // Get Resend OTP button
-        const timerElement = $('#timer');  // Get Timer element
+        const resendButton = $('#resend_otp_button');
+        const timerElement = $('#timer');
 
-        // Hide resend OTP button initially, show timer
         resendButton.hide();
         $('#resend_timer').show();
 
-        // Countdown logic
         const countdown = setInterval(function () {
             timer--;
-            timerElement.text(timer);  // Update timer UI
+            timerElement.text(timer);
 
-            // If timer reaches 0, stop countdown and show the resend button
             if (timer <= 0) {
                 clearInterval(countdown);
-                $('#resend_timer').hide();  // Hide the timer
-                resendButton.show();  // Show the resend OTP button
+                $('#resend_timer').hide();
+                resendButton.show();
             }
         }, 1000);
 
-        // Handle resend OTP button click
         resendButton.click(function () {
-            // Get the email value (can be dynamically set)
-            const email = $('#user_email').val();  // Assuming you have an email input field with id "user_email"
+            const email = $('#user_email').val();
 
-            // Perform AJAX request to resend OTP
+            // Disable button and add loading animation
+            resendButton.prop("disabled", true);
+            resendButton.html('<i class="fa fa-spinner fa-spin"></i> Resending...');
+
+            // Show persistent loading notification
+            let loadingToast = Toastify({
+                text: "Resending OTP...",
+                duration: -1, // Persistent until manually closed
+                close: false,
+                gravity: "top",
+                position: "center",
+                className: "custom-toast",
+                style: {
+                    background: "linear-gradient(to right, #007bff, #0056b3)",
+                    width: "300px",
+                    textAlign: "center"
+                }
+            });
+
+            loadingToast.showToast();
+
             ajax.jsonRpc('/web/resend_otp', 'call', { email: email })
                 .then(function (data) {
-                    if (data.success) {
-                        // Success: alert user and restart timer
-                        alert(data.message || "OTP resent successfully.");
-                        timer = 60;  // Reset timer
-                        timerElement.text(timer);  // Update timer UI
-                        $('#resend_timer').show();
-                        resendButton.hide();  // Hide the button while countdown is active
+                    // Remove loading toast
+                    loadingToast.hideToast();
 
-                        // Restart countdown
+                    if (data.success) {
+                        Toastify({
+                            text: "OTP resent successfully!",
+                            duration: 6000,
+                            close: true,
+                            gravity: "top",
+                            position: "center",
+                            className: "custom-toast",
+                            style: {
+                                background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                width: "300px",
+                                textAlign: "center"
+                            }
+                        }).showToast();
+
+                        timer = 60;
+                        timerElement.text(timer);
+                        $('#resend_timer').show();
+                        resendButton.hide();
+
                         const restartCountdown = setInterval(function () {
                             timer--;
                             timerElement.text(timer);
@@ -54,14 +82,45 @@ odoo.define('sr_otp_login.otp_timer', function (require) {
                             }
                         }, 1000);
                     } else {
-                        // Error: alert failure message
-                        alert(data.message || "Failed to resend OTP. Please try again.");
+                        Toastify({
+                            text: "Failed to resend OTP. Please try again.",
+                            duration: 6000,
+                            close: true,
+                            gravity: "top",
+                            position: "center",
+                            className: "custom-toast",
+                            style: {
+                                background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                                width: "300px",
+                                textAlign: "center"
+                            }
+                        }).showToast();
                     }
                 })
-                .catch(function (error) {
-                    // Handle any network or unexpected errors
+                .fail(function (error) {
                     console.error("Error:", error);
-                    alert("An unexpected error occurred. Please try again later.");
+
+                    // Remove loading toast
+                    loadingToast.hideToast();
+
+                    Toastify({
+                        text: "An unexpected error occurred. Please try again later.",
+                        duration: 6000,
+                        close: true,
+                        gravity: "top",
+                        position: "center",
+                        className: "custom-toast",
+                        style: {
+                            background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                            width: "300px",
+                            textAlign: "center"
+                        }
+                    }).showToast();
+                })
+                .always(function () {
+                    // Reset button after AJAX call completes
+                    resendButton.prop("disabled", false);
+                    resendButton.html("Resend OTP");
                 });
         });
     });
