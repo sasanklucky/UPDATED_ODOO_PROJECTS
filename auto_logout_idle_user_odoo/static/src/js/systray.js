@@ -60,10 +60,15 @@ odoo.define('auto_logout_idle_user_odoo.systray', function(require) {
                     // First, perform session logout
                     ajax.rpc('/get_config_param', { param_key: 'web.base.url' }).then(function(redirectUrl) {
                         if (!redirectUrl) {
-                            redirectUrl = "/web/login";  // Default fallback if no parameter is set
+                            redirectUrl = "/web/login";  // Default fallback
                         }
                         ajax.post('/web/session/logout', {}).then(function() {
-                            window.location.href = redirectUrl + "/web/login";
+                            setTimeout(function() {
+                                window.location.href = redirectUrl + '/web/login';
+                            }, 5000);  // Small delay to ensure logout is complete
+                        }).fail(function() {
+                            console.error("Logout failed!");
+                            window.location.href = "/web/login";  // Redirect to login if logout request fails
                         });
                     });
 
