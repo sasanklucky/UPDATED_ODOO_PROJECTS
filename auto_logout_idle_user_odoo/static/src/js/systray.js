@@ -58,9 +58,15 @@ odoo.define('auto_logout_idle_user_odoo.systray', function(require) {
                     self.el.querySelector("#idle_timer").innerHTML = "EXPIRED";
                     localStorage.setItem("logout_message", "You have exceeded the idle time. Please log in again.");
                     // First, perform session logout
-                    ajax.post('/web/session/logout', {}).then(function() {
-                        location.replace("/web/login");
+                    ajax.rpc('/get_config_param', { param_key: 'web.base.url' }).then(function(redirectUrl) {
+                        if (!redirectUrl) {
+                            redirectUrl = "/web/login";  // Default fallback if no parameter is set
+                        }
+                        ajax.post('/web/session/logout', {}).then(function() {
+                            window.location.href = redirectUrl + "/web/login";
+                        });
                     });
+
 
                 }
 
