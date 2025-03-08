@@ -1,4 +1,4 @@
-.custom-toast {
+.custom-toast-auto-logout {
     width: 400px !important;  /* Set a fixed width */
     max-width: 400px !important; /* Prevent exceeding width */
     height: auto !important;  /* Auto height for content */

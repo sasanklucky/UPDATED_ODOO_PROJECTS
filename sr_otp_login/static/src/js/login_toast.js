@@ -11,8 +11,6 @@ odoo.define("sr_otp_login.login_toast", function (require) {
                 console.log("Received Messages:", message);
 
                 let notifications = [];
-                let logoutMessage = localStorage.getItem("logout_message");
-                console.log("logoutMessage", logoutMessage);
 
                 function showNotification(text, background, persistent = false, onCloseCallback = null) {
                     let toast = Toastify({
@@ -66,20 +64,6 @@ odoo.define("sr_otp_login.login_toast", function (require) {
 
                         )
 
-                    );
-                }
-                if (logoutMessage) {
-                    notifications.push(
-                        showNotification(
-                            logoutMessage,
-                            "linear-gradient(to right, #ff5f6d, #ffc371)",
-                            true,
-                            function () {
-                                // Remove logout message from localStorage when closed
-                                console.log("Clearing logout_message from localStorage...");
-                                localStorage.removeItem("logout_message");
-                            }
-                        )
                     );
                 }
 
