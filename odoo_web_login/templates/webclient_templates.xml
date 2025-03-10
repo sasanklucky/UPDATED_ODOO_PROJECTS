@@ -69,6 +69,14 @@
 		 <xpath expr="." position="inside">
             <script type="text/javascript" src="/odoo_web_login/static/src/js/password_instruction_list_v3.js"/>
         </xpath>
+		<xpath expr="//form" position="before">
+			<t t-if="request.params.get('expired_password') == 'true'">
+				<div class="expired-password-warning">
+					Your password has expired. Please reset it.
+				</div>
+			</t>
+		</xpath>
+
     </template>
 
 </odoo>
