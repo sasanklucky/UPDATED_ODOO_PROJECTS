@@ -1,5 +1,5 @@
 $(document).ready(function() {
-    console.log('called')
+//    console.log('called')
     // page is now ready, initialize the calendar...
 	//$('#calendar').fullCalendar();
 	$('#calendar').fullCalendar({

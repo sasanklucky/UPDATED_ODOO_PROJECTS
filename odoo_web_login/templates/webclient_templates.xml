@@ -65,4 +65,10 @@
     	</xpath>
 	</template>
 
+	<template id="custom_reset_password" inherit_id="auth_signup.reset_password">
+		 <xpath expr="." position="inside">
+            <script type="text/javascript" src="/odoo_web_login/static/src/js/password_instruction_list_v3.js"/>
+        </xpath>
+    </template>
+
 </odoo>

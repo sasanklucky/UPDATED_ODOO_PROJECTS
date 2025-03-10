@@ -92,7 +92,7 @@ odoo.define('ac_rms.script', function(require) {
 	    setInterval(function() { myFunction(); }, 60000);
 	    setInterval(function() {
 	    	if(run_interval == 0){
-	    		console.log(run_interval);
+//	    		console.log(run_interval);
 	    		myFunction();
 	    		run_interval = run_interval + 1;
 

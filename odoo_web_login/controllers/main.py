@@ -22,6 +22,9 @@
 ##############################################################################
 
 import ast
+from http.client import responses
+from pyexpat.errors import messages
+
 from odoo.addons.web.controllers.main import Home
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 import pytz
@@ -73,9 +76,32 @@ class AuthSignupHomeInherit(AuthSignupHome):
     @http.route('/web/reset_password', type='http', auth='public', website=True, sitemap=False)
     def web_auth_reset_password(self, *args, **kw):
         set_background()
-        return super(AuthSignupHomeInherit, self).web_auth_reset_password(*args, **kw)
+        # Get the current company
+        company = request.env.user.company_id  # Gets the company of the current user or website
+        instructions = {
+            "password_lower": company.password_lower,
+            "password_upper": company.password_upper,
+            "password_numeric": company.password_numeric,
+            "password_special": company.password_special,
+            "password_length": company.password_length,
+        }
+        response = super(AuthSignupHomeInherit, self).web_auth_reset_password(*args, **kw)
+        response.qcontext.update({'instructions': instructions})
+        return response
 
     @http.route('/web/signup', type='http', auth='public', website=True, sitemap=False)
     def web_auth_signup(self, *args, **kw):
         set_background()
         return super(AuthSignupHomeInherit, self).web_auth_signup(*args, **kw)
+
+    @http.route("/get_password_instruction_messages", type="json", auth="public")
+    def get_password_instruction(self):
+        company = request.env.user.company_id
+        instructions = {
+            "password_lower": company.password_lower,
+            "password_upper": company.password_upper,
+            "password_numeric": company.password_numeric,
+            "password_special": company.password_special,
+            "password_length": company.password_length,
+        }
+        return instructions
