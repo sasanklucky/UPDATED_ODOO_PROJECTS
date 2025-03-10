@@ -76,18 +76,7 @@ class AuthSignupHomeInherit(AuthSignupHome):
     @http.route('/web/reset_password', type='http', auth='public', website=True, sitemap=False)
     def web_auth_reset_password(self, *args, **kw):
         set_background()
-        # Get the current company
-        company = request.env.user.company_id  # Gets the company of the current user or website
-        instructions = {
-            "password_lower": company.password_lower,
-            "password_upper": company.password_upper,
-            "password_numeric": company.password_numeric,
-            "password_special": company.password_special,
-            "password_length": company.password_length,
-        }
-        response = super(AuthSignupHomeInherit, self).web_auth_reset_password(*args, **kw)
-        response.qcontext.update({'instructions': instructions})
-        return response
+        return super(AuthSignupHomeInherit, self).web_auth_reset_password(*args, **kw)
 
     @http.route('/web/signup', type='http', auth='public', website=True, sitemap=False)
     def web_auth_signup(self, *args, **kw):
