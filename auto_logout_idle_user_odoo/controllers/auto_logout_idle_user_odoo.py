@@ -52,7 +52,7 @@ class AutoLogoutIdleUSer(http.Controller):
     @http.route('/get_config_param', type='json', auth="user")
     def get_config_param(self, param_key):
         url = request.env['ir.config_parameter'].sudo().get_param(param_key, default="/web/login")
-        # if url.startswith('http://'):  # Only replace if it's explicitly 'http://'
-        #     url = url.replace('http', 'https', 1)
+        if url.startswith('http://'):  # Only replace if it's explicitly 'http://'
+            url = url.replace('http', 'https', 1)
 
         return url
