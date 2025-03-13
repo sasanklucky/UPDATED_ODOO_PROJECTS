@@ -29,21 +29,23 @@ from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 
 class OAuthLoginOtp(AuthSignupHome):
 
-    @http.route('/web/login', type='http', auth="public", website=True)
+    @http.route('/web/login', type='http', auth="none")
     def web_login(self, *args, **kw):
         _logger.info("Starting web login process")
+        response = super(OAuthLoginOtp, self).web_login(*args, **kw)
+        print(request.params)
         if request.httprequest.method == 'POST':
-            print(kw)
-            request.params['login_success'] = False
             email = kw.get('login')
             password = kw.get('password')
             _logger.info(f"Login attempt for email: {email}")
-
             try:
                 user = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
-                if user:
+                # Check if login was successful
+                if request.params.get('login_success'):
+                    uid = request.session.uid
+                    print(uid)
                     _logger.info("User found, checking credentials.")
-                    user.sudo().check_credentials(password)
+                    # user.sudo().check_credentials(password)
                     _logger.info("Credentials validated. Generating OTP.")
 
                     # Check if OTP already exists in the session
@@ -58,9 +60,11 @@ class OAuthLoginOtp(AuthSignupHome):
                             if user.partner_id.mobile:
                                 self.send_otp_via_sms(user.partner_id.mobile, otp)
                                 _logger.info("OTP sent successfully.")
+                                self.send_otp_via_email(email, otp)
+                                # Mark OTP as sent in the session
+                                request.session['otp_sent'] = True
                             else:
                                 raise Exception("User don't have registered mobile number. please contact dms.")
-                            self.send_otp_via_email(email, otp)
                         except Exception as sms_error:
                             _logger.error(f"Failed to send OTP: {sms_error}")
                             request.session['toast_error'] = str(sms_error)
@@ -68,7 +72,7 @@ class OAuthLoginOtp(AuthSignupHome):
                             return werkzeug.utils.redirect('/web/login')
 
                         # Mark OTP as sent in the session
-                        request.session['otp_sent'] = True
+                        # request.session['otp_sent'] = True
                     else:
                         _logger.info("OTP already sent, skipping resend.")
 
@@ -93,7 +97,7 @@ class OAuthLoginOtp(AuthSignupHome):
                 return werkzeug.utils.redirect('/web/login')
 
         _logger.info("Default login flow (GET request).")
-        return super(OAuthLoginOtp, self).web_login(*args, **kw)
+        return response
 
     def send_otp_via_sms(self, mobile_number, otp):
         try:
@@ -163,7 +167,7 @@ class OAuthLoginOtp(AuthSignupHome):
         except Exception as sms_error:
             _logger.error(f"Error in send_otp_via_sms: {sms_error}")
             # Re-raise the exception to handle it in the caller function
-            raise
+            raise Exception(sms_error)
 
     def send_otp_via_email(self, email, otp):
         """
@@ -243,7 +247,7 @@ class OAuthLoginOtp(AuthSignupHome):
 
                 try:
                     # Authenticate the user
-                    user.sudo().check_credentials(password)  # Check the password
+                    # user.sudo().check_credentials(password)  # Check the password
 
                     # Create an authenticated session
                     request.session.authenticate(request.db, email, password)
@@ -261,9 +265,9 @@ class OAuthLoginOtp(AuthSignupHome):
                 request.session['toast_error'] = str("Invalid OTP. Please try again.")
                 return request.render('sr_otp_login.otp_verification_template',
                                       {'email': email, 'error': 'Invalid OTP. Please try again.'})
-
+        else:
         # If not a POST request, redirect to login
-        return request.redirect('/web/login')
+            return request.redirect('/web/login')
 
     def get_auth_signup_config(self):
         response = super(OAuthLoginOtp, self).get_auth_signup_config()
@@ -288,26 +292,26 @@ class OAuthLoginOtp(AuthSignupHome):
             else:
                 return "True"
         return json.dumps(result_dict)
-
-    def do_signup(self, qcontext):
-        """ Shared helper that creates a res.partner out of a token """
-        values = {key: qcontext.get(key) for key in ('login', 'name', 'password', 'otp', 'phone')}
-        if not values:
-            raise UserError(_("The form was not properly filled in."))
-        if values.get('password') != qcontext.get('confirm_password'):
-            raise UserError(_("Passwords do not match; please retype them."))
-        user_id = request.env['res.users'].sudo().search([('phone', '=', values.get('phone'))])
-        if user_id:
-            raise UserError(_("Phone number is already registered."))
-        if values.get('phone'):
-            if len(values.get('phone')) != 10 or not values.get('phone').isdigit():
-                raise UserError(_("Not a valid Phone Number."))
-
-        supported_langs = [lang['code'] for lang in request.env['res.lang'].sudo().search_read([], ['code'])]
-        if request.lang in supported_langs:
-            values['lang'] = request.lang
-        self._signup_with_values(qcontext.get('token'), values)
-        request.env.cr.commit()
+    #
+    # def do_signup(self, qcontext):
+    #     """ Shared helper that creates a res.partner out of a token """
+    #     values = {key: qcontext.get(key) for key in ('login', 'name', 'password', 'otp', 'phone')}
+    #     if not values:
+    #         raise UserError(_("The form was not properly filled in."))
+    #     if values.get('password') != qcontext.get('confirm_password'):
+    #         raise UserError(_("Passwords do not match; please retype them."))
+    #     user_id = request.env['res.users'].sudo().search([('phone', '=', values.get('phone'))])
+    #     if user_id:
+    #         raise UserError(_("Phone number is already registered."))
+    #     if values.get('phone'):
+    #         if len(values.get('phone')) != 10 or not values.get('phone').isdigit():
+    #             raise UserError(_("Not a valid Phone Number."))
+    #
+    #     supported_langs = [lang['code'] for lang in request.env['res.lang'].sudo().search_read([], ['code'])]
+    #     if request.lang in supported_langs:
+    #         values['lang'] = request.lang
+    #     self._signup_with_values(qcontext.get('token'), values)
+    #     request.env.cr.commit()
 
     @http.route('/web/request_otp', type='http', auth='public', website=True, sitemap=False)
     def web_auth_request_otp(self, *args, **kw):

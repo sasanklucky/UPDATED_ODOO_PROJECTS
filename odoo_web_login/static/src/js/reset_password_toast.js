@@ -29,31 +29,34 @@ odoo.define("odoo_web_login.reset_password_toast", function (require) {
     }
 
     $(document).ready(function () {
-        console.log("Checking for alerts...");
+    function showAlerts() {
+        var errorElement = $(".alert.alert-danger:visible"); // Only pick visible error messages
+        var successElement = $(".alert.alert-success:visible"); // Only pick visible success messages
 
-        // Delay execution to ensure alerts are present
-        setTimeout(function () {
-            var errorElement = $(".alert.alert-danger");
-            var successElement = $(".alert.alert-success");
-
-            console.log("Error Elements Found:", errorElement.length);
-            console.log("Success Elements Found:", successElement.length);
-
-            if (errorElement.length) {
-                var errorMessage = errorElement.text().trim();
-                if (errorMessage) {
-                    showNotification(errorMessage, "linear-gradient(to right, #ff5f6d, #ffc371)");
-                    errorElement.hide(); // Hide original error message
-                }
+        if (errorElement.length) {
+            var errorMessage = errorElement.text().trim();
+            if (errorMessage) {
+                showNotification(errorMessage, "linear-gradient(to right, #ff5f6d, #ffc371)");
+                errorElement.hide(); // Hide original error message
             }
+        }
 
-            if (successElement.length) {
-                var successMessage = successElement.text().trim();
-                if (successMessage) {
-                    showNotification(successMessage, "linear-gradient(to right, #00b09b, #96c93d)");
-                    successElement.hide(); // Hide original success message
-                }
+        if (successElement.length) {
+            var successMessage = successElement.text().trim();
+            if (successMessage) {
+                showNotification(successMessage, "linear-gradient(to right, #00b09b, #96c93d)");
+                successElement.hide(); // Hide original success message
             }
-        }, 10); // Delay by 500ms to ensure elements are available
+        }
+    }
+
+    // Run check on page load
+    showAlerts();
+
+    // Listen for form submission and re-check for new errors
+    $("form").on("submit", function (e) {
+        setTimeout(showAlerts, 50); // Delay to wait for error message to appear
     });
+});
+
 });

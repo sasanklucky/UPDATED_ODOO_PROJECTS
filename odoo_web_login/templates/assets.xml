@@ -9,9 +9,9 @@
 		</xpath>
     </template>
 
-    <template id="assets_frontend_reset_password" inherit_id="web.assets_frontend" name="Reset Password Notify">
-        <xpath expr="." position="inside">
-            <script type="text/javascript" src="/odoo_web_login/static/src/js/reset_password_toast.js"/>
-        </xpath>
-    </template>
+<!--    <template id="assets_frontend_reset_password" inherit_id="web.assets_frontend" name="Reset Password Notify">-->
+<!--        <xpath expr="." position="inside">-->
+<!--            <script type="text/javascript" src="/odoo_web_login/static/src/js/reset_password_toast.js"/>-->
+<!--        </xpath>-->
+<!--    </template>-->
 </odoo>
