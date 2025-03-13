@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    
+
    	 <template id="assets_login" inherit_id="web.assets_frontend">
    	 	<xpath expr="." position="inside">
    	 		<link rel="stylesheet" href="/odoo_web_login/static/src/css/web_login_style.css"/>
+   	 		<link rel="stylesheet" href="/odoo_web_login/static/src/css/reset_password.css"/>
    	 	</xpath>
     </template>
     
@@ -29,12 +30,39 @@
    			<attribute name="class">company_logo</attribute>
    		</xpath>
    	</template>
-   	
+
    	<template id="login" inherit_id="web.login" name="Login Inherit">
+		 <xpath expr="." position="inside">
+			<script type="text/javascript" src="/odoo_web_login/static/src/js/reset_password_toast.js"/>
+<!--			<script type="text/javascript" src="/odoo_web_login/static/src/js/captcha_query_and_toast.js"/>-->
+<!--			<script type="text/javascript" src="/odoo_web_login/static/src/js/captcha.js"/>-->
+    	</xpath>
+
+		<xpath expr="//form" position="attributes">
+<!--			<attribute name="onsubmit">return validateCaptcha(event);</attribute>-->
+		</xpath>
+
+<!--		<xpath expr="//form/div[contains(@class, 'field-password')]" position="after">-->
+<!--				<div class="form-group recaptcha-wrapper form-control">-->
+<!--    				<div class="recaptcha-wrapper form-control g-recaptcha" id="recaptcha-container"></div>-->
+<!--				</div>-->
+<!--		</xpath>-->
+
+<!--		 <xpath expr="//form" position="inside">-->
+<!--        <div class="form-group">-->
+<!--            <img id="captcha_image" src="data:image/png;base64," alt="CAPTCHA" style="border: 1px solid #ccc;"/>-->
+<!--            <a href="javascript:void(0);" onclick="reloadCaptcha();">Refresh</a>-->
+<!--        </div>-->
+<!--        <div class="form-group">-->
+<!--            <label for="captcha_input">Enter CAPTCHA</label>-->
+<!--            <input type="text" id="captcha_input" name="captcha_input" required="1"/>-->
+<!--        </div>-->
+<!--    </xpath>-->
+
    		<xpath expr="//label[@for='db']" position="replace" />
 		<xpath expr="//label[@for='login']" position="replace" />
 		<xpath expr="//label[@for='password']" position="replace" />
-		
+
 		<xpath expr="//input[@name='login']" position="attributes">
 			<attribute name="placeholder">Email ...</attribute>
 			<attribute name="autocomplete">off</attribute>
@@ -49,5 +77,19 @@
 			<a href="/web/database/selector" class="btn btn-default btn-select"><i class="fa fa-database"></i></a>
 		</xpath>
 	</template>
+
+	<template id="custom_reset_password" inherit_id="auth_signup.reset_password">
+		 <xpath expr="." position="inside">
+            <script type="text/javascript" src="/odoo_web_login/static/src/js/password_instruction_list_v3.js"/>
+        </xpath>
+		<xpath expr="//form" position="before">
+			<t t-if="request.params.get('expired_password') == 'true'">
+				<div class="expired-password-warning">
+					Your password has expired. Please reset it.
+				</div>
+			</t>
+		</xpath>
+
+    </template>
 
 </odoo>

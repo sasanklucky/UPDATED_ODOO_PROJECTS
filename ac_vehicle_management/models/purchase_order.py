@@ -32,8 +32,8 @@ class CrmSequence(models.Model):
         lead = super(CrmSequence, self).create(vals)
 
         # Fetch the dealer code from the user's company
-        user = self.env.user
-        dealer_code = user.company_id.dealer_code if user.company_id.dealer_code else 'N/A'
+        # user = self.env.user
+        dealer_code = lead.company_id.dealer_code if lead.company_id.dealer_code else 'N/A'
 
         # Assign the sequence
         lead.crm_sequence = 'ENQ/{}/{}'.format(dealer_code, lead.id)

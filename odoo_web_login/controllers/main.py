@@ -22,12 +22,15 @@
 ##############################################################################
 
 import ast
+from http.client import responses
+from pyexpat.errors import messages
+
 from odoo.addons.web.controllers.main import Home
 from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 import pytz
 import datetime
 import logging
-
+import requests
 from odoo import http
 from odoo.http import request
 _logger = logging.getLogger(__name__)
@@ -65,6 +68,21 @@ class LoginHome(Home):
     @http.route('/web/login', type='http', auth="none")
     def web_login(self, redirect=None, **kw):
         set_background()
+        # recaptcha_response = kw.get('g-recaptcha-response')
+        # secret_key = "6LeRC_EqAAAAAB6Nz_mJSychKq9rIizkSyERVrju"  # Replace with your actual secret key
+        #
+        # # Verify reCAPTCHA
+        # if recaptcha_response:
+        #     response = requests.post(
+        #         "https://www.google.com/recaptcha/api/siteverify",
+        #         data={'secret': secret_key, 'response': recaptcha_response}
+        #     ).json()
+        #     print(response, recaptcha_response)
+        #     # If reCAPTCHA is invalid, return an error message
+        #     if not response.get("success"):
+        #         return request.render("web.login", {
+        #             'error': "Invalid CAPTCHA. Please try again."
+        #         })
         return super(LoginHome, self).web_login(redirect, **kw)
 
 
@@ -79,3 +97,15 @@ class AuthSignupHomeInherit(AuthSignupHome):
     def web_auth_signup(self, *args, **kw):
         set_background()
         return super(AuthSignupHomeInherit, self).web_auth_signup(*args, **kw)
+
+    @http.route("/get_password_instruction_messages", type="json", auth="public")
+    def get_password_instruction(self):
+        company = request.env.user.company_id
+        instructions = {
+            "password_lower": company.password_lower if company.password_lower else '',
+            "password_upper": company.password_upper if company.password_upper else '',
+            "password_numeric": company.password_numeric if company.password_numeric else '',
+            "password_special": company.password_special if company.password_special else '',
+            "password_length": company.password_length if company.password_length else '',
+        }
+        return instructions

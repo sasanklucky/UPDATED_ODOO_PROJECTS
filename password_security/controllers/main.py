@@ -45,7 +45,7 @@ class PasswordSecurityHome(AuthSignupHome):
         request.session.logout(keep_db=True)
         # I was kicked out, so set login_success in request params to False
         request.params['login_success'] = False
-        redirect = request.env.user.partner_id.signup_url
+        redirect = "{}&expired_password=true".format(request.env.user.partner_id.signup_url)
         return http.redirect_with_hash(redirect)
 
     @http.route()

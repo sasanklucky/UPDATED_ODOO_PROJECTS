@@ -5,7 +5,7 @@ from datetime import datetime
 import contextlib
 import uuid
 import json
-
+import re
 
 
 
@@ -197,14 +197,19 @@ class WebsiteAPIController(http.Controller):
                             }
                             lead_status[customer_key] = 'Failed'
                             continue
-                        partner_obj = env['res.partner'].sudo().search([('name', '=', customer_name), '|', ('mobile', '=',  mobile), ('email', '=',  email_from)], limit=1)
+
+                        cleaned_mobile = self.format_mobile_number(mobile=mobile)
+                        print(cleaned_mobile, 'cleaned_mobile')
+                        if not cleaned_mobile.isdigit():
+                            raise Exception ('Enter a valid number format.')
+                        partner_obj = env['res.partner'].sudo().search([('name', '=', customer_name), '|', ('mobile', '=',  cleaned_mobile), ('email', '=',  email_from)], limit=1)
                         print(partner_obj,'partner_objpartner_obj')
                         country_obj = env['res.country'].sudo().search([('name', '=', country)], limit=1)
 
                         if not partner_obj:
                             created_partner = env['res.partner'].sudo().create({
                                 "name": customer_name,
-                                "mobile": mobile,
+                                "mobile": cleaned_mobile,
                                 "phone": phone or False,
                                 "email": email_from,
                                 "city": city,
@@ -228,6 +233,10 @@ class WebsiteAPIController(http.Controller):
                         if dealer_code:
                             company_id = env['res.company'].search([('dealer_code', '=', dealer_code)], limit=1)
                             team_type = env['crm.team'].search([('team_type', '=', 'sales'),('company_id', '=', company_id.id)], limit=1)
+                            team_branch = env['branch.master.company'].search([('company_id', '=', company_id.id)])
+                            # Apply filtered condition with space removal and case-insensitive match
+                            team_branch_id = team_branch.filtered(lambda b: street.replace(" ", "").lower() == b.name.replace(" ", "").lower())[:1]
+
                         unique_token = str(uuid.uuid4())
                         new_lead = res_model.sudo().create({
                             'company_type': "individual",
@@ -236,7 +245,7 @@ class WebsiteAPIController(http.Controller):
                             'contact_name': customer_name,
                             'source_id': source_obj[0] if source_obj else None,
                             'medium_id': medium_obj[0] if medium_obj else None,
-                            'mobile': mobile,
+                            'mobile': cleaned_mobile,
                             'street': customer_data.get('street'),
                             'city': city,
                             'lead_token': unique_token,
@@ -246,6 +255,8 @@ class WebsiteAPIController(http.Controller):
                             'zip': customer_data.get('zip') or False,
                             'source_reference': source_reference,
                             'team_id': team_type.id,
+                            'company_id': company_id.id,
+                            'branch_id': team_branch_id.id,
                             'vehicle_line': [(0, 0, {
                                 'product_template_id': product.product_tmpl_id.id,
                                 'product_id': product.id,
@@ -272,3 +283,26 @@ class WebsiteAPIController(http.Controller):
                 lead_status[customer_key] = "error"
 
         return response, lead_status
+
+    @staticmethod
+    def format_mobile_number(mobile: str) -> str:
+        try:
+            # Remove all non-numeric characters except '+'
+            mobile = re.sub(r"[^\d+]", "", mobile)
+
+            # Normalize the number by removing country codes and leading zeros
+            if mobile.startswith("+91"):
+                mobile = mobile[3:]  # Remove "+91"
+            elif mobile.startswith("91"):
+                mobile = mobile[2:]  # Remove "91"
+            elif mobile.startswith("0"):
+                mobile = mobile[1:]  # Remove leading "0"
+
+            # Ensure it's a valid 10-digit mobile number
+            if not mobile.isdigit() or len(mobile) != 10:
+                raise ValueError("Invalid mobile number format")
+
+            return mobile
+
+        except Exception as e:
+            return f"Error: {str(e)}"  # Returning error message instead of raising
