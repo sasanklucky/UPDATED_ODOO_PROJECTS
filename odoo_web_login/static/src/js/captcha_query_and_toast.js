@@ -29,7 +29,7 @@ odoo.define("odoo_web_login.captcha_query_and_toast", function (require) {
     // Callback function when reCAPTCHA script loads
     window.recaptchaLoaded = function () {
         grecaptcha.render("recaptcha-container", {
-            sitekey: "6LeRC_EqAAAAAD4kBTqv-C4Uzy701In3PTJkRCIX", // Replace with your actual site key
+            sitekey: "6LeTGvQqAAAAAEBA3VIqO03T4ha_vwcuz6siUeCd", // Replace with your actual site key
         });
     };
 

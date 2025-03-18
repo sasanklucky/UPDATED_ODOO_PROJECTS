@@ -258,7 +258,7 @@ class FleetVehicle(models.Model):
                             history = False
                             for sale in sale_line:
                                 _logger.info(
-                                    f"Sale line for update owner history for {sale_line.vin_no.name} with {sale.order_id.partner_id.name}")
+                                    f"Sale line for update owner history for {sale.vin_no.name} with {sale.order_id.partner_id.name}")
                                 if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
                                     for invoice in sale.order_id.invoice_ids:
                                         if invoice.date_invoice == record.date_of_ownership:
