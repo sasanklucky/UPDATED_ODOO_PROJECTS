@@ -105,7 +105,8 @@ class ARSMailActivity(models.Model):
             sheets.write(row, column + 6, rec.res_name, format11)
             # sheets.write(row, column + 7, vin_no.contact_name.name, format11)   #to be corrcted
             if rec.mobile:
-                sheets.write(row, column + 8, rec.mobile, format11)
+                # sheets.write(row, column + 8, rec.mobile, format11)
+                sheets.write(row, column + 8, '******' + rec.mobile[-4:] , format11)
             if invoice.delivery_type:
                 select_del_type = dict(invoice.fields_get(allfields=['delivery_type'])['delivery_type']
                                        ['selection'])[invoice.delivery_type]
