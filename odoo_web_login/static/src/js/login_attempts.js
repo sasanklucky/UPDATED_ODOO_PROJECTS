@@ -125,23 +125,24 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
             return;
         }
 
-        fetch("https://ip-api.com/json/")
+        fetch("https://ipinfo.io/json")
             .then(response => response.json())
             .then(data => {
-                storeLocationInOdoo(loginInput, data.query, data.city, data.regionName, data.country, data.lat, data.lon);
+                let [latitude, longitude] = data.loc.split(',')
+                storeLocationInOdoo(loginInput, data.ip, data.city, data.region, data.country, latitude, longitude);
             })
             .catch(error => console.error("Error fetching IP location:", error));
     }
 
     function storeLocationInOdoo(loginInput, ip, city, region, country, latitude, longitude) {
         ajax.jsonRpc('/store_user_ip', 'call', {
-            login: loginInput,
-            ip: ip,
-            city: city,
-            region: region,
-            country: country,
-            latitude: latitude,
-            longitude: longitude
+            login: loginInput || "Unknown",
+            ip: ip || "Unknown",
+            city: city || "Unknown",
+            region: region || "Unknown",
+            country: country || "Unknown",
+            latitude: latitude || "0.0000",
+            longitude: longitude || "0.0000"
         }).then(function (response) {
 //            console.log("User location stored:", response);
         });
