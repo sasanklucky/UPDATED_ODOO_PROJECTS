@@ -125,7 +125,7 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
             return;
         }
 
-        fetch("http://ip-api.com/json/")
+        fetch("https://ip-api.com/json/")
             .then(response => response.json())
             .then(data => {
                 storeLocationInOdoo(loginInput, data.query, data.city, data.regionName, data.country, data.lat, data.lon);
