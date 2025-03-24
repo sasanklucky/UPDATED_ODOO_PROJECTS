@@ -21,10 +21,18 @@
         'security/groups.xml',
         'views/web_export_view_view.xml',
         'views/xlsx_config_setup.xml',
+        'views/ars_config_settings.xml',
     ],
     'qweb': [
         "static/src/xml/web_export_view_template.xml",
+        "static/src/xml/booking_stage_mask.xml",
     ],
+    'assets': {
+        'web.assets_backend': [
+            'web_export_view/static/src/js/booking_stage_mask.js',
+        ],
+    },
+
 
     'installable': True,
     'auto_install': False,

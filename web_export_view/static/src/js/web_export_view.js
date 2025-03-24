@@ -4,6 +4,8 @@ odoo.define('web_export_view', function (require) {
     var core = require('web.core');
     var Sidebar = require('web.Sidebar');
     var session = require('web.session');
+    var rpc = require('web.rpc');
+    var Dialog = require('web.Dialog');
     var crash_manager = require('web.crash_manager');
 
     var QWeb = core.qweb;
@@ -15,6 +17,7 @@ odoo.define('web_export_view', function (require) {
         _redraw: function () {
             var self = this;
             this._super.apply(this, arguments);
+
             if (self.getParent().renderer.viewType === 'list') {
                 session.user_has_group(
                     'web_export_view.group_disallow_export_view_data_excel')
@@ -24,48 +27,115 @@ odoo.define('web_export_view', function (require) {
                                 .last().append(QWeb.render(
                                     'WebExportTreeViewXls', {widget: self}));
                             self.$el.find('.export_treeview_xls').on('click',
-                                self.on_sidebar_export_treeview_xls);
+                                self.on_sidebar_export_treeview_xls.bind(self));
                         }
                     });
             }
         },
 
-        on_sidebar_export_treeview_xls: function () {
-    var self = this;
-    var view = this.getParent();
+       on_sidebar_export_treeview_xls: function () {
+            var self = this;
+            var view = this.getParent();
+            var model_name = view.modelName;  // Get the selected model
 
-    // Fetch allowed models from the Python method
-    return this._rpc({
-        route: '/web/export/get_allowed_models',
-        params: {},
-    }).then(function (mode_restrict) {
-        console.log(mode_restrict, 'mode_restrict', view.modelName);
-        if (mode_restrict.includes(view.modelName)) {
-            self.do_warn(
-                _t("Export Restricted"),
-                _t("You are not allowed to export data for this model.")
-            );
-            return;
-        }
+            // Fetch allowed models
+            rpc.query({
+                route: '/web/export/get_allowed_models',
+            }).then(function (allowed_models) {
+                if (allowed_models.includes(model_name)) {
+                    // If model is in allowed models, show password dialog
+                    var dialog = new Dialog(self, {
+                        size: 'medium',
+                        $content: $('<div/>', {
+                            html: '<label style="display: block; text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 10px;">' +
+                                      _t('Enter your password for exporting') +
+                                  '</label>' +
+                                  '<div style="margin-left: 200px;">' +
+                                      '<input type="password" id="xls_export_password" class="form-control" ' +
+                                      'style="display: block; text-align: center; width: 50%; padding: 8px; border-radius: 5px; border: 1px solid #ccc;"/>' +
+                                  '</div>' +
+                                  '<small class="text-muted" style="display: block; text-align: center; margin-top: 5px; font-size: 12px; color: #666;">' +
+                                      _t('Hint: Use your login password.') +
+                                  '</small>'
+                        }),
+                        buttons: [
+                            {
+                                text: _t('Export'),
+                                classes: 'btn-primary',
+                                click: function () {
+                                    var password = $('#xls_export_password').val();
+                                    if (!password) {
+                                        self.do_notify(_t("Warning"), _("Please enter a password."));
+                                        return;
+                                    }
 
-        // Proceed with export logic
-        var children = view.getChildren();
-        var c = crash_manager;
-        var export_columns_keys = [];
-        var export_columns_names = [];
-        var column_index = 0;
-        var column_header_selector = '';
-        var isGrouped = view.renderer.state.groupedBy.length > 0;
-        $.each(view.renderer.columns, function () {
-            if (this.tag === 'field' &&
-                (this.attrs.widget === undefined || this.attrs.widget !== 'handle')) {
-                export_columns_keys.push(column_index);
-                var css_selector_index = isGrouped ? column_index + 1 : column_index;
-                column_header_selector = '.o_list_view > thead > tr> th:not([class*="o_list_record_selector"]):eq(' + css_selector_index + ')';
-                export_columns_names.push(view.$el.find(column_header_selector)[0].textContent);
-            }
-            ++column_index;
-        });
+                                    // Verify password via RPC
+                                    rpc.query({
+                                        model: 'res.users',
+                                        method: 'verify_password',
+                                        args: [session.uid, password],
+                                        kwargs: {},
+                                    }).then(function (is_valid) {
+                                        if (is_valid) {
+                                            dialog.close();
+                                            self._export_xls(password);  // Proceed with export
+                                        } else {
+                                            self.do_notify(_t("Warning"), _("Invalid password. Please try again."));
+                                        }
+                                    }).fail(function (err) {
+                                        self.do_notify(_t("Error"), _("Error validating password."));
+                                        console.error(err);
+                                    });
+                                }
+                            },
+                            {
+                                text: _t('Cancel'),
+                                close: true
+                            }
+                        ]
+                    });
+
+                    dialog.open();
+
+            // Ensure buttons are centered
+            setTimeout(function () {
+                $('.modal-title').remove();  // Removes the title
+                $('.modal-header').remove();
+                $('.modal-footer').css({
+                    'text-align': 'center'
+                });
+            }, 100);
+                } else {
+                    // If model is NOT in allowed models, proceed without password
+                    self._export_xls();
+                }
+            }).fail(function (err) {
+                self.do_notify(_t("Error"), _("Error fetching allowed models."));
+                console.error(err);
+            });
+        },
+
+        _export_xls: function (password) {
+            var view = this.getParent();
+            var children = view.getChildren();
+            var c = crash_manager;
+            var export_columns_keys = [];
+            var export_columns_names = [];
+            var column_index = 0;
+            var column_header_selector = '';
+            var isGrouped = view.renderer.state.groupedBy.length > 0;
+
+            $.each(view.renderer.columns, function () {
+                if (this.tag === 'field' &&
+                    (this.attrs.widget === undefined || this.attrs.widget !== 'handle')) {
+                    export_columns_keys.push(column_index);
+                    var css_selector_index = isGrouped ? column_index + 1 : column_index;
+                    column_header_selector = '.o_list_view > thead > tr> th:not([class*="o_list_record_selector"]):eq(' + css_selector_index + ')';
+                    export_columns_names.push(
+                    view.$el.find(column_header_selector)[0].textContent);
+                }
+                ++column_index;
+            });
 
         var export_rows = [];
         $.blockUI();
@@ -108,21 +178,20 @@ odoo.define('web_export_view', function (require) {
                     });
             }
 
-        session.get_file({
-            url: '/web/export/xls_view',
-            data: {
-                data: JSON.stringify({
-                    model: view.modelName,
-                    headers: export_columns_names,
-                    rows: export_rows,
-                }),
-            },
-            complete: $.unblockUI,
-            error: c.rpc_error.bind(c),
-        });
-    });
-},
-
+            session.get_file({
+                url: '/web/export/xls_view',
+                data: {
+                    data: JSON.stringify({
+                        model: view.modelName,
+                        headers: export_columns_names,
+                        rows: export_rows,
+                        password: password,
+                    }),
+                },
+                complete: $.unblockUI,
+                error: c.rpc_error.bind(c),
+            });
+        },
 
     });
 });

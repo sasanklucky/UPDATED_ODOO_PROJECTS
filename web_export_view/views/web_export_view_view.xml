@@ -4,6 +4,8 @@
     <template id="assets_backend" name="web_export_view assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/web_export_view/static/src/js/web_export_view.js"></script>
+            <script type="text/javascript" src="/web_export_view/static/src/js/booking_stage_mask.js"></script>
+            <link rel="import" href="/web_export_view/static/src/xml/booking_stage_mask.xml"></link>
         </xpath>
     </template>
 </odoo>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="BookingStageMaskTemplate">
+        <div class="o_input_wrapper">
+            <!-- Eye icon with increased size -->
+            <span class="toggle-visibility">
+                <i class="fa fa-eye eye-icon"></i>
+            </span>
+            <!-- Input field -->
+            <input type="password" class="o_input masked-input" t-att-value="value"/>
+        </div>
+    </t>
+</templates>
