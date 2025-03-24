@@ -166,6 +166,23 @@ class ExcelExportView(ExcelExport):
             cookies={'fileToken': token}
         )
 
+    @http.route('/web/export/unprotected/xls_view', type='http', auth='user')
+    def export_xls_unprotected_view(self, data, token):
+        data = json.loads(data)
+        model = data.get('model', [])
+        columns_headers = data.get('headers', [])
+        rows = data.get('rows', [])
+
+        return request.make_response(
+            self.from_data(columns_headers, rows),
+            headers=[
+                ('Content-Disposition', 'attachment; filename="%s"'
+                 % self.filename(model)),
+                ('Content-Type', self.content_type)
+            ],
+            cookies={'fileToken': token}
+        )
+
 
     @http.route('/web/export/get_allowed_models', type='json', auth='user')
     def get_allowed_models(self):
