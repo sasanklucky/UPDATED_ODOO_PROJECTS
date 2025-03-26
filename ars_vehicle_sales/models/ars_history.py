@@ -7,6 +7,7 @@ class customer_history(models.Model):
 
     custmer_name = fields.Many2one('res.partner')
     date_of_ownership = fields.Date()
+    delivery_date = fields.Date()
     address = fields.Text()
     mobile = fields.Char()
     sold_by = fields.Many2one('res.partner')
