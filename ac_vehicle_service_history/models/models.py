@@ -3,17 +3,17 @@
 from odoo import models, fields, api
 
 
-class customer_history(models.Model):
-    _name = 'ownership.history'
-
-    custmer_name = fields.Many2one('res.partner')
-    date_of_ownership = fields.Date()
-    delivery_date = fields.Date()
-    address = fields.Text()
-    mobile = fields.Char()
-    sold_by = fields.Many2one('res.partner')
-    stock_id1 = fields.Many2one('stock.production.lot', 'Stock Id')
-    vehicle_id = fields.Many2one('fleet.vehicle', 'Fleet Vehicle ID')
+# class customer_history(models.Model):
+#     _name = 'ownership.history'
+#
+#     custmer_name = fields.Many2one('res.partner')
+#     date_of_ownership = fields.Date()
+#     delivery_date = fields.Date()
+#     address = fields.Text()
+#     mobile = fields.Char()
+#     sold_by = fields.Many2one('res.partner')
+#     stock_id1 = fields.Many2one('stock.production.lot', 'Stock Id')
+#     vehicle_id = fields.Many2one('fleet.vehicle', 'Fleet Vehicle ID')
 
 
 class service_history(models.Model):
