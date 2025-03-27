@@ -33,7 +33,7 @@
 
    	<template id="login" inherit_id="web.login" name="Login Inherit">
 		 <xpath expr="." position="inside">
-			<script type="text/javascript" src="/odoo_web_login/static/src/js/reset_password_toast.js"/>
+<!--			<script type="text/javascript" src="/odoo_web_login/static/src/js/reset_password_toast.js"/>-->
 			<script type="text/javascript" src="/odoo_web_login/static/src/js/captcha_query_and_toast.js"/>
 			 <script type="text/javascript" src="/odoo_web_login/static/src/js/login_attempts.js"/>
 <!--			<script type="text/javascript" src="/odoo_web_login/static/src/js/captcha.js"/>-->
