@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_user_ip_log,access.user.ip.log,model_user_ip_log,odoo_web_login.group_model_access_user_ip_log,1,1,1,1
