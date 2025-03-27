@@ -35,10 +35,13 @@ The new configurable Odoo Web Login Screen
     'depends': [
     ],
     'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'data/ir_config_parameter.xml',
         'templates/assets.xml',
         'templates/website_templates.xml',
         'templates/webclient_templates.xml',
+        'templates/user_ip_log.xml'
     ],
     'qweb': [
     ],

@@ -68,21 +68,22 @@ class LoginHome(Home):
     @http.route('/web/login', type='http', auth="none")
     def web_login(self, redirect=None, **kw):
         set_background()
-        recaptcha_response = kw.get('g-recaptcha-response')
-        secret_key = "6LeTGvQqAAAAAEFoIzqaRgCZxQjvY1J6h83Lt8Bt"  # Replace with your actual secret key
+        if request.httprequest.method == 'POST':
+            recaptcha_response = kw.get('g-recaptcha-response')
+            secret_key = "6LeTGvQqAAAAAEFoIzqaRgCZxQjvY1J6h83Lt8Bt"  # Replace with your actual secret key
 
-        # Verify reCAPTCHA
-        if recaptcha_response:
-            response = requests.post(
-                "https://www.google.com/recaptcha/api/siteverify",
-                data={'secret': secret_key, 'response': recaptcha_response}
-            ).json()
-            print(response, recaptcha_response)
-            # If reCAPTCHA is invalid, return an error message
-            if not response.get("success"):
-                return request.render("web.login", {
-                    'error': "Invalid CAPTCHA. Please try again."
-                })
+            # Verify reCAPTCHA
+            if recaptcha_response:
+                response = requests.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={'secret': secret_key, 'response': recaptcha_response}
+                ).json()
+                print(response, recaptcha_response)
+                # If reCAPTCHA is invalid, return an error message
+                if not response.get("success"):
+                    return request.render("web.login", {
+                        'error': "Invalid CAPTCHA. Please try again."
+                    })
         return super(LoginHome, self).web_login(redirect, **kw)
 
 

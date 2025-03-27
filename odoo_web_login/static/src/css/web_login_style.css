@@ -40,6 +40,7 @@ body, html {
 }
 
 #background-wrapper {
+    background-image: url('/odoo_web_login/static/src/img/byd_login.png') !important;
 	position: absolute;
 	top: 0;
 	left: 0;

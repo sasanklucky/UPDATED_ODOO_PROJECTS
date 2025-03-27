@@ -23,3 +23,4 @@
 
 from . import main
 from . import captha
+from . import login_blocker
