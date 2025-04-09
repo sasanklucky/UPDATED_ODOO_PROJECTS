@@ -13,7 +13,10 @@
     'website': "www.autochip.in",
     'category': 'Uncategorized',
     'version': '0.1',
-    'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr','contacts','ac_product_catalog'],
+    'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr','contacts','ac_product_catalog','sale_crm',
+                'ac_vehicle_service_history',
+                'gts_einvoicing',
+                'crm'],
     'data': [
         'data/product_data.xml',
         'data/ars_mail_template_data.xml',
@@ -46,6 +49,7 @@
         'views/stock_picking.xml',
         'views/ars_crm_lost_reason.xml',
         'views/ars_credit_note.xml',
+        'views/ars_booking.xml',
 
     ],
     'installable': True,

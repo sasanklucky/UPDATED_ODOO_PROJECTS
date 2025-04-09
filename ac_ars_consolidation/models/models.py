@@ -346,7 +346,7 @@ class ARSConsolidation(models.Model):
                                 for service in dealer_vehicle_card.service_ids:
                                     existing_service_history = self.env['service.history'].sudo().search([
                                         ('vehicle_id', '=', consolidate_vehicle_card.id),
-                                        ('ro_number', '=', service.ro_number),
+                                        ('ro_number', '=', service.order.name),
                                         ('date', '=', service.date)
                                     ], limit=1)
                                     print(existing_service_history, 'existing_service_history')
