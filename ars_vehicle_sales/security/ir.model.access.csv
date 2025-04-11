@@ -13,4 +13,3 @@ access_view,ir_ui_view,website.model_ir_ui_view,base.group_portal,1,1,1,0
 access_test_drive,test_drive,model_ars_test_drive,base.group_user,1,1,1,0
 
 access_booking_amount,access.booking.amount,model_booking_amount,,1,1,1,1
-access_booking_amount_wizard,access.booking.amount.wizard,model_booking_amount_wizard,,1,1,1,0
