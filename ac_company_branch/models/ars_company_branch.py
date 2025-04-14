@@ -56,7 +56,7 @@ class BranchCrmLead(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         lead = super(BranchCrmLead, self).create(vals)
 
@@ -114,7 +114,7 @@ class BranchSaleOrder(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         order = super(BranchSaleOrder, self).create(vals)
 
@@ -180,7 +180,7 @@ class BranchRESPartner(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         bank = super(BranchRESPartner, self).create(vals)
 
@@ -238,7 +238,7 @@ class BranchProductTemp(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         product = super(BranchProductTemp, self).create(vals)
 
@@ -295,7 +295,7 @@ class CRMTeam(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         team = super(CRMTeam, self).create(vals)
 
@@ -416,7 +416,7 @@ class ResPartner(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         partner = super(ResPartner, self).create(vals)
 
@@ -474,7 +474,7 @@ class StockProduction(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         stock = super(StockProduction, self).create(vals)
 
@@ -530,7 +530,7 @@ class AccountInvoice(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         invoice = super(AccountInvoice, self).create(vals)
 
@@ -586,7 +586,7 @@ class ProductPricelist(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         productprice = super(ProductPricelist, self).create(vals)
 
@@ -643,7 +643,7 @@ class WebsitePage(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         websitepage = super(WebsitePage, self).create(vals)
 
@@ -699,7 +699,7 @@ class MailActivity(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         mailactivity = super(MailActivity, self).create(vals)
 
@@ -756,7 +756,7 @@ class HelpdeskTicket(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         halpdek = super(HelpdeskTicket, self).create(vals)
 
@@ -813,7 +813,7 @@ class ChannelSales(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         channelsales = super(ChannelSales, self).create(vals)
 
@@ -870,7 +870,7 @@ class Website(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         website = super(Website, self).create(vals)
 
@@ -927,7 +927,7 @@ class PurchaseOrder(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         purchaseorder = super(PurchaseOrder, self).create(vals)
 
@@ -984,7 +984,7 @@ class PurchaseOrderLine(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         orderline = super(PurchaseOrderLine, self).create(vals)
 
@@ -1041,7 +1041,7 @@ class PurchaseRequisition(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         purchase = super(PurchaseRequisition, self).create(vals)
 
@@ -1099,7 +1099,7 @@ class ProductSupplierInfo(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         productsupplier = super(ProductSupplierInfo, self).create(vals)
 
@@ -1157,7 +1157,7 @@ class AccountMove(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         move = super(AccountMove, self).create(vals)
 
@@ -1215,7 +1215,7 @@ class BranchStockPicking(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         stockpicking = super(BranchStockPicking, self).create(vals)
 
@@ -1273,7 +1273,7 @@ class BranchStockInventory(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchStockInventory, self).create(vals)
 
@@ -1383,7 +1383,7 @@ class BranchWarehouse(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchWarehouse, self).create(vals)
 
@@ -1441,7 +1441,7 @@ class BranchWarehouseLocation(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchWarehouseLocation, self).create(vals)
 
@@ -1499,7 +1499,7 @@ class BranchLocationRoute(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchLocationRoute, self).create(vals)
 
@@ -1556,7 +1556,7 @@ class BranchProcurement(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchProcurement, self).create(vals)
 
@@ -1614,7 +1614,7 @@ class BranchProductProduct(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchProductProduct, self).create(vals)
 
@@ -1672,7 +1672,7 @@ class BranchMoveLine(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchMoveLine, self).create(vals)
 
@@ -1730,7 +1730,7 @@ class BranchAccountPayment(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountPayment, self).create(vals)
 
@@ -1788,7 +1788,7 @@ class BranchStockQuant(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchStockQuant, self).create(vals)
 
@@ -1846,7 +1846,7 @@ class BranchAccountAccount(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountAccount, self).create(vals)
 
@@ -1904,7 +1904,7 @@ class BranchAccountTax(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountTax, self).create(vals)
 
@@ -1962,7 +1962,7 @@ class BranchAccountFiscal(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountFiscal, self).create(vals)
 
@@ -2021,7 +2021,7 @@ class BranchAccountJournal(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountJournal, self).create(vals)
 
@@ -2078,7 +2078,7 @@ class BranchAccountFinancial(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountFinancial, self).create(vals)
 
@@ -2135,7 +2135,7 @@ class BranchHrPayslip(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchHrPayslip, self).create(vals)
 
@@ -2194,7 +2194,7 @@ class BranchHrPayroll(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchHrPayroll, self).create(vals)
 
@@ -2251,7 +2251,7 @@ class BranchHrSalary(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchHrSalary, self).create(vals)
 
@@ -2308,7 +2308,7 @@ class BranchHrReg(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchHrReg, self).create(vals)
 
@@ -2366,7 +2366,7 @@ class BranchProjectTask(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchProjectTask, self).create(vals)
 
@@ -2423,7 +2423,7 @@ class BranchProjectTaskUser(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchProjectTaskUser, self).create(vals)
 
@@ -2481,7 +2481,7 @@ class BranchIrAttachment(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
     #
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchIrAttachment, self).create(vals)
 
