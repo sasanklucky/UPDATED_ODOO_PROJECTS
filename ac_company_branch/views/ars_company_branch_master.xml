@@ -66,14 +66,13 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
+
                 <field name="company_id" position="after">
                     <field name="allowed_branch_ids" widget="many2many_tags"
-                           domain="[('company_id', 'in', company_ids)]"
-                           options="{'no_create': True,'no_open': True}"/>
-                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
-                           options="{'no_create': True, 'no_open': True}" required="1"/>
-
-                    <!--                    <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>-->
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]"
+                           />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>
@@ -84,16 +83,12 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_simple_form"/>
             <field name="arch" type="xml">
-                <field name="company_id" position="after">
-                    <group>
 
-                        <field name="allowed_branch_ids" widget="many2many_tags"
-                               options="{'no_create': True,'no_open': True}"/>
-                        <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
-                               options="{'no_create': True, 'no_open': True}" required="1"/>
-                        <!--                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"-->
-                        <!--                           options="{'no_create': True,'no_open': True}"/>-->
-                    </group>
+                <field name="company_id" position="after">
+                    <field name="allowed_branch_ids" widget="many2many_tags"
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]" />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>
