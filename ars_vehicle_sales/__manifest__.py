@@ -15,7 +15,6 @@
     'version': '0.1',
     'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr','contacts','ac_product_catalog','sale_crm',
                 'ac_vehicle_service_history',
-                'gts_einvoicing',
                 'crm'],
     'data': [
         'data/product_data.xml',

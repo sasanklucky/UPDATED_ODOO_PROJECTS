@@ -59,6 +59,7 @@ class FleetVehicle(models.Model):
         ServiceHistory = self.env['service.history']
         param = self.env['ir.config_parameter'].sudo()
         cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
+        print("cons......")
         is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
         db = sql_db.db_connect(f"{cons_db_name}")
         if is_cons_enable and cons_db_name:

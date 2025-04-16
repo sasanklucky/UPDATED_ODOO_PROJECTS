@@ -22,6 +22,7 @@ class AccountInvoice(models.Model):
             with contextlib.closing(db.cursor()) as cr:
                 cr.autocommit(True)
                 env = api.Environment(cr, SUPERUSER_ID, {})
+                print(self._context.get('default_type'),self._context.get('type'),'eeee')
                 if (self._context.get('default_type') or self._context.get('type') == 'out_invoice') and (self.ars_invoice_type == 'vehicle' or self.order_id.sale_type == 'vehicle'):
                     for inv_line in self.invoice_line_ids:
                         if inv_line.vin_no:

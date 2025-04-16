@@ -114,7 +114,7 @@ class BranchSaleOrder(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         order = super(BranchSaleOrder, self).create(vals)
 
@@ -1730,7 +1730,7 @@ class BranchAccountPayment(models.Model):
         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
             self.branch_id = False
 
-    # @api.model
+    @api.model
     def create(self, vals):
         vehicle = super(BranchAccountPayment, self).create(vals)
 
