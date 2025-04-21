@@ -470,7 +470,7 @@ class ARS_sale_order(models.Model):
                         vals['sale_aftersales'] = 'after_sales'
                 elif sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
                     vals['sale_aftersales'] = 'sales'
-            res = super(ARS_sale_order, self).create(vals)
+        res = super(ARS_sale_order, self).create(vals)
         return res
 
     @api.multi
