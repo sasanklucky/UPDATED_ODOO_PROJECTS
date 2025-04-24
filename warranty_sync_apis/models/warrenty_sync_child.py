@@ -29,7 +29,7 @@ class ArsSaleWarrentySync(models.Model):
     child_db = fields.Char()
     order_id_ref = fields.Char(string='Child Service Document ref')
     # test_css = fields.Html(string='CSS', sanitize=False, compute='_compute_css', store=False)
-    hide_sync = fields.Boolean(string='Sync', compute='hide_sync_status', store=True)
+    # hide_sync = fields.Boolean(string='Sync', compute='hide_sync_status', store=True)
     sync_log_details_ids = fields.One2many('warrenty_sync_log', 'warrenty_record', string='Log')
     reject_reason = fields.Char('Rejected Reason')
     any_line_rejected = fields.Boolean(string="Any Line Rejected", compute='_compute_any_line_rejected')
@@ -96,28 +96,28 @@ class ArsSaleWarrentySync(models.Model):
             'context': {'active_ids': self.ids},
         }
 
-    @api.depends('state', 'sync_count', 'Warranty_sync_reject', 'order_lines')
-    def hide_sync_status(self):
-        param = self.env['ir.config_parameter'].sudo()
-        child = param.get_param('warranty_sync_apis.warrenty_company_type')
-
-        for record in self:
-            # Set hide_sync based on conditions
-            if record.Warranty_sync_reject:
-                if record.sync_count < 2:
-                    record.hide_sync = False
-                else:
-                    record.hide_sync = True
-
-            else:
-                if child == 'is_child_company' and record.state == 'draft' and not record.sync_warranty:
-                    if record.sync_count < 2:
-                        record.hide_sync = False
-
-                    else:
-                        record.hide_sync = True
-                else:
-                    record.hide_sync = True
+    # @api.depends('state', 'sync_count', 'Warranty_sync_reject', 'order_lines')
+    # def hide_sync_status(self):
+    #     param = self.env['ir.config_parameter'].sudo()
+    #     child = param.get_param('warranty_sync_apis.warrenty_company_type')
+    #
+    #     for record in self:
+    #         # Set hide_sync based on conditions
+    #         if record.Warranty_sync_reject:
+    #             if record.sync_count < 2:
+    #                 record.hide_sync = False
+    #             else:
+    #                 record.hide_sync = True
+    #
+    #         else:
+    #             if child == 'is_child_company' and record.state == 'draft' and not record.sync_warranty:
+    #                 if record.sync_count < 2:
+    #                     record.hide_sync = False
+    #
+    #                 else:
+    #                     record.hide_sync = True
+    #             else:
+    #                 record.hide_sync = True
 
             # if record.sync_count < 2 and record.hide_sync:
             #     record.Warranty_sync_reject = False
