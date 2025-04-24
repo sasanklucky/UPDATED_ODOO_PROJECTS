@@ -31,8 +31,7 @@ class ARS_MailActivity(models.Model):
         for rec in self:
             if rec.response_id:
                 rec.response_create_date = rec.response_id.create_date
-            else:
-                rec.response_create_date = False
+
 
     @api.model
     def create(self, values):
