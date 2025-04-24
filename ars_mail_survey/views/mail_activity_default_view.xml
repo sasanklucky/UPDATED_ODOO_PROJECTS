@@ -28,6 +28,7 @@
                             <field name="res_id" invisible="1"/>
                             <field name="previous_activity_type_id"/>
                             <field name="has_recommended_activities"/>
+                            <field name="response_create_date" />
                         </group>
                         <group attrs="{'invisible': [('has_recommended_activities','=',False)]}">
                             <div>
