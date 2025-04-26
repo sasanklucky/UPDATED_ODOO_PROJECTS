@@ -3,6 +3,12 @@
 <odoo>
     <data>
 
+        <template id="assets_backend" name="branch switch assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/ac_company_branch/static/src/js/SwitchBranchMenu.js"/>
+            </xpath>
+        </template>
+
         <!-- branch master for company -->
 
         <record model="ir.ui.view" id="branch_master_company_list">
@@ -60,25 +66,54 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
+
                 <field name="company_id" position="after">
-                    <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
+                    <field name="allowed_branch_ids" widget="many2many_tags"
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]"
+                           />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>
 
 
+        <record id="view_res_users_form_inherit_branch" model="ir.ui.view">
+            <field name="name">res.users.form.inherit.branch</field>
+            <field name="model">res.users</field>
+            <field name="inherit_id" ref="base.view_users_simple_form"/>
+            <field name="arch" type="xml">
 
-    <record id="view_sale_order_branch_inherit_branch" model="ir.ui.view">
-        <field name="name">sale.order.branch.form.inherit.branch</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="ars_after_sales.view_service_order_form_inherit"/>
-        <field name="arch" type="xml">
-            <!-- Insert branch_id after company_id -->
-            <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
+                <field name="company_id" position="after">
+                    <field name="allowed_branch_ids" widget="many2many_tags"
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]" />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
+                </field>
             </field>
-        </field>
-    </record>
+        </record>
+
+
+        <record id="view_sale_order_branch_inherit_branch" model="ir.ui.view">
+            <field name="name">sale.order.branch.form.inherit.branch</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ars_after_sales.view_service_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <!-- Insert branch_id after company_id -->
+                <field name="company_id" position="after">
+                    <group>
+
+                        <field name="allowed_branch_ids" widget="many2many_tags"
+                               options="{'no_create': True,'no_open': True}"/>
+                        <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
+                               options="{'no_create': True, 'no_open': True}"/>
+                        <!--                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"-->
+                        <!--                           options="{'no_create': True,'no_open': True}"/>-->
+                    </group>
+                </field>
+            </field>
+        </record>
+
 
 
 

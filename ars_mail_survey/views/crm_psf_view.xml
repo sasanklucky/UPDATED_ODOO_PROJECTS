@@ -115,6 +115,8 @@
                     <field name="mobile" attrs="{'invisible': [('invoice_type','not in',('sales','after_sales'))]}"/>
                     <field name="vin_no"/>
                     <field name="reg_no"/>
+                    <field name="response_create_date" />
+
                 </field>
                 <field name="user_id" position="after">
                     <field name="satisfaction_status" attrs="{'readonly':1}"/>
