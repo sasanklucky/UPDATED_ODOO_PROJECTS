@@ -458,7 +458,8 @@ class ARS_sale_order(models.Model):
     @api.model
     def create(self, vals):
         sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
-        self.check_valid_sales_channel(sale_team, vals['sale_type'])
+        #commented, because reflecting under 'send to nsc' implementation.
+        # self.check_valid_sales_channel(sale_team, vals['sale_type'])
         if vals.get('name', _('New')) == _('New'):
             if sale_team or 'sale_type' in vals:
                 if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':
@@ -469,7 +470,7 @@ class ARS_sale_order(models.Model):
                         vals['sale_aftersales'] = 'after_sales'
                 elif sale_team.team_type == 'sales' and vals['sale_type'] == 'vehicle':
                     vals['sale_aftersales'] = 'sales'
-            res = super(ARS_sale_order, self).create(vals)
+        res = super(ARS_sale_order, self).create(vals)
         return res
 
     @api.multi
