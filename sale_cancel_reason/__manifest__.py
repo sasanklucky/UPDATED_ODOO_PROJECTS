@@ -19,7 +19,7 @@
         ==================
         When a sale order is canceled, a reason must be given,
         it is chosen from a configured list. ''',
-    'depends': ['sale'],
+    'depends': ['sale', 'ars_vehicle_sales'],
     'data': [
             'wizard/cancel_reason_view.xml',
             'view/sale_view.xml',

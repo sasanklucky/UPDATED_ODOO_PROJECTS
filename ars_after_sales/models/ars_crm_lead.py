@@ -441,16 +441,16 @@ class ARS_crm_lead(models.Model):
     #     return super(ARS_crm_lead, self).write(vals)
 
     # Appointment stage id default set in 'Service Due'
-
-    def _default_stage_id(self):
-        team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
-        userid = self.env.user
-        stage = self._stage_find(team_id=team.id, domain=[('fold', '=', False), ('name', '=', 'New')]).id
-        if userid.sale_team_id.team_type == 'after_sales':
-            companyid = self.env.user.company_id
-            if companyid.team_stage_id.id:
-                stage = companyid.team_stage_id.id
-        return stage
+    #'''Commented the code because stage is not taking default in crm sales while creating new lead. reason is overriding default functionality.'''
+    # def _default_stage_id(self):
+    #     team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
+    #     userid = self.env.user
+    #     stage = self._stage_find(team_id=team.id, domain=[('fold', '=', False), ('name', '=', 'New')]).id
+    #     if userid.sale_team_id.team_type == 'after_sales':
+    #         companyid = self.env.user.company_id
+    #         if companyid.team_stage_id.id:
+    #             stage = companyid.team_stage_id.id
+    #     return stage
 
     # service advisor field bydefault blank
     # @api.onchange('user_id')
