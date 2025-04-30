@@ -337,19 +337,19 @@ class ARS_sale_order(models.Model):
                 self.model = customer_details.mvariant_id.id
                 self.mileage_in = customer_details.odometer
 
-    @api.multi
-    @api.onchange('vin_no')
-    def vinno_change(self):
-        if self.vin_no:
-            customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)])
-            self.count_vehicle = len(customer_details)
-            if len(customer_details) == 1:
-                self.partner_id = customer_details.driver_id.id
-                self.phone = customer_details.driver_id.phone
-                # self.regn_no = customer_details.id
-                self.vin_no = self.vin_no
-                # self.vehicle_model = customer_details.mvariant_id.id
-                self.model = customer_details.mvariant_id.id
+    # @api.multi
+    # @api.onchange('vin_no')
+    # def vinno_change(self):
+    #     if self.vin_no:
+    #         customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)])
+    #         self.count_vehicle = len(customer_details)
+    #         if len(customer_details) == 1:
+    #             self.partner_id = customer_details.driver_id.id
+    #             self.phone = customer_details.driver_id.phone
+    #             # self.regn_no = customer_details.id
+    #             self.vin_no = self.vin_no
+    #             # self.vehicle_model = customer_details.mvariant_id.id
+    #             self.model = customer_details.mvariant_id.id
 
     @api.multi
     @api.onchange('mobile')
