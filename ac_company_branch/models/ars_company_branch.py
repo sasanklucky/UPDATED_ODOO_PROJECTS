@@ -15,88 +15,59 @@ import json
 class BranchCrmLead(models.Model):
     _inherit = 'crm.lead'
 
+
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_lead_rel', 'lead_id', 'branch_id', compute='_compute_user_allowed_branch_ids', string='Allowed Branches' , ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchCrmLead, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+
         return res
 
-    @api.onchange('company_id')
+
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch    if user_branch else False
         else:
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        lead = super(BranchCrmLead, self).create(vals)
 
+        if lead.branch_id:
+            message = _(" A New Lead has been added in '%s'. '%s' branch.") % (lead.company_id.name, lead.branch_id.name)
+        else:
+            message = _(" A New Lead has been added in '%s'. Without branch.") % (lead.company_id.name)
 
-    # @api.onchange('user_id')
-    # def _onchange_user_id(self):
-    #     if self.user_id and self.user_id.branch_id:
-    #         self.branch_id = self.user_id.branch_id
-    #     else:
-    #         self.branch_id = False
-    #
-    #         print(self.user_id, 'user_id', self.branch_id)
-    #
-    # @api.onchange('company_id')
-    # def _onchange_company_id(self):
-    #     self.branch_id = self._get_branch_based_on_company(self.company_id)
-    #
-    # def _get_branch_based_on_company(self, company):
-    #     branch = self.env['branch.master.company'].search([('company_id', '=', company.id)], limit=1)
-    #     return branch.id if branch else False
-    #
-    # @api.model
-    # def create(self, vals):
-    #     if 'company_id' in vals and 'branch_id' not in vals:
-    #         # Automatically set branch_id based on company_id if it's not provided
-    #         company = self.env['res.company'].browse(vals['company_id'])
-    #         vals['branch_id'] = self._get_branch_based_on_company(company)
-    #
-    #     if vals.get('user_id'):
-    #         user = self.env['res.users'].browse(vals['user_id'])
-    #         vals['branch_id'] = user.branch_id.id if user.branch_id else False
-    #
-    #     return super(BranchCrmLead, self).create(vals)
-    #
-    # # def write(self, vals):
-    # #     if 'user_id' in vals:
-    # #         user = self.env['res.users'].browse(vals['user_id'])
-    # #         vals['branch_id'] = user.branch_id.id if user.branch_id else False
-    # #         print(vals['branch_id'], 'vals11111111')
-    # #     return super(BranchCrmLead, self).write(vals)
-    #
-    # def write(self, vals):
-    #     if 'company_id' in vals and 'branch_id' not in vals:
-    #         company = self.env['res.company'].browse(vals['company_id'])
-    #         vals['branch_id'] = self._get_branch_based_on_company(company)
-    #
-    #     if 'user_id' in vals:
-    #         user = self.env['res.users'].browse(vals['user_id'])
-    #         vals['branch_id'] = user.branch_id.id if user.branch_id else False
-    #     return super(BranchCrmLead, self).write(vals)
+        lead.env.user.notify_info(message)
+
+        return lead
 
 
 # SALE
@@ -104,53 +75,66 @@ class BranchSaleOrder(models.Model):
     _inherit = 'sale.order'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_sale_rel', 'order_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchSaleOrder, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    def action_confirm(self):
-        res = super(BranchSaleOrder, self).action_confirm()
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
-        for order in self:
-            user_branch = self.env.user.branch_id
-            if user_branch:
-                order.picking_ids.write({'branch_id': user_branch.id})
-            else:
-                raise UserError("The current user does not have a branch assigned. Please set a branch for the user.")
-        return res
+    @api.model
+    def create(self, vals):
+        order = super(BranchSaleOrder, self).create(vals)
 
+        if order.branch_id:
+            message = _(" A New Sale Order has been added in '%s'. '%s' branch.") % (order.company_id.name, order.branch_id.name)
+        else:
+            message = _(" A New Sale Order has been added in '%s'. Without branch.") % (order.company_id.name)
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
+        order.env.user.notify_info(message)
+
+        return order
+
+    # Validation error on suppose branch value didnt have in current company
+    # @api.constrains('branch_id', 'allowed_branch_ids', 'company_id')
+    # def _check_branch_allowed_and_company(self):
     #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-
+    #         if record.branch_id:
+    #
+    #             if record.company_id and record.branch_id.company_id != record.company_id:
+    #                 raise ValidationError("That branch value didn't map in current company.")
 
 
 # RES PARTNER BANK
@@ -158,40 +142,57 @@ class BranchRESPartner(models.Model):
     _inherit = 'res.partner.bank'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_bank_rel', 'bank_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchRESPartner, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        bank = super(BranchRESPartner, self).create(vals)
+
+        if bank.branch_id:
+            message = _(" A New Res Partner Bank has been added in '%s'. '%s' branch.") % (
+            bank.company_id.name, bank.branch_id.name)
+        else:
+            message = _(" A New Res Partner Bank has been added in '%s'. Without branch.") % (bank.company_id.name)
+
+        bank.env.user.notify_info(message)
+
+        return bank
 
 
 # Product Template
@@ -199,714 +200,860 @@ class BranchProductTemp(models.Model):
     _inherit = 'product.template'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_template_rel', 'template_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchProductTemp, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        product = super(BranchProductTemp, self).create(vals)
+
+        if product.branch_id:
+            message = _(" A New Product Template has been added in '%s'. '%s' branch.") % (
+                product.company_id.name, product.branch_id.name)
+        else:
+            message = _(" A New Product Template has been added in '%s'. Without branch.") % (product.company_id.name)
+
+        product.env.user.notify_info(message)
+
+        return product
 
 #CRM Team
 class CRMTeam(models.Model):
     _inherit = 'crm.team'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch', domain="[('company_id', '=', company_id)]")
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_team_rel', 'team_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(CRMTeam, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-    #
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        team = super(CRMTeam, self).create(vals)
+
+        if team.branch_id:
+            message = _(" A New CRM Team has been added in '%s'. '%s' branch.") % (
+                team.company_id.name, team.branch_id.name)
+        else:
+            message = _(" A New CRM Team has been added in '%s'. Without branch.") % (team.company_id.name)
+
+        team.env.user.notify_info(message)
+
+        return team
+
 
 #Vehicle
-class FleetVehicle(models.Model):
-    _inherit = 'fleet.vehicle'
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
-
-    @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(FleetVehicle, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
-
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
-        else:
-            # Clear the branch if no company is selected
-            self.branch_id = False
-
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-
+# class FleetVehicle(models.Model):
+#     _inherit = 'fleet.vehicle'
+#
+#     branch_id = fields.Many2one('branch.master.company', 'Branch')
+#     allowed_branch_ids = fields.Many2many(
+#         'branch.master.company',
+#         'branch_fleet_vehicle_rel',
+#         'vehicle_id',
+#         'branch_id',
+#         compute='_compute_user_allowed_branch_ids',
+#         string='Allowed Branches',
+#         ondelete='cascade', store=False
+#     )
+#
+#     # @api.depends('user_id')
+#     def _compute_user_allowed_branch_ids(self):
+#         for rec in self:
+#             rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+#
+#     @api.model
+#     def default_get(self, fields_list):
+#         """Set default branch and allowed branches based on the logged-in user."""
+#         res = super(FleetVehicle, self).default_get(fields_list)
+#         user = self.env.user
+#         if user.branch_id:
+#             res['branch_id'] = user.branch_id.id
+#         if user.allowed_branch_ids:
+#             res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+#         return res
+#
+#     @api.onchange('company_ids')
+#     def _onchange_company_id(self):
+#         if self.company_ids:
+#             selected_company_ids = self.company_ids.ids
+#
+#             user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+#             user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+#
+#             self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+#             self.branch_id = user_branch if user_branch else False
+#         else:
+#             self.allowed_branch_ids = False
+#             self.branch_id = False
+#
+#     @api.onchange('allowed_branch_ids')
+#     def _onchange_allowed_branch_ids(self):
+#         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+#             self.branch_id = False
+#
+#     # @api.model
+#     def create(self, vals):
+#         vehicle = super(FleetVehicle, self).create(vals)
+#
+#         if vehicle.branch_id:
+#             message = _(" A New Fleet Vehicle has been added in '%s'. '%s' branch.") % (
+#                 vehicle.company_id.name, vehicle.branch_id.name)
+#         else:
+#             message = _(" A New Fleet Vehicle has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+#
+#         vehicle.env.user.notify_info(message)
+#
+#         return vehicle
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_partner_rel', 'partner_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(ResPartner, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        partner = super(ResPartner, self).create(vals)
+
+        if partner.branch_id:
+            message = _(" A New Partner has been added in '%s'. '%s' branch.") % (
+                partner.company_id.name, partner.branch_id.name)
+        else:
+            message = _(" A New Partner has been added in '%s'. Without branch.") % (partner.company_id.name)
+
+        partner.env.user.notify_info(message)
+
+        return partner
 
 
 class StockProduction(models.Model):
     _inherit = 'stock.production.lot'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_stock_rel', 'stock_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(StockProduction, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        stock = super(StockProduction, self).create(vals)
+
+        if stock.branch_id:
+            message = _(" A New Stock Production Lot has been added in '%s'. '%s' branch.") % (
+                stock.company_id.name, stock.branch_id.name)
+        else:
+            message = _(" A New Stock Production Lot has been added in '%s'. Without branch.") % (stock.company_id.name)
+
+        stock.env.user.notify_info(message)
+
+        return stock
 
 class AccountInvoice(models.Model):
     _inherit = 'account.invoice'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_invoice_rel', 'invoice_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(AccountInvoice, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        invoice = super(AccountInvoice, self).create(vals)
+
+        if invoice.branch_id:
+            message = _(" A New Invoice has been added in '%s'. '%s' branch.") % (
+                invoice.company_id.name, invoice.branch_id.name)
+        else:
+            message = _(" A New Invoice has been added in '%s'. Without branch.") % (invoice.company_id.name)
+
+        invoice.env.user.notify_info(message)
+
+        return invoice
 
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_price_rel', 'list_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(ProductPricelist, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-    #
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        productprice = super(ProductPricelist, self).create(vals)
+
+        if productprice.branch_id:
+            message = _(" A New Product PriceList has been added in '%s'. '%s' branch.") % (
+                productprice.company_id.name, productprice.branch_id.name)
+        else:
+            message = _(" A New Product PriceList has been added in '%s'. Without branch.") % (productprice.company_id.name)
+
+        productprice.env.user.notify_info(message)
+
+        return productprice
+
 
 class WebsitePage(models.Model):
     _inherit = 'website.page'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_page_rel', 'page_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(WebsitePage, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-
-#
-# class Instructions(models.Model):
-#     _inherit = 'instructions'
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.model
-#     def default_get(self, fields_list):
-#         """Set default branch based on the logged-in user."""
-#         res = super(Instructions, self).default_get(fields_list)
-#         if self.env.user.branch_id:
-#             res['branch_id'] = self.env.user.branch_id.id
-#         return res
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         """Update branch based on the company."""
-#         if self.company_id:
-#             # Set branch based on user's branch filtered by company
-#             user_branch = self.env.user.branch_id
-#             if user_branch and user_branch.company_id == self.company_id:
-#                 self.branch_id = user_branch
-#             else:
-#                 self.branch_id = False
-#         else:
-#             # Clear the branch if no company is selected
-#             self.branch_id = False
-#
-#     @api.constrains('branch_id')
-#     def _check_branch_id(self):
-#         """
-#         Validate that the selected branch belongs to the logged-in user.
-#         """
-#         for record in self:
-#             if record.branch_id and record.branch_id != self.env.user.branch_id:
-#                 raise ValidationError(
-#                     "You can only select your assigned branch. "
-#                     "The branch you selected is not allowed for this user."
-#                 )
-
-
-class ResUserList(models.Model):
-    _inherit = 'res.users'
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
     @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(ResUserList, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
+    def create(self, vals):
+        websitepage = super(WebsitePage, self).create(vals)
 
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if websitepage.branch_id:
+            message = _(" A New Website Page has been added in '%s'. '%s' branch.") % (
+                websitepage.company_id.name, websitepage.branch_id.name)
         else:
-            # Clear the branch if no company is selected
-            self.branch_id = False
-    #
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+            message = _(" A New Website Page has been added in '%s'. Without branch.") % (websitepage.company_id.name)
 
+        websitepage.env.user.notify_info(message)
+
+        return websitepage
 
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_mail_rel', 'mail_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(MailActivity, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
-#
-# class LeadsAnalysis(models.Model):
-#     _inherit = 'crm.opportunity.report'
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
+    @api.model
+    def create(self, vals):
+        mailactivity = super(MailActivity, self).create(vals)
 
+        if mailactivity.branch_id:
+            message = _(" A New Mail Activity has been added in '%s'. '%s' branch.") % (
+                mailactivity.company_id.name, mailactivity.branch_id.name)
+        else:
+            message = _(" A New Mail Activity has been added in '%s'. Without branch.") % (mailactivity.company_id.name)
+
+        mailactivity.env.user.notify_info(message)
+
+        return mailactivity
 
 #
 class HelpdeskTicket(models.Model):
     _inherit = 'helpdesk.ticket'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_ticket_rel', 'ticket_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(HelpdeskTicket, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
-#
-# class Estimation(models.Model):
-#     _inherit = 'sale.order'
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.onchange('user_id')
-#     def _onchange_user_id(self):
-#         if self.user_id and self.user_id.branch_id:
-#             self.branch_id = self.user_id.branch_id
-#         else:
-#             self.branch_id = False
-#
-#             print(self.user_id, 'user_id', self.branch_id)
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         self.branch_id = self._get_branch_based_on_company(self.company_id)
-#
-#     def _get_branch_based_on_company(self, company):
-#         branch = self.env['branch.master.company'].search([('company_id', '=', company.id)], limit=1)
-#         return branch.id if branch else False
-#
-#     @api.model
-#     def create(self, vals):
-#         if 'company_id' in vals and 'branch_id' not in vals:
-#             # Automatically set branch_id based on company_id if it's not provided
-#             company = self.env['res.company'].browse(vals['company_id'])
-#             vals['branch_id'] = self._get_branch_based_on_company(company)
-#
-#         if vals.get('user_id'):
-#             user = self.env['res.users'].browse(vals['user_id'])
-#             vals['branch_id'] = user.branch_id.id if user.branch_id else False
-#
-#         return super(Estimation, self).create(vals)
-#
-#
-#     def write(self, vals):
-#         if 'company_id' in vals and 'branch_id' not in vals:
-#             company = self.env['res.company'].browse(vals['company_id'])
-#             vals['branch_id'] = self._get_branch_based_on_company(company)
-#
-#         if 'user_id' in vals:
-#             user = self.env['res.users'].browse(vals['user_id'])
-#             vals['branch_id'] = user.branch_id.id if user.branch_id else False
-#         return super(Estimation, self).write(vals)
+    @api.model
+    def create(self, vals):
+        halpdek = super(HelpdeskTicket, self).create(vals)
 
+        if halpdek.branch_id:
+            message = _(" A New Helpdesk Ticket has been added in '%s'. '%s' branch.") % (
+                halpdek.company_id.name, halpdek.branch_id.name)
+        else:
+            message = _(" A New Helpdesk Ticket has been added in '%s'. Without branch.") % (halpdek.company_id.name)
+
+        halpdek.env.user.notify_info(message)
+
+        return halpdek
 
 
 class ChannelSales(models.Model):
     _inherit = 'report.all.channels.sales'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_sales_rel', 'channel_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(ChannelSales, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        channelsales = super(ChannelSales, self).create(vals)
+
+        if channelsales.branch_id:
+            message = _(" A New Sales Channels has been added in '%s'. '%s' branch.") % (
+                channelsales.company_id.name, channelsales.branch_id.name)
+        else:
+            message = _(" A New Sales Channels has been added in '%s'. Without branch.") % (channelsales.company_id.name)
+
+        channelsales.env.user.notify_info(message)
+
+        return channelsales
 
 
 class Website(models.Model):
     _inherit = 'website'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_website_rel', 'website_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(Website, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-class WebPage(models.Model):
-    _inherit = 'website.page'
-
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
     @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(WebPage, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
+    def create(self, vals):
+        website = super(Website, self).create(vals)
 
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if website.branch_id:
+            message = _(" A New Website has been added in '%s'. '%s' branch.") % (
+                website.company_id.name, website.branch_id.name)
         else:
-            # Clear the branch if no company is selected
-            self.branch_id = False
+            message = _(" A New Website has been added in '%s'. Without branch.") % (website.company_id.name)
 
+        website.env.user.notify_info(message)
 
+        return website
 
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_purchase_rel', 'purchase_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(PurchaseOrder, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        purchaseorder = super(PurchaseOrder, self).create(vals)
+
+        if purchaseorder.branch_id:
+            message = _(" A New Purchase Order has been added in '%s'. '%s' branch.") % (
+                purchaseorder.company_id.name, purchaseorder.branch_id.name)
+        else:
+            message = _(" A New Purchase Order has been added in '%s'. Without branch.") % (purchaseorder.company_id.name)
+
+        purchaseorder.env.user.notify_info(message)
+
+        return purchaseorder
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_line_rel', 'order_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(PurchaseOrderLine, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['company_id'] = self.env.user.company_id.id
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        orderline = super(PurchaseOrderLine, self).create(vals)
+
+        if orderline.branch_id:
+            message = _(" A New Purchase OrderLine has been added in '%s'. '%s' branch.") % (
+                orderline.company_id.name, orderline.branch_id.name)
+        else:
+            message = _(" A New Purchase OrderLine has been added in '%s'. Without branch.") % (orderline.company_id.name)
+
+        orderline.env.user.notify_info(message)
+
+        return orderline
 
 class PurchaseRequisition(models.Model):
     _inherit = 'purchase.requisition'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_requisition_rel', 'requisition_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(PurchaseRequisition, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        purchase = super(PurchaseRequisition, self).create(vals)
+
+        if purchase.branch_id:
+            message = _(" A New Purchase Requisition has been added in '%s'. '%s' branch.") % (
+                purchase.company_id.name, purchase.branch_id.name)
+        else:
+            message = _(" A New Purchase Requisition has been added in '%s'. Without branch.") % (purchase.company_id.name)
+
+        purchase.env.user.notify_info(message)
+
+        return purchase
 
 
 class ProductSupplierInfo(models.Model):
@@ -914,29 +1061,57 @@ class ProductSupplierInfo(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_supplier_rel', 'supplier_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(ProductSupplierInfo, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        productsupplier = super(ProductSupplierInfo, self).create(vals)
+
+        if productsupplier.branch_id:
+            message = _(" A New Product Supplierinfo has been added in '%s'. '%s' branch.") % (
+                productsupplier.company_id.name, productsupplier.branch_id.name)
+        else:
+            message = _(" A New Product Supplierinfo has been added in '%s'. Without branch.") % (productsupplier.company_id.name)
+
+        productsupplier.env.user.notify_info(message)
+
+        return productsupplier
 
 
 class AccountMove(models.Model):
@@ -944,89 +1119,57 @@ class AccountMove(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_move_rel', 'move_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(AccountMove, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
-#
-# class FleetVehicle(models.Model):
-#     _inherit = 'fleet.vehicle'
-#
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.model
-#     def default_get(self, fields_list):
-#         """Set default branch based on the logged-in user."""
-#         res = super(FleetVehicle, self).default_get(fields_list)
-#         if self.env.user.branch_id:
-#             res['branch_id'] = self.env.user.branch_id.id
-#         return res
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         """Update branch based on the company."""
-#         if self.company_id:
-#             # Set branch based on user's branch filtered by company
-#             user_branch = self.env.user.branch_id
-#             if user_branch and user_branch.company_id == self.company_id:
-#                 self.branch_id = user_branch
-#             else:
-#                 self.branch_id = False
-#         else:
-#             # Clear the branch if no company is selected
-#             self.branch_id = False
+    @api.model
+    def create(self, vals):
+        move = super(AccountMove, self).create(vals)
 
+        if move.branch_id:
+            message = _(" A New Account Move has been added in '%s'. '%s' branch.") % (
+                move.company_id.name, move.branch_id.name)
+        else:
+            message = _(" A New Account Move has been added in '%s'. Without branch.") % (move.company_id.name)
 
-#
-# class BranchAccountInvoice(models.Model):
-#     _inherit = 'account.invoice'
-#
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.model
-#     def default_get(self, fields_list):
-#         """Set default branch based on the logged-in user."""
-#         res = super(BranchAccountInvoice, self).default_get(fields_list)
-#         if self.env.user.branch_id:
-#             res['branch_id'] = self.env.user.branch_id.id
-#         return res
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         """Update branch based on the company."""
-#         if self.company_id:
-#             # Set branch based on user's branch filtered by company
-#             user_branch = self.env.user.branch_id
-#             if user_branch and user_branch.company_id == self.company_id:
-#                 self.branch_id = user_branch
-#             else:
-#                 self.branch_id = False
-#         else:
-#             # Clear the branch if no company is selected
-#             self.branch_id = False
+        move.env.user.notify_info(message)
 
+        return move
 
 
 class BranchStockPicking(models.Model):
@@ -1034,40 +1177,57 @@ class BranchStockPicking(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_picking_rel', 'picking_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchStockPicking, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        stockpicking = super(BranchStockPicking, self).create(vals)
+
+        if stockpicking.branch_id:
+            message = _(" A New Stock Picking has been added in '%s'. '%s' branch.") % (stockpicking.company_id.name, stockpicking.branch_id.name)
+        else:
+            message = _(" A New Stock Picking has been added in '%s'. Without branch.") % (stockpicking.company_id.name)
+
+        stockpicking.env.user.notify_info(message)
+
+        return stockpicking
+
 
 
 class BranchStockInventory(models.Model):
@@ -1075,58 +1235,109 @@ class BranchStockInventory(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_inventory_rel', 'inventory_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchStockInventory, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-
-class BranchStockProduction(models.Model):
-    _inherit = 'stock.production.lot'
-
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
     @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(BranchStockProduction, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
+    def create(self, vals):
+        vehicle = super(BranchStockInventory, self).create(vals)
 
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if vehicle.branch_id:
+            message = _(" A New Stock Inventory has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
         else:
-            # Clear the branch if no company is selected
-            self.branch_id = False
+            message = _(" A New Stock Inventory has been added in '%s'. Without branch.") % (vehicle.company_id.name)
 
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
+#
+# class BranchStockProduction(models.Model):
+#     _inherit = 'stock.production.lot'
+#
+#
+#     branch_id = fields.Many2one('branch.master.company', 'Branch')
+#     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_lot_rel', 'lot_id', 'branch_id',
+#                                           string='Allowed Branches', ondelete='cascade')
+#
+#     @api.model
+#     def default_get(self, fields_list):
+#         """Set default branch and allowed branches based on the logged-in user."""
+#         res = super(BranchStockProduction, self).default_get(fields_list)
+#         user = self.env.user
+#         if user.branch_id:
+#             res['branch_id'] = user.branch_id.id
+#         if user.allowed_branch_ids:
+#             res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+#         return res
+#
+#     @api.onchange('company_ids')
+#     def _onchange_company_id(self):
+#         if self.company_ids:
+#             selected_company_ids = self.company_ids.ids
+#
+#             user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+#             user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+#
+#             self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+#             self.branch_id = user_branch if user_branch else False
+#         else:
+#             self.allowed_branch_ids = False
+#             self.branch_id = False
+#
+#     @api.onchange('allowed_branch_ids')
+#     def _onchange_allowed_branch_ids(self):
+#         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+#             self.branch_id = False
+#
+#     # @api.model
+#     def create(self, vals):
+#         vehicle = super(BranchStockProduction, self).create(vals)
+#
+#         if vehicle.branch_id:
+#             message = _(" A New Lead has been added in '%s'. '%s' branch.") % (
+#                 vehicle.company_id.name, vehicle.branch_id.name)
+#         else:
+#             message = _(" A New Lead has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+#
+#         vehicle.env.user.notify_info(message)
+#
+#         return vehicle
 
 
 class BranchWarehouse(models.Model):
@@ -1134,29 +1345,57 @@ class BranchWarehouse(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_warehouse_rel', 'warehouse_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchWarehouse, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchWarehouse, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Warehouse has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Warehouse has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchWarehouseLocation(models.Model):
@@ -1164,29 +1403,57 @@ class BranchWarehouseLocation(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_location_rel', 'location_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchWarehouseLocation, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchWarehouseLocation, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Location has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Location has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchLocationRoute(models.Model):
@@ -1194,58 +1461,114 @@ class BranchLocationRoute(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_route_rel', 'route_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchLocationRoute, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchLocationRoute, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Stock Location Route has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Stock Location Route has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchProcurement(models.Model):
     _inherit = 'procurement.rule'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_rule_rel', 'rule_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchProcurement, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchProcurement, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Procurement Rule has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Procurement Rule has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchProductProduct(models.Model):
@@ -1253,28 +1576,57 @@ class BranchProductProduct(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_product_product_rel', 'product_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchProductProduct, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchProductProduct, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Product has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Product has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchMoveLine(models.Model):
@@ -1282,28 +1634,57 @@ class BranchMoveLine(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_move_line_rel', 'move_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchMoveLine, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchMoveLine, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Move Line has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Move Line has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchAccountPayment(models.Model):
@@ -1311,28 +1692,57 @@ class BranchAccountPayment(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payment_rel', 'payment_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountPayment, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountPayment, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Payment has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Payment has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchStockQuant(models.Model):
@@ -1340,87 +1750,57 @@ class BranchStockQuant(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_quant_rel', 'quant_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchStockQuant, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
-# class BranchAccountasset(models.Model):
-#     _inherit = 'account.asset.asset'
-#
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.model
-#     def default_get(self, fields_list):
-#         """Set default branch based on the logged-in user."""
-#         res = super(BranchAccountasset, self).default_get(fields_list)
-#         if self.env.user.branch_id:
-#             res['branch_id'] = self.env.user.branch_id.id
-#         return res
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         """Update branch based on the company."""
-#         if self.company_id:
-#             # Set branch based on user's branch filtered by company
-#             user_branch = self.env.user.branch_id
-#             if user_branch and user_branch.company_id == self.company_id:
-#                 self.branch_id = user_branch
-#             else:
-#                 self.branch_id = False
-#         else:
-#             # Clear the branch if no company is selected
-#             self.branch_id = False
-#
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchStockQuant, self).create(vals)
 
-#
-# class BranchAssetCategory(models.Model):
-#     _inherit = 'account.asset.category'
-#
-#
-#     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
-#
-#     @api.model
-#     def default_get(self, fields_list):
-#         """Set default branch based on the logged-in user."""
-#         res = super(BranchAssetCategory, self).default_get(fields_list)
-#         if self.env.user.branch_id:
-#             res['branch_id'] = self.env.user.branch_id.id
-#         return res
-#
-#     @api.onchange('company_id')
-#     def _onchange_company_id(self):
-#         """Update branch based on the company."""
-#         if self.company_id:
-#             # Set branch based on user's branch filtered by company
-#             user_branch = self.env.user.branch_id
-#             if user_branch and user_branch.company_id == self.company_id:
-#                 self.branch_id = user_branch
-#             else:
-#                 self.branch_id = False
-#         else:
-#             # Clear the branch if no company is selected
-#             self.branch_id = False
+        if vehicle.branch_id:
+            message = _(" A New Stock Quant has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Stock Quant has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchAccountAccount(models.Model):
@@ -1428,28 +1808,57 @@ class BranchAccountAccount(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_account_rel', 'account_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountAccount, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountAccount, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Account has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Account has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchAccountTax(models.Model):
@@ -1457,28 +1866,57 @@ class BranchAccountTax(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_tax_rel', 'tax_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountTax, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountTax, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Tax has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Tax has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchAccountFiscal(models.Model):
@@ -1486,28 +1924,58 @@ class BranchAccountFiscal(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_fiscal_rel', 'fiscal_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountFiscal, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountFiscal, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Fiscal Position has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Fiscal Position has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
+
 
 
 class BranchAccountJournal(models.Model):
@@ -1515,86 +1983,171 @@ class BranchAccountJournal(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_journal_rel', 'journal_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountJournal, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountJournal, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Journal has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Journal has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchAccountFinancial(models.Model):
     _inherit = 'account.financial.html.report'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_financial_rel', 'financial_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAccountFinancial, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAccountFinancial, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Account Financial has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Account Financial has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchHrPayslip(models.Model):
     _inherit = 'hr.payslip'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payslip_rel', 'payslip_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrPayslip, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrPayslip, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Payslip has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Payslip has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchHrPayroll(models.Model):
@@ -1602,86 +2155,172 @@ class BranchHrPayroll(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payroll_rel', 'payroll_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrPayroll, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrPayroll, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Payroll Structure has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Payroll Structure has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchHrSalary(models.Model):
     _inherit = 'hr.salary.rule'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_rule_rel', 'rule_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrSalary, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrSalary, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Salary Rule has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Salary Rule has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchHrReg(models.Model):
     _inherit = 'hr.contribution.register'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_register_rel', 'register_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrReg, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrReg, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Contribution has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Contribution has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchProjectTask(models.Model):
@@ -1689,86 +2328,173 @@ class BranchProjectTask(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_task_rel', 'task_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchProjectTask, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchProjectTask, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Project Task has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Project Task has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchProjectTaskUser(models.Model):
     _inherit = 'report.project.task.user'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_task_user_rel', 'task_user_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchProjectTaskUser, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchProjectTaskUser, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Project Task User has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Project Task User has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchIrAttachment(models.Model):
     _inherit = 'ir.attachment'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_attachment_rel', 'attachment_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchIrAttachment, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+    #
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchIrAttachment, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Attachment has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Attachment has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
+
 
 
 class BranchAnalytic(models.Model):
@@ -1776,57 +2502,114 @@ class BranchAnalytic(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_analytic_line_rel', 'analytic_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchAnalytic, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchAnalytic, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Analytic Line has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Analytic Line has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchHrEmployee(models.Model):
     _inherit = 'hr.employee'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_employee_rel', 'employee_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrEmployee, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrEmployee, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Employee has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Employee has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchHrContract(models.Model):
@@ -1834,57 +2617,114 @@ class BranchHrContract(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_contract_rel', 'contract_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrContract, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrContract, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Contract has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Contract has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchHrDepartment(models.Model):
     _inherit = 'hr.department'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_department_rel', 'department_id', 'branch_id',compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchHrDepartment, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchHrDepartment, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Department has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Department has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 
 class BranchLabour(models.Model):
@@ -1892,151 +2732,275 @@ class BranchLabour(models.Model):
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_group_rel', 'labour_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchLabour, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(BranchLabour, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Labour Group has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Labour Group has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
 
 class BranchApplicant(models.Model):
     _inherit = 'hr.applicant'
 
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_applicant_rel', 'applicant_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(BranchApplicant, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
 
-
-class BranchHrJob(models.Model):
-    _inherit = 'hr.job'
-
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
 
     @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(BranchHrJob, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
+    def create(self, vals):
+        vehicle = super(BranchApplicant, self).create(vals)
 
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if vehicle.branch_id:
+            message = _(" A New Applicant has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
         else:
-            # Clear the branch if no company is selected
-            self.branch_id = False
+            message = _(" A New Applicant has been added in '%s'. Without branch.") % (vehicle.company_id.name)
 
+        vehicle.env.user.notify_info(message)
 
-class AccountInvoiceAC(models.Model):
-    _inherit = 'account.invoice'
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
-
-    @api.model
-    def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
-        res = super(AccountInvoiceAC, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
-        return res
-
-    @api.onchange('company_id')
-    def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
-        else:
-            self.branch_id = False
-
-    # @api.constrains('branch_id')
-    # def _check_branch_id(self):
-    #     """
-    #     Validate that the selected branch belongs to the logged-in user.
-    #     """
-    #     for record in self:
-    #         if record.branch_id and record.branch_id != self.env.user.branch_id:
-    #             raise ValidationError(
-    #                 "You can only select your assigned branch. "
-    #                 "The branch you selected is not allowed for this user."
-    #             )
-
-
+        return vehicle
+#
+# class AccountInvoiceAC(models.Model):
+#     _inherit = 'account.invoice'
+#
+#     branch_id = fields.Many2one('branch.master.company', 'Branch')
+#     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_invoice_rel', 'invoice_id', 'branch_id',
+#                                           string='Allowed Branches', ondelete='cascade')
+#
+#     @api.model
+#     def default_get(self, fields_list):
+#         """Set default branch and allowed branches based on the logged-in user."""
+#         res = super(AccountInvoiceAC, self).default_get(fields_list)
+#         user = self.env.user
+#         if user.branch_id:
+#             res['branch_id'] = user.branch_id.id
+#         if user.allowed_branch_ids:
+#             res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+#         return res
+#
+#     @api.onchange('company_ids')
+#     def _onchange_company_id(self):
+#         if self.company_ids:
+#             selected_company_ids = self.company_ids.ids
+#
+#             user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+#             user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+#
+#             self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+#             self.branch_id = user_branch if user_branch else False
+#         else:
+#             self.allowed_branch_ids = False
+#             self.branch_id = False
+#
+#     @api.onchange('allowed_branch_ids')
+#     def _onchange_allowed_branch_ids(self):
+#         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+#             self.branch_id = False
+#
+#     @api.model
+#     def create(self, vals):
+#         vehicle = super(AccountInvoiceAC, self).create(vals)
+#
+#         if vehicle.branch_id:
+#             message = _(" A New Lead has been added in '%s'. '%s' branch.") % (
+#                 vehicle.company_id.name, vehicle.branch_id.name)
+#         else:
+#             message = _(" A New Lead has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+#
+#         vehicle.env.user.notify_info(message)
+#
+#         return vehicle
 
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse.orderpoint'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_orderpoint_rel', 'orderpoint_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
     @api.model
     def default_get(self, fields_list):
-        """Set default branch based on the logged-in user."""
+        """Set default branch and allowed branches based on the logged-in user."""
         res = super(StockWarehouse, self).default_get(fields_list)
-        if self.env.user.branch_id:
-            res['branch_id'] = self.env.user.branch_id.id
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
         return res
 
-    @api.onchange('company_id')
+    @api.onchange('company_ids')
     def _onchange_company_id(self):
-        """Update branch based on the company."""
-        if self.company_id:
-            # Set branch based on user's branch filtered by company
-            user_branch = self.env.user.branch_id
-            if user_branch and user_branch.company_id == self.company_id:
-                self.branch_id = user_branch
-            else:
-                self.branch_id = False
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
         else:
-            # Clear the branch if no company is selected
+            self.allowed_branch_ids = False
             self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        vehicle = super(StockWarehouse, self).create(vals)
+
+        if vehicle.branch_id:
+            message = _(" A New Warehouse OrderPoint has been added in '%s'. '%s' branch.") % (
+                vehicle.company_id.name, vehicle.branch_id.name)
+        else:
+            message = _(" A New Warehouse OrderPoint has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+        vehicle.env.user.notify_info(message)
+
+        return vehicle
+
+class BranchHrJob(models.Model):
+    _inherit = 'hr.job'
+
+    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_job_rel', 'job_id',
+                                          'branch_id', compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade', store=False)
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+
+    @api.model
+    def default_get(self, fields_list):
+        """Set default branch and allowed branches based on the logged-in user."""
+        res = super(BranchHrJob, self).default_get(fields_list)
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+        return res
+
+    @api.onchange('company_ids')
+    def _onchange_company_id(self):
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
+        else:
+            self.allowed_branch_ids = False
+            self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+            @api.model
+            def create(self, vals):
+                vehicle = super(BranchHrJob, self).create(vals)
+
+                if vehicle.branch_id:
+                    message = _(" A New HR Job has been added in '%s'. '%s' branch.") % (
+                        vehicle.company_id.name, vehicle.branch_id.name)
+                else:
+                    message = _(" A New HR Job has been added in '%s'. Without branch.") % (vehicle.company_id.name)
+
+                vehicle.env.user.notify_info(message)
+
+                return vehicle

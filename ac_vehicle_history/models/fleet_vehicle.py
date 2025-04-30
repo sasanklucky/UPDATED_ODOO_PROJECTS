@@ -58,173 +58,291 @@ class FleetVehicle(models.Model):
     def update_vehicle_service_history(self):
         ServiceHistory = self.env['service.history']
         param = self.env['ir.config_parameter'].sudo()
+
         cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
         is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
-        db = sql_db.db_connect(f"{cons_db_name}")
-        if is_cons_enable and cons_db_name:
-            try:
-                with contextlib.closing(db.cursor()) as cr:
-                    cr.autocommit(True)
-                    env = api.Environment(cr, SUPERUSER_ID, {})
 
-                    for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
-                        service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
-                        to_update = service_records.filtered(lambda s: s.order.id)
-                        for record in to_update:
-                            if record.order.id:  # Ensure order has a valid ID
-                                for sale_q in record.order:
-                                    record.write({'ro_id': sale_q.id,
-                                                  'servicetype': sale_q.service_type.name,
-                                                  'service_type_name': sale_q.service_type.name,
-                                                  'service_code': sale_q.service_type.code,
-                                                  'dealer_db_name': record.dealer_db_name if record.dealer_db_name else self._cr.dbname,
-                                                  'mileage_in': record.mileage_in if record.mileage_in else sale_q.mileage_in,
-                                                  'ro_number': record.ro_number if record.ro_number else sale_q.name})
+        for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
+            # --- Step 1: Update local service.history with order details ---
+            service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
+            to_update = service_records.filtered(lambda s: s.order.id)
 
-                        duplicate_orders = ServiceHistory.read_group(
-                            [('vehicle_id', '=', vehicle.id), ('order', '!=', False)],
-                            # Filter only records with order.id
-                            ['ro_id'],  # Group by order.id
-                            ['ro_id']  # Fields to group on
-                        )
-                        # print(duplicate_orders, 'duplicate_orders')
-                        duplicate_order_ids = [
-                            group['ro_id']
-                            for group in duplicate_orders
-                            if group['ro_id_count'] > 1
-                        ]
-                        # print(duplicate_order_ids)
-                        # Remove duplicates
-                        for order_id in duplicate_order_ids:
-                            duplicates = self.env['service.history'].search(
-                                [('order', '=', order_id), ('vehicle_id', '=', vehicle.id)])
-                            duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
-                            # Log the IDs to be deleted
-                            # print(f"Duplicates to delete: {duplicates_to_delete.ids}")
-                            # Unlink duplicates one by one
-                            for duplicate in duplicates_to_delete:
-                                # Double-check if the record exists before unlinking
-                                if not duplicate.exists():
-                                    # print(f"Record with ID: {duplicate.id} does not exist or was already deleted.")
-                                    continue  # Skip to the next record
+            for record in to_update:
+                if record.order.id:
+                    for sale_q in record.order:
+                        record.write({
+                            'ro_id': sale_q.id,
+                            'servicetype': sale_q.service_type.name,
+                            'service_type_name': sale_q.service_type.name,
+                            'service_code': sale_q.service_type.code,
+                            'dealer_db_name': record.dealer_db_name or self._cr.dbname,
+                            'mileage_in': record.mileage_in or sale_q.mileage_in,
+                            'ro_number': record.ro_number or sale_q.name,
+                        })
 
-                                try:
-                                    # print(f"Unlinking record with ID: {duplicate.id}")
-                                    duplicate.sudo().unlink()
-                                except Exception as e:
-                                    print(f"Error unlinking record with ID: {duplicate.id}: {e}")
+            # --- Step 2: Remove duplicate service records ---
+            duplicate_orders = ServiceHistory.read_group(
+                [('vehicle_id', '=', vehicle.id), ('order', '!=', False)],
+                ['ro_id'],
+                ['ro_id']
+            )
+            duplicate_order_ids = [group['ro_id'] for group in duplicate_orders if group['ro_id_count'] > 1]
+
+            for order_id in duplicate_order_ids:
+                duplicates = ServiceHistory.search([
+                    ('order', '=', order_id),
+                    ('vehicle_id', '=', vehicle.id)
+                ])
+                duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
+                for duplicate in duplicates_to_delete:
+                    if duplicate.exists():
+                        try:
+                            duplicate.sudo().unlink()
+                        except Exception as e:
+                            _logger.error(f"Error unlinking duplicate service history ID {duplicate.id}: {e}")
+
+            # --- Step 3: Consolidation Sync ---
+            if is_cons_enable and cons_db_name:
+                try:
+                    db = sql_db.db_connect(cons_db_name)
+                    with contextlib.closing(db.cursor()) as cr:
+                        cr.autocommit(True)
+                        env = api.Environment(cr, SUPERUSER_ID, {})
 
                         cons_vehicle_card = env['fleet.vehicle'].sudo().search([('vin_sn', '=', vehicle.vin_sn)],
                                                                                limit=1)
-                        if not cons_vehicle_card and vehicle.consolidate_vehicle_card_id != 0:
+                        if not cons_vehicle_card and vehicle.consolidate_vehicle_card_id:
                             cons_vehicle_card = env['fleet.vehicle'].sudo().browse(vehicle.consolidate_vehicle_card_id)
+
                         if cons_vehicle_card:
                             dealer_code = self.env.user.company_id.dealer_code
-                            if dealer_code:
-                                dealer_id = env['ars.consolidation.setup'].sudo().search(
-                                    [('dealer_code', '=', dealer_code)], limit=1)
-                                if not dealer_id:
-                                    raise ValidationError(_("Dealer code does not match with consolidation setup"))
-                            else:
-                                raise ValidationError(_("Dealer code not present user company"))
+                            if not dealer_code:
+                                raise ValidationError(_("Dealer code not present in user's company"))
+
+                            dealer_id = env['ars.consolidation.setup'].sudo().search(
+                                [('dealer_code', '=', dealer_code)], limit=1)
+                            if not dealer_id:
+                                raise ValidationError(_("Dealer code does not match with consolidation setup"))
 
                             con_service_recs = cons_vehicle_card.service_ids
-                            vehicle_service_ids = vehicle.service_ids
+                            local_service_recs = vehicle.service_ids
 
-                            if len(con_service_recs) > len(vehicle_service_ids):
-                                # Need to insert into dealer service histories
-                                remaining_con_service_recs = con_service_recs.filtered(
-                                    lambda x: x.id not in vehicle_service_ids.mapped('cons_service_history_id'))
-                                for rec in remaining_con_service_recs:
-                                    service_vals = {
-                                        'vehicle_id': vehicle.id,
-                                        'ro_id': rec.ro_id,
-                                        'ro_number': rec.ro_number,
-                                        'servicetype': rec.servicetype,
-                                        'date': rec.date,
-                                        'service_type_name': rec.service_type_name,
-                                        'mileage_in': rec.mileage_in,
-                                        'service_code': rec.service_code,
-                                        'mileage': rec.mileage,
-                                        'next_service_due': rec.next_service_due,
-                                        'set_reminder': rec.set_reminder,
-                                        'dealer_db_name': rec.dealer_db_name,
-                                        'cons_service_history_id': rec.id,  # Add this to link the record
-                                    }
-                                    self.env['service.history'].sudo().create(service_vals)
-                                self.update_vehicle_service_history()
+                            # --- Insert missing records from consolidated to local ---
+                            remaining_con_service_recs = con_service_recs.filtered(
+                                lambda x: x.id not in local_service_recs.mapped('cons_service_history_id'))
+                            for rec in remaining_con_service_recs:
+                                self.env['service.history'].sudo().create({
+                                    'vehicle_id': vehicle.id,
+                                    'ro_id': rec.ro_id,
+                                    'ro_number': rec.ro_number,
+                                    'servicetype': rec.servicetype,
+                                    'date': rec.date,
+                                    'service_type_name': rec.service_type_name,
+                                    'mileage_in': rec.mileage_in,
+                                    'service_code': rec.service_code,
+                                    'mileage': rec.mileage,
+                                    'next_service_due': rec.next_service_due,
+                                    'set_reminder': rec.set_reminder,
+                                    'dealer_db_name': rec.dealer_db_name,
+                                    'cons_service_history_id': rec.id,
+                                })
 
-                            if len(con_service_recs) < len(vehicle_service_ids):
-                                # Need to insert into cons service histories
-                                remaining_vehicle_service_ids = vehicle_service_ids.filtered(
-                                    lambda x: not x.cons_service_history_id)
+                            # --- Insert missing records from local to consolidated ---
+                            remaining_local_service = local_service_recs.filtered(
+                                lambda x: not x.cons_service_history_id)
+                            for rec in remaining_local_service:
+                                cons_rec = env['service.history'].sudo().create({
+                                    'vehicle_id': cons_vehicle_card.id,
+                                    'ro_id': rec.ro_id,
+                                    'ro_number': rec.ro_number,
+                                    'servicetype': rec.servicetype,
+                                    'date': rec.date,
+                                    'service_type_name': rec.service_type_name,
+                                    'mileage_in': rec.mileage_in,
+                                    'service_code': rec.service_code,
+                                    'mileage': rec.mileage_in,
+                                    'dealer_db_name': self.env.cr.dbname,
+                                    'next_service_due': rec.next_service_due,
+                                    'set_reminder': rec.set_reminder,
+                                    'dealer_id': dealer_id.id if dealer_id else None,
+                                })
+                                rec.sudo().write({'cons_service_history_id': cons_rec.id})
 
-                                for rec in remaining_vehicle_service_ids:
-                                    service_vals = {
-                                        'vehicle_id': cons_vehicle_card.id,
-                                        'ro_id': rec.ro_id,
-                                        'ro_number': rec.ro_number,
-                                        'servicetype': rec.servicetype,
-                                        'date': rec.date,
-                                        'service_type_name': rec.service_type_name,
-                                        'mileage_in': rec.mileage_in,
-                                        'service_code': rec.service_code,
-                                        'mileage': rec.mileage_in,
-                                        'dealer_db_name': self.env.cr.dbname,
-                                        'next_service_due': rec.next_service_due,
-                                        'set_reminder': rec.set_reminder,
-                                        'dealer_id': dealer_id.id if dealer_id else None,
-                                    }
-                                    cons_rec = env['service.history'].sudo().create(service_vals)
-                                    rec.sudo().write({'cons_service_history_id': cons_rec.id})
-                                self.update_vehicle_service_history()
+                except Exception as e:
+                    _logger.error(f"Consolidation sync error: {e}")
+                    raise UserError(_("Error during consolidation sync: %s") % e)
 
-                            if len(con_service_recs) == len(vehicle_service_ids):
-                                remaining_con_service_recs = con_service_recs.filtered(
-                                    lambda x: x.id not in vehicle_service_ids.mapped('cons_service_history_id'))
-                                for rec in remaining_con_service_recs:
-                                    service_vals = {
-                                        'vehicle_id': vehicle.id,
-                                        'ro_id': rec.ro_id,
-                                        'ro_number': rec.ro_number,
-                                        'servicetype': rec.servicetype,
-                                        'date': rec.date,
-                                        'service_type_name': rec.service_type_name,
-                                        'mileage_in': rec.mileage_in,
-                                        'service_code': rec.service_code,
-                                        'mileage': rec.mileage,
-                                        'next_service_due': rec.next_service_due,
-                                        'set_reminder': rec.set_reminder,
-                                        'dealer_db_name': rec.dealer_db_name,
-                                        'cons_service_history_id': rec.id,  # Add this to link the record
-                                    }
-                                    self.env['service.history'].sudo().create(service_vals)
-                                    self.update_vehicle_service_history()
-                                remaining_vehicle_service_ids = vehicle_service_ids.filtered(
-                                    lambda x: not x.cons_service_history_id)
-                                for rec in remaining_vehicle_service_ids:
-                                    service_vals = {
-                                        'vehicle_id': cons_vehicle_card.id,
-                                        'ro_id': rec.id,
-                                        'ro_number': rec.ro_number,
-                                        'servicetype': rec.servicetype.name,
-                                        'date': rec.date,
-                                        'service_type_name': rec.service_type_name,
-                                        'mileage_in': rec.mileage_in,
-                                        'service_code': rec.service_type.code,
-                                        'mileage': rec.mileage_in,
-                                        'dealer_db_name': self.env.cr.dbname,
-                                        'next_service_due': rec.next_service_due,
-                                        'set_reminder': rec.set_reminder,
-                                        'dealer_id': dealer_id.id if dealer_id else None,
-                                    }
-                                    cons_rec = env['service.history'].sudo().create(service_vals)
-                                    rec.sudo().write({'cons_service_history_id': cons_rec.id})
-                                    self.update_vehicle_service_history()
-
-            except Exception as e:
-                _logger.error(e)
-                raise UserError(_(e))
+    #
+    # def update_vehicle_service_history(self):
+    #     ServiceHistory = self.env['service.history']
+    #     param = self.env['ir.config_parameter'].sudo()
+    #     cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
+    #     is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
+    #     db = sql_db.db_connect(f"{cons_db_name}")
+    #     if is_cons_enable and cons_db_name:
+    #         try:
+    #             with contextlib.closing(db.cursor()) as cr:
+    #                 cr.autocommit(True)
+    #                 env = api.Environment(cr, SUPERUSER_ID, {})
+    #
+    #                 for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
+    #                     service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
+    #                     to_update = service_records.filtered(lambda s: s.order.id)
+    #                     for record in to_update:
+    #                         if record.order.id:  # Ensure order has a valid ID
+    #                             for sale_q in record.order:
+    #                                 record.write({'ro_id': sale_q.id,
+    #                                               'servicetype': sale_q.service_type.name,
+    #                                               'service_type_name': sale_q.service_type.name,
+    #                                               'service_code': sale_q.service_type.code,
+    #                                               'dealer_db_name': record.dealer_db_name if record.dealer_db_name else self._cr.dbname,
+    #                                               'mileage_in': record.mileage_in if record.mileage_in else sale_q.mileage_in,
+    #                                               'ro_number': record.ro_number if record.ro_number else sale_q.name})
+    #
+    #                     duplicate_orders = ServiceHistory.read_group(
+    #                         [('vehicle_id', '=', vehicle.id), ('order', '!=', False)],
+    #                         # Filter only records with order.id
+    #                         ['ro_id'],  # Group by order.id
+    #                         ['ro_id']  # Fields to group on
+    #                     )
+    #                     # print(duplicate_orders, 'duplicate_orders')
+    #                     duplicate_order_ids = [
+    #                         group['ro_id']
+    #                         for group in duplicate_orders
+    #                         if group['ro_id_count'] > 1
+    #                     ]
+    #                     # print(duplicate_order_ids)
+    #                     # Remove duplicates
+    #                     for order_id in duplicate_order_ids:
+    #                         duplicates = self.env['service.history'].search(
+    #                             [('order', '=', order_id), ('vehicle_id', '=', vehicle.id)])
+    #                         duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
+    #                         # Log the IDs to be deleted
+    #                         # print(f"Duplicates to delete: {duplicates_to_delete.ids}")
+    #                         # Unlink duplicates one by one
+    #                         for duplicate in duplicates_to_delete:
+    #                             # Double-check if the record exists before unlinking
+    #                             if not duplicate.exists():
+    #                                 # print(f"Record with ID: {duplicate.id} does not exist or was already deleted.")
+    #                                 continue  # Skip to the next record
+    #
+    #                             try:
+    #                                 # print(f"Unlinking record with ID: {duplicate.id}")
+    #                                 duplicate.sudo().unlink()
+    #                             except Exception as e:
+    #                                 print(f"Error unlinking record with ID: {duplicate.id}: {e}")
+    #
+    #                     cons_vehicle_card = env['fleet.vehicle'].sudo().search([('vin_sn', '=', vehicle.vin_sn)],
+    #                                                                            limit=1)
+    #                     if not cons_vehicle_card and vehicle.consolidate_vehicle_card_id != 0:
+    #                         cons_vehicle_card = env['fleet.vehicle'].sudo().browse(vehicle.consolidate_vehicle_card_id)
+    #                     if cons_vehicle_card:
+    #                         dealer_code = self.env.user.company_id.dealer_code
+    #                         if dealer_code:
+    #                             dealer_id = env['ars.consolidation.setup'].sudo().search(
+    #                                 [('dealer_code', '=', dealer_code)], limit=1)
+    #                             if not dealer_id:
+    #                                 raise ValidationError(_("Dealer code does not match with consolidation setup"))
+    #                         else:
+    #                             raise ValidationError(_("Dealer code not present user company"))
+    #
+    #                         con_service_recs = cons_vehicle_card.service_ids
+    #                         vehicle_service_ids = vehicle.service_ids
+    #
+    #                         if len(con_service_recs) > len(vehicle_service_ids):
+    #                             # Need to insert into dealer service histories
+    #                             remaining_con_service_recs = con_service_recs.filtered(
+    #                                 lambda x: x.id not in vehicle_service_ids.mapped('cons_service_history_id'))
+    #                             for rec in remaining_con_service_recs:
+    #                                 service_vals = {
+    #                                     'vehicle_id': vehicle.id,
+    #                                     'ro_id': rec.ro_id,
+    #                                     'ro_number': rec.ro_number,
+    #                                     'servicetype': rec.servicetype,
+    #                                     'date': rec.date,
+    #                                     'service_type_name': rec.service_type_name,
+    #                                     'mileage_in': rec.mileage_in,
+    #                                     'service_code': rec.service_code,
+    #                                     'mileage': rec.mileage,
+    #                                     'next_service_due': rec.next_service_due,
+    #                                     'set_reminder': rec.set_reminder,
+    #                                     'dealer_db_name': rec.dealer_db_name,
+    #                                     'cons_service_history_id': rec.id,  # Add this to link the record
+    #                                 }
+    #                                 self.env['service.history'].sudo().create(service_vals)
+    #                             self.update_vehicle_service_history()
+    #
+    #                         if len(con_service_recs) < len(vehicle_service_ids):
+    #                             # Need to insert into cons service histories
+    #                             remaining_vehicle_service_ids = vehicle_service_ids.filtered(
+    #                                 lambda x: not x.cons_service_history_id)
+    #
+    #                             for rec in remaining_vehicle_service_ids:
+    #                                 service_vals = {
+    #                                     'vehicle_id': cons_vehicle_card.id,
+    #                                     'ro_id': rec.ro_id,
+    #                                     'ro_number': rec.ro_number,
+    #                                     'servicetype': rec.servicetype,
+    #                                     'date': rec.date,
+    #                                     'service_type_name': rec.service_type_name,
+    #                                     'mileage_in': rec.mileage_in,
+    #                                     'service_code': rec.service_code,
+    #                                     'mileage': rec.mileage_in,
+    #                                     'dealer_db_name': self.env.cr.dbname,
+    #                                     'next_service_due': rec.next_service_due,
+    #                                     'set_reminder': rec.set_reminder,
+    #                                     'dealer_id': dealer_id.id if dealer_id else None,
+    #                                 }
+    #                                 cons_rec = env['service.history'].sudo().create(service_vals)
+    #                                 rec.sudo().write({'cons_service_history_id': cons_rec.id})
+    #                             self.update_vehicle_service_history()
+    #
+    #                         if len(con_service_recs) == len(vehicle_service_ids):
+    #                             remaining_con_service_recs = con_service_recs.filtered(
+    #                                 lambda x: x.id not in vehicle_service_ids.mapped('cons_service_history_id'))
+    #                             for rec in remaining_con_service_recs:
+    #                                 service_vals = {
+    #                                     'vehicle_id': vehicle.id,
+    #                                     'ro_id': rec.ro_id,
+    #                                     'ro_number': rec.ro_number,
+    #                                     'servicetype': rec.servicetype,
+    #                                     'date': rec.date,
+    #                                     'service_type_name': rec.service_type_name,
+    #                                     'mileage_in': rec.mileage_in,
+    #                                     'service_code': rec.service_code,
+    #                                     'mileage': rec.mileage,
+    #                                     'next_service_due': rec.next_service_due,
+    #                                     'set_reminder': rec.set_reminder,
+    #                                     'dealer_db_name': rec.dealer_db_name,
+    #                                     'cons_service_history_id': rec.id,  # Add this to link the record
+    #                                 }
+    #                                 self.env['service.history'].sudo().create(service_vals)
+    #                                 self.update_vehicle_service_history()
+    #                             remaining_vehicle_service_ids = vehicle_service_ids.filtered(
+    #                                 lambda x: not x.cons_service_history_id)
+    #                             for rec in remaining_vehicle_service_ids:
+    #                                 service_vals = {
+    #                                     'vehicle_id': cons_vehicle_card.id,
+    #                                     'ro_id': rec.id,
+    #                                     'ro_number': rec.ro_number,
+    #                                     'servicetype': rec.servicetype.name,
+    #                                     'date': rec.date,
+    #                                     'service_type_name': rec.service_type_name,
+    #                                     'mileage_in': rec.mileage_in,
+    #                                     'service_code': rec.service_type.code,
+    #                                     'mileage': rec.mileage_in,
+    #                                     'dealer_db_name': self.env.cr.dbname,
+    #                                     'next_service_due': rec.next_service_due,
+    #                                     'set_reminder': rec.set_reminder,
+    #                                     'dealer_id': dealer_id.id if dealer_id else None,
+    #                                 }
+    #                                 cons_rec = env['service.history'].sudo().create(service_vals)
+    #                                 rec.sudo().write({'cons_service_history_id': cons_rec.id})
+    #                                 self.update_vehicle_service_history()
+    #
+    #         except Exception as e:
+    #             _logger.error(e)
+    #             raise UserError(_(e))
 
 
 class WholesaleHistory(models.Model):

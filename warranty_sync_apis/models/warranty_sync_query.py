@@ -576,7 +576,8 @@ class ArsSaleWarrentySync(models.Model):
                         # Reg No
                         if rec.regn_no:
                             reg_record = env['fleet.vehicle'].sudo().search(
-                                [('active', '=', rec.regn_no.active)], order='id desc',
+                                # [('active', '=', rec.regn_no.active)], order='id desc',
+                                [('vin_sn', '=', rec.regn_no.vin_sn)], order='id desc',
                                 # [('name', '=', rec.regn_no.name), ('active', '=', rec.regn_no.active)], order='id desc',
                                 limit=1)
                             if not reg_record:

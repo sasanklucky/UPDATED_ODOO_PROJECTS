@@ -8,3 +8,4 @@ from . import ars_stock_warehouse
 from . import shell_location
 from . import res_region
 from . import res_bank
+from . import ars_gst

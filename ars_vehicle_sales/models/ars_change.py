@@ -245,23 +245,44 @@ class ars_sale_crm_sale(models.Model):
         [('internal_transfer', 'Internal Transfer'), ('external_transfer', 'External Transfer')],
         string="Transfer Type")
 
+    # @api.model
+    # def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):
+    #     res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+    #     transfer_type = self.env.context.get('default_transfer_type')
+    #     if transfer_type:
+    #         if transfer_type == 'internal_transfer':
+    #             domain = [('is_dealer', '=', True)]
+    #             doc = etree.XML(res['arch'])
+    #             for node in doc.xpath("//field[@name='partner_id']"):
+    #                 node.set('domain', str(domain))
+    #             res['arch'] = etree.tostring(doc, encoding='unicode')
+    #         else:
+    #             domain = []
+    #             doc = etree.XML(res['arch'])
+    #             for node in doc.xpath("//field[@name='partner_id']"):
+    #                 node.set('domain', str(domain))
+    #             res['arch'] = etree.tostring(doc, encoding='unicode')
+    #     return res
+
     @api.model
     def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):
-        res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                             submenu=submenu)
+
         transfer_type = self.env.context.get('default_transfer_type')
         if transfer_type:
-            if transfer_type == 'internal_transfer':
-                domain = [('is_dealer', '=', True)]
-                doc = etree.XML(res['arch'])
-                for node in doc.xpath("//field[@name='partner_id']"):
-                    node.set('domain', str(domain))
-                res['arch'] = etree.tostring(doc, encoding='unicode')
-            else:
-                domain = []
-                doc = etree.XML(res['arch'])
-                for node in doc.xpath("//field[@name='partner_id']"):
-                    node.set('domain', str(domain))
-                res['arch'] = etree.tostring(doc, encoding='unicode')
+            doc = etree.XML(res['arch'])
+            for node in doc.xpath("//field[@name='partner_id']"):
+                node.set('context', "{'default_is_dealer': True}")
+
+                if transfer_type == 'internal_transfer':
+                    node.set('domain', "[('is_dealer', '=', True)]")
+                    node.set('options', "{'no_create': True}")
+                    node.set('readonly', '1')
+                else:
+                    node.set('domain', "[]")
+
+            res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
 
     @api.depends('amount_total')
