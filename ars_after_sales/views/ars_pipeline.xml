@@ -1151,6 +1151,7 @@
                     <field name="invoice_status" string="Status"/>
                     <field name="state" invisible="1"/>
                     <field name="work_type"/>
+                    <field name="service_type"/>
 <!--                    <field name="vin_no"/>-->
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
@@ -3033,6 +3034,8 @@
                 <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="regn_no"/>
                     <field name="vin_no"/>
+                    <field name="work_type"/>
+                    <field name="service_type"/>
                 </xpath>
             </field>
         </record>
