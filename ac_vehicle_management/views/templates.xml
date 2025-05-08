@@ -29,5 +29,23 @@
                 </xpath>
             </field>
         </record>
+
+        <template id="assets_backend" name="mail assets restrict unlink" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/ac_vehicle_management/static/src/js/activity_unlink_restrict.js"/>
+            </xpath>
+        </template>
+
+
+         <record id="crm_lead_form_view_sales_form_inherit_won" model="ir.ui.view">
+        <field name="name">crm.lead.sales.form.inherited.mark.won</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='action_set_won']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+        </field>
+    </record>
     </data>
 </odoo>

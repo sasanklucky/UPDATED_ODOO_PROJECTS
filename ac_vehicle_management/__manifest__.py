@@ -9,7 +9,7 @@
     'category': 'Uncategorized',
     'version': '0.1',
     # any module necessary for this one to work correctly
-    'depends': ['base','sale','crm','purchase','purchase_requisition',
+    'depends': ['base','sale','crm','purchase','purchase_requisition','web', 'mail',
                 'ac_product_catalog',
                 'ars_after_sales',
                 'ars_vehicle_sales'],
@@ -18,6 +18,7 @@
         # 'security/ir.model.access.csv',
         'demo/ars_vehicle_purchase.xml',
         'demo/ars_vehicle_sales.xml',
+        'data/ir_config_parameter_data.xml',
         'security/ars_vehicle_security.xml',
         'views/views.xml',
         'views/vehicle_purchase.xml',
