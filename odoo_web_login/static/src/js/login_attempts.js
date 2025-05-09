@@ -3,45 +3,109 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
 
     var ajax = require('web.ajax');
 
+    // Load reCAPTCHA dynamically
+    (function () {
+        if (!window.grecaptcha) {
+            var recaptchaScript = document.createElement("script");
+            recaptchaScript.src = "https://www.google.com/recaptcha/api.js?onload=recaptchaLoaded&render=explicit";
+            recaptchaScript.async = true;
+            recaptchaScript.defer = true;
+            document.head.appendChild(recaptchaScript);
+        }
+    })();
+
+    // Load Toastify dynamically
+    (function () {
+        if (!window.Toastify) {
+            var toastifyScript = document.createElement("script");
+            toastifyScript.src = "https://cdn.jsdelivr.net/npm/toastify-js";
+            toastifyScript.async = true;
+            document.head.appendChild(toastifyScript);
+        }
+    })();
+
+    // Render reCAPTCHA when loaded
+    window.recaptchaLoaded = function () {
+        grecaptcha.render("recaptcha-container", {
+            sitekey: "6LeTGvQqAAAAAEBA3VIqO03T4ha_vwcuz6siUeCd", // Replace with your actual site key
+        });
+    };
+
+    function validateCaptcha() {
+        var response = grecaptcha.getResponse();
+        if (response.length === 0) {
+            showNotification("⚠️ Please complete the CAPTCHA.", "linear-gradient(to right, #ff5f6d, #ffc371)");
+            return false;
+        }
+        return true;
+    }
+
+    function showNotification(text, background) {
+        if (!window.Toastify) {
+            console.error("Toastify.js not loaded!");
+            return;
+        }
+
+        Toastify({
+            text: text,
+            duration: 3000,
+            close: true,
+            gravity: "top",
+            position: "center",
+            className: "toast-message-captcha",
+            style: {
+                background: background,
+                width: "400px",
+                textAlign: "center",
+                whiteSpace: "normal",
+                wordWrap: "break-word",
+                borderRadius: "10px",
+                padding: "12px",
+            },
+        }).showToast();
+    }
+
     $(document).ready(function () {
         var loginForm = $('.oe_login_form');
 
         if (loginForm.length) {
             checkLoginAttempts(); // Check stored attempts on page load
+            detectLoginErrorAfterReload();
 
             loginForm.on('submit', async function (ev) {  // Make it async
                 ev.preventDefault(); // Stop default form submission first
 
                 let loginAttempts = parseInt(localStorage.getItem('login_attempts')) || 0;
 
-                // Check if user exists before proceeding
+                // ✅ Validate CAPTCHA first
+                if (!validateCaptcha()) {
+                    return;
+                }
+
+                // ✅ Check user account
                 let userExists = await checkUserAccount();
 
                 if (!userExists.s && userExists.mes === 'not_present') {
 //                    console.log("User does not exist. Stopping submission.");
-                    showNotificationLoginAttempt('Your account is inactive. Please contact the BYD support team for assistance.', 'linear-gradient(to right, #ff5f6d, #ffc371)');
+                    showNotification('Your account is inactive. Please contact the BYD support team for assistance.', 'linear-gradient(to right, #ff5f6d, #ffc371)');
                     return; // Stop further execution
-                }else if (!userExists.s && userExists.mes === 'invalid') {
+                } else if (!userExists.s && userExists.mes === 'invalid') {
 //                    console.log("User does not exist. Stopping submission.");
-                    showNotificationLoginAttempt('Invalid User credentials', 'linear-gradient(to right, #ff5f6d, #ffc371)');
+                    showNotification('Invalid User credentials', 'linear-gradient(to right, #ff5f6d, #ffc371)');
                     return; // Stop further execution
                 }
 
-                // If user exists, check login attempts
+                //  Check login attempts
                 if (loginAttempts >= 4) {
-                    localStorage.setItem('login_attempts', 0)
-                    showNotificationLoginAttempt("You have used all your attempts. lease contact the BYD support team for assistance.", "linear-gradient(to right, #ff5f6d, #ffc371)");
+                    localStorage.setItem('login_attempts', 0);
+                    showNotification("You have used all your attempts. Please contact the BYD support team for assistance.", "linear-gradient(to right, #ff5f6d, #ffc371)");
 //                    return;
                 }
 
                 // Store a temporary flag that an attempt was made
                 localStorage.setItem('attempt_made', 'true');
-
-                // Submit the form programmatically after validations
-                this.submit();
+                this.submit(); // Final form submission
             });
-
-            detectLoginErrorAfterReload();
         }
     });
 
@@ -57,9 +121,9 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
 //                console.log("LOGIN ATTEMPTS AFTER RELOAD:", loginAttempts);
 
                 if (loginAttempts === 2) {
-                    showNotificationLoginAttempt("Warning: You have 2 attempts remaining. Multiple failed logins may lock your account.", "linear-gradient(to right, #ff5f6d, #ffc371)");
+                    showNotification("Warning: You have 2 attempts remaining. Multiple failed logins may lock your account.", "linear-gradient(to right, #ff5f6d, #ffc371)");
                 }else if (loginAttempts === 3) {
-                    showNotificationLoginAttempt("Warning: One last attempt remaining! Another failed login will lock your account.", "linear-gradient(to right, #ff5f6d, #ffc371)");
+                    showNotification("Warning: One last attempt remaining! Another failed login will lock your account.", "linear-gradient(to right, #ff5f6d, #ffc371)");
                 }
 
                 if (loginAttempts >= 4) {
@@ -75,33 +139,8 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
 //        console.log("CHECKING LOGIN ATTEMPTS:", loginAttempts);
         if (loginAttempts >= 4) {
             getIPLocation();
-            showNotificationLoginAttempt("You have used all your attempts. lease contact the BYD support team for assistance.", "linear-gradient(to right, #ff5f6d, #ffc371)");
+            showNotification("You have used all your attempts. Please contact the BYD support team.", "linear-gradient(to right, #ff5f6d, #ffc371)");
         }
-    }
-
-    function showNotificationLoginAttempt(text, background) {
-        if (!window.Toastify) {
-            console.error("Toastify.js not loaded!");
-            return;
-        }
-
-        Toastify({
-            text: text,
-            duration: 3000,
-            close: true,
-            gravity: "top",
-            position: "right",
-            className: "custom-toast-rest-password",
-            style: {
-                background: background,
-                width: "400px",
-                textAlign: "center",
-                whiteSpace: "normal",
-                wordWrap: "break-word",
-                borderRadius: "10px",
-                padding: "12px"
-            }
-        }).showToast();
     }
 
     function lockUserAccount() {

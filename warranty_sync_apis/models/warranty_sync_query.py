@@ -220,7 +220,7 @@ class ArsSaleWarrentySync(models.Model):
     child_db = fields.Char()
     order_id_ref = fields.Char(string='Child Service Document ref')
     # test_css = fields.Html(string='CSS', sanitize=False, compute='_compute_css', store=False)
-    hide_sync = fields.Boolean(string='Sync', store=True, compute='_compute_hide_sync')
+    hide_sync = fields.Boolean(string='Sync', store=False, compute='_compute_hide_sync', default=False)
     # hide_sync = fields.Boolean(string='Sync', compute='hide_sync_status')
     sync_log_details_ids = fields.One2many('warrenty_sync_log', 'warrenty_record', string='Log')
     reject_reason = fields.Char('Rejected Reason')
@@ -307,7 +307,7 @@ class ArsSaleWarrentySync(models.Model):
     def _compute_hide_sync(self):
         param = self.env['ir.config_parameter'].sudo()
         child = param.get_param('warranty_sync_apis.warrenty_company_type')
-
+        print('helooooooooo')
         for record in self:
             # Set hide_sync based on conditions
             if record.Warranty_sync_reject:
