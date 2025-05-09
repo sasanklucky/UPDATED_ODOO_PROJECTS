@@ -81,6 +81,18 @@ class FleetVehicle(models.Model):
     driver_id = fields.Many2one('res.partner', 'Customer', track_visibility="onchange", help='Customer of the vehicle',
                                 copy=False)
     consolidate_vehicle_card_id = fields.Integer(string='consolidate_vehicle_card_id')
+    is_demo_vehicle = fields.Boolean(string="Demo Vehicle")
+    demo_vehicle_label = fields.Char(string="Demo Label", compute="_compute_demo_vehicle_label")
+
+    @api.depends('is_demo_vehicle')
+    def _compute_demo_vehicle_label(self):
+        for rec in self:
+            rec.demo_vehicle_label = "Demo Vehicle" if rec.is_demo_vehicle else "Not Demo Vehicle"
+
+    @api.multi
+    def toggle_demo_vehicle(self):
+        for rec in self:
+            rec.is_demo_vehicle = not rec.is_demo_vehicle
 
     # engine_type_code = fields.Char(string='Engine Type Code', related="product_id.product_tmpl_id.engine_type_code")
     # no_of_cylinder = fields.Char(string='No of Cylinder', related="product_id.product_tmpl_id.no_of_cylinder")
