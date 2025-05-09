@@ -724,7 +724,7 @@ class FleetVehicleCreateRestriction(models.Model):
         template_action_id = groups_dic[2] if groups_dic else 0
 
         def apply_restriction():
-            doc.set('create', 'false')
+            # doc.set('create', 'false')
             doc.set('edit', 'true')
             if view_type == 'form':
                 restricted_fields = []
