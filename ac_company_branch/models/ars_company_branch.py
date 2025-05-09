@@ -175,16 +175,43 @@ class BranchSaleOrder(models.Model):
 
     @api.model
     def create(self, vals):
+        current_user_branch = self.env.user.branch_id
+
+        # Check if linked to a CRM Lead (usually via 'opportunity_id')
+        if vals.get('opportunity_id'):
+            lead = self.env['crm.lead'].browse(vals['opportunity_id'])
+
+            if lead.branch_id and lead.branch_id.id != current_user_branch.id:
+                raise ValidationError(_(
+                    "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
+                ) % (current_user_branch.name or 'N/A', lead.branch_id.name or 'N/A'))
+
+        # Create the Sale Order
         order = super(BranchSaleOrder, self).create(vals)
 
+        # Notification
         if order.branch_id:
-            message = _(" A New Sale Order has been added in '%s'. '%s' branch.") % (order.company_id.name, order.branch_id.name)
+            message = _("A new Sale Order has been added in '%s' (%s branch).") % (
+                order.company_id.name, order.branch_id.name)
         else:
-            message = _(" A New Sale Order has been added in '%s'. Without branch.") % (order.company_id.name)
+            message = _("A new Sale Order has been added in '%s' without a branch.") % order.company_id.name
 
         order.env.user.notify_info(message)
 
         return order
+
+    # @api.model
+    # def create(self, vals):
+    #     order = super(BranchSaleOrder, self).create(vals)
+    #
+    #     if order.branch_id:
+    #         message = _(" A New Sale Order has been added in '%s'. '%s' branch.") % (order.company_id.name, order.branch_id.name)
+    #     else:
+    #         message = _(" A New Sale Order has been added in '%s'. Without branch.") % (order.company_id.name)
+    #
+    #     order.env.user.notify_info(message)
+    #
+    #     return order
 
     # Validation error on suppose branch value didnt have in current company
     # @api.constrains('branch_id', 'allowed_branch_ids', 'company_id')
