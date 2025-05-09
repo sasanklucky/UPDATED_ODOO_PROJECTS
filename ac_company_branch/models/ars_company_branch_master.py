@@ -99,6 +99,11 @@ class ResUserList(models.Model):
                     vals['branch_id'] = False
         return super(ResUserList, self).create(vals)
 
+    @api.multi
+    def write(self, vals):
+        if 'company_id' in vals and len(vals) == 1:
+            vals['branch_id'] = False
+        return super(ResUserList, self).write(vals)
 
 
 #
