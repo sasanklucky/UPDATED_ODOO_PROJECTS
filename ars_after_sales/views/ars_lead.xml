@@ -171,6 +171,11 @@
                 <xpath expr="/tree/field[@name='source_id']" position="before">
                     <field name="user_id"/>
                 </xpath>
+
+                <field name="medium_id" position="replace">
+                    <field name="medium_id"/>
+                </field>
+
             </field>
         </record>
 
