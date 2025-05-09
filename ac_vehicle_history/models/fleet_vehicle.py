@@ -17,6 +17,19 @@ class FleetVehicle(models.Model):
     service_type_sequence = fields.Integer(string="Service Type Sequence", compute='compute_service_type_sequence')
     po_ref = fields.Char(string="PO Ref")
 
+    #Added For to enable/disable the create button through setup.
+    @api.model
+    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+        template_result = super(FleetVehicle, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                                 submenu=submenu)
+        doc = etree.XML(template_result['arch'])
+        param = self.env['ir.config_parameter'].sudo()
+        is_vehicle_creation_enable = param.get_param('ac_vehicle_history.is_vehicle_create')
+        if not is_vehicle_creation_enable:
+            doc.set('create', 'false')
+        template_result['arch'] = etree.tostring(doc)
+        return template_result
+
     # @api.model
     # def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
     #     template_result = super(FleetVehicle, self).fields_view_get(view_id=view_id,view_type=view_type, toolbar=toolbar,submenu=submenu)
