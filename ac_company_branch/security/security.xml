@@ -34,7 +34,7 @@
 
         <record model="ir.rule" id="account_invoice_branch_rule">
             <field name="name">Invoice: Branch Access</field>
-            <field name="model_id" ref="account.model_account_move"/>
+            <field name="model_id" ref="account.model_account_invoice"/>
             <field name="global" eval="True"/>
             <field name="domain_force">
                 [
@@ -49,6 +49,19 @@
         <record model="ir.rule" id="purchase_order_branch_rule">
             <field name="name">Purchase Order: Branch Access</field>
             <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+        </record>
+
+        <record model="ir.rule" id="stock_picking_branch_rule">
+            <field name="name">Stock Picking: Branch Access</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
             <field name="global" eval="True"/>
             <field name="domain_force">
                 [
