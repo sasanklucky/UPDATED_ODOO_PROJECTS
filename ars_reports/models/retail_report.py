@@ -126,3 +126,24 @@ class RetailReport(models.Model):
             where ai.type = 'out_invoice' and ct.team_type = 'sales' and ai.ars_invoice_type = 'vehicle'
             
         )""" % (self._table))
+
+
+# from lxml import etree
+class ResPartner(models.Model):
+    _inherit = 'res.partner'
+
+    @api.model
+    def _add_tracking_to_fields(self):
+        excluded_fields = {"__last_update", "write_date"} #if you don't want to display modification and update
+        field_def = self._fields
+        for field_name, field in field_def.items():
+            if field_name in excluded_fields:
+                continue
+            if getattr(field, 'track_visibility', None):
+                continue
+            field.track_visibility = 'onchange'
+    @api.model
+    def _register_hook(self):
+        self._add_tracking_to_fields()
+        return super(ResPartner, self)._register_hook()
+

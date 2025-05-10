@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_import_vin_wizard" model="ir.ui.view">
+    <field name="name">import.button.wizard</field>
+    <field name="model">import.button.wizard</field>
+    <field name="arch" type="xml">
+        <form string="Import Vins Wizard">
+            <group>
+                <field name="file" filename="filename"/>
+                <field name="filename"/>
+            </group>
+            <footer>
+                <button name="import_lines" type="object" string="Import" class="btn-primary"/>
+                <button string="Cancel" class="btn-secondary" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+<record id="action_open_import_wizard" model="ir.actions.act_window">
+    <field name="name">Import Vin Wizard</field>
+    <field name="res_model">import.button.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+</record>
+</odoo>

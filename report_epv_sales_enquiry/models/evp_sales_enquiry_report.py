@@ -127,7 +127,7 @@ class report_epv_sales_enquiry(models.Model):
     test_drive_date = fields.Date('TD Date', compute='get_test_drive_date')
     sale_order_id = fields.Many2one('sale.order')
     booking = fields.Selection([('yes', 'Yes'), ('no', 'No')], compute="get_booking_details")
-    booking_date = fields.Date('Booking Date', compute="get_booking_details")
+    booking_date = fields.Date('Booking Datinvoice_ide', compute="get_booking_details")
     booking_token = fields.Float('Booking amount Token', compute="get_booking_details")
     sale_cancel_reason = fields.Many2one('sale.order.cancel.reason', related='sale_order_id.cancel_reason_id')
     invoice_id = fields.Many2one('account.invoice')

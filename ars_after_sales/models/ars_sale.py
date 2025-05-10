@@ -863,7 +863,7 @@ class ARS_sale_order(models.Model):
             set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
                 days=int(remainder))
         if self.env.context.get('count_line') == 0:
-            self.env['service.history'].create({
+            service_vals_current_dealer = {
                 'order': self.id,
                 'ro_id': self.id,
                 'ro_number': self.name,
@@ -877,7 +877,13 @@ class ARS_sale_order(models.Model):
                 'next_service_due': next_service_due,
                 'set_reminder': set_reminder,
                 'vehicle_id': vehicle.id,
-            })
+            }
+            check_dealer_ro_name = self.env['service.history'].sudo().search([('ro_number', '=', self.name)])
+            if check_dealer_ro_name:
+                check_dealer_ro_name.update(service_vals_current_dealer)
+            else:
+                 self.env['service.history'].sudo().create(service_vals_current_dealer)
+
         return res
 
 

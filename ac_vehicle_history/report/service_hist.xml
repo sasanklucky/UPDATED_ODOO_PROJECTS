@@ -112,6 +112,7 @@
 <!--            <xpath expr="//div/div" position="replace"/>-->
 <!--            <xpath expr="//t[@t-foreach='doc.service_ids']" position="replace">-->
             <t t-set="data" t-value="doc._get_service_history_from_pdf()"/>
+<!--            <t t-esc="data"/>-->
             <t t-set="all_service_history" t-value="data['all_service_details']"/>
             <t t-set="summary_service_history" t-value="data['service_details']"/>
 <!--                <t t-esc="summary_service_history"/>-->

@@ -29,7 +29,7 @@
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='report_footer']" position="after">
-                <field name="stored_password" readonly="1" invisible="1" />
+                <field name="stored_password" invisible="1" />
             </xpath>
         </field>
     </record>
