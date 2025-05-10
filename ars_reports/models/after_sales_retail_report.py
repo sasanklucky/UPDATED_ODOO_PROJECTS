@@ -67,58 +67,71 @@ class AfterSlaesRetailReport(models.Model):
     selling_dealer = fields.Char(string="Selling Dealer")
     service_advisor = fields.Many2one('res.users', 'Service Advisor', related='order_id.user_id')
 
-    @api.model_cr
-    def init(self):
+
+
+    @api.multi
+    def sql_query(self, companys,start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over(order by inli.id desc) as id,
-            so.id as order_id,
-            inli.id as line_item_id,
-            rs.dealer_code as dealer_code,
-            so.company_id as dealer_id,
-            so.vin_no as vin,
-            so.regn_no as registration_no,
-            so.model as model,
-            rp2.name as selling_dealer,
-            inv.id as invoice_id,
-            inv.create_date as ro_close_date,
-            inv.cust_invoice_type as cust_invoice_type,
-            inv.type as invoice_type,
-            inv.origin as origin,
-            inv.reference as invoice_reference,
-            (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
-            (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
-            (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
-            (select so.confirmation_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
-            so.service_type as service_type,
-            (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
-            (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
-            so.mileage_in as odoometer,
-            inli.product_id as part_id,
-            inli.name as part_description,
-            inli.price_unit as price_unit,
-            inli.discount as discount,
-            inli.price_subtotal as part_price,
-            inli.price_total as total_part_price,
-            inli.quantity as product_uom_qty,
-            inli.product_catalog_id as product_catalog_id,
-            rp.name as bill_to_customer,
-			so.work_type as work_type,
-			rp.zip as pincode,
-            rp.vat as bill_to_customer_gst,
-            (select 
-                case when inv.irn_no is not null then 'Yes' 
-                else 'No' 
-                end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
-            inv.irn_no as irn_no
-            from account_invoice_line inli
-			left join account_invoice inv on inv.id = inli.invoice_id
-            left join sale_order so on so.id = inv.order_id
-            left join res_company rs on rs.id = so.company_id
-			left join res_partner rp on inv.partner_id = rp.id
-			left join res_partner rp2 on so.sold_by = rp2.id
-            where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
-        )""" % (self._table))
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = tuple(companys)
+        if isinstance(start_date, str):
+            start_date = fields.Datetime.from_string(start_date)
+        if isinstance(end_date, str):
+            end_date = fields.Datetime.from_string(end_date)
+        start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+        end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+        self.env.cr.execute(""" CREATE or REPLACE VIEW {table_name} as (
+                select row_number() over(order by inli.id desc) as id,
+                so.id as order_id,
+                inli.id as line_item_id,
+                rs.dealer_code as dealer_code,
+                so.company_id as dealer_id,
+                so.vin_no as vin,
+                so.regn_no as registration_no,
+                so.model as model,
+                rp2.name as selling_dealer,
+                inv.id as invoice_id,
+                inv.create_date as ro_close_date,
+                inv.cust_invoice_type as cust_invoice_type,
+                inv.type as invoice_type,
+                inv.origin as origin,
+                inv.reference as invoice_reference,
+                (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
+                (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
+                (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
+                (select so.confirmation_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
+                so.service_type as service_type,
+                (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
+                (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
+                so.mileage_in as odoometer,
+                inli.product_id as part_id,
+                inli.name as part_description,
+                inli.price_unit as price_unit,
+                inli.discount as discount,
+                inli.price_subtotal as part_price,
+                inli.price_total as total_part_price,
+                inli.quantity as product_uom_qty,
+                inli.product_catalog_id as product_catalog_id,
+                rp.name as bill_to_customer,
+    			so.work_type as work_type,
+    			rp.zip as pincode,
+                rp.vat as bill_to_customer_gst,
+                (select 
+                    case when inv.irn_no is not null then 'Yes' 
+                    else 'No' 
+                    end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
+                inv.irn_no as irn_no
+                from account_invoice_line inli
+    			left join account_invoice inv on inv.id = inli.invoice_id
+                left join sale_order so on so.id = inv.order_id
+                left join res_company rs on rs.id = so.company_id
+    			left join res_partner rp on inv.partner_id = rp.id
+    			left join res_partner rp2 on so.sold_by = rp2.id
+                where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales' and rs.id in {company_ids} and inv.create_date::date BETWEEN {start_date} AND {end_date}
+            )""".format(table_name=self._table, company_ids=company_ids,start_date=start_date_str, end_date=end_date_str))
+
 
     @api.multi
     def _compute_customer_voc(self):
@@ -145,3 +158,28 @@ class AfterSlaesRetailReport(models.Model):
                     if 'igst' in tax_id['name'].lower():
                         rec.igst_per = round(tax_id.amount, 1)
                         rec.igst_amt = t['amount']
+
+
+class AfterSalesRetailWizard(models.TransientModel):
+    _name = 'retail.report.after.sales.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def retrieve_stock_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['retail.report.after.sales']
+        query.sudo().sql_query(companys=comp_ids,start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Retail Report',
+            'res_model': 'retail.report.after.sales',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }

@@ -12,7 +12,7 @@
         <record id="menu_after_sales_retail_report" model="ir.ui.menu">
             <field name="name">After-Sales Retail Report</field>
             <field name="sequence" eval="2"/>
-            <field name="action" ref="action_after_sales_retail_report_act_window"/>
+            <field name="action" ref="action_after_sales_retail_report_wizard"/>
             <field name="parent_id" ref="ars_after_sales.menu_aftersales_reporting"/>
         </record>
 
