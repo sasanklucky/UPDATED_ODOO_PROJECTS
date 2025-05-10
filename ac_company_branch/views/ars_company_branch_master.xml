@@ -54,8 +54,6 @@
                             <group>
 
                                 <field name="partner_id" required="0"/>
-<!--                                <field name="parent_id" required="0"/>-->
-<!--                                <field name="child_ids" widget="many2many_tags"/>-->
 
                             </group>
                         </group>
@@ -82,32 +80,29 @@
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_form"/>
             <field name="arch" type="xml">
-                <field name="company_id" position="after">
-                    <field name="allowed_branch_ids" widget="many2many_tags" domain="[('company_id', 'in', company_ids)]"
-                           options="{'no_create': True,'no_open': True}" />
-                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
-                           options="{'no_create': True, 'no_open': True}" required="1"/>
 
-<!--                    <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>-->
+                <field name="company_id" position="after">
+                    <field name="allowed_branch_ids" widget="many2many_tags"
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]"
+                           />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>
+
 
         <record id="view_res_users_form_inherit_branch" model="ir.ui.view">
             <field name="name">res.users.form.inherit.branch</field>
             <field name="model">res.users</field>
             <field name="inherit_id" ref="base.view_users_simple_form"/>
             <field name="arch" type="xml">
-                <field name="company_id" position="after">
-                    <group>
 
-                        <field name="allowed_branch_ids" widget="many2many_tags"
-                               options="{'no_create': True,'no_open': True}"/>
-                        <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
-                               options="{'no_create': True, 'no_open': True}"  required="1"/>
-                        <!--                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"-->
-                        <!--                           options="{'no_create': True,'no_open': True}"/>-->
-                    </group>
+                <field name="company_id" position="after">
+                    <field name="allowed_branch_ids" widget="many2many_tags"
+                           options="{'no_create': True,'no_open': True}" domain="[('company_id', '=', company_id)]" />
+                    <field name="branch_id" domain="[('id', 'in', allowed_branch_ids), ('company_id', '=', company_id)]"
+                           options="{'no_create': True, 'no_open': True}"/>
                 </field>
             </field>
         </record>
@@ -125,7 +120,7 @@
                         <field name="allowed_branch_ids" widget="many2many_tags"
                                options="{'no_create': True,'no_open': True}"/>
                         <field name="branch_id" domain="[('id', 'in', allowed_branch_ids)]"
-                               options="{'no_create': True, 'no_open': True}" />
+                               options="{'no_create': True, 'no_open': True}"/>
                         <!--                    <field name="branch_id" string="Branch" required="1" domain="[('company_id', '=', company_id)]"-->
                         <!--                           options="{'no_create': True,'no_open': True}"/>-->
                     </group>
@@ -133,72 +128,6 @@
             </field>
         </record>
 
-
-
-
-
-        <record model="ir.ui.view" id="branch_master_list_form_company">
-            <field name="name">branch_master_company form</field>
-            <field name="model">branch.master.company</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
-                            <group>
-
-                                <field name="name" required="1"/>
-                                <field name="company_id" required="1"/>
-
-                            </group>
-
-                            <group>
-
-                                <field name="partner_id" required="0"/>
-
-                            </group>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
-
-        <!-- actions opening views on models -->
-        <record model="ir.actions.act_window" id="branch_master_company_action_window">
-            <field name="name">Branch</field>
-            <field name="res_model">branch.master.company</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <menuitem name="Branch" id="ac_branch_master_menu" parent="base.menu_users"
-                  action="branch_master_company_action_window"/>
-
-
-        <!-- adding a branch field on users -->
-
-        <record id="view_users_form_company_inherit_branch" model="ir.ui.view">
-            <field name="name">res.users.form.company.inherit.branch</field>
-            <field name="model">res.users</field>
-            <field name="inherit_id" ref="base.view_users_form"/>
-            <field name="arch" type="xml">
-                <field name="company_id" position="after">
-                    <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
-                </field>
-            </field>
-        </record>
-
-
-
-    <record id="view_sale_order_branch_inherit_branch" model="ir.ui.view">
-        <field name="name">sale.order.branch.form.inherit.branch</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="ars_after_sales.view_service_order_form_inherit"/>
-        <field name="arch" type="xml">
-            <!-- Insert branch_id after company_id -->
-            <field name="company_id" position="after">
-                <field name="branch_id" domain="[('company_id', '=', company_id)]" options="{'no_create': True,'no_open': True}"/>
-            </field>
-        </field>
-    </record>
 
 
 

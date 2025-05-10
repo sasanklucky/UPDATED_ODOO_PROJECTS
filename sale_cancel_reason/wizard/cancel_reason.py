@@ -20,7 +20,13 @@ class SaleOrderCancel(models.TransientModel):
     reason_id = fields.Many2one(
         'sale.order.cancel.reason',
         string='Reason',
-        required=True)
+        required=False)
+
+    sale_lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason', required=False)
+
+    lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason', required=True)
+    #
+    child_lost_reason_id = fields.Many2one('crm.lost.reason.child', 'Child Lost Reason', required=True)
 
     @api.multi
     def confirm_cancel(self):
@@ -31,6 +37,9 @@ class SaleOrderCancel(models.TransientModel):
         assert len(sale_ids) == 1, "Only 1 sale ID expected"
         sale = self.env['sale.order'].browse(sale_ids)
         sale.cancel_reason_id = self.reason_id.id
+        sale.sale_cancel_reason_id = self.sale_lost_reason_id.id
+        sale.lost_reason_id = self.lost_reason_id.id
+        sale.child_lost_reason_id = self.child_lost_reason_id.id
         # in the official addons, they call the signal on quotations
         # but directly call action_cancel on sales orders
         if sale.state in QUOTATION_STATES:
@@ -39,3 +48,14 @@ class SaleOrderCancel(models.TransientModel):
             raise UserError(_('You cannot cancel the Quotation/Order in the '
                               'current state!'))
         return act_close
+
+    @api.onchange('lost_reason_id')
+    def set_sale_lost_reason_ids(self):
+        leads = self.env['sale.order'].browse(self.env.context.get('active_ids')).team_id.team_type
+        # print(leads, "leadsleadsleadsleadsleadsleadsleads")
+        parent_lost_reasons = self.env['crm.lost.reason'].search([('sale_type', '=', leads), ('active', '=', True)])
+        # print(len(parent_lost_reasons))
+        if parent_lost_reasons:
+            return {'domain': {'lost_reason_id': [('id', 'in', parent_lost_reasons.ids)]}}
+        else:
+            return {'domain': {'lost_reason_id': [('id', 'in', False)]}}

@@ -176,9 +176,11 @@ class ars_sale_crm_lead(models.Model):
         if len(self.ids) == 1:
             previous_state_id = self.stage_id
         result = super(ars_sale_crm_lead, self).write(vals)
-        if len(self.ids) == 1:
-            if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
-                raise ValidationError('You do not have access to change the state')
+        # The below line of code is commented because now every thing is going to happens based on fields values changes in crm.
+        # we restrict the drag & drop option in pipeline so, the below lines of code not using.
+        # if len(self.ids) == 1:
+        #     if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+        #         raise ValidationError('You do not have access to change the state')
         res_value = {}
         for res in self:
             if res.partner_id:

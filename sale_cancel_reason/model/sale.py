@@ -17,6 +17,15 @@ class SaleOrder(models.Model):
         readonly=True,
         ondelete="restrict")
 
+    # sale_cancel_reason_id = fields.Many2one(
+    #     'sale.order.cancel.reason',
+    #     string="Reason for cancellation",
+    #     readonly=True,
+    #     ondelete="restrict")
+
+    lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason', readonly=True, ondelete="restrict")
+
+    child_lost_reason_id = fields.Many2one('crm.lost.reason.child', 'Child Lost Reason', readonly=True, ondelete="restrict")
 
 class SaleOrderCancelReason(models.Model):
     _name = 'sale.order.cancel.reason'
