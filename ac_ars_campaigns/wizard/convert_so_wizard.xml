@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    <record id="view_convert_so_message_form" model="ir.ui.view">-->
+    <!--        <field name="name">view.convert.so.message.form</field>-->
+    <!--        <field name="model">convert.so.wizard</field>-->
+    <!--        <field name="arch" type="xml">-->
+    <!--            <form string="Campaign Message">-->
+    <!--                <group>-->
+    <!--                    <div class="o_setting_left_pane">-->
+    <!--                        <field name='text' string="Message" readonly="1"/>-->
+    <!--                    </div>-->
+    <!--                    <field name="is_campagin" widget="radio"/>-->
+    <!--                </group>-->
+    <!--                <div>-->
+    <!--                    <div class="o_setting_right_pane">-->
+    <!--                        <field name='cancel_reason' string="Cancel Reason"-->
+    <!--                               attrs="{'invisible': [('is_campagin', 'in', ['yes'])], 'required': [('is_campagin', 'in', ['no'])]}"-->
+    <!--                               placeholder="Please specify the cancellation reason"/>-->
+    <!--                    </div>-->
+    <!--                </div>-->
+    <!--                <footer>-->
+    <!--                    <button name="action_done" type="object" string="Done" class="btn-primary"/>-->
+    <!--                </footer>-->
+    <!--            </form>-->
+    <!--        </field>-->
+    <!--    </record>-->
+    <record id="view_convert_so_message_form" model="ir.ui.view">
+        <field name="name">view.convert.so.message.form</field>
+        <field name="model">convert.so.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <h3>
+                    <field name="text" readonly="1"/>
+                </h3>
+                <group string="Campaign Selection">
+                    <group>
+                        <field name="is_campagin" widget="radio"/>
+                    </group>
+                </group>
+                <separator string="Exception"/>
+                <field name="cancel_reason"
+                       attrs="{'invisible': [('is_campagin', 'in', ['yes'])],
+                                'required': [('is_campagin', 'in', ['no'])]}"
+                       placeholder="Please specify the cancellation reason"/>
+                <footer>
+                    <button name="action_done" type="object" string="Done" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_confirm_update_form" model="ir.ui.view">
+        <field name="name">view.confirm.update.form</field>
+        <field name="model">click.done.action</field>
+        <field name="arch" type="xml">
+            <form string="Campaign Updation">
+
+                <label for="sale_order_id">Estimation Name</label>
+                <h1>
+                    <field name="sale_order_id" attrs="{'readonly': True}"/>
+                </h1>
+                <group>
+                    <group>
+                        <field name="campaign_service_option"/>
+                    </group>
+                    <group>
+                        <field name="campaign_service_type"/>
+                    </group>
+                </group>
+                <group string="Instructions">
+                    <group>
+                        <field name="instruction_id"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_updation" type="object" string="UPDATE" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

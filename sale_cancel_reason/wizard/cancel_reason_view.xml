@@ -12,7 +12,10 @@
                     sale order.
                 </p>
                 <group>
-                    <field name="reason_id" widget="selection"/>
+                    <field name="reason_id" widget="selection" invisible="1"/>
+                    <field name="sale_lost_reason_id" widget="selection" invisible="1"/>
+                    <field name="lost_reason_id" widget="selection"/>
+                    <field name="child_lost_reason_id" widget="selection" domain="[('parent_lost_reason','=',lost_reason_id )]"/>
                 </group>
                 <footer>
                     <button name="confirm_cancel"

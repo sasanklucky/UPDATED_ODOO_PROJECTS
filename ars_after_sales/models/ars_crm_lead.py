@@ -16,7 +16,7 @@ class ARS_crm_lead(models.Model):
     @api.constrains('mobile')
     def mobile_validation(self):
         pattern = r'^[1-9]\d{9}$'
-        if not re.match(pattern, self.mobile) if self.mobile  else True:
+        if not re.match(pattern, self.mobile) if self.mobile else True:
             raise ValidationError(_('Mobile number should contain 10 digits and the first digit should not be zero'))
 
     stage_name = fields.Char(compute='_compute_stage_name', store=True)
@@ -287,7 +287,8 @@ class ARS_crm_lead(models.Model):
                                                                        count, record.partner_id.id)
                         order_line.append((0, 0, data))
                         count += 1
-                warehouse_id = self.env['stock.warehouse'].search([('company_id', '=', record.regn_no.company_id.id), ('ars_type', 'in', ['after_sales'])])
+                warehouse_id = self.env['stock.warehouse'].search(
+                    [('company_id', '=', record.regn_no.company_id.id), ('ars_type', 'in', ['after_sales'])])
                 customer_voice = self.env['customer.voice'].search([('customer_voice_id', '=', record.id)])
 
                 order_id = orderid.create({'opportunity_id': self.id,
@@ -441,16 +442,16 @@ class ARS_crm_lead(models.Model):
     #     return super(ARS_crm_lead, self).write(vals)
 
     # Appointment stage id default set in 'Service Due'
-
-    def _default_stage_id(self):
-        team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
-        userid = self.env.user
-        stage = self._stage_find(team_id=team.id, domain=[('fold', '=', False), ('name', '=', 'New')]).id
-        if userid.sale_team_id.team_type == 'after_sales':
-            companyid = self.env.user.company_id
-            if companyid.team_stage_id.id:
-                stage = companyid.team_stage_id.id
-        return stage
+    #'''Commented the code because stage is not taking default in crm sales while creating new lead. reason is overriding default functionality.'''
+    # def _default_stage_id(self):
+    #     team = self.env['crm.team'].sudo()._get_default_team_id(user_id=self.env.uid)
+    #     userid = self.env.user
+    #     stage = self._stage_find(team_id=team.id, domain=[('fold', '=', False), ('name', '=', 'New')]).id
+    #     if userid.sale_team_id.team_type == 'after_sales':
+    #         companyid = self.env.user.company_id
+    #         if companyid.team_stage_id.id:
+    #             stage = companyid.team_stage_id.id
+    #     return stage
 
     # service advisor field bydefault blank
     # @api.onchange('user_id')
@@ -549,7 +550,6 @@ class ARS_crm_lead(models.Model):
                 return multiple_regno
         if self.regn_no.license_plate != '/':
             customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.regn_no.license_plate)])
-
             if len(customer_details) == 1:
                 # vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
                 self.count_vehicle = len(customer_details)
@@ -575,6 +575,9 @@ class ARS_crm_lead(models.Model):
                 self.vin_no = self.vin_no
                 self.vehicle_model = customer_details.mvariant_id.id
                 self.vehicle_model_char = customer_details.mvariant_id.name
+            else:
+                raise ValidationError(_(f'{self.vin_no} duplicate vin number present in the system!!!\n'
+                                        f'Please check vin number {customer_details.ids}'))
 
     @api.multi
     @api.onchange('mobile')
@@ -676,6 +679,7 @@ class ARS_crm_lead(models.Model):
     #             if vals.get('main_process_id'):
     #                 sale_id.main_process_id = vals.get('main_process_id')
     #     return super(ARS_crm_lead, self).write(vals)
+
 
 class CRMLeadStage(models.Model):
     _name = "crm.lead.stage"

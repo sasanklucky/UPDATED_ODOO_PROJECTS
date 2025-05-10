@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_mandatory_fields_update_form" model="ir.ui.view">
+        <field name="name">view.mandatory.fields.update.form</field>
+        <field name="model">sim.installation</field>
+        <field name="arch" type="xml">
+            <form string="Mandatory Fields Updation">
+                <label for="sim_numbers"/>  <!-- 'label' not 'lable' -->
+                <field name="sim_numbers"/>
+                <group string="Sim Installation Date">
+                    <group>
+                        <field name="sim_installation_date"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="updation_sim" type="object" string="Update" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

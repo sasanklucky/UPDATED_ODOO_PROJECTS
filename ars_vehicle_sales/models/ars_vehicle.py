@@ -19,6 +19,18 @@ class FleetVehicle(models.Model):
                 raise ValidationError(_('VIN is not Alphanumeric'))
             if len(self.vin_sn) != 17:
                 raise ValidationError(_('VIN Have %s Characters. It Should be 17') % len(self.vin_sn))
+    #Added New Constraints restrict to create duplicate vehicle card.
+    @api.constrains('vin_sn')
+    def _check_unique_vin_sn(self):
+        for record in self:
+            if record.vin_sn:
+                # Search for other vehicles with the same VIN
+                duplicate = self.search([
+                    ('vin_sn', '=', record.vin_sn),
+                    ('id', '!=', record.id)
+                ], limit=1)
+                if duplicate:
+                    raise ValidationError("VIN Number must be unique!")
 
     @api.multi
     def get_years(self):
@@ -69,6 +81,18 @@ class FleetVehicle(models.Model):
     driver_id = fields.Many2one('res.partner', 'Customer', track_visibility="onchange", help='Customer of the vehicle',
                                 copy=False)
     consolidate_vehicle_card_id = fields.Integer(string='consolidate_vehicle_card_id')
+    is_demo_vehicle = fields.Boolean(string="Demo Vehicle")
+    demo_vehicle_label = fields.Char(string="Demo Label", compute="_compute_demo_vehicle_label")
+
+    @api.depends('is_demo_vehicle')
+    def _compute_demo_vehicle_label(self):
+        for rec in self:
+            rec.demo_vehicle_label = "Demo Vehicle" if rec.is_demo_vehicle else "Not Demo Vehicle"
+
+    @api.multi
+    def toggle_demo_vehicle(self):
+        for rec in self:
+            rec.is_demo_vehicle = not rec.is_demo_vehicle
 
     # engine_type_code = fields.Char(string='Engine Type Code', related="product_id.product_tmpl_id.engine_type_code")
     # no_of_cylinder = fields.Char(string='No of Cylinder', related="product_id.product_tmpl_id.no_of_cylinder")
@@ -103,9 +127,14 @@ class FleetVehicle(models.Model):
     # power_window = fields.Many2one('power.window', 'Power Window', index=True)
     # centre_locking = fields.Boolean(string="Centre Locking")
     # description = fields.Text()
-    sql_constraints = [
-        ('driver_id_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same employee!'),
-        ('vin_sn_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same VIN Number!')
+    #Commented the below constrain to write new constraints
+    # sql_constraints = [
+    #     ('driver_id_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same employee!'),
+    #     ('vin_sn_unique', 'CHECK(1=1)', 'Only one car can be assigned to the same VIN Number!')
+    # ]
+    _sql_constraints = [
+
+        ('vin_sn_unique', 'unique(vin_sn)', 'VIN/Chassis Number must be unique for each vehicle!')
     ]
 
     @api.onchange('vin_sn')
@@ -154,7 +183,11 @@ class FleetVehicle(models.Model):
             for res in ress:
                 r = list(res)
                 st_pr_lt = self.browse(int(r[0]))
-                if st_pr_lt.license_plate:
+                if st_pr_lt.license_plate and st_pr_lt.vin_sn and st_pr_lt.license_plate == '/':
+                    r[1] = f'{st_pr_lt.license_plate} - [{st_pr_lt.vin_sn}]'
+                    res_t = tuple(r)
+                    result.append(res_t)
+                else:
                     r[1] = st_pr_lt.license_plate
                     res_t = tuple(r)
                     result.append(res_t)

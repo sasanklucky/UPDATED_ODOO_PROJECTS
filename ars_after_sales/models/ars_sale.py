@@ -187,15 +187,16 @@ class ARS_sale_order(models.Model):
             else:
                 rec.pick_up_drop = 'No'
 
-    @api.onchange('regn_no')
-    def update_vin_number(self):
-        if self.regn_no:
-            history_items = self.regn_no.customer_ids
-            try:
-                target = history_items[-1]
-                self.sold_by = target.sold_by
-            except:
-                pass
+    # Commented because this query re-written under ars_sale.py line-216
+    # @api.onchange('regn_no')
+    # def update_vin_number(self):
+    #     if self.regn_no:
+    #         history_items = self.regn_no.customer_ids
+    #         try:
+    #             target = history_items[-1]
+    #             self.sold_by = target.sold_by
+    #         except:
+    #             pass
 
     @api.multi
     @api.depends('sale_type')
@@ -214,41 +215,142 @@ class ARS_sale_order(models.Model):
             self.product_catalog_id = self.env['product.catalog'].search(domain, limit=1).id
 
     @api.multi
-    @api.onchange('resource_id_sale')
-    def resource_map(self):
-        self.service_advisor = self.resource_id_sale.user_id.id
+    @api.onchange('partner_id', 'regn_no', 'vin_no')
+    def _onchange_fields_to_update(self):
+        domain = {}
 
-    @api.multi
-    @api.onchange('partner_id')
-    def Estimate_change(self):
-        partner = False
-        if self.partner_id.id or partner:
-            if not partner:
-                partner = self.partner_id
-            if partner:
-                customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', partner.id)])
+        if not self.partner_id:
+            self.partner_invoice_id = False
+            self.partner_shipping_id = False
+            self.payment_term_id = False
+            self.fiscal_position_id = False
+            self.phone = False
 
-                if len(customer_details) == 1:
-                    vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
-                    self.count_vehicle = len(customer_details)
-                    self.partner_id = self.partner_id.id
-                    self.phone = self.partner_id.phone
-                    self.regn_no = customer_details.id
-                    self.vin_no = customer_details.vin_sn
-                    self.vehicle_model = customer_details.mvariant_id.id
-                else:
-                    lot_pro_id = []
-                    for cus in customer_details:
-                        vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)], limit=1)
-                        lot_pro_id.append(vin_no_details.ids)
-                    self.env.cr.execute('delete from customer_regn')
-                    self.partner_id = self.partner_id.id
-                    self.phone = self.partner_id.phone
-                    multiple_regno = {}
-                    multiple_regno.setdefault('domain', {})
-                    multiple_regno['domain']['regn_no'] = repr([('id', 'in', customer_details.ids)])
-                    multiple_regno['domain']['vin_no'] = repr([('id', 'in', lot_pro_id)])
-                    return multiple_regno
+        # 1. If vin_no is changed directly
+        if self.vin_no and not self.regn_no:
+            vehicle = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)], limit=1)
+            if vehicle:
+                self.partner_id = vehicle.driver_id.id
+                self.phone = vehicle.driver_id.phone
+                self.regn_no = vehicle.id
+                self.model = vehicle.mvariant_id.id
+                self.mileage_in = vehicle.odometer
+
+                domain['regn_no'] = [('id', 'in', vehicle.ids)]
+                domain['vin_no'] = [('id', 'in', self.env['stock.production.lot'].search([
+                    ('name', 'in', vehicle.mapped('vin_sn'))]).ids)]
+
+                addr = self.partner_id.address_get(['delivery', 'invoice'])
+                self.partner_invoice_id = addr.get('invoice')
+                self.partner_shipping_id = addr.get('delivery')
+                self.pricelist_id = self.partner_id.property_product_pricelist.id
+                self.payment_term_id = self.partner_id.property_payment_term_id.id
+                self.user_id = self.partner_id.user_id.id or self.env.uid
+
+                if self.env['ir.config_parameter'].sudo().get_param(
+                        'sale.use_sale_note') and self.env.user.company_id.sale_note:
+                    self.note = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+        # 2. If regn_no is changed directly
+        if self.regn_no:
+            vehicle = self.env['fleet.vehicle'].browse(self.regn_no.id)
+            self.vin_no = vehicle.vin_sn
+            self.model = vehicle.mvariant_id.id
+            self.mileage_in = vehicle.odometer
+
+            if vehicle.driver_id:
+                self.partner_id = vehicle.driver_id.id
+                self.phone = vehicle.driver_id.phone
+            else:
+                self.partner_id = False
+                self.phone = False
+
+            customer_vehicles = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            addr = self.partner_id.address_get(['delivery', 'invoice'])
+            self.partner_invoice_id = addr.get('invoice')
+            self.partner_shipping_id = addr.get('delivery')
+            self.pricelist_id = self.partner_id.property_product_pricelist.id
+            self.payment_term_id = self.partner_id.property_payment_term_id.id
+            self.user_id = self.partner_id.user_id.id or self.env.uid
+
+            if self.env['ir.config_parameter'].sudo().get_param(
+                    'sale.use_sale_note') and self.env.user.company_id.sale_note:
+                self.note = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+            if len(customer_vehicles) > 1:
+                domain['regn_no'] = [('id', 'in', customer_vehicles.ids)]
+                domain['vin_no'] = [('id', 'in', self.env['stock.production.lot'].search([
+                    ('name', 'in', customer_vehicles.mapped('vin_sn'))]).ids)]
+
+            # Sold by
+            history_items = self.regn_no.customer_ids
+            try:
+                self.sold_by = history_items[-1].sold_by
+            except IndexError:
+                self.sold_by = False
+
+        # 3. If only partner is selected
+        if self.partner_id and not self.regn_no and not self.vin_no:
+            vehicles = self.env['fleet.vehicle'].search([('driver_id', '=', self.partner_id.id)])
+            self.count_vehicle = len(vehicles)
+            self.phone = self.partner_id.phone
+
+            if len(vehicles) == 1:
+                vehicle = vehicles[0]
+                self.regn_no = vehicle.id
+                self.vin_no = vehicle.vin_sn
+                self.model = vehicle.mvariant_id.id
+                self.mileage_in = vehicle.odometer
+            elif len(vehicles) > 1:
+                domain['regn_no'] = [('id', 'in', vehicles.ids)]
+                domain['vin_no'] = [('id', 'in', self.env['stock.production.lot'].search([
+                    ('name', 'in', vehicles.mapped('vin_sn'))]).ids)]
+
+            # Address & finance
+            addr = self.partner_id.address_get(['delivery', 'invoice'])
+            self.partner_invoice_id = addr.get('invoice')
+            self.partner_shipping_id = addr.get('delivery')
+            self.pricelist_id = self.partner_id.property_product_pricelist.id
+            self.payment_term_id = self.partner_id.property_payment_term_id.id
+            self.user_id = self.partner_id.user_id.id or self.env.uid
+
+            if self.env['ir.config_parameter'].sudo().get_param(
+                    'sale.use_sale_note') and self.env.user.company_id.sale_note:
+                self.note = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+
+        if domain:
+            return {'domain': domain}
+
+    # Commented because this query re-written under ars_sale.py line-216
+    # @api.multi
+    # @api.onchange('partner_id')
+    # def Estimate_change(self):
+    #     partner = False
+    #     if self.partner_id.id or partner:
+    #         if not partner:
+    #             partner = self.partner_id
+    #         if partner:
+    #             customer_details = self.env['fleet.vehicle'].search([('driver_id', '=', partner.id)])
+    #
+    #             if len(customer_details) == 1:
+    #                 vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+    #                 self.count_vehicle = len(customer_details)
+    #                 self.partner_id = self.partner_id.id
+    #                 self.phone = self.partner_id.phone
+    #                 self.regn_no = customer_details.id
+    #                 self.vin_no = customer_details.vin_sn
+    #                 self.vehicle_model = customer_details.mvariant_id.id
+    #             else:
+    #                 lot_pro_id = []
+    #                 for cus in customer_details:
+    #                     vin_no_details = self.env['stock.production.lot'].search([('name', '=', cus.vin_sn)], limit=1)
+    #                     lot_pro_id.append(vin_no_details.ids)
+    #                 self.env.cr.execute('delete from customer_regn')
+    #                 self.partner_id = self.partner_id.id
+    #                 self.phone = self.partner_id.phone
+    #                 multiple_regno = {}
+    #                 multiple_regno.setdefault('domain', {})
+    #                 multiple_regno['domain']['regn_no'] = repr([('id', 'in', customer_details.ids)])
+    #                 multiple_regno['domain']['vin_no'] = repr([('id', 'in', lot_pro_id)])
+    #                 return multiple_regno
 
         # if self.regn_no:
         #     customer_details = self.env['stock.production.lot'].search([('reg_no', '=', self.regn_no.id)])
@@ -260,33 +362,34 @@ class ARS_sale_order(models.Model):
         #         self.vin_no = customer_details.name
         #         self.vehicle_model = customer_details.product_id.name
 
-    @api.multi
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        if not self.partner_id:
-            self.update({
-                'partner_invoice_id': False,
-                'partner_shipping_id': False,
-                'payment_term_id': False,
-                'fiscal_position_id': False,
-            })
-            return
-
-        addr = self.partner_id.address_get(['delivery', 'invoice'])
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
-            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
-            'partner_invoice_id': addr['invoice'],
-            'partner_shipping_id': addr['delivery'],
-            'user_id': self.partner_id.user_id.id or self.env.uid
-        }
-        if self.env['ir.config_parameter'].sudo().get_param(
-                'sale.use_sale_note') and self.env.user.company_id.sale_note:
-            values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
-
-        # if self.partner_id.team_id:
-        #     values['team_id'] = self.partner_id.team_id.id
-        self.update(values)
+    #Commented because this query re-written under ars_sale.py line-216
+    # @api.multi
+    # @api.onchange('partner_id')
+    # def onchange_partner_id(self):
+    #     if not self.partner_id:
+    #         self.update({
+    #             'partner_invoice_id': False,
+    #             'partner_shipping_id': False,
+    #             'payment_term_id': False,
+    #             'fiscal_position_id': False,
+    #         })
+    #         return
+    #
+    #     addr = self.partner_id.address_get(['delivery', 'invoice'])
+    #     values = {
+    #         'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+    #         'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
+    #         'partner_invoice_id': addr['invoice'],
+    #         'partner_shipping_id': addr['delivery'],
+    #         'user_id': self.partner_id.user_id.id or self.env.uid
+    #     }
+    #     if self.env['ir.config_parameter'].sudo().get_param(
+    #             'sale.use_sale_note') and self.env.user.company_id.sale_note:
+    #         values['note'] = self.with_context(lang=self.partner_id.lang).env.user.company_id.sale_note
+    #
+    #     # if self.partner_id.team_id:
+    #     #     values['team_id'] = self.partner_id.team_id.id
+    #     self.update(values)
 
         # res = super(ARS_sale_order, self).onchange_partner_id()
         # values = {}
@@ -305,51 +408,53 @@ class ARS_sale_order(models.Model):
         # self.update(values)
         # return res
 
-    @api.model
-    def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        con = self.env.context
-        res = super(ARS_sale_order, self).fields_view_get(view_id, view_type, toolbar, submenu)
-        doc = etree.XML(res['arch'])
-        if view_type == 'form':
-            fleet_v = self.env['fleet.vehicle'].search([('vehicle_status', '=', 'customer')])
-            for node in doc.xpath("//field[@name='regn_no']"):
-                user_filter = "[('id', 'in'," + str(fleet_v.ids) + " )]"
-                node.set('domain', user_filter)
+    #Commented the due to it's showing only vehicle_status in customer only.
+    #this making Wrong FPDI's for differnet vehicle
+    # @api.model
+    # def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
+    #     con = self.env.context
+    #     res = super(ARS_sale_order, self).fields_view_get(view_id, view_type, toolbar, submenu)
+    #     doc = etree.XML(res['arch'])
+    #     if view_type == 'form':
+    #         fleet_v = self.env['fleet.vehicle'].search([('vehicle_status', '=', 'customer')])
+    #         for node in doc.xpath("//field[@name='regn_no']"):
+    #             user_filter = "[('id', 'in'," + str(fleet_v.ids) + " )]"
+    #             node.set('domain', user_filter)
+    #     res['arch'] = etree.tostring(doc)
+    #     return res
 
-        res['arch'] = etree.tostring(doc)
-        return res
-
-    @api.multi
-    @api.onchange('regn_no')
-    def regnno_change(self):
-        if self.regn_no.license_plate != '/':
-            customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.regn_no.license_plate)])
-
-            if len(customer_details) == 1:
-                vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
-                self.count_vehicle = len(customer_details)
-                self.partner_id = customer_details.driver_id.id
-                self.phone = customer_details.driver_id.phone
-                self.regn_no = customer_details.id
-                self.vin_no = customer_details.vin_sn
-                # self.vin_no = customer_details.vin_sn
-                # self.vehicle_model = customer_details.mvariant_id.id
-                self.model = customer_details.mvariant_id.id
-                self.mileage_in = customer_details.odometer
-
-    @api.multi
-    @api.onchange('vin_no')
-    def vinno_change(self):
-        if self.vin_no:
-            customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)])
-            self.count_vehicle = len(customer_details)
-            if len(customer_details) == 1:
-                self.partner_id = customer_details.driver_id.id
-                self.phone = customer_details.driver_id.phone
-                # self.regn_no = customer_details.id
-                self.vin_no = self.vin_no
-                # self.vehicle_model = customer_details.mvariant_id.id
-                self.model = customer_details.mvariant_id.id
+    # Commented because this query re-written under ars_sale.py line-216
+    # @api.multi
+    # @api.onchange('regn_no')
+    # def regnno_change(self):
+    #     if self.regn_no.license_plate != '/':
+    #         customer_details = self.env['fleet.vehicle'].search([('license_plate', '=', self.regn_no.license_plate)])
+    #
+    #         if len(customer_details) == 1:
+    #             vin_no_details = self.env['stock.production.lot'].search([('name', '=', customer_details.vin_sn)])
+    #             self.count_vehicle = len(customer_details)
+    #             self.partner_id = customer_details.driver_id.id
+    #             self.phone = customer_details.driver_id.phone
+    #             self.regn_no = customer_details.id
+    #             self.vin_no = customer_details.vin_sn
+    #             # self.vin_no = customer_details.vin_sn
+    #             # self.vehicle_model = customer_details.mvariant_id.id
+    #             self.model = customer_details.mvariant_id.id
+    #             self.mileage_in = customer_details.odometer
+    #
+    # @api.multi
+    # @api.onchange('vin_no')
+    # def vinno_change(self):
+    #     if self.vin_no:
+    #         customer_details = self.env['fleet.vehicle'].search([('vin_sn', '=', self.vin_no)])
+    #         self.count_vehicle = len(customer_details)
+    #         if len(customer_details) == 1:
+    #             self.partner_id = customer_details.driver_id.id
+    #             self.phone = customer_details.driver_id.phone
+    #             # self.regn_no = customer_details.id
+    #             self.vin_no = self.vin_no
+    #             # self.vehicle_model = customer_details.mvariant_id.id
+    #             self.model = customer_details.mvariant_id.id
 
     @api.multi
     @api.onchange('mobile')
@@ -758,7 +863,7 @@ class ARS_sale_order(models.Model):
             set_reminder = datetime.strptime(last_service_history.set_reminder, '%Y-%m-%d') + timedelta(
                 days=int(remainder))
         if self.env.context.get('count_line') == 0:
-            self.env['service.history'].create({
+            service_vals_current_dealer = {
                 'order': self.id,
                 'ro_id': self.id,
                 'ro_number': self.name,
@@ -772,7 +877,13 @@ class ARS_sale_order(models.Model):
                 'next_service_due': next_service_due,
                 'set_reminder': set_reminder,
                 'vehicle_id': vehicle.id,
-            })
+            }
+            check_dealer_ro_name = self.env['service.history'].sudo().search([('ro_number', '=', self.name)])
+            if check_dealer_ro_name:
+                check_dealer_ro_name.update(service_vals_current_dealer)
+            else:
+                 self.env['service.history'].sudo().create(service_vals_current_dealer)
+
         return res
 
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="crm_lead_kanban_view_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="ars_after_sales.crm_case_kanban_view_leads_inherit"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="disable_drag_drop_record">true</attribute>
+<!--                <attribute name="disable_sort_record">true</attribute>-->
+<!--                <attribute name="disable_sort_column">true</attribute>-->
+            </xpath>
+        </field>
+    </record>
+
+
+     <record id="crm_lead_kanban_view_sales_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.sales.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//kanban" position="attributes">
+                <attribute name="disable_drag_drop_record">true</attribute>
+                <attribute name="disable_sort_record">true</attribute>
+                <attribute name="disable_sort_column">true</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="crm_lead_kanban_view_sales_form_inherit" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.sales.form.inherit</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/field[@name='stage_id']" position="attributes">
+            <attribute name="readonly">1</attribute>
+        </xpath>
+        </field>
+    </record>
+
+</odoo>

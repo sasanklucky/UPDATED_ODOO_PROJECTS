@@ -26,6 +26,11 @@
 <!--                                    <label class="col-md-3" string="IMS Database Name"/>-->
 <!--                                    <field name="ims_db_name" id='ims_db_name' required="1" options="{'horizontal': true}"/>-->
 <!--                                </div>-->
+                                <div class="row mt16">
+                                    <label class="col-md-3" string="Create Button"/>
+                                    <field name="is_vehicle_create" id='is_vehicle_create'
+                                           options="{'horizontal': true}"/>
+                                </div>
                             </div>
                             <br></br>
                         </div>
