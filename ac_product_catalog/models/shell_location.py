@@ -16,6 +16,7 @@ class ShellLocation(models.Model):
     child_id = fields.One2many('shell.location', 'parent_id', 'Child Shelf Location')
     parent_left = fields.Integer('Left Parent', index=1)
     parent_right = fields.Integer('Right Parent', index=1)
+    company_id = fields.Many2one('res.company', 'Company')
 
 
 class ProductTemplateShellLocation(models.Model):
