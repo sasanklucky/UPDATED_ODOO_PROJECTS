@@ -64,44 +64,6 @@ class FleetVehicle(models.Model):
         is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
 
         for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
-            # --- Step 1: Update local service.history with order details ---
-            service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
-            to_update = service_records.filtered(lambda s: s.order.id)
-
-            for record in to_update:
-                if record.order.id:
-                    for sale_q in record.order:
-                        record.write({
-                            'ro_id': sale_q.id,
-                            'servicetype': sale_q.service_type.name,
-                            'service_type_name': sale_q.service_type.name,
-                            'service_code': sale_q.service_type.code,
-                            'dealer_db_name': record.dealer_db_name or self._cr.dbname,
-                            'mileage_in': record.mileage_in or sale_q.mileage_in,
-                            'ro_number': record.ro_number or sale_q.name,
-                        })
-
-            # --- Step 2: Remove duplicate service records ---
-            duplicate_orders = ServiceHistory.read_group(
-                [('vehicle_id', '=', vehicle.id), ('order', '!=', False)],
-                ['ro_id'],
-                ['ro_id']
-            )
-            duplicate_order_ids = [group['ro_id'] for group in duplicate_orders if group['ro_id_count'] > 1]
-
-            for order_id in duplicate_order_ids:
-                duplicates = ServiceHistory.search([
-                    ('order', '=', order_id),
-                    ('vehicle_id', '=', vehicle.id)
-                ])
-                duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
-                for duplicate in duplicates_to_delete:
-                    if duplicate.exists():
-                        try:
-                            duplicate.sudo().unlink()
-                        except Exception as e:
-                            _logger.error(f"Error unlinking duplicate service history ID {duplicate.id}: {e}")
-
             # --- Step 3: Consolidation Sync ---
             if is_cons_enable and cons_db_name:
                 try:
@@ -172,6 +134,48 @@ class FleetVehicle(models.Model):
                 except Exception as e:
                     _logger.error(f"Consolidation sync error: {e}")
                     raise UserError(_("Error during consolidation sync: %s") % e)
+            # --- Step 1: Update local service.history with order details ---
+            service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
+            to_update = service_records.filtered(lambda s: s.order.id)
+
+            for record in to_update:
+                if record.order.id:
+                    for sale_q in record.order:
+                        record.write({
+                            'ro_id': sale_q.id,
+                            'servicetype': sale_q.service_type.name,
+                            'service_type_name': sale_q.service_type.name,
+                            'service_code': sale_q.service_type.code,
+                            'dealer_db_name': record.dealer_db_name or self._cr.dbname,
+                            'mileage_in': record.mileage_in or sale_q.mileage_in,
+                            'ro_number': record.ro_number or sale_q.name,
+                        })
+
+            # --- Step 2: Remove duplicate service records ---
+            duplicate_orders = ServiceHistory.read_group(
+                [('vehicle_id', '=', vehicle.id)],
+                ['ro_id'],
+                ['ro_id']
+            )
+            print(duplicate_orders)
+            duplicate_order_ids = [group['ro_id'] for group in duplicate_orders if group['ro_id_count'] > 1]
+            print(duplicate_order_ids, 'duplicate_order_ids')
+            for order_id in duplicate_order_ids:
+                duplicates = ServiceHistory.search([
+                    ('ro_id', '=', order_id),
+                    ('vehicle_id', '=', vehicle.id)
+                ])
+                print('duplicates',duplicates)
+                duplicates_to_delete = duplicates.sorted(key=lambda s: s.create_date)[1:]
+                print(duplicates_to_delete, 'duplicates_to_delete')
+                for duplicate in duplicates_to_delete:
+                    if duplicate.exists():
+                        try:
+                            duplicate.sudo().unlink()
+                        except Exception as e:
+                            _logger.error(f"Error unlinking duplicate service history ID {duplicate.id}: {e}")
+
+
 
     #
     # def update_vehicle_service_history(self):

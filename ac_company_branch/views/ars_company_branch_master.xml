@@ -12,10 +12,10 @@
                 <tree>
                     <field name="name"/>
                     <field name="company_id"/>
-                    <field name="partner_id"/><?xml version="1.0" encoding="utf-8"?>
-
-<odoo>
-    <data>
+                    <field name="partner_id"/>
+                </tree>
+            </field>
+        </record>
 
         <template id="assets_backend" name="branch switch assets" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
@@ -134,11 +134,8 @@
         </record>
 
 
-    </data>
-</odoo>
-                </tree>
-            </field>
-        </record>
+
+
 
         <record model="ir.ui.view" id="branch_master_list_form_company">
             <field name="name">branch_master_company form</field>
