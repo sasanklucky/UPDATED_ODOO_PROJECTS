@@ -744,28 +744,28 @@ class AccountInvoice(models.Model):
     #
     #     return super(AccountInvoice, self).write(vals)
 
-    def write(self, vals):
-        current_user_branch = self.env.user.branch_id
-
-        for invoice in self:
-            # Use new or existing branch value
-            new_branch_id = vals.get('branch_id', invoice.branch_id.id)
-
-            # Try to get linked sale order from origin
-            sale_order = None
-            if invoice.origin:
-                sale_order = self.env['sale.order'].search([
-                    ('name', '=', invoice.origin)
-                ], limit=1)
-
-            if sale_order:
-                transaction_branch = sale_order.branch_id
-                if current_user_branch.id != transaction_branch.id:
-                    raise ValidationError(_(
-                        "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
-                    ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
-
-        return super(AccountInvoice, self).write(vals)
+    # def write(self, vals):
+    #     current_user_branch = self.env.user.branch_id
+    #
+    #     for invoice in self:
+    #         # Use new or existing branch value
+    #         new_branch_id = vals.get('branch_id', invoice.branch_id.id)
+    #
+    #         # Try to get linked sale order from origin
+    #         sale_order = None
+    #         if invoice.origin:
+    #             sale_order = self.env['sale.order'].search([
+    #                 ('name', '=', invoice.origin)
+    #             ], limit=1)
+    #
+    #         if sale_order:
+    #             transaction_branch = sale_order.branch_id
+    #             if current_user_branch.id != transaction_branch.id:
+    #                 raise ValidationError(_(
+    #                     "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
+    #                 ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
+    #
+    #     return super(AccountInvoice, self).write(vals)
 
 
 class ProductPricelist(models.Model):
