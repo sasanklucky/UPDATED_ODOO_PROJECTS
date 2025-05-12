@@ -4,12 +4,12 @@ from odoo import api, fields, models
 class ProductTemplates(models.Model):
     _inherit = "product.template"
 
-    model_ids = fields.Many2many('ir.model', string='Models')
+    ir_model_ids = fields.Many2many('ir.model', string='Models')
 
     field_ids = fields.Many2many(
         'ir.model.fields',
         string="Fields",
-        domain="[('model_id', 'in', model_ids), ('ttype', 'not in', ['one2many', 'many2many', 'many2one'])]"
+        domain="[('model_id', 'in', ir_model_ids), ('ttype', 'not in', ['one2many', 'many2many', 'many2one'])]"
     )
 
     setup_line_ids = fields.One2many('labour.setup.line', 'setup_id', string="Fields")

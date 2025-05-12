@@ -10,7 +10,7 @@ class ConvertSOWizard(models.TransientModel):
     cancel_reason = fields.Text(string='Cancel Reason')
     show_cancel_reason = fields.Boolean(default=False)
     campaign_history_id = fields.Many2one('campaign.history', string="Campaign History")
-    sim_installation_date = fields.Date(string='SIM Assignment Date', default=fields.Date.context_today)
+    # sim_installation_date = fields.Date(string='SIM Assignment Date', default=fields.Date.context_today)
     is_campagin = fields.Selection([
         ('yes', 'Yes'),
         ('no', 'No'),

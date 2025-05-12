@@ -23,11 +23,11 @@
                             <field name="state"/>
 <!--                            <field name="campaign_done_date"/>-->
 <!--                            <field name="campaign_service_id"/>-->
-                            <field name="camp_cancel_reasons"/>
                             <field name="campaign_vehicle_status"/>
                             <field name="dealer_code"/>
                             <field name="dealer_db_name"/>
                             <field name="campaign_service_name"/>
+                            <field name="camp_cancel_reasons"/>
                         </tree>
                     </field>
                 </page>
