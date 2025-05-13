@@ -27,13 +27,13 @@ class ARSResPartner(models.Model):
     can_edit_address_child = fields.Boolean(string="Address Child", compute="_compute_can_edit_address_child")
 
     @api.depends(
-        "opportunity_ids", "meeting_ids", "sale_order_ids", "task_ids", "invoice_ids",
+         "meeting_ids", "sale_order_ids", "invoice_ids",
         # "vehicle_count", "estimate_count", "so_count", "purchase_order_count", "sale_order_count"
     )
     def _compute_can_edit_address(self):
         for partner in self:
             partner.can_edit_address = any([
-                partner.opportunity_ids,
+                # partner.opportunity_ids,
                 partner.meeting_ids,
                 partner.sale_order_ids,
                 partner.invoice_ids,
@@ -53,7 +53,7 @@ class ARSResPartner(models.Model):
     def write(self, vals):
         result = super(ARSResPartner, self).write(vals)
         tracked_fields = {
-            "opportunity_ids", "meeting_ids", "sale_order_ids", "task_ids", "invoice_ids"
+            "meeting_ids", "sale_order_ids",  "invoice_ids"
         }
         if any(field in vals for field in tracked_fields):
             self._compute_can_edit_address()
