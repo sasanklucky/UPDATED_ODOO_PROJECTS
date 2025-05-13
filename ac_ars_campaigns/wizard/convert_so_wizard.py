@@ -19,6 +19,7 @@ class ConvertSOWizard(models.TransientModel):
 
     def action_done(self):
         sale_order = self.env['sale.order'].browse(self.env.context.get('default_sale_estimation_id'))
+        # sale_order.write({'stages':'repair_order'})
         for record in self:
             cam_history = self.env['campaign.history'].search([('id', '=', record.campaign_history_id.id)], limit=1)
             if record.is_campagin == 'yes':
@@ -124,9 +125,3 @@ class ClickableAction(models.TransientModel):
         return self.sale_order_id.action_convert(vals)
 
 
-    # def action_updation(self):
-    #     self.ensure_one()
-    #     self.sale_order_id.write({
-    #         'service_type': self.campaign_service_type.id,
-    #         'service_options': self.campaign_service_option.id,
-    #     })

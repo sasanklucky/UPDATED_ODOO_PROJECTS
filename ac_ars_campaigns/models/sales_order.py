@@ -43,6 +43,11 @@ class SalesOrders(models.Model):
         self.write({'stages':'estimation'})
         return super(SalesOrders, self).action_cancel()
 
+    # def action_convert(self):
+    #     res = super(SalesOrders,self).action_convert()
+    #     self.write({'stages':'repair_order'})
+    #     return res
+
     def ro_closed_action(self):
         action = self.action_done()
         self.write({'stages':'ro_closed'})
