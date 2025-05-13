@@ -744,6 +744,7 @@ class AccountInvoice(models.Model):
     #
     #     return super(AccountInvoice, self).write(vals)
 
+
     def write(self, vals):
         current_user_branch = self.env.user.branch_id
 
@@ -771,6 +772,7 @@ class AccountInvoice(models.Model):
                     ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
 
         return super(AccountInvoice, self).write(vals)
+
 
 
 class ProductPricelist(models.Model):
