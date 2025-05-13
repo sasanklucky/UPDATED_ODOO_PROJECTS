@@ -26,11 +26,14 @@ class SimInstallation(models.TransientModel):
         for rec in self:
             vehicle_id = self.env['fleet.vehicle'].search([('id', '=', rec.vehicle)], limit=1)
             sale_id = self.env['sale.order'].search([('id', '=', rec.sale_id)], limit=1)
-            campaign_his_id = self.env['campaign.history'].search([('id', '=', sale_id.campaign_his_id.id)])
+            campaign_his_id = self.env['campaign.history'].search([('id', '=', sale_id.campaign_his_id.id)], limit=1)
             if vehicle_id:
                 vehicle_id.write({'sim_number': rec.sim_numbers,
                                   'sim_installation_date': rec.sim_installation_date})
-
-            campaign_his_id.write({'state': 'done',
-                                   'camp_cancel_reasons': ''
-                                   })
+            for camp in campaign_his_id:
+                if camp.camp_cancel_reasons:
+                    campaign_his_id.write({'state': 'pending',})
+                else:
+                    campaign_his_id.write({'state': 'done',
+                                           'camp_cancel_reasons': ''
+                                           })

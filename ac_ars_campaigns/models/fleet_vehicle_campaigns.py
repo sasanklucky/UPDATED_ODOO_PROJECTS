@@ -7,7 +7,7 @@ class FleetVehicleCampaigns(models.Model):
         'campaign.history', 'campaign_vehicle_id', string="Campaign History"
     )
     sim_number = fields.Char('Sim Number')
-    sim_installation_date = fields.Date('Sim Installation Date')
+    sim_installation_date = fields.Date('Campaign Done Date')
 
 
 class CampaignHistory(models.Model):

@@ -23,8 +23,8 @@ class ResCompany(models.Model):
 class ARSResPartner(models.Model):
     _inherit = 'res.partner'
 
-    can_edit_address = fields.Boolean(compute="_compute_can_edit_address", store=True)
-    can_edit_address_child = fields.Boolean(string="Address Child", compute="_compute_can_edit_address_child", store=True)
+    can_edit_address = fields.Boolean(compute="_compute_can_edit_address")
+    can_edit_address_child = fields.Boolean(string="Address Child", compute="_compute_can_edit_address_child")
 
     @api.depends(
         "opportunity_ids", "meeting_ids", "sale_order_ids", "task_ids", "invoice_ids",
