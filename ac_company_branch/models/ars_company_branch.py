@@ -16,7 +16,7 @@ class BranchCrmLead(models.Model):
     _inherit = 'crm.lead'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
-    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_lead_rel', 'lead_id', 'branch_id', compute='_compute_user_allowed_branch_ids', string='Allowed Branches', ondelete='cascade', store=True)
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_lead_rel', 'lead_id', 'branch_id', compute='_compute_user_allowed_branch_ids', string='Allowed Branches', ondelete='cascade')
 
     def _compute_user_allowed_branch_ids(self):
         for rec in self:
@@ -135,7 +135,7 @@ class BranchSaleOrder(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_sale_rel', 'order_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -229,7 +229,7 @@ class BranchRESPartner(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_bank_rel', 'bank_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=False)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -287,7 +287,7 @@ class BranchProductTemp(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_template_rel', 'template_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -344,7 +344,7 @@ class CRMTeam(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch', domain="[('company_id', '=', company_id)]")
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_team_rel', 'team_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -465,7 +465,7 @@ class ResPartner(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_partner_rel', 'partner_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -522,7 +522,7 @@ class StockProduction(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_stock_rel', 'stock_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -641,8 +641,7 @@ class AccountInvoice(models.Model):
         'invoice_id',
         'branch_id',
         compute='_compute_user_allowed_branch_ids',
-        string='Allowed Branches',
-        store=True
+        string='Allowed Branches'
     )
 
     @api.depends('user_id')
@@ -744,10 +743,17 @@ class AccountInvoice(models.Model):
     #
     #     return super(AccountInvoice, self).write(vals)
 
-    def write(self, vals):
-        current_user_branch = self.env.user.branch_id
 
+    def write(self, vals):
+        # active_model = self.env.context['params']
+        uid = self.env.context['uid'] if 'uid' in self.env.context else False
+        # user =current_user_branch= False
+        # if active_model['active_model'] == 'sale.order' and uid:
+        user = self.env['res.users'].browse(uid)
+        current_user_branch = user.branch_id
         for invoice in self:
+            print(self.env.context)
+            # current_user_branch = self.env.user.branch_id
             new_branch_id = vals.get('branch_id', invoice.branch_id.id)
 
             # Try to get linked sale or purchase order from origin
@@ -773,12 +779,13 @@ class AccountInvoice(models.Model):
         return super(AccountInvoice, self).write(vals)
 
 
+
 class ProductPricelist(models.Model):
     _inherit = 'product.pricelist'
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_price_rel', 'list_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -835,7 +842,7 @@ class WebsitePage(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_page_rel', 'page_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -891,7 +898,7 @@ class MailActivity(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_mail_rel', 'mail_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -948,7 +955,7 @@ class HelpdeskTicket(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_ticket_rel', 'ticket_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1005,7 +1012,7 @@ class ChannelSales(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_sales_rel', 'channel_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1062,7 +1069,7 @@ class Website(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_website_rel', 'website_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1119,7 +1126,7 @@ class PurchaseOrder(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_purchase_rel', 'purchase_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1176,7 +1183,7 @@ class PurchaseOrderLine(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_line_rel', 'order_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=False)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1233,7 +1240,7 @@ class PurchaseRequisition(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_requisition_rel', 'requisition_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1291,7 +1298,7 @@ class ProductSupplierInfo(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_supplier_rel', 'supplier_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1349,7 +1356,7 @@ class AccountMove(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_move_rel', 'move_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1407,7 +1414,7 @@ class BranchStockPicking(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_picking_rel', 'picking_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1465,7 +1472,7 @@ class BranchStockInventory(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch', required=True)
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_inventory_rel', 'inventory_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1575,7 +1582,7 @@ class BranchWarehouse(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_warehouse_rel', 'warehouse_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1633,7 +1640,7 @@ class BranchWarehouseLocation(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_location_rel', 'location_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1691,7 +1698,7 @@ class BranchLocationRoute(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_route_rel', 'route_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1748,7 +1755,7 @@ class BranchProcurement(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_rule_rel', 'rule_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1806,7 +1813,7 @@ class BranchProductProduct(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_product_product_rel', 'product_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1864,7 +1871,7 @@ class BranchMoveLine(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_move_line_rel', 'move_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1922,7 +1929,7 @@ class BranchAccountPayment(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payment_rel', 'payment_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -1980,7 +1987,7 @@ class BranchStockQuant(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_quant_rel', 'quant_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2038,7 +2045,7 @@ class BranchAccountAccount(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_account_rel', 'account_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2096,7 +2103,7 @@ class BranchAccountTax(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_tax_rel', 'tax_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2154,7 +2161,7 @@ class BranchAccountFiscal(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_fiscal_rel', 'fiscal_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2213,7 +2220,7 @@ class BranchAccountJournal(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_journal_rel', 'journal_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2270,7 +2277,7 @@ class BranchAccountFinancial(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_financial_rel', 'financial_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2327,7 +2334,7 @@ class BranchHrPayslip(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payslip_rel', 'payslip_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2385,7 +2392,7 @@ class BranchHrPayroll(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_payroll_rel', 'payroll_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2443,7 +2450,7 @@ class BranchHrSalary(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_rule_rel', 'rule_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2500,7 +2507,7 @@ class BranchHrReg(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_register_rel', 'register_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2558,7 +2565,7 @@ class BranchProjectTask(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_task_rel', 'task_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2615,7 +2622,7 @@ class BranchProjectTaskUser(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_task_user_rel', 'task_user_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2672,7 +2679,7 @@ class BranchIrAttachment(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_attachment_rel', 'attachment_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2732,7 +2739,7 @@ class BranchAnalytic(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_analytic_line_rel', 'analytic_line_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2789,7 +2796,7 @@ class BranchHrEmployee(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_employee_rel', 'employee_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2847,7 +2854,7 @@ class BranchHrContract(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_contract_rel', 'contract_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2904,7 +2911,7 @@ class BranchHrDepartment(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_department_rel', 'department_id', 'branch_id',compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -2962,7 +2969,7 @@ class BranchLabour(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_group_rel', 'labour_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -3019,7 +3026,7 @@ class BranchApplicant(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_applicant_rel', 'applicant_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -3131,7 +3138,7 @@ class StockWarehouse(models.Model):
 
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_orderpoint_rel', 'orderpoint_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
@@ -3188,7 +3195,7 @@ class BranchHrJob(models.Model):
     branch_id = fields.Many2one('branch.master.company', 'Branch')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_job_rel', 'job_id',
                                           'branch_id', compute='_compute_user_allowed_branch_ids',
-                                          string='Allowed Branches', ondelete='cascade', store=True)
+                                          string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
