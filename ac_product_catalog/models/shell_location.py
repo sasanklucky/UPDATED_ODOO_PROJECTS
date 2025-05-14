@@ -22,7 +22,7 @@ class ShellLocation(models.Model):
 class ProductTemplateShellLocation(models.Model):
     _inherit = 'product.template'
 
-    shell_location = fields.Many2many('shell.location', 'product_shell_location_rel', 'prod_id', 'shell_id', string="Shelf Location", track_visibility='always')
+    shell_location = fields.Many2many('shell.location', 'product_template_shell_location_rel', 'prod_id', 'shell_id', string="Shelf Location", track_visibility='always')
 
     def create(self, values):
         record = super(ProductTemplateShellLocation, self).create(values)
