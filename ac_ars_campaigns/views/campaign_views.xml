@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!--    tree view for vehicle campaigns-->
+    <record id="view_vehicle_campaigns_tree" model="ir.ui.view">
+        <field name="name">vehicle.campaigns.tree</field>
+        <field name="model">vehicle.campaigns</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="stage"/>
+                <field name="cons_vehicles_camp_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    form view for vehicle campaigns-->
+    <record id="view_vehicle_campaigns_form" model="ir.ui.view">
+        <field name="name">vehicle.campaigns.form</field>
+        <field name="model">vehicle.campaigns</field>
+        <field name="arch" type="xml">
+            <form string="Campaign">
+                <header>
+                    <!--                    button placed on header-->
+                    <button name="execute_campaign" string="Execute Campaign" type="object"
+                            class="oe_highlight" attrs="{'invisible': [('stage', '=', 'draft')]}"/>
+                    <button name="paused_action" string="Paused" type="object"
+                            class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <!-- Status Bar -->
+                    <field name="stage" widget="statusbar"
+                           statusbar_visible="draft,scheduled,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="cons_vehicles_camp_id" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="service_options"/>
+                        <field name="service_type"/>
+                    </group>
+                    <group>
+                        <field name="instruction"/>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date" />
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="failed" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Campaign Criteria">
+                            <group>
+                                <field name="campaigns" string="Campaigns"/>
+                            </group>
+                            <!-- Buttons placed here -->
+                            <div class="row mt16" attrs="{'invisible': [('campaigns', '!=', 'vin')]}">
+                                <div class="col-md-12">
+                                    <button name="action_open_import_wizard" string="Import VINs" type="object"
+                                            class="oe_highlight"/>
+                                </div>
+                            </div>
+                            <div>
+                                <group attrs="{'invisible': [('campaigns', '!=', 'vin')]}">
+                                    <field name="vin_ids" nolabel="1"
+                                           context="{'tree_view_ref': 'ac_ars_campaigns.view_vehicle_campaign_vin_tree'}">
+                                    </field>
+                                </group>
+                            </div>
+                        </page>
+                        <page string="UnMatched Campaigns">
+                            <field name="unmatched_vin_ids" nolabel="1" readonly="1"
+                                   context="{'tree_view_ref': 'ac_ars_campaigns.view_vehicle_campaign_vin_tree',}">
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action to open Campaigns -->
+    <record id="action_vehicle_campaigns" model="ir.actions.act_window">
+        <field name="name">Vehicle Campaigns</field>
+        <field name="res_model">vehicle.campaigns</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first campaign</p>
+        </field>
+    </record>
+
+    <!-- Menu Items -->
+    <menuitem
+            id="master_menu_campaigns"
+            name="Campaigns"
+            parent="ars_after_sales.menu_aftersales"
+            sequence="4"/>
+    <menuitem
+            id="menu_vehicle_campaigns"
+            name="Campaign Services"
+            parent="master_menu_campaigns"
+            action="action_vehicle_campaigns"
+            sequence="1"/>
+
+    <!--tree view for vehicle campaign vin-->
+    <record id="view_vehicle_campaign_vin_tree" model="ir.ui.view">
+        <field name="name">vehicle.campaign.vin.tree</field>
+        <field name="model">vehicle.campaign.vin</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom" decoration-success="cam_active == True" decoration-danger="cam_active == False">
+                <field name="vin_number"/>
+                <field name="cam_active" invisible="1"/>
+                <field name="status"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

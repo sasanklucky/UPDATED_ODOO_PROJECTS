@@ -16,12 +16,13 @@ class ShellLocation(models.Model):
     child_id = fields.One2many('shell.location', 'parent_id', 'Child Shelf Location')
     parent_left = fields.Integer('Left Parent', index=1)
     parent_right = fields.Integer('Right Parent', index=1)
+    company_id = fields.Many2one('res.company', 'Company')
 
 
 class ProductTemplateShellLocation(models.Model):
     _inherit = 'product.template'
 
-    shell_location = fields.Many2many('shell.location', string="Shelf Location", track_visibility='always')
+    shell_location = fields.Many2many('shell.location', 'product_template_shell_location_rel', 'product_template_id', 'shell_location_id', string="Shelf Location", track_visibility='always')
 
     def create(self, values):
         record = super(ProductTemplateShellLocation, self).create(values)

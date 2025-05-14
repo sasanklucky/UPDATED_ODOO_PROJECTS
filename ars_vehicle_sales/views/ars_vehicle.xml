@@ -81,6 +81,12 @@
                                         name="get_vehcile_features"
                                         string="Vehicle Features" type="object"
                                         target="new"/>
+                               <button name="toggle_demo_vehicle"
+                                    type="object"
+                                    class="oe_stat_button"
+                                    icon="fa-car">
+                                    <span><field name="demo_vehicle_label" readonly="1"/></span>
+                                </button>
                             </div>
                             <field name="image_medium" widget='image' class="oe_avatar"/>
                             <div class="oe_title">

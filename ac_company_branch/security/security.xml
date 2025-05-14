@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+
+
+        <record model="ir.rule" id="crm_lead_branch_rule">
+            <field name="name">CRM Lead: Branch Access</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', False),
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+
+            <!--            <field name="domain_force">-->
+<!--                [-->
+<!--                '|',-->
+<!--                ('branch_id', '=', False),-->
+<!--                ('branch_id', '=', user.branch_id.id),-->
+<!--                ('branch_id', 'in', user.allowed_branch_ids.ids),-->
+<!--                ]-->
+<!--            </field>-->
+        </record>
+
+
+        <record model="ir.rule" id="sale_order_branch_rule">
+            <field name="name">Sale Order: Branch Access</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', False),
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+        </record>
+
+
+        <record model="ir.rule" id="account_invoice_branch_rule">
+            <field name="name">Invoice: Branch Access</field>
+            <field name="model_id" ref="account.model_account_invoice"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', False),
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+        </record>
+
+
+        <record model="ir.rule" id="purchase_order_branch_rule">
+            <field name="name">Purchase Order: Branch Access</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', False),
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+        </record>
+
+        <record model="ir.rule" id="stock_picking_branch_rule">
+            <field name="name">Stock Picking: Branch Access</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                [
+                '|',
+                ('branch_id', '=', False),
+                '|',
+                ('branch_id', '=', user.branch_id.id),
+                ('branch_id', 'in', user.allowed_branch_ids.ids)
+                ]
+            </field>
+        </record>
+
+
+    </data>
+
+</odoo>
+
+
+
+
+<!--        <record id="crm_lead_branch_rule" model="ir.rule">-->
+<!--            <field name="name">CRM Lead: Restrict Access by Branch</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--&lt;!&ndash;            <field name="groups" eval="[(4, ref('base.group_user'))]"/>  &lt;!&ndash; Apply to internal users &ndash;&gt;&ndash;&gt;-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">-->
+<!--                [-->
+<!--                '|',-->
+<!--                ('branch_id', '=', user.branch_id.id),-->
+<!--                ('branch_id', 'in', user.allowed_branch_ids.ids)-->
+<!--                ]-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="allowed_branch_comp_rule" model="ir.rule">-->
+<!--            <field name="name">Allowed Branches</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">[('allowed_branch_ids', 'child_of', [user.company_id.id])]</field>-->
+<!--        </record>-->
+
+<!--        <record id="allowed_branch_comp_rule" model="ir.rule">-->
+<!--            <field name="name">Allowed Branches</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">[('branch_id', 'in', user.allowed_branch_ids.ids)]</field>-->
+<!--        </record>-->
+
+
+
+
+<!--        <record id="allowed_branch_comp_rule" model="ir.rule">-->
+<!--            <field name="name">Allowed Branches</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">-->
+<!--                <field name="domain_force">-->
+<!--                    [('allowed_branch_ids', 'child_of', user.allowed_branch_ids.ids)]-->
+<!--                </field>-->
+
+<!--            </field>-->
+<!--        </record>-->
+
+
+        <!--                <record id="crm_lead_allowed_branches_rule" model="ir.rule">-->
+<!--            <field name="name">CRM Lead: Restrict Allowed Branches by Company</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">-->
+<!--                [('allowed_branch_ids.company_id', '=', user.company_id.id)]-->
+<!--            </field>-->
+<!--        </record>-->
+
+
+<!--        <record id="crm_lead_branch_access_rule" model="ir.rule">-->
+<!--            <field name="name">CRM Lead: Restrict by Allowed Branches</field>-->
+<!--            <field name="model_id" ref="crm.model_crm_lead"/>-->
+<!--            <field name="global" eval="True"/>-->
+<!--            <field name="domain_force">-->
+<!--                [('allowed_branch_ids', '=', user.allowed_branch_ids.id)-->
+<!--            </field>-->
+<!--        </record>-->
+
+

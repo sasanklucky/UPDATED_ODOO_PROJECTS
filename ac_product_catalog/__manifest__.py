@@ -14,7 +14,8 @@
     'depends': ['base', 'sale', 'purchase', 'purchase_requisition', 'stock','portal','account'],
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
+        'security/catalog_security.xml',
         'views/views.xml',
         'views/purchase_order.xml',
         'views/sale_order.xml',

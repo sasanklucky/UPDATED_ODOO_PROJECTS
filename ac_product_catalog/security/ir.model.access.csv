@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_ac_product_catalog_ac_product_catalog,ac_product_catalog.ac_product_catalog,model_ac_product_catalog_ac_product_catalog,,1,0,0,0
-access_ac_shell_location,ac_product_catalog.access_ac_shell_location,model_shell_location,stock.group_stock_user,1,1,1,0
+access_ac_product_catalog_ac_product_catalog,ac_product_catalog.ac_product_catalog,base.group_user,,1,0,0,0
+
+access_shell_location,access_shell_location,model_shell_location,base.group_user,1,1,1,1

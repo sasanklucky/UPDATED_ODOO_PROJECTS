@@ -176,9 +176,11 @@ class ars_sale_crm_lead(models.Model):
         if len(self.ids) == 1:
             previous_state_id = self.stage_id
         result = super(ars_sale_crm_lead, self).write(vals)
-        if len(self.ids) == 1:
-            if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
-                raise ValidationError('You do not have access to change the state')
+        # The below line of code is commented because now every thing is going to happens based on fields values changes in crm.
+        # we restrict the drag & drop option in pipeline so, the below lines of code not using.
+        # if len(self.ids) == 1:
+        #     if previous_state_id.probability == 100 and self.stage_id != previous_state_id and not self.env.user.has_group('ars_vehicle_sales.group_access_crm_stage'):
+        #         raise ValidationError('You do not have access to change the state')
         res_value = {}
         for res in self:
             if res.partner_id:
@@ -243,23 +245,44 @@ class ars_sale_crm_sale(models.Model):
         [('internal_transfer', 'Internal Transfer'), ('external_transfer', 'External Transfer')],
         string="Transfer Type")
 
+    # @api.model
+    # def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):
+    #     res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+    #     transfer_type = self.env.context.get('default_transfer_type')
+    #     if transfer_type:
+    #         if transfer_type == 'internal_transfer':
+    #             domain = [('is_dealer', '=', True)]
+    #             doc = etree.XML(res['arch'])
+    #             for node in doc.xpath("//field[@name='partner_id']"):
+    #                 node.set('domain', str(domain))
+    #             res['arch'] = etree.tostring(doc, encoding='unicode')
+    #         else:
+    #             domain = []
+    #             doc = etree.XML(res['arch'])
+    #             for node in doc.xpath("//field[@name='partner_id']"):
+    #                 node.set('domain', str(domain))
+    #             res['arch'] = etree.tostring(doc, encoding='unicode')
+    #     return res
+
     @api.model
     def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):
-        res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        res = super(ars_sale_crm_sale, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                             submenu=submenu)
+
         transfer_type = self.env.context.get('default_transfer_type')
         if transfer_type:
-            if transfer_type == 'internal_transfer':
-                domain = [('is_dealer', '=', True)]
-                doc = etree.XML(res['arch'])
-                for node in doc.xpath("//field[@name='partner_id']"):
-                    node.set('domain', str(domain))
-                res['arch'] = etree.tostring(doc, encoding='unicode')
-            else:
-                domain = []
-                doc = etree.XML(res['arch'])
-                for node in doc.xpath("//field[@name='partner_id']"):
-                    node.set('domain', str(domain))
-                res['arch'] = etree.tostring(doc, encoding='unicode')
+            doc = etree.XML(res['arch'])
+            for node in doc.xpath("//field[@name='partner_id']"):
+                node.set('context', "{'default_is_dealer': True}")
+
+                if transfer_type == 'internal_transfer':
+                    node.set('domain', "[('is_dealer', '=', True)]")
+                    node.set('options', "{'no_create': True}")
+                    node.set('readonly', '1')
+                else:
+                    node.set('domain', "[]")
+
+            res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
 
     @api.depends('amount_total')

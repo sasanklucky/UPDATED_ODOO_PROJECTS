@@ -23,6 +23,7 @@ class ARS_After_sale_order(models.Model):
     @api.multi
     def action_convert(self):
         self.write({'state': 'so'})
+        self.write({'stages':'repair_order'})
         if self.sale_aftersales == 'after_sales':
             self.create_warranty_order()
             if self.mileage_in == 0:

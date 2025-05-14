@@ -1,0 +1,19 @@
+<!-- data/ir_config_parameter_data.xml -->
+<odoo>
+    <data noupdate="1">
+        <record id="crm_stage_hot" model="ir.config_parameter">
+            <field name="key">crm_stage_hot</field>
+            <field name="value">1</field>
+        </record>
+
+         <record id="crm_stage_warm" model="ir.config_parameter">
+            <field name="key">crm_stage_warm</field>
+            <field name="value">2</field>
+        </record>
+
+         <record id="crm_stage_cold" model="ir.config_parameter">
+            <field name="key">crm_stage_cold</field>
+            <field name="value">3</field>
+        </record>
+    </data>
+</odoo>

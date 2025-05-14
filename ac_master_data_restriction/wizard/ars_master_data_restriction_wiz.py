@@ -724,7 +724,7 @@ class FleetVehicleCreateRestriction(models.Model):
         template_action_id = groups_dic[2] if groups_dic else 0
 
         def apply_restriction():
-            doc.set('create', 'false')
+            # doc.set('create', 'false')
             doc.set('edit', 'true')
             if view_type == 'form':
                 restricted_fields = []
@@ -6154,7 +6154,7 @@ class MasterRestrictionComplintSource(models.Model):
 
     @api.model
     def fields_view_get(self, view_id=None, view_type=False, toolbar=False, submenu=False):
-        helpdesk_category_1 = super(HelpdeskCategoryOne, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+        helpdesk_category_1 = super(MasterRestrictionComplintSource, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                            submenu=submenu)
         doc = etree.XML(helpdesk_category_1['arch'])
 

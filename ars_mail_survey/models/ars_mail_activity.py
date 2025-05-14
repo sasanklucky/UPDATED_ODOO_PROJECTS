@@ -20,6 +20,19 @@ class ARS_MailActivity(models.Model):
         [('satisfied', 'Satisfied'), ('dissatisfied', 'Dissatisfied')],
         string="Survey Status", )
 
+    response_create_date = fields.Datetime(
+        string="Survey Complete Date",
+        compute="_compute_response_create_date",
+        store=True
+    )
+
+    @api.depends('response_id.create_date')
+    def _compute_response_create_date(self):
+        for rec in self:
+            if rec.response_id:
+                rec.response_create_date = rec.response_id.create_date
+
+
     @api.model
     def create(self, values):
         res = super(ARS_MailActivity, self).create(values)
