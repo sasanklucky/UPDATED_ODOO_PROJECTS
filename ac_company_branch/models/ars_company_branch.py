@@ -3076,62 +3076,62 @@ class BranchApplicant(models.Model):
         vehicle.env.user.notify_info(message)
 
         return vehicle
-
-class AccountInvoiceAC(models.Model):
-    _inherit = 'account.invoice'
-
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
-    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_invoice_rel', 'invoice_id', 'branch_id',
-                                          string='Allowed Branches', ondelete='cascade')
-
-    # @api.depends('user_id')
-    def _compute_user_allowed_branch_ids(self):
-        for rec in self:
-            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
-
-    @api.model
-    def default_get(self, fields_list):
-        """Set default branch and allowed branches based on the logged-in user."""
-        res = super(AccountInvoice, self).default_get(fields_list)
-        user = self.env.user
-        if user.branch_id:
-            res['branch_id'] = user.branch_id.id
-        if user.allowed_branch_ids:
-            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
-        return res
-
-    @api.onchange('company_ids')
-    def _onchange_company_id(self):
-        if self.company_ids:
-            selected_company_ids = self.company_ids.ids
-
-            user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
-            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
-
-            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
-            self.branch_id = user_branch if user_branch else False
-        else:
-            self.allowed_branch_ids = False
-            self.branch_id = False
-
-    @api.onchange('allowed_branch_ids')
-    def _onchange_allowed_branch_ids(self):
-        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
-            self.branch_id = False
-
-    @api.model
-    def create(self, vals):
-        invoice = super(AccountInvoice, self).create(vals)
-
-        if invoice.branch_id:
-            message = _(" A New Invoice has been added in '%s'. '%s' branch.") % (
-                invoice.company_id.name, invoice.branch_id.name)
-        else:
-            message = _(" A New Invoice has been added in '%s'. Without branch.") % (invoice.company_id.name)
-
-        invoice.env.user.notify_info(message)
-
-        return invoice
+#
+# class AccountInvoiceAC(models.Model):
+#     _inherit = 'account.invoice'
+#
+#     branch_id = fields.Many2one('branch.master.company', 'Branch')
+#     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_invoice_rel', 'invoice_id', 'branch_id',
+#                                           string='Allowed Branches', ondelete='cascade')
+#
+#     # @api.depends('user_id')
+#     def _compute_user_allowed_branch_ids(self):
+#         for rec in self:
+#             rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+#
+#     @api.model
+#     def default_get(self, fields_list):
+#         """Set default branch and allowed branches based on the logged-in user."""
+#         res = super(AccountInvoice, self).default_get(fields_list)
+#         user = self.env.user
+#         if user.branch_id:
+#             res['branch_id'] = user.branch_id.id
+#         if user.allowed_branch_ids:
+#             res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+#         return res
+#
+#     @api.onchange('company_ids')
+#     def _onchange_company_id(self):
+#         if self.company_ids:
+#             selected_company_ids = self.company_ids.ids
+#
+#             user_branch_allowed = self.allowed_branch_ids.filtered(lambda b: b.company_id.id in selected_company_ids)
+#             user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+#
+#             self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+#             self.branch_id = user_branch if user_branch else False
+#         else:
+#             self.allowed_branch_ids = False
+#             self.branch_id = False
+#
+#     @api.onchange('allowed_branch_ids')
+#     def _onchange_allowed_branch_ids(self):
+#         if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+#             self.branch_id = False
+#
+#     @api.model
+#     def create(self, vals):
+#         invoice = super(AccountInvoice, self).create(vals)
+#
+#         if invoice.branch_id:
+#             message = _(" A New Invoice has been added in '%s'. '%s' branch.") % (
+#                 invoice.company_id.name, invoice.branch_id.name)
+#         else:
+#             message = _(" A New Invoice has been added in '%s'. Without branch.") % (invoice.company_id.name)
+#
+#         invoice.env.user.notify_info(message)
+#
+#         return invoice
 
 class StockWarehouse(models.Model):
     _inherit = 'stock.warehouse.orderpoint'
