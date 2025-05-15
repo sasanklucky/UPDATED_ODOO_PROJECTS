@@ -1493,6 +1493,34 @@ class StockMove(models.Model):
 
         return res
 
+class CreditNoteReasonBranch(models.TransientModel):
+    _inherit = "account.invoice.refund"
+
+    @api.multi
+    def compute_refund(self, mode='refund'):
+        # Step 1: Store original invoices before creating credit notes
+        original_invoices = self.env['account.invoice'].browse(self._context.get('active_ids', []))
+        sale_order_map = {
+            inv.id: inv.order_id for inv in original_invoices if inv.order_id
+        }
+
+        # Step 2: Call original refund method to generate credit notes
+        result = super(CreditNoteReasonBranch, self).compute_refund(mode)
+
+        # Step 3: Fetch newly created credit notes by matching refund_invoice_id
+        credit_notes = self.env['account.invoice'].search([
+            ('refund_invoice_id', 'in', original_invoices.ids)
+        ])
+
+        # Step 4: Set the branch_id from related sale order into credit note
+        for credit_note in credit_notes:
+            original_invoice = credit_note.refund_invoice_id
+            sale_order = sale_order_map.get(original_invoice.id)
+            if sale_order:
+                credit_note.branch_id = sale_order.branch_id.id  # ✅ Set your custom field here
+
+        return result
+
 
 class BranchStockInventory(models.Model):
     _inherit = 'stock.inventory'
