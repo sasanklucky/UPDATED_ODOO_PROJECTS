@@ -26,31 +26,40 @@
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='name']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='image']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='parent_id']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='street']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='street2']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='city']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='state_id']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='zip']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
                 <xpath expr="//field[@name='country_id']" position="attributes">
-                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
                 </xpath>
 <!--                <xpath expr="//field[@name='mobile']" position="attributes">-->
 <!--                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>-->
@@ -63,6 +72,7 @@
 <!--                </xpath>-->
                 <xpath expr="//field[@name='opt_out']" position="after">
                     <field name="can_edit_address" invisible="1"/>
+                    <field name="can_edit_address_restrict" groups="base.group_no_one"/>
                     <field name="can_edit_address_child" invisible="1"/>
                 </xpath>
             </field>

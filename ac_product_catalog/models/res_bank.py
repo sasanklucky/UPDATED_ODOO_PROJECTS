@@ -23,6 +23,7 @@ class ResCompany(models.Model):
 class ARSResPartner(models.Model):
     _inherit = 'res.partner'
 
+    can_edit_address_restrict = fields.Boolean('Address Restrict', default=False)
     can_edit_address = fields.Boolean(compute="_compute_can_edit_address")
     can_edit_address_child = fields.Boolean(string="Address Child", compute="_compute_can_edit_address_child")
 
