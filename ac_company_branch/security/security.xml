@@ -11,21 +11,10 @@
             <field name="domain_force">
                 [
                 '|',
-                ('branch_id', '=', False),
-                '|',
                 ('branch_id', '=', user.branch_id.id),
                 ('branch_id', 'in', user.allowed_branch_ids.ids)
                 ]
             </field>
-
-            <!--            <field name="domain_force">-->
-<!--                [-->
-<!--                '|',-->
-<!--                ('branch_id', '=', False),-->
-<!--                ('branch_id', '=', user.branch_id.id),-->
-<!--                ('branch_id', 'in', user.allowed_branch_ids.ids),-->
-<!--                ]-->
-<!--            </field>-->
         </record>
 
 
@@ -35,8 +24,6 @@
             <field name="global" eval="True"/>
             <field name="domain_force">
                 [
-                '|',
-                ('branch_id', '=', False),
                 '|',
                 ('branch_id', '=', user.branch_id.id),
                 ('branch_id', 'in', user.allowed_branch_ids.ids)
@@ -52,8 +39,6 @@
             <field name="domain_force">
                 [
                 '|',
-                ('branch_id', '=', False),
-                '|',
                 ('branch_id', '=', user.branch_id.id),
                 ('branch_id', 'in', user.allowed_branch_ids.ids)
                 ]
@@ -68,8 +53,6 @@
             <field name="domain_force">
                 [
                 '|',
-                ('branch_id', '=', False),
-                '|',
                 ('branch_id', '=', user.branch_id.id),
                 ('branch_id', 'in', user.allowed_branch_ids.ids)
                 ]
@@ -83,8 +66,6 @@
             <field name="domain_force">
                 [
                 '|',
-                ('branch_id', '=', False),
-                '|',
                 ('branch_id', '=', user.branch_id.id),
                 ('branch_id', 'in', user.allowed_branch_ids.ids)
                 ]
@@ -95,6 +76,7 @@
     </data>
 
 </odoo>
+
 
 
 
