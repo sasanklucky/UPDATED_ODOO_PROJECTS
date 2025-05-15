@@ -1412,25 +1412,38 @@ class BranchStockPicking(models.Model):
     _inherit = 'stock.picking'
 
 
-    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    branch_id = fields.Many2one('branch.master.company', 'Branch', compute='_compute_user_allowed_branch_id', store=True,inverse='_compute_user_allowed_branch_id')
     allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_picking_rel', 'picking_id', 'branch_id', compute='_compute_user_allowed_branch_ids',
                                           string='Allowed Branches', ondelete='cascade')
 
     # @api.depends('user_id')
     def _compute_user_allowed_branch_ids(self):
+        print('BRANCH IDSSS')
         for rec in self:
-            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+            if not rec.allowed_branch_ids:
+                rec.allowed_branch_ids = self.env.user.allowed_branch_ids
 
-    @api.model
-    def default_get(self, fields_list):
-        """Set default branch and allowed branches based on the logged-in user."""
-        res = super(BranchStockPicking, self).default_get(fields_list)
-        user = self.env.user
-        if user.branch_id:
-            res['branch_id'] = user.branch_id.id
-        if user.allowed_branch_ids:
-            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
-        return res
+    def _compute_user_allowed_branch_id(self):
+        uid = self.env.context['uid'] if 'uid' in self.env.context else False
+        user = self.env['res.users'].browse(uid)
+        for rec in self:
+        # user = self.env.user
+            if user.branch_id and not rec.branch_id:
+                rec.branch_id = user.branch_id.id
+
+
+    # @api.model
+    # def default_get(self, fields_list):
+    #     """Set default branch and allowed branches based on the logged-in user."""
+    #     res = super(BranchStockPicking, self).default_get(fields_list)
+    #     uid = self.env.context['uid'] if 'uid' in self.env.context else False
+    #     user = self.env['res.users'].browse(uid)
+    #     # user = self.env.user
+    #     if user.branch_id:
+    #         res['branch_id'] = user.branch_id.id
+    #     if user.allowed_branch_ids:
+    #         res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+    #     return res
 
     @api.onchange('company_ids')
     def _onchange_company_id(self):
@@ -1463,6 +1476,18 @@ class BranchStockPicking(models.Model):
         stockpicking.env.user.notify_info(message)
 
         return stockpicking
+
+class StockMove(models.Model):
+    _inherit = 'stock.move'
+
+    def _get_new_picking_values(self):
+        res = super(StockMove, self)._get_new_picking_values()
+
+        # Pass branch_id from sale order if available
+        if self.sale_line_id and self.sale_line_id.order_id.branch_id:
+            res['branch_id'] = self.sale_line_id.order_id.branch_id.id
+
+        return res
 
 
 
