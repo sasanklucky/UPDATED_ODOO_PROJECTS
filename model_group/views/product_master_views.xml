@@ -1,0 +1,171 @@
+<!-- views/product_master_views.xml -->
+<odoo>
+
+     <!-- Kanban View -->
+    <record id="view_model_groups_kanban" model="ir.ui.view">
+        <field name="name">model.groups.kanban</field>
+        <field name="model">model.groups</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="code">
+                <field name="code"/>
+                <field name="name"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="oe_kanban_content">
+                                <div class="oe_kanban_header">
+                                    <strong>
+                                        <field name="code"/>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <field name="name"/>
+                                </div>
+                                <div class="oe_kanban_footer">
+                                    <div class="oe_kanban_footer_left">
+                                        <field name="template_count" widget="statinfo"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <!-- Form View -->
+<record id="view_model_groups_form" model="ir.ui.view">
+    <field name="name">model.groups.form</field>
+    <field name="model">model.groups</field>
+    <field name="arch" type="xml">
+        <form>
+
+            <header>
+                <div class="oe_button_box" name="button_box">
+
+
+                    <!-- Cube Button (optional) -->
+                    <button name="action_view_templates"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-cubes"
+                            attrs="{'invisible': [('template_count', '&lt;=', 0)]}">
+                        <field name="template_count" widget="statinfo" string="Templates"/>
+                    </button>
+                </div>
+            </header>
+            <sheet>
+                <div class="oe_button_box" name="button_box">
+<!--                        <button name="action_open_related_items"-->
+<!--                                type="object"-->
+<!--                                class="oe_stat_button"-->
+<!--                                icon="fa-external-link">-->
+<!--                            <field name="related_count" widget="statinfo" string="total child product"/>-->
+<!--                        </button>-->
+
+                <button name="action_view_related_templates"
+                    type="object"
+                    icon="fa-bars"
+                    class="oe_stat_button"
+                    attrs="{'invisible': [('related_count', '&lt;=', 0)]}">
+                <field string="Models" name="related_count" widget="statinfo"/>
+            </button>
+
+
+
+                    </div>
+
+                <group>
+                <div class="oe_title">
+                        <div class="oe_avatar" style="float:left; margin-right:20px;">
+                            <field name="image" widget="image" class="oe_avatar" options='{"size": [200, 200]}'/>
+                        </div>
+                        <div>
+                            <h1><field name="name" class="oe_inline" required="1"/></h1>
+                            <group>
+                                <field name="code"/>
+                                <field name="description"/>
+                            </group>
+                        </div>
+                    </div>
+                </group>
+
+
+                <notebook>
+                    <page string="Product Templates">
+                        <field name="template_ids" readonly="1" mode="tree">
+                            <tree>
+                                <field name="name"/>
+                                <field name="list_price" string="Price"/>
+                                <field name="qty_available" string="On Hand"/>
+                                <field name="product_variant_count" string="Variants" widget="statinfo"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </sheet>
+        </form>
+    </field>
+</record>
+
+    <!-- Tree View -->
+    <record id="view_model_groups_tree" model="ir.ui.view">
+        <field name="name">model.groups.tree</field>
+        <field name="model">model.groups</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="template_count" widget="statinfo"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Action and Menu Items -->
+    <record id="action_model_groups" model="ir.actions.act_window">
+        <field name="name">Model Groups</field>
+        <field name="res_model">model.groups</field>
+        <field name="view_mode">tree,form,kanban</field>
+    </record>
+
+    <record id="action_select_product_templates" model="ir.actions.act_window">
+        <field name="name">Select Product Templates</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">tree,form</field>
+        <field name="target">new</field>
+        <field name="context">{'select_for_master': active_id}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <menuitem id="menu_model_group_catalog"
+              name="Model Group"
+              parent="ars_after_sales.stock_catalog"
+              action="action_model_groups"
+              sequence="0"/>
+
+
+<menuitem id="menu_model_group_catalog_sale"
+              name="Model Group"
+              parent="sale.product_menu_catalog"
+              action="action_model_groups"
+              sequence="0"/>
+    <menuitem id="menu_model_group_catalog_after_sale"
+              name="Model Group"
+              parent="ars_after_sales.menu_aftersales_catalog"
+              action="action_model_groups"
+              sequence="0"/>
+
+
+
+    <menuitem id="menu_model_group_catalog_crm"
+              name="Model Group"
+              parent="ars_after_sales.crm_catalog"
+              action="action_model_groups"
+              sequence="0"/>
+
+
+
+
+</odoo>
