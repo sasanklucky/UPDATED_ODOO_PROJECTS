@@ -687,6 +687,208 @@ class CRMLeadStage(models.Model):
     name = fields.Char(string="Name")
 
 
+
+class CrmLead(models.Model):
+    _inherit = 'crm.lead'
+
+    vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+    vehicle_line_limit_reached = fields.Boolean(compute='_compute_vehicle_line_create_button', store=False)
+
+    @api.depends('vehicle_line')
+    def _compute_vehicle_line_create_button(self):
+        for rec in self:
+            # Set the lead-level boolean
+            line_limit_reached = len(rec.vehicle_line) >= 1
+            rec.vehicle_line_limit_reached = line_limit_reached
+
+            # Set the flag on each vehicle line as well
+            for line in rec.vehicle_line:
+                line.vehicle_line_limit_reached_line = line_limit_reached
+
+    @api.multi
+    def get_prod_action(self):
+        if not self.partner_id:
+            raise UserError(_('Please Enter The Customer Name'))
+
+        order_model = self.env['sale.order']
+        order_line_model = self.env['sale.order.line']
+        action_rec = self.env.ref('sale_crm.sale_action_quotations_new')
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        self.check_valid_sales_channel(sale_team)
+
+        if sale_team.team_type == 'sales':
+            sale_type = 'vehicle'
+        elif sale_team.team_type == 'after_sales':
+            sale_type = 'parts'
+        else:
+            sale_type = 'others'
+
+        for record in self:
+            # Search for existing sale order
+            sale_order = order_model.search([('opportunity_id', '=', record.id)], limit=1)
+
+            if sale_order:
+                # Update existing sale order lines
+                for vehicle in record.vehicle_line:
+                    existing_line = order_line_model.search([
+                        ('order_id', '=', sale_order.id),
+                        ('product_id', '=', vehicle.product_id.id)
+                    ], limit=1)
+
+                    if existing_line:
+                        existing_line.product_uom_qty = vehicle.crm_ordered_qty
+                    else:
+                        order_line_model.create({
+                            'order_id': sale_order.id,
+                            'product_catalog_id': vehicle.product_catalog_id.id if vehicle.product_catalog_id else False,
+                            'product_template_id': vehicle.product_template_id.id,
+                            'product_id': vehicle.product_id.id,
+                            'product_uom_qty': vehicle.crm_ordered_qty,
+                            'product_uom': vehicle.product_id.uom_id.id,
+                            'name': vehicle.name or vehicle.product_id.name,
+                            'price_unit': vehicle.product_id.list_price,
+                        })
+
+                action = action_rec.read([])[0]
+                action['res_id'] = sale_order.id
+                return action
+            else:
+                # Create new sale order and lines
+                lines = []
+                for vehicle in record.vehicle_line:
+                    lines.append((0, 0, {
+                        'product_catalog_id': vehicle.product_catalog_id.id,
+                        'product_template_id': vehicle.product_template_id.id,
+                        'product_id': vehicle.product_id.id,
+                        'product_uom_qty': vehicle.crm_ordered_qty,
+                        'product_uom': vehicle.product_id.uom_id.id,
+                        'name': vehicle.name or vehicle.product_id.name,
+                        'price_unit': vehicle.product_id.list_price,
+                    }))
+                sale_order = order_model.create({
+                    'opportunity_id': record.id,
+                    'user_id': record.user_id.id,
+                    'partner_id': record.partner_id.id,
+                    'sale_type': sale_type,
+                    'order_line': lines,
+                    'mobile': record.mobile,
+                    'email': record.email_from
+                })
+
+                action = action_rec.read([])[0]
+                action['res_id'] = sale_order.id
+                return action
+
+
+class CrmLeadQTY(models.Model):
+    _inherit = 'crm.lead'
+
+    vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+    vehicle_line_limit_reached = fields.Boolean(string='Vehicle Line Limit Reached')
+    model_id = fields.Many2one('product.template', string='Model')  # Assuming you have this field
+
+    @api.onchange('vehicle_line')
+    def _onchange_vehicle_line(self):
+        for rec in self:
+            # Set vehicle_line_limit_reached conditionally
+            if rec.vehicle_line and len(rec.vehicle_line) == 1 and all(
+                    line.crm_ordered_qty > 0 for line in rec.vehicle_line):
+                rec.vehicle_line_limit_reached = True
+            else:
+                rec.vehicle_line_limit_reached = False
+
+            # Set model_id from first vehicle line
+            if rec.vehicle_line:
+                rec.model_id = rec.vehicle_line[0].product_template_id.id
+            else:
+                rec.model_id = False
+
+    # @api.onchange('vehicle_line')
+    # def _onchange_vehicle_line(self):
+    #     for rec in self:
+    #         # Triggered when vehicle_line changes
+    #         if all(line.crm_ordered_qty > 0 for line in rec.vehicle_line) and len(rec.vehicle_line) == 1:
+    #             rec.vehicle_line_limit_reached = True
+    #         else:
+    #             rec.vehicle_line_limit_reached = False
+    #
+
+    @api.multi
+    def get_prod_action(self):
+        if not self.partner_id:
+            raise UserError(_('Please Enter The Customer Name'))
+
+        order_model = self.env['sale.order']
+        order_line_model = self.env['sale.order.line']
+        action_rec = self.env.ref('sale_crm.sale_action_quotations_new')
+        sale_team = self.env['crm.team'].search([('member_ids', 'in', self.env.user.ids)])
+        self.check_valid_sales_channel(sale_team)
+
+        if sale_team.team_type == 'sales':
+            sale_type = 'vehicle'
+        elif sale_team.team_type == 'after_sales':
+            sale_type = 'parts'
+        else:
+            sale_type = 'others'
+
+        for record in self:
+            # Search for existing sale order
+            sale_order = order_model.search([('opportunity_id', '=', record.id)], limit=1)
+
+            if sale_order:
+                # Update existing sale order lines
+                for vehicle in record.vehicle_line:
+                    existing_line = order_line_model.search([
+                        ('order_id', '=', sale_order.id),
+                        ('product_id', '=', vehicle.product_id.id)
+                    ], limit=1)
+
+                    if existing_line:
+                        existing_line.product_uom_qty = vehicle.crm_ordered_qty
+                    else:
+                        order_line_model.create({
+                            'order_id': sale_order.id,
+                            'product_catalog_id': vehicle.product_catalog_id.id if vehicle.product_catalog_id else False,
+                            'product_template_id': vehicle.product_template_id.id,
+                            'product_id': vehicle.product_id.id,
+                            'product_uom_qty': vehicle.crm_ordered_qty,
+                            'product_uom': vehicle.product_id.uom_id.id,
+                            'name': vehicle.name or vehicle.product_id.name,
+                            'price_unit': vehicle.product_id.list_price,
+                        })
+
+                action = action_rec.read([])[0]
+                action['res_id'] = sale_order.id
+                return action
+            else:
+                # Create new sale order and lines
+                lines = []
+                for vehicle in record.vehicle_line:
+                    lines.append((0, 0, {
+                        'product_catalog_id': vehicle.product_catalog_id.id,
+                        'product_template_id': vehicle.product_template_id.id,
+                        'product_id': vehicle.product_id.id,
+                        'product_uom_qty': vehicle.crm_ordered_qty,
+                        'product_uom': vehicle.product_id.uom_id.id,
+                        'name': vehicle.name or vehicle.product_id.name,
+                        'price_unit': vehicle.product_id.list_price,
+                    }))
+                sale_order = order_model.create({
+                    'opportunity_id': record.id,
+                    'user_id': record.user_id.id,
+                    'partner_id': record.partner_id.id,
+                    'sale_type': sale_type,
+                    'order_line': lines,
+                    'mobile': record.mobile,
+                    'email': record.email_from
+                })
+
+                action = action_rec.read([])[0]
+                action['res_id'] = sale_order.id
+                return action
+
+
+
 class ARS_crm_lead_line(models.Model):
     _name = "crm.lead.line"
 
@@ -704,6 +906,33 @@ class ARS_crm_lead_line(models.Model):
     product_template_id = fields.Many2one('product.template', string='Model')
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict', required=True)
+    crm_ordered_qty = fields.Float('Quantity')
+
+    @api.onchange('crm_ordered_qty')
+    def _onchange_crm_ordered_qty(self):
+        if self.lead_order_id:
+            if all(line.crm_ordered_qty > 0 for line in self.lead_order_id.vehicle_line) and len(
+                    self.lead_order_id.vehicle_line) == 1:
+                self.lead_order_id.vehicle_line_limit_reached = True
+            else:
+                self.lead_order_id.vehicle_line_limit_reached = False
+
+    # @api.model
+    # def create(self, vals):
+    #     lead_id = vals.get('lead_order_id')
+    #     if lead_id:
+    #         lead = self.env['crm.lead'].browse(lead_id)
+    #         # If there's already one vehicle line, do NOT create a new one, return existing
+    #         if lead.vehicle_line and len(lead.vehicle_line) >= 1:
+    #             return lead.vehicle_line[0]
+    #     return super(ARS_crm_lead_line, self).create(vals)
+
+    # @api.constrains('crm_ordered_qty')
+    # def _check_crm_ordered_qty_equals_one(self):
+    #     for record in self:
+    #         if record.crm_ordered_qty != 1.0:
+    #             raise ValidationError(_("Only quantity of 1 is allowed for this field."))
+
 
     @api.multi
     @api.onchange('product_catalog_id')
@@ -963,3 +1192,83 @@ class Lead2OpportunityPartner(models.TransientModel):
             #     multiple_regno['domain'] = {'regn_no': [('id', '=', customer_details.ids)],'vin_no': [('id', '=', customer_details.ids)]}
 
         return leads[0].redirect_opportunity_view()
+
+#
+# class CrmLead(models.Model):
+#     _inherit = 'crm.lead'
+# #
+# #     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+# #     vehicle_line_limit_reached = fields.Boolean(compute='_compute_vehicle_line_create_button', store=False)
+# #
+# #     @api.depends('vehicle_line')
+# #     def _compute_vehicle_line_create_button(self):
+# #         for rec in self:
+# #             rec.vehicle_line_limit_reached = len(rec.vehicle_line) >= 1
+#
+#     vehicle_line_limit_reached = fields.Boolean(compute='_compute_vehicle_line_create_button', store=False)
+#
+#     @api.depends('vehicle_line')
+#     def _compute_vehicle_line_create_button(self):
+#         for rec in self:
+#             # Set the lead-level boolean
+#             line_limit_reached = len(rec.vehicle_line) >= 1
+#             rec.vehicle_line_limit_reached = line_limit_reached
+#
+#             # Set the flag on each vehicle line as well
+#             for line in rec.vehicle_line:
+#                 line.vehicle_line_limit_reached_line = line_limit_reached
+#
+
+
+    # @api.onchange('vehicle_line')
+    # def _onchange_vehicle_line_limit(self):
+    #     if len(self.vehicle_line) >= 1:
+    #         warning = {
+    #             'title': _("Limit Exceeded"),
+    #             'message': _("You can only add 1 vehicle line."),
+    #         }
+    #         self.vehicle_line = self.vehicle_line[:1]
+
+    # vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+    #
+    # @api.onchange('vehicle_line')
+    # def _onchange_vehicle_line_limit(self):
+    #     if len(self.vehicle_line) > 1:
+    #         warning = {
+    #             'title': _("Limit Exceeded"),
+    #             'message': _("You can only add 1 vehicle line."),
+    #         }
+    #         self.vehicle_line = self.vehicle_line[:1]
+
+
+#
+# class CrmLead(models.Model):
+#     _inherit = 'crm.lead'
+#
+#     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+#     vehicle_line_limit_reached = fields.Boolean(compute='_compute_vehicle_line_limit_reached')
+#
+#     @api.depends('vehicle_line')
+#     def _compute_vehicle_line_limit_reached(self):
+#         for rec in self:
+#             rec.vehicle_line_limit_reached = len(rec.vehicle_line) >= 1
+#
+#
+#
+
+
+
+# from odoo import models, fields, api
+#
+# class CrmLead(models.Model):
+#     _inherit = 'crm.lead'
+#
+#     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
+#     vehicle_line_limit_reached = fields.Boolean(compute='_compute_vehicle_line_limit_reached')
+#
+#     @api.depends('vehicle_line')
+#     def _compute_vehicle_line_limit_reached(self):
+#         for rec in self:
+#             rec.vehicle_line_limit_reached = len(rec.vehicle_line) >= 1
+#
+#
