@@ -47,7 +47,7 @@ class ARS_sale_order_line(models.Model):
     product_catalog_id = fields.Many2one('product.catalog', string='Catalog Type')
     product_id_domain = fields.Char(compute="_compute_product_id_domain", readonly=True, store=False)
     product_template_id = fields.Many2one('product.template', string='Product')
-    labor_unit = fields.Float()
+    labor_unit = fields.Float(digits=(16, 3))
 
     @api.multi
     @api.onchange('product_id')
@@ -56,7 +56,14 @@ class ARS_sale_order_line(models.Model):
             if this.product_id:
                 this.labor_unit = this.product_id.product_tmpl_id.labor_unit
 
-
+    @api.multi
+    @api.onchange('product_id', 'product_catalog_id')
+    def _onchange_product_qty_based_on_labor_unit(self):
+        if self.product_catalog_id and self.product_catalog_id.name.lower() == 'labor' and self.product_id:
+            template = self.product_id.product_tmpl_id
+            if template.labor_unit:
+                self.labor_unit = template.labor_unit
+                self.product_uom_qty = template.labor_unit
 
     @api.multi
     @api.depends('product_catalog_id')
