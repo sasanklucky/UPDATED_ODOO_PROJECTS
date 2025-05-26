@@ -291,7 +291,7 @@
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
                                        context="{'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
                                        options="{'no_create':True, 'no_open':True}"/>
-                                <field name="crm_ordered_qty" />
+                                <field name="crm_ordered_qty" readonly="1"/>
                                 <field name="name"/>
                             </tree>
                         </field>
