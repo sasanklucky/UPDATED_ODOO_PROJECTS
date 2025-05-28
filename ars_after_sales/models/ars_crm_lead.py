@@ -692,19 +692,13 @@ class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
-    vehicle_line_limit_reached = fields.Boolean(string='Vehicle Line Limit Reached', compute='_compute_vehicle_info',
-                                                store=True)
     model_id = fields.Many2one('product.template', string='Model', compute='_compute_vehicle_info', store=True)
+    readonly_crm_qty = fields.Boolean(string="Read-Only CRM Qty", compute="_compute_readonly_crm_qty", store=True)
 
-    @api.depends('vehicle_line.crm_ordered_qty')
-    def _compute_vehicle_info(self):
-        for rec in self:
-            lines = rec.vehicle_line
-            rec.vehicle_line_limit_reached = bool(
-                lines and len(lines) == 1 and all(line.crm_ordered_qty > 0 for line in lines)
-            )
-            rec.model_id = lines[0].product_template_id.id if lines else False
-
+    @api.depends('order_ids.state')
+    def _compute_readonly_crm_qty(self):
+        for lead in self:
+            lead.readonly_crm_qty = any(order.state == 'sale' for order in lead.order_ids)
 
     @api.multi
     def get_prod_action(self):
@@ -799,28 +793,14 @@ class ARS_crm_lead_line(models.Model):
     product_template_id = fields.Many2one('product.template', string='Model')
     product_id = fields.Many2one('product.product', string='Product', domain=[('sale_ok', '=', True)],
                                  change_default=True, ondelete='restrict', required=True)
-    crm_ordered_qty = fields.Float('Quantity')
-
-    @api.onchange('crm_ordered_qty')
-    def _onchange_crm_ordered_qty(self):
-        if self.lead_order_id:
-            lines = self.lead_order_id.vehicle_line
-            if lines and len(lines) == 1 and all(line.crm_ordered_qty > 0 for line in lines):
-                self.lead_order_id.vehicle_line_limit_reached = True
-            else:
-                self.lead_order_id.vehicle_line_limit_reached = False
-
-    @api.constrains('crm_ordered_qty')
-    def _check_crm_ordered_qty(self):
-        for rec in self:
-            if rec.crm_ordered_qty == 0:
-                raise ValidationError(_("Quantity does not allow 0. Enter a valid quantity value."))
+    crm_ordered_qty = fields.Float('Quantity', default=1.0)
 
     @api.constrains('lead_order_id')
     def _check_only_one_vehicle_line(self):
         for rec in self:
             if rec.lead_order_id and len(rec.lead_order_id.vehicle_line) > 1:
-                raise ValidationError(_("Only One Vehicle  is Allowed."))
+                raise ValidationError(_("Only One Vehicle is Allowed to be Added."))
+
 
     @api.multi
     @api.onchange('product_catalog_id')
