@@ -816,6 +816,11 @@ class ARS_crm_lead_line(models.Model):
             if rec.crm_ordered_qty == 0:
                 raise ValidationError(_("Quantity does not allow 0. Enter a valid quantity value."))
 
+    @api.constrains('lead_order_id')
+    def _check_only_one_vehicle_line(self):
+        for rec in self:
+            if rec.lead_order_id and len(rec.lead_order_id.vehicle_line) > 1:
+                raise ValidationError(_("Only One Vehicle  is Allowed."))
 
     @api.multi
     @api.onchange('product_catalog_id')
