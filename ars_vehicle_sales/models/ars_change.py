@@ -244,15 +244,15 @@ class ars_sale_crm_sale(models.Model):
     transfer_type = fields.Selection(
         [('internal_transfer', 'Internal Transfer'), ('external_transfer', 'External Transfer')],
         string="Transfer Type")
-    wh_approve = fields.Boolean(default=False, copy=False, string="WH Request", track_visibility='onchange')
-    fin_approve = fields.Boolean(default=False, copy=False, string="FIN Request", track_visibility='onchange')
-    wh_approved = fields.Boolean(default=False, copy=False, string="WH Approved", track_visibility='onchange')
-    fin_approved = fields.Boolean(default=False, copy=False, string="FIN Approved", track_visibility='onchange')
-    sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
-                                  ('accessories', 'Accessories'), ('others', 'Others')])
-    customer_reference = fields.Char(string="Customer Reference")
-    customer_reference_date = fields.Date(string="Customer Reference Date")
-    sale_order_number = fields.Char('SO Number', copy=False)
+    # wh_approve = fields.Boolean(default=False, copy=False, string="WH Request", track_visibility='onchange')
+    # fin_approve = fields.Boolean(default=False, copy=False, string="FIN Request", track_visibility='onchange')
+    # wh_approved = fields.Boolean(default=False, copy=False, string="WH Approved", track_visibility='onchange')
+    # fin_approved = fields.Boolean(default=False, copy=False, string="FIN Approved", track_visibility='onchange')
+    # sale_type = fields.Selection([('vehicle', 'Vehicle'), ('parts', 'Parts'),
+    #                               ('accessories', 'Accessories'), ('others', 'Others')])
+    # customer_reference = fields.Char(string="Customer Reference")
+    # customer_reference_date = fields.Date(string="Customer Reference Date")
+    # sale_order_number = fields.Char('SO Number', copy=False)
 
     # @api.model
     # def fields_view_get(self, view_id="sale.view_order_form", view_type='form', toolbar=False, submenu=False):

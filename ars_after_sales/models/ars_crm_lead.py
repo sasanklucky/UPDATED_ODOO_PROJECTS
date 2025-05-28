@@ -692,34 +692,19 @@ class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
-    vehicle_line_limit_reached = fields.Boolean(string='Vehicle Line Limit Reached')
-    model_id = fields.Many2one('product.template', string='Model')  # Assuming you have this field
+    vehicle_line_limit_reached = fields.Boolean(string='Vehicle Line Limit Reached', compute='_compute_vehicle_info',
+                                                store=True)
+    model_id = fields.Many2one('product.template', string='Model', compute='_compute_vehicle_info', store=True)
 
-    @api.onchange('vehicle_line')
-    def _onchange_vehicle_line(self):
+    @api.depends('vehicle_line.crm_ordered_qty')
+    def _compute_vehicle_info(self):
         for rec in self:
-            # Set vehicle_line_limit_reached conditionally
-            if rec.vehicle_line and len(rec.vehicle_line) == 1 and all(
-                    line.crm_ordered_qty > 0 for line in rec.vehicle_line):
-                rec.vehicle_line_limit_reached = True
-            else:
-                rec.vehicle_line_limit_reached = False
+            lines = rec.vehicle_line
+            rec.vehicle_line_limit_reached = bool(
+                lines and len(lines) == 1 and all(line.crm_ordered_qty > 0 for line in lines)
+            )
+            rec.model_id = lines[0].product_template_id.id if lines else False
 
-            # Set model_id from first vehicle line
-            if rec.vehicle_line:
-                rec.model_id = rec.vehicle_line[0].product_template_id.id
-            else:
-                rec.model_id = False
-
-    # @api.onchange('vehicle_line')
-    # def _onchange_vehicle_line(self):
-    #     for rec in self:
-    #         # Triggered when vehicle_line changes
-    #         if all(line.crm_ordered_qty > 0 for line in rec.vehicle_line) and len(rec.vehicle_line) == 1:
-    #             rec.vehicle_line_limit_reached = True
-    #         else:
-    #             rec.vehicle_line_limit_reached = False
-    #
 
     @api.multi
     def get_prod_action(self):
@@ -819,27 +804,17 @@ class ARS_crm_lead_line(models.Model):
     @api.onchange('crm_ordered_qty')
     def _onchange_crm_ordered_qty(self):
         if self.lead_order_id:
-            if all(line.crm_ordered_qty > 0 for line in self.lead_order_id.vehicle_line) and len(
-                    self.lead_order_id.vehicle_line) == 1:
+            lines = self.lead_order_id.vehicle_line
+            if lines and len(lines) == 1 and all(line.crm_ordered_qty > 0 for line in lines):
                 self.lead_order_id.vehicle_line_limit_reached = True
             else:
                 self.lead_order_id.vehicle_line_limit_reached = False
 
-    # @api.model
-    # def create(self, vals):
-    #     lead_id = vals.get('lead_order_id')
-    #     if lead_id:
-    #         lead = self.env['crm.lead'].browse(lead_id)
-    #         # If there's already one vehicle line, do NOT create a new one, return existing
-    #         if lead.vehicle_line and len(lead.vehicle_line) >= 1:
-    #             return lead.vehicle_line[0]
-    #     return super(ARS_crm_lead_line, self).create(vals)
-
-    # @api.constrains('crm_ordered_qty')
-    # def _check_crm_ordered_qty_equals_one(self):
-    #     for record in self:
-    #         if record.crm_ordered_qty != 1.0:
-    #             raise ValidationError(_("Only quantity of 1 is allowed for this field."))
+    @api.constrains('crm_ordered_qty')
+    def _check_crm_ordered_qty(self):
+        for rec in self:
+            if rec.crm_ordered_qty == 0:
+                raise ValidationError(_("Quantity does not allow 0. Enter a valid quantity value."))
 
 
     @api.multi
