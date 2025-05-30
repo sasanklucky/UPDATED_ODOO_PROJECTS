@@ -13,7 +13,7 @@
     'depends': ['base','web', 'product', 'crm', 'sale', 'sale_stock', 'stock_account', 'web_m2x_options',
                 'ars_vehicle_sales', 'account', 'website', 'sale_crm', 'hr', 'sale_timesheet', 'web_notify',
                 'l10n_in_sale', 'fleet', 'mail', 'auth_signup', 'purchase_requisition', 'ars_after_sales',
-                'purchase', 'purchase_requisition', 'stock', 'stock_account', 'contacts'],
+                'purchase', 'purchase_requisition', 'stock', 'stock_account', 'contacts', 'ars_invoice_aftersales'],
     'data': [
 
         'security/ir.model.access.csv',
