@@ -186,6 +186,9 @@ class BranchSaleOrder(models.Model):
                     "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
                 ) % (current_user_branch.name or 'N/A', lead.branch_id.name or 'N/A'))
 
+        if not vals.get('branch_id') and current_user_branch:
+            vals['branch_id'] = current_user_branch.id
+
         # Create the Sale Order
         order = super(BranchSaleOrder, self).create(vals)
 
@@ -691,72 +694,15 @@ class AccountInvoice(models.Model):
 
         return invoice
 
-
-    # @api.model
-    # def create(self, vals):
-    #     # Current user's branch
-    #     current_user_branch = self.env.user.branch_id
-    #
-    #     # Get or fallback to user's branch if not passed in
-    #     invoice_branch_id = vals.get('branch_id') or current_user_branch.id
-    #
-    #     # Get related sale order (from invoice 'origin' field)
-    #     sale_order = None
-    #     if vals.get('origin'):
-    #         sale_order = self.env['sale.order'].search([
-    #             ('name', '=', vals['origin'])
-    #         ], limit=1)
-    #
-    #     # Validate branch if sale order found
-    #     if sale_order:
-    #         order_branch_id = sale_order.branch_id.id
-    #         if current_user_branch.id != order_branch_id:
-    #             raise ValidationError(_(
-    #                 "Your branch does not match the transaction branch: '%s'."
-    #             ) % sale_order.branch_id.name)
-    #
-    #         # Ensure invoice gets the correct branch_id from the order if missing
-    #         if not vals.get('branch_id'):
-    #             vals['branch_id'] = order_branch_id
-    #
-    #     return super(AccountInvoice, self).create(vals)
-
-    # def write(self, vals):
-    #     current_user_branch = self.env.user.branch_id
-    #
-    #     for invoice in self:
-    #         # Use new or existing branch value
-    #         new_branch_id = vals.get('branch_id', invoice.branch_id.id)
-    #
-    #         # Try to get linked sale order from origin
-    #         sale_order = None
-    #         if invoice.origin:
-    #             sale_order = self.env['sale.order'].search([
-    #                 ('name', '=', invoice.origin)
-    #             ], limit=1)
-    #
-    #         if sale_order:
-    #             if current_user_branch.id != sale_order.branch_id.id:
-    #                 raise ValidationError(_(
-    #                     "Your branch does not match the transaction branch: '%s'."
-    #                 ) % sale_order.branch_id.name)
-    #
-    #     return super(AccountInvoice, self).write(vals)
-
-
     def write(self, vals):
-        # active_model = self.env.context['params']
-        uid = self.env.context['uid'] if 'uid' in self.env.context else False
-        # user =current_user_branch= False
-        # if active_model['active_model'] == 'sale.order' and uid:
-        user = self.env['res.users'].browse(uid)
+        user = self.env.user
         current_user_branch = user.branch_id
+
         for invoice in self:
             print(self.env.context)
-            # current_user_branch = self.env.user.branch_id
+
             new_branch_id = vals.get('branch_id', invoice.branch_id.id)
 
-            # Try to get linked sale or purchase order from origin
             sale_order = purchase_order = None
             if invoice.origin:
                 if self.order_id:
@@ -780,6 +726,41 @@ class AccountInvoice(models.Model):
                     ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
 
         return super(AccountInvoice, self).write(vals)
+
+
+    # def write(self, vals):
+    #     # active_model = self.env.context['params']
+    #     uid = self.env.context['uid'] if 'uid' in self.env.context else False
+    #     # user =current_user_branch= False
+    #     # if active_model['active_model'] == 'sale.order' and uid:
+    #     user = self.env['res.users'].browse(uid)
+    #     current_user_branch = user.branch_id
+    #     for invoice in self:
+    #         print(self.env.context)
+    #         # current_user_branch = self.env.user.branch_id
+    #         new_branch_id = vals.get('branch_id', invoice.branch_id.id)
+    #
+    #         # Try to get linked sale or purchase order from origin
+    #         sale_order = purchase_order = None
+    #         if invoice.origin:
+    #             sale_order = self.env['sale.order'].search([('name', '=', invoice.origin)], limit=1)
+    #             purchase_order = self.env['purchase.order'].search([('name', '=', invoice.origin)], limit=1)
+    #
+    #         if sale_order:
+    #             transaction_branch = sale_order.branch_id
+    #             if current_user_branch.id != transaction_branch.id:
+    #                 raise ValidationError(_(
+    #                     "Access Denied: Your current branch '%s' does not match the Sale Order's branch '%s'."
+    #                 ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
+    #
+    #         elif purchase_order:
+    #             transaction_branch = purchase_order.branch_id
+    #             if current_user_branch.id != transaction_branch.id:
+    #                 raise ValidationError(_(
+    #                     "Access Denied: Your current branch '%s' does not match the Purchase Order's branch '%s'."
+    #                 ) % (current_user_branch.name or 'N/A', transaction_branch.name or 'N/A'))
+    #
+    #     return super(AccountInvoice, self).write(vals)
 
 
 
