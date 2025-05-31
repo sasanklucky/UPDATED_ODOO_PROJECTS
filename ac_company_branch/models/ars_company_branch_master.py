@@ -38,11 +38,14 @@ class ResUserList(models.Model):
     )
 
     # clear cache function while record rule method
+
     @api.multi
     def write(self, vals):
-        res = super(ResUserList, self).write(vals)
+        # Case 1: If only 'company_id' is being changed, reset 'branch_id'
+        if 'company_id' in vals and len(vals) == 1:
+            vals['branch_id'] = False
 
-        # Clear the cache by updating the user's context
+        # Case 2: Logic for allowed_branch_ids and branch_id consistency
         if 'allowed_branch_ids' in vals or 'branch_id' in vals:
             self.env.user.clear_caches()
 
@@ -55,6 +58,24 @@ class ResUserList(models.Model):
                         vals.setdefault('branch_id', False)
 
         return super(ResUserList, self).write(vals)
+
+    # @api.multi
+    # def write(self, vals):
+    #     res = super(ResUserList, self).write(vals)
+    #
+    #     # Clear the cache by updating the user's context
+    #     if 'allowed_branch_ids' in vals or 'branch_id' in vals:
+    #         self.env.user.clear_caches()
+    #
+    #     if 'allowed_branch_ids' in vals:
+    #         for user in self:
+    #             new_allowed_branches = vals.get('allowed_branch_ids')
+    #             if isinstance(new_allowed_branches, list) and new_allowed_branches and new_allowed_branches[0][0] == 6:
+    #                 allowed_ids = set(new_allowed_branches[0][2])
+    #                 if user.branch_id and user.branch_id.id not in allowed_ids:
+    #                     vals.setdefault('branch_id', False)
+    #
+    #     return super(ResUserList, self).write(vals)
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
@@ -99,11 +120,11 @@ class ResUserList(models.Model):
                     vals['branch_id'] = False
         return super(ResUserList, self).create(vals)
 
-    @api.multi
-    def write(self, vals):
-        if 'company_id' in vals and len(vals) == 1:
-            vals['branch_id'] = False
-        return super(ResUserList, self).write(vals)
+    # @api.multi
+    # def write(self, vals):
+    #     if 'company_id' in vals and len(vals) == 1:
+    #         vals['branch_id'] = False
+    #     return super(ResUserList, self).write(vals)
 
 
 #
