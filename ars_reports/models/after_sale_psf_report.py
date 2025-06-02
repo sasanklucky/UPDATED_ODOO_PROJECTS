@@ -36,6 +36,7 @@ class AfterSaleReport(models.Model):
     doc_type = fields.Char(string="Type")
     user_id = fields.Many2one('res.users', string="Service Advisor", track_visibility='onchange')
     reg_no = fields.Many2one('fleet.vehicle', string="Reg No.")
+    master_name = fields.Char(string='Model Group Name')
     model = fields.Many2one('product.product', string="Model")
     delivery_date = fields.Date(string="Delivery Date")
     ro_ageing = fields.Integer('Ro Ageing', compute='ro_ageing_compute')
@@ -79,13 +80,19 @@ class AfterSaleReport(models.Model):
         ru.id as user_id,
         so.doc_type as doc_type,
         inv.reg_no as reg_no,
+        
         inv.model as model,
-        inv.gate_pass_date as delivery_date
+        inv.gate_pass_date as delivery_date,
+        mg.name as master_name
         from account_invoice inv left join sale_order so on so.name = inv.origin
+
         left join res_partner rp on rp.id = so.partner_id 
         left join res_users ru on ru.id = so.user_id 
         left join res_company rc on ru.company_id = rc.id
         left join res_partner rp2 on so.sold_by = rp2.id
+        left join fleet_vehicle fv on fv.id = inv.reg_no
+        left join product_template pt on pt.id = fv.model_id
+        left join model_groups mg on mg.id = pt.master_id
         where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales'
         and rp.opt_out = 'False' )""" % (
             self._table))

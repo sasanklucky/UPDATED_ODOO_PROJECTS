@@ -49,6 +49,7 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 0, 'Sl No', format21)
         sheets.write(1, 2, 'Sales Person', format21)
         sheets.write(1, 3, 'Date of Delivery', format21)
+
         sheets.write(1, 4, 'Model', format21)
         sheets.write(1, 5, 'VIN No', format21)
         sheets.write(1, 6, 'Customer Name', format21)
@@ -71,6 +72,7 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 27, 'Current Status', format21)
         sheets.write(1, 28, 'Complaint Close Date', format21)
         sheets.write(1, 29, 'Ageing', format21)
+        sheets.write(1, 30, 'Model group', format21)
         row, column, sl = 2, 0, 0
         for rec in data:
             helpdesk_ticket = self.env['helpdesk.ticket'].search([('activity_source_id', '=', rec.id)])
@@ -104,6 +106,11 @@ class ARSMailActivity(models.Model):
             sheets.write(row, column + 5, vin_no.name, format11)
             sheets.write(row, column + 6, rec.res_name, format11)
             # sheets.write(row, column + 7, vin_no.contact_name.name, format11)   #to be corrcted
+            if vin_no and vin_no.product_id and vin_no.product_id.master_id:
+                sheets.write(row, column + 30, vin_no.product_id.master_id.name, format11)
+            else:
+                sheets.write(row, column + 30, '', format11)
+
             if rec.mobile:
                 # sheets.write(row, column + 8, rec.mobile, format11)
                 sheets.write(row, column + 8, '******' + rec.mobile[-4:] , format11)

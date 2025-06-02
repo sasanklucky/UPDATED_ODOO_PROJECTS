@@ -26,6 +26,8 @@
                     <!-- <field name="line_item_id" /> -->
                     <field name="vin" />
                     <field name="registration_no" />
+<!--                    <field name="master_id" />-->
+                    <field name="master_name" />
                     <field name="product_varient_id" />
                     <field name="model" string="Product Varient"/>
                     <field name="vehiclesale_dt" />

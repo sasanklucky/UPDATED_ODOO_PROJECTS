@@ -28,6 +28,7 @@
                     <field name="doc_type"/>
                     <field name="vin"/>
                     <field name="model_code"/>
+                    <field name="master_name"/>
                     <field name="model_description"/>
                     <field name="issue_date"/>
                     <field name="issue_quantity"/>

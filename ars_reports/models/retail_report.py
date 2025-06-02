@@ -20,6 +20,8 @@ class RetailReport(models.Model):
     vin_no = fields.Many2one('stock.production.lot',string="VIN")
     customer_name = fields.Many2one('res.partner',string="Customer Name")
     product_template_id = fields.Many2one('product.template',string="Model")
+    master_group = fields.Char(string="Master Group")
+
     product_id = fields.Many2one('product.product',string="Product")
     color = fields.Char(string="Color",compute="get_color")
     outlet = fields.Many2one('res.company',string="Outlet")
@@ -95,6 +97,8 @@ class RetailReport(models.Model):
             ail.id as line_item_id,
             ail.price_unit as price_unit,
             ail.discount as discount,
+            mg.name AS master_group,
+
             ai.partner_id as customer_name,
             rsp.mobile as contact_no,
             rsp.email as email,
@@ -122,7 +126,9 @@ class RetailReport(models.Model):
             left join sale_order_line sol on solir.order_line_id = sol.id
             left join stock_move sm on sm.sale_line_id = sol.id
             left join stock_move_line sml on sml.move_id = sm.id
-            left join res_partner rsp on rsp.id = ai.partner_id          
+            left join res_partner rsp on rsp.id = ai.partner_id   
+            left join product_template pt on pt.id = ail.product_template_id
+            left join model_groups mg on mg.id = pt.master_id       
             where ai.type = 'out_invoice' and ct.team_type = 'sales' and ai.ars_invoice_type = 'vehicle'
             
         )""" % (self._table))

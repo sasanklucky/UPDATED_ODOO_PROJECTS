@@ -12,6 +12,7 @@
             <field name="arch" type="xml">
                 <tree string="cust_booking_contract_mis_report_tree" create="false" delete="false" edit="false">
                     <field name="dealer_zone" />
+
                     <field name="dealer_code" />
                     <field name="company_id" />
                     <field name="contract_id" />
@@ -31,8 +32,10 @@
                     <field name="no_of_cars_purchased" />
                     <field name="referred_by" />
                     <field name="source_id" />
+                    <field name="model_group" />
                     <field name="vehicle_make" />
-                    <field name="vehicle_model" />
+                    <field name="vehicle_colour" />
+
                     <field name="product_name" />
                     <field name="vehicle_colour" />
                     <field name="medium_id" />

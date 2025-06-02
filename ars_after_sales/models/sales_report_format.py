@@ -103,6 +103,7 @@ class SalesReportFormat(models.Model):
     repair_no = fields.Char(related="invoice_id.origin", string="Repair Order No")
     vin = fields.Char(related="invoice_id.vin", string="VIN")
     model_code = fields.Char(related="invoice_id.model.default_code", string="Model Code")
+    master_name = fields.Char(string='Model Group')
     model_description = fields.Char(related="invoice_id.model.name", string="Model Desc")
     issue_date = fields.Date(string="Issue Date")
     issue_quantity = fields.Float(string="Issue Quantity")
@@ -131,7 +132,7 @@ class SalesReportFormat(models.Model):
         print("table name", self._table);
         self.env.cr.execute(f"""  CREATE or REPLACE VIEW %s as (
                     select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
-                    a.date_invoice::Date as invoice_date,
+                    a.date_invoice::Date as invoice_date,mg.name as master_name,
                     (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
                     (select confirmation_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
                     (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
@@ -143,6 +144,9 @@ class SalesReportFormat(models.Model):
                         a.cust_invoice_type
                     END as category_id
                     from account_invoice a join account_invoice_line al on a.id = al.invoice_id
+                    left join fleet_vehicle fv on fv.id = a.reg_no
+                    left join product_template pt on pt.id = fv.model_id
+                    left join model_groups mg on mg.id = pt.master_id
                     where a.type = 'out_invoice' 
                     and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc OFFSET 0)
         )""" % (self._table))

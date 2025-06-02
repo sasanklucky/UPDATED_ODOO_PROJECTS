@@ -35,6 +35,9 @@ class VehicleSalePsfReport(models.Model):
     amount_untaxed = fields.Float(string="Untaxed Amount")
     amount_tax = fields.Float(string="Tax")
     amount_total = fields.Float(string="Total")
+
+    model_group = fields.Char(string="Model Group")
+
     product_template_id = fields.Many2one('product.template')
     # service_options_id = fields.Many2one('service.options', string="Service Options")
     # service_type_id = fields.Many2one('service.type', string="Service Type")
@@ -71,12 +74,15 @@ class VehicleSalePsfReport(models.Model):
         invl.product_template_id,
         inv.gate_pass_date as delivery_date,
         rp.street as delivery_address1,
-        rp.street2 as delivery_address2
+        rp.street2 as delivery_address2,
+        mg.name AS model_group
         from  account_invoice inv
         left join account_invoice_line invl on invl.invoice_id = inv.id
         left join sale_order so on inv.order_id=so.id
         left join res_partner rp on rp.id = so.partner_id
         left join stock_production_lot lot on invl.vin_no = lot.id
+        LEFT JOIN product_template pt ON pt.id = invl.product_template_id
+        LEFT JOIN model_groups mg ON mg.id = pt.master_id
         where inv.type='out_invoice'  and inv.state not in ('draft', 'cancel')and 
         inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
         """ % (self._table))

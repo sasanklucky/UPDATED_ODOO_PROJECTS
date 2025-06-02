@@ -16,10 +16,10 @@
                 'purchase', 'purchase_requisition', 'stock', 'stock_account', 'contacts'],
     'data': [
 
-        'security/ir.model.access.csv',
-        'security/security.xml',
-        'views/ars_company_branch_master.xml',
-        'views/ars_company_branch.xml',
+        # 'security/ir.model.access.csv',
+        # 'security/security.xml',
+        # 'views/ars_company_branch_master.xml',
+        # 'views/ars_company_branch.xml',
 
     ],
     'qweb': [

@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_model_groups,model.groups,model_model_groups,base.group_user,1,1,1,1
+access_model_groups_restricted,model.groups restricted,model_model_groups,model_group.group_model_group_security,1,0,0,0

@@ -15,6 +15,8 @@ class AfterSlaesRetailReport(models.Model):
     line_item_id = fields.Many2one('account.invoice.line', string="Invoice Line")
     vin = fields.Char(string="VIN")
     registration_no = fields.Many2one('fleet.vehicle', string="Registration No")
+
+    master_name = fields.Char(string='Model Group ')
     model = fields.Many2one('product.product', string="Model")
     last_service_dealer = fields.Char(string="Last Service Dealer")
     last_service_date = fields.Date(string="Last Service Date")
@@ -98,6 +100,7 @@ class AfterSlaesRetailReport(models.Model):
                 inv.type as invoice_type,
                 inv.origin as origin,
                 inv.reference as invoice_reference,
+                mg.name as master_name,
                 (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
                 (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
                 (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
@@ -129,6 +132,9 @@ class AfterSlaesRetailReport(models.Model):
                 left join res_company rs on rs.id = so.company_id
     			left join res_partner rp on inv.partner_id = rp.id
     			left join res_partner rp2 on so.sold_by = rp2.id
+    			left join fleet_vehicle fv on fv.id = inv.reg_no
+                left join product_template pt on pt.id = fv.model_id
+                left join model_groups mg on mg.id = pt.master_id
                 where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales' and rs.id in {company_ids} and inv.create_date::date BETWEEN {start_date} AND {end_date}
             )""".format(table_name=self._table, company_ids=company_ids,start_date=start_date_str, end_date=end_date_str))
 

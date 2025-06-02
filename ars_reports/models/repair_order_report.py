@@ -39,6 +39,10 @@ class RepairOrderReport(models.Model):
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per  = fields.Float(string="IGST %", compute="_compute_tax_percentage")
     dealer_gst = fields.Char(string='Dealer Gst',related='dealer_id.vat')
+
+    master_id = fields.Many2one('model.group', string='Model Group')
+    master_name = fields.Char(string='Model Group')
+
     product_varient_id = fields.Many2one(string='Product Name',related='registration_no.model_id')
     vehiclesale_dt = fields.Date(string='Vehicle Sale Date')
     last_service_km = fields.Integer(string='Last Odometer Reading')
@@ -52,6 +56,7 @@ class RepairOrderReport(models.Model):
          ('completed', 'Completed')], string="PSF Status",compute='psf_status_crm')
     product_uom_qty = fields.Float(string='Ordered Quantity')
     ro_ageing = fields.Integer('Ro Ageing',compute='ro_ageing_compute')
+
 
     @api.depends('ro_close_date', 'ro_open_date')
     def ro_ageing_compute(self):
@@ -112,6 +117,7 @@ class RepairOrderReport(models.Model):
                     so.service_type AS service_type,
                     so.regn_no AS registration_no,
                     so.model AS model,
+                    pt.master_id as master_id,
                     last_service.last_service_id,
                     last_service.last_service_date,
                     last_service.last_service_km,
@@ -119,6 +125,7 @@ class RepairOrderReport(models.Model):
                     last_service.ro_type as ro_type,
                     rs.dealer_code AS last_service_dealer, 
                     so.name AS ro_number,  -- Fetching 'name' from 'sale_order' instead
+                    mg.name AS master_name,
                     so.confirmation_date AS ro_open_date,
                     so.confirmation_date AS last_ro_close_date,
                     inv.create_date AS ro_close_date,
@@ -138,6 +145,10 @@ class RepairOrderReport(models.Model):
                     LEFT JOIN last_service ON last_service.vehicle_id = so.regn_no
                     LEFT JOIN service_history sh_last ON sh_last.id = last_service.last_service_id
                     LEFT JOIN last_ownership ON last_ownership.vehicle_id = so.regn_no
+                    LEFT JOIN fleet_vehicle ftv ON ftv.id = so.regn_no
+                    LEFt JOIN product_template pt ON pt.id = ftv.model_id
+                    LEFT JOIN model_groups mg ON mg.id = pt.master_id
+
                     WHERE so.state NOT IN ('draft', 'sent', 'cancel') 
                       AND so.sale_aftersales = 'after_sales'
         )""" % (self._table))

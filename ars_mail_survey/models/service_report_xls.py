@@ -78,6 +78,8 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 37, 'Person Responsible', format21)
         sheets.write(1, 38, 'Complaint Close Date', format21)
         sheets.write(1, 39, 'Ageing', format21)
+        sheets.write(1, 40, 'Model group', format21)
+
         row = 2
         column = 0
         sl = 0
@@ -120,6 +122,11 @@ class ARSMailActivity(models.Model):
             inv_create_date = inv_date.strftime('%d-%m-%Y')
             sheets.write(row, column + 8, inv_create_date, format11)
             # sheets.write(row, column + 8, invoice.create_date, format11)
+
+            if invoice.reg_no and invoice.reg_no.model_id and invoice.reg_no.model_id.master_id:
+                sheets.write(row, column + 40, invoice.reg_no.model_id.master_id.name, format11)
+            else:
+                sheets.write(row, column + 40, '', format11)
 
             if invoice.gate_pass_date:
                 gate_date = datetime.strptime(invoice.gate_pass_date, '%Y-%m-%d')

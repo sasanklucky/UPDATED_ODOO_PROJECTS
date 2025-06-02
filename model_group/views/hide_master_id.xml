@@ -1,19 +1,17 @@
 <odoo>
-    <record id="product_template_form_view_inherit1" model="ir.ui.view">
-    <field name="name">product.template.form.inherit.show_master</field>
-    <field name="model">product.template</field>
-    <field name="inherit_id" ref="product.product_template_only_form_view"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='master_id']" position="before">
-            <field name="context_show_master" invisible="1"/>
-        </xpath>
-        <xpath expr="//field[@name='master_id']" position="replace">
-            <field name="master_id"
-                   widget="many2one_quick_create"
-                   options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                   required="1"
-                   attrs="{'invisible': [('context_show_master', '=', False)]}"/>
-        </xpath>
-    </field>
-</record>
+    <data>
+        <!-- Inherit form view to hide create/edit buttons for restricted users -->
+        <record id="view_model_groups_form_inherit_buttons" model="ir.ui.view">
+            <field name="name">model.groups.form.restrict.buttons</field>
+            <field name="model">model.groups</field>
+            <field name="inherit_id" ref="model_group.view_model_groups_form"/> <!-- Replace if custom view ID -->
+            <field name="groups_id" eval="[(4, ref('model_group.group_model_group_security'))]"/>
+            <field name="arch" type="xml">
+                <form position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </form>
+            </field>
+        </record>
+    </data>
 </odoo>

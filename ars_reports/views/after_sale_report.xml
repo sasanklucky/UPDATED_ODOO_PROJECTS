@@ -34,6 +34,7 @@
                     <field name="doc_type" string="Type"/>
                     <field name="user_id" string="Service Advisor"/>
                     <field name="reg_no" string="Reg No."/>
+                    <field name="master_name" string="Model group"/>
                     <field name="model" string="Model"/>
                     <field name="delivery_date" string="Delivery Date"/>
                     <field name="selling_dealer" string="Selling Dealer"/>

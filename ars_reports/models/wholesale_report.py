@@ -24,6 +24,7 @@ class WholesaleReport(models.Model):
     date_of_invoice = fields.Date(string="Date of Invoice")
     invoice_number = fields.Char(string="Invoice Number")
     vin_no = fields.Char(string="Vin No")
+    model_group = fields.Char(string="Model Group")
     product_template_id = fields.Many2one('product.template', string="Model")
     product_id = fields.Many2one('product.product', string="Product")
     color = fields.Char(string="Color", compute="get_color")
@@ -56,7 +57,8 @@ class WholesaleReport(models.Model):
             rc.dealer_code as dealer_code,
             ai.reference as vendor_reference_no,
 			rp.name as vendor,
-			ail.name as description
+			ail.name as description,
+			mg.name AS model_group
             from account_invoice_line ail 
             left join account_invoice ai on ai.id = ail.invoice_id
             left join purchase_order_line pol on ail.purchase_line_id = pol.id
@@ -66,5 +68,7 @@ class WholesaleReport(models.Model):
             left join sale_order so on so.id = ai.order_id
             left join product_product pp on ail.product_id = pp.id
 			left join res_partner rp on ai.partner_id = rp.id
+			LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+        	LEFT JOIN model_groups mg ON mg.id = pt.master_id
             where ai.type = 'in_invoice' and ai.ars_type = 'vehicle'
         )""" % (self._table))
