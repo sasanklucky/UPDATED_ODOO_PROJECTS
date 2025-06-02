@@ -113,7 +113,7 @@ class Split(http.Controller):
                     'service_type': order_id.service_type.id,
                     'service_options': order_id.service_options.id,
                 }
-                context = {'type': 'out_invoice', 'journal_type': 'sale', 'default_ars_invoice_type': 'after_sales'}
+                context = {'type': 'out_invoice', 'journal_type': 'sale', 'default_ars_invoice_type': 'after_sales', 'uid': request.env.user.id}
                 created_invoice = request.env['account.invoice'].with_context(context).create(vals)
                 invoice_ids.append(created_invoice.id)
 

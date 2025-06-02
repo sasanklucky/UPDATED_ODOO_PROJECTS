@@ -186,6 +186,9 @@ class BranchSaleOrder(models.Model):
                     "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
                 ) % (current_user_branch.name or 'N/A', lead.branch_id.name or 'N/A'))
 
+        if not vals.get('branch_id') and current_user_branch:
+            vals['branch_id'] = current_user_branch.id
+
         # Create the Sale Order
         order = super(BranchSaleOrder, self).create(vals)
 
@@ -200,27 +203,79 @@ class BranchSaleOrder(models.Model):
 
         return order
 
-    # @api.model
-    # def create(self, vals):
-    #     order = super(BranchSaleOrder, self).create(vals)
-    #
-    #     if order.branch_id:
-    #         message = _(" A New Sale Order has been added in '%s'. '%s' branch.") % (order.company_id.name, order.branch_id.name)
-    #     else:
-    #         message = _(" A New Sale Order has been added in '%s'. Without branch.") % (order.company_id.name)
-    #
-    #     order.env.user.notify_info(message)
-    #
-    #     return order
+class BranchSaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
 
-    # Validation error on suppose branch value didnt have in current company
-    # @api.constrains('branch_id', 'allowed_branch_ids', 'company_id')
-    # def _check_branch_allowed_and_company(self):
-    #     for record in self:
-    #         if record.branch_id:
-    #
-    #             if record.company_id and record.branch_id.company_id != record.company_id:
-    #                 raise ValidationError("That branch value didn't map in current company.")
+    branch_id = fields.Many2one('branch.master.company', 'Branch')
+    allowed_branch_ids = fields.Many2many('branch.master.company', 'branch_sale_rel', 'order_id', 'branch_id',
+                                          compute='_compute_user_allowed_branch_ids',
+                                          string='Allowed Branches', ondelete='cascade')
+
+    # @api.depends('user_id')
+    def _compute_user_allowed_branch_ids(self):
+        for rec in self:
+            rec.allowed_branch_ids = self.env.user.allowed_branch_ids
+
+    @api.model
+    def default_get(self, fields_list):
+        """Set default branch and allowed branches based on the logged-in user."""
+        res = super(BranchSaleOrderLine, self).default_get(fields_list)
+        user = self.env.user
+        if user.branch_id:
+            res['branch_id'] = user.branch_id.id
+        if user.allowed_branch_ids:
+            res['allowed_branch_ids'] = [(6, 0, user.allowed_branch_ids.ids)]
+        return res
+
+    @api.onchange('company_ids')
+    def _onchange_company_id(self):
+        if self.company_ids:
+            selected_company_ids = self.company_ids.ids
+
+            user_branch_allowed = self.allowed_branch_ids.filtered(
+                lambda b: b.company_id.id in selected_company_ids)
+            user_branch = self.branch_id if self.branch_id.company_id.id in selected_company_ids else False
+
+            self.allowed_branch_ids = user_branch_allowed if user_branch_allowed else False
+            self.branch_id = user_branch if user_branch else False
+        else:
+            self.allowed_branch_ids = False
+            self.branch_id = False
+
+    @api.onchange('allowed_branch_ids')
+    def _onchange_allowed_branch_ids(self):
+        if self.branch_id and self.branch_id not in self.allowed_branch_ids:
+            self.branch_id = False
+
+    @api.model
+    def create(self, vals):
+        current_user_branch = self.env.user.branch_id
+
+        # Check if linked to a CRM Lead (usually via 'opportunity_id')
+        if vals.get('opportunity_id'):
+            lead = self.env['crm.lead'].browse(vals['opportunity_id'])
+
+            if lead.branch_id and lead.branch_id.id != current_user_branch.id:
+                raise ValidationError(_(
+                    "Access Denied: Your current branch is '%s' does not match, the transaction's branch is '%s'."
+                ) % (current_user_branch.name or 'N/A', lead.branch_id.name or 'N/A'))
+
+        if not vals.get('branch_id') and current_user_branch:
+            vals['branch_id'] = current_user_branch.id
+
+        # Create the Sale Order
+        order = super(BranchSaleOrderLine, self).create(vals)
+
+        # Notification
+        if order.branch_id:
+            message = _("A new Sale Order line has been added in '%s' (%s branch).") % (
+                order.company_id.name, order.branch_id.name)
+        else:
+            message = _("A new Sale Order line has been added in '%s' without a branch.") % order.company_id.name
+
+        order.env.user.notify_info(message)
+
+        return order
 
 
 # RES PARTNER BANK
@@ -690,58 +745,6 @@ class AccountInvoice(models.Model):
         self.env.user.notify_info(message)
 
         return invoice
-
-
-    # @api.model
-    # def create(self, vals):
-    #     # Current user's branch
-    #     current_user_branch = self.env.user.branch_id
-    #
-    #     # Get or fallback to user's branch if not passed in
-    #     invoice_branch_id = vals.get('branch_id') or current_user_branch.id
-    #
-    #     # Get related sale order (from invoice 'origin' field)
-    #     sale_order = None
-    #     if vals.get('origin'):
-    #         sale_order = self.env['sale.order'].search([
-    #             ('name', '=', vals['origin'])
-    #         ], limit=1)
-    #
-    #     # Validate branch if sale order found
-    #     if sale_order:
-    #         order_branch_id = sale_order.branch_id.id
-    #         if current_user_branch.id != order_branch_id:
-    #             raise ValidationError(_(
-    #                 "Your branch does not match the transaction branch: '%s'."
-    #             ) % sale_order.branch_id.name)
-    #
-    #         # Ensure invoice gets the correct branch_id from the order if missing
-    #         if not vals.get('branch_id'):
-    #             vals['branch_id'] = order_branch_id
-    #
-    #     return super(AccountInvoice, self).create(vals)
-
-    # def write(self, vals):
-    #     current_user_branch = self.env.user.branch_id
-    #
-    #     for invoice in self:
-    #         # Use new or existing branch value
-    #         new_branch_id = vals.get('branch_id', invoice.branch_id.id)
-    #
-    #         # Try to get linked sale order from origin
-    #         sale_order = None
-    #         if invoice.origin:
-    #             sale_order = self.env['sale.order'].search([
-    #                 ('name', '=', invoice.origin)
-    #             ], limit=1)
-    #
-    #         if sale_order:
-    #             if current_user_branch.id != sale_order.branch_id.id:
-    #                 raise ValidationError(_(
-    #                     "Your branch does not match the transaction branch: '%s'."
-    #                 ) % sale_order.branch_id.name)
-    #
-    #     return super(AccountInvoice, self).write(vals)
 
 
     def write(self, vals):

@@ -120,7 +120,7 @@ class ARS_product_vehicle(models.Model):
     model_id = fields.Many2one('product.template', 'Model')
     model_ids = fields.Many2many('product.template', 'parts_vehicle_models', 'parts_id', 'vehicle_id', 'Models')
     catalog_type_name = fields.Char(related='catalog_type.name')
-    labor_unit = fields.Float()
+    labor_unit = fields.Float(digits=(16, 3))
     rsa = fields.Selection([('yes', 'YES'), ('no', 'NO')])
     ecb = fields.Selection([('yes', 'YES'), ('no', 'NO')])
     description_form22 = fields.Text(
