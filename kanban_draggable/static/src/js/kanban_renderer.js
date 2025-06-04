@@ -32,14 +32,14 @@ KanbanRenderer.include({
         }
     },
 
-    _renderGrouped: function (fragment) {
-        this._super.apply(this, arguments);
-
-        if (this.columnOptions.sortable==false){
-            this.$el.sortable( "disable" );
-        }
-
-    },
+//    _renderGrouped: function (fragment) {
+//        this._super.apply(this, arguments);
+//
+//        if (this.columnOptions.sortable==false){
+////            this.$el.sortable( "disable" );
+//        }
+//
+//    },
 
 
 
