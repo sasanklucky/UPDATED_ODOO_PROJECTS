@@ -115,7 +115,8 @@ class ars_sale_crm_lead(models.Model):
     def _set_booking_date(self):
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         if booking_stage and self.stage_id.id == int(booking_stage):
-            self.booking_date = datetime.now()
+            if not self.booking_date:
+                self.booking_date = datetime.now()
 
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
 
@@ -172,7 +173,8 @@ class ars_sale_crm_lead(models.Model):
         stage = vals.get('stage_id')
         if stage and booking_stage:
             if int(stage) == int(booking_stage):
-                vals['booking_date'] = datetime.now()
+                if not self.booking_date:
+                    vals['booking_date'] = datetime.now()
         if len(self.ids) == 1:
             previous_state_id = self.stage_id
         result = super(ars_sale_crm_lead, self).write(vals)
