@@ -19,8 +19,9 @@
                     <field name="date_of_booking" />
                     <field name="date_of_invoice" />
                     <field name="invoice_number" />
+                    <field name="master_group" string="Model Group"/>
                     <field name="product_template_id" string="Product"/>
-                     <field name="master_group" string="Model Group"/>
+
                     <field name="product_id" invisible="0" string="Product Varient"/>
                     <field name="color" string="Attributes"/>
                     <field name="vin_no" />
@@ -45,6 +46,7 @@
                     <field name="igst_per" />
                     <field name="igst_amt" />
                     <field name="total" />
+
                 </tree>
             </field>
         </record>

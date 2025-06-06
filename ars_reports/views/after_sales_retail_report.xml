@@ -27,7 +27,7 @@
                     <field name="customer_state"/>
                     <field name="vin"/>
                     <field name="registration_no"/>
-                    <field name="master_name"/>
+
                     <field name="model"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
@@ -67,6 +67,7 @@
                     <field name="irn_no"/>
                     <field name="selling_dealer"/>
                     <field name="service_advisor"/>
+                    <field name="master_name"/>
                 </tree>
             </field>
         </record>
@@ -97,7 +98,7 @@
                     <!--                    <field name="bill_to_customer" string="Bill To Customer"/>-->
                     <field name="vin"/>
                     <field name="registration_no"/>
-                    <field name="master_name"/>
+
                     <field name="model"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
@@ -129,6 +130,7 @@
                     <field name="customer_voc"/>
                     <field name="e_invoice_generated"/>
                     <field name="irn_no"/>
+                    <field name="master_name"/>
                 </tree>
             </field>
         </record>

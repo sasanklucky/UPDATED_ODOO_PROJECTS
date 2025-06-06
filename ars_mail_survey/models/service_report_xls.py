@@ -54,17 +54,18 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 7, 'RO Creation Date', format21)
         sheets.write(1, 8, 'RO Closed Date', format21)
         sheets.write(1, 9, 'Delivery Date', format21)
-        sheets.write(1, 10, 'Model', format21)
-        sheets.write(1, 11, 'Model Variant', format21)
-        sheets.write(1, 12, 'Mileage Out', format21)
-        sheets.write(1, 13, 'Repeat Repair Yes/No', format21)
-        sheets.write(1, 14, 'Voice of Customer', format21)
-        sheets.write(1, 15, 'SA Name', format21)
-        sheets.write(1, 16, 'Pick Up and Drop', format21)
-        sheets.write(1, 17, 'PSF Date', format21)
-        sheets.write(1, 18, 'Contact Status', format21)
+        sheets.write(1, 10, 'Model group', format21)
+        sheets.write(1, 11, 'Model', format21)
+        sheets.write(1, 12, 'Model Variant', format21)
+        sheets.write(1, 13, 'Mileage Out', format21)
+        sheets.write(1, 14, 'Repeat Repair Yes/No', format21)
+        sheets.write(1, 15, 'Voice of Customer', format21)
+        sheets.write(1, 16, 'SA Name', format21)
+        sheets.write(1, 17, 'Pick Up and Drop', format21)
+        sheets.write(1, 18, 'PSF Date', format21)
+        sheets.write(1, 19, 'Contact Status', format21)
         if questions_list:
-            q_rw = 19
+            q_rw = 20
             for quest in questions_list:
                 # print(quest.question)
                 sheets.write(1, q_rw, quest.question, format21)
@@ -78,7 +79,7 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 37, 'Person Responsible', format21)
         sheets.write(1, 38, 'Complaint Close Date', format21)
         sheets.write(1, 39, 'Ageing', format21)
-        sheets.write(1, 40, 'Model group', format21)
+
 
         row = 2
         column = 0
@@ -123,16 +124,18 @@ class ARSMailActivity(models.Model):
             sheets.write(row, column + 8, inv_create_date, format11)
             # sheets.write(row, column + 8, invoice.create_date, format11)
 
-            if invoice.reg_no and invoice.reg_no.model_id and invoice.reg_no.model_id.master_id:
-                sheets.write(row, column + 40, invoice.reg_no.model_id.master_id.name, format11)
-            else:
-                sheets.write(row, column + 40, '', format11)
+
 
             if invoice.gate_pass_date:
                 gate_date = datetime.strptime(invoice.gate_pass_date, '%Y-%m-%d')
                 gate_pass_date = gate_date.strftime('%d-%m-%Y')
                 sheets.write(row, column + 9, gate_pass_date, format11)
-            sheets.write(row, column + 10, invoice.reg_no.model_id.name, format11)
+            if invoice.reg_no and invoice.reg_no.model_id and invoice.reg_no.model_id.master_id:
+                sheets.write(row, column + 10, invoice.reg_no.model_id.master_id.name, format11)
+            else:
+                sheets.write(row, column + 10, '', format11)
+
+            sheets.write(row, column + 11, invoice.reg_no.model_id.name, format11)
             color = invoice.model.attribute_value_ids.filtered(
                 lambda x: x.attribute_id.name == 'colour' or x.attribute_id.name == 'Exterior Color').ids
             if color:
@@ -141,9 +144,9 @@ class ARSMailActivity(models.Model):
                     attribute = self.env['product.attribute.value'].sudo().search([('id', '=', i)])
                     color_list.append(attribute.name)
                 color_car = ', '.join(str(attribute) for attribute in color_list)
-                sheets.write(row, column + 11, color_car, format11)
+                sheets.write(row, column + 12, color_car, format11)
             if invoice.kilometer_out:
-                sheets.write(row, column + 12, invoice.kilometer_out, format11)
+                sheets.write(row, column + 13, invoice.kilometer_out, format11)
             if len(invoice.reg_no.service_ids) > 2:
                 if invoice.reg_no.service_ids[-2].servicetype == invoice.reg_no.service_ids[-1].servicetype:
                     if (invoice.reg_no.service_ids[-2].order.appointment_date
@@ -154,31 +157,31 @@ class ARSMailActivity(models.Model):
                                                    '%Y-%m-%d %H:%M:%S')
                         final_date = ((date_2 - date_1).days)
                         if final_date < 15:
-                            sheets.write(row, column + 13, 'YES', format11)
+                            sheets.write(row, column + 14, 'YES', format11)
                         else:
-                            sheets.write(row, column + 13, 'NO', format11)
+                            sheets.write(row, column + 14, 'NO', format11)
                     else:
-                        sheets.write(row, column + 13, 'NO', format11)
+                        sheets.write(row, column + 14, 'NO', format11)
                 else:
-                    sheets.write(row, column + 13, 'NO', format11)
+                    sheets.write(row, column + 14, 'NO', format11)
             else:
-                sheets.write(row, column + 13, 'NO', format11)
+                sheets.write(row, column + 14, 'NO', format11)
             voc_cus = ''
             for voc in recs.psf_order_id.customer_voice_sale:
                 if voc.name:
                     value_text = voc.name
                     voc_cus += value_text + ',' + ' '
-            sheets.write(row, column + 14, voc_cus, format11)
-            sheets.write(row, column + 15, invoice.user_id.name, format11)
+            sheets.write(row, column + 15, voc_cus, format11)
+            sheets.write(row, column + 16, invoice.user_id.name, format11)
             if recs.psf_order_id.pick_up_drop:
-                sheets.write(row, column + 16, recs.psf_order_id.pick_up_drop, format11)
+                sheets.write(row, column + 17, recs.psf_order_id.pick_up_drop, format11)
             if invoice.gate_pass_date:
                 create_date = fields.Datetime.from_string(invoice.gate_pass_date)
                 psf_date_calc = create_date + timedelta(days=3)
                 psf_date = psf_date_calc.strftime("%d-%m-%Y")
-                sheets.write(row, column + 17, psf_date, format11)
-            sheets.write(row, column + 18, recs.stages, format11)
-            an_cl = 19
+                sheets.write(row, column + 18, psf_date, format11)
+            sheets.write(row, column + 19, recs.stages, format11)
+            an_cl = 20
             for question in questions_list:
                 quest_vals = False
                 for qst_vals in recs.response_id.user_input_line_ids:
@@ -247,6 +250,6 @@ class ARSMailActivity(models.Model):
         data = base64.encodebytes(data)
         doc_id = self.env['ir.attachment'].create(
             {'datas': data, 'name': 'Afterservice_psf_report_' + str(datetime.now().date()) + '.xls',
-             'datas_fname': 'Afterservice_psf_report_' + str(datetime.now().date()) + '.xls',
+             'datas_fname': 'Aftersef40rvice_psf_report_' + str(datetime.now().date()) + '.xls',
              })
         return doc_id
