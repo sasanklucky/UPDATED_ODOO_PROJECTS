@@ -147,6 +147,7 @@ class PurchaseOrderInheritSync(models.Model):
         """ connect to parent db set up in general settings """
         # try:
         param = self.env['ir.config_parameter'].sudo()
+        print("param..........",param)
         child = param.get_param('purchase_order_sync_apis.po_company_type')
         check_po_sync = param.get_param('purchase_order_sync_apis.enable_po_sync')
         print("child---", child, check_po_sync)
