@@ -975,7 +975,7 @@
                                         <field name="qty_available_line"/>
                                         <field name="layout_category_id" groups="sale.group_sale_layout"/>
                                         <field name="name"/>
-                                        <field name="labor_unit"/>
+                                        <field name="labor_unit" readonly="1"/>
                                         <field name="product_uom_qty"
                                                string="Ordered Qty"
                                                context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"

@@ -288,7 +288,7 @@ class ARS_After_sale_order(models.Model):
     @api.multi
     def action_split(self):
         action = ''
-        if len(self.order_line.ids) > 1:
+        if len(self.order_line.ids) >= 1:
             action = self.env.ref('ars_invoice_aftersales.action_split_line').read()[0]
             action.update({'domain': [('id', 'in', self.order_line.ids)]})
         return action
