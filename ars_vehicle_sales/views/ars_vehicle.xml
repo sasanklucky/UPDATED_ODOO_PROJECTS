@@ -158,7 +158,7 @@
                                             <field name="odometer"/>
                                             <field name="odometer_unit"/>
                                         </div>
-                                        <field name="location"/>
+                                        <field name="location" invisible="1"/>
                                     </group>
                                     <group colspan="4" string="Warranty Details">
                                         <field name="warranty_validation"/>
@@ -361,6 +361,24 @@
                 <field name="driver_id" position="replace">
                     <field name="driver_id" string="Customer"/>
                     <field name="contact_name" string="Contact Person"/>
+                </field>
+                <field name="state_id" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="acquisition_date" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="odometer_unit" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="odometer" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </field>
+                <field name="license_plate" position="attributes">
+                    <attribute name="string">Registration Number</attribute>
+                </field>
+                <field name="vin_sn" position="attributes">
+                    <attribute name="string">VIN</attribute>
                 </field>
             </field>
         </record>
