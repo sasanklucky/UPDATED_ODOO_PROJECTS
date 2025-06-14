@@ -17,6 +17,7 @@
                     <field name="dealer_state" />
                     <field name="dealer_city" />
                     <field name="invoice_number" />
+                    <field name="model_group" />
                     <field name="product_template_id" string="Product" />
                     <field name="product_id" string="Product Variant"/>
                     <field name="date_of_invoice" />
@@ -65,12 +66,48 @@
                 </p>
             </field>
         </record>
+
+        <record id="view_wholesale_report_report_wizard" model="ir.ui.view">
+            <field name="name">Wholesale Report</field>
+            <field name="model">wholesale.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="wholesale_report_qty" string="Wholesale Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_wholesale_report_wizard" model="ir.actions.act_window">
+            <field name="name">wholesale Report Wizard</field>
+            <field name="res_model">wholesale.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_wholesale_report_report_wizard"/>
+            <field name="target">new</field>
+        </record>
+
         
         <!-- Main menu for "wholesale.report" -->
         <record id="menu_wholesale_report" model="ir.ui.menu" >
             <field name="name">Wholesale Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_wholesale_report_act_window" />
+            <field name="action" ref="action_wholesale_report_wizard" />
             <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
         

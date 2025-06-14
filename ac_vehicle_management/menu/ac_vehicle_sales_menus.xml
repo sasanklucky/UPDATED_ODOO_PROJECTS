@@ -42,7 +42,7 @@
         <menuitem action="vehicle_sale_action_orders_upselling"
                   id="menu_vehicle_sale_order_upselling"
                   parent="menu_vehicle_sale_sale_invoicing"
-                  sequence="5" active="True"/>
+                  sequence="5" active="False"/>
 
 <!--        <menuitem action="ars_vehicle_sales.action_invoice_vehicle_tree1"-->
 <!--                  name="Vehicle Invoices"-->

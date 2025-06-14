@@ -20,6 +20,8 @@ class RetailReport(models.Model):
     vin_no = fields.Many2one('stock.production.lot',string="VIN")
     customer_name = fields.Many2one('res.partner',string="Customer Name")
     product_template_id = fields.Many2one('product.template',string="Model")
+    master_group = fields.Char(string="Master Group")
+
     product_id = fields.Many2one('product.product',string="Product")
     color = fields.Char(string="Color",compute="get_color")
     outlet = fields.Many2one('res.company',string="Outlet")
@@ -80,10 +82,26 @@ class RetailReport(models.Model):
                     ((record.customer_name.country_id.name + ',') if record.customer_name.country_id else '') + \
                     ((record.customer_name.zip) if record.customer_name.zip else '')
 
-    @api.model_cr
-    def init(self):
+    @api.multi
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = str(tuple(companys))
+
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND ai.date_invoice::date BETWEEN {start_date_str} AND {end_date_str}"
+
+        self.env.cr.execute(f"""
+                    CREATE OR REPLACE VIEW {self._table} AS (
             select row_number() over(order by ai.id desc) as id,
             ai.company_id as dealer_id,
             rc.dealer_code as dealer_code,
@@ -95,6 +113,8 @@ class RetailReport(models.Model):
             ail.id as line_item_id,
             ail.price_unit as price_unit,
             ail.discount as discount,
+            mg.name AS master_group,
+
             ai.partner_id as customer_name,
             rsp.mobile as contact_no,
             rsp.email as email,
@@ -122,11 +142,14 @@ class RetailReport(models.Model):
             left join sale_order_line sol on solir.order_line_id = sol.id
             left join stock_move sm on sm.sale_line_id = sol.id
             left join stock_move_line sml on sml.move_id = sm.id
-            left join res_partner rsp on rsp.id = ai.partner_id          
+            left join res_partner rsp on rsp.id = ai.partner_id   
+            left join product_template pt on pt.id = ail.product_template_id
+            left join model_groups mg on mg.id = pt.master_id       
             where ai.type = 'out_invoice' and ct.team_type = 'sales' and ai.ars_invoice_type = 'vehicle'
-            
-        )""" % (self._table))
-
+                    AND ai.company_id IN {company_ids}
+                        {date_filter}
+            )
+        """)
 
 # from lxml import etree
 class ResPartner(models.Model):
@@ -147,3 +170,27 @@ class ResPartner(models.Model):
         self._add_tracking_to_fields()
         return super(ResPartner, self)._register_hook()
 
+
+class RetailReportPSFWizard(models.TransientModel):
+    _name = 'retail.report.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def retail_report_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['retail.report']
+        query.sudo().sql_query(companys=comp_ids,start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Retail Report',
+            'res_model': 'retail.report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }

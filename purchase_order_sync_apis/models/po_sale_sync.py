@@ -147,6 +147,7 @@ class PurchaseOrderInheritSync(models.Model):
         """ connect to parent db set up in general settings """
         # try:
         param = self.env['ir.config_parameter'].sudo()
+        print("param..........",param)
         child = param.get_param('purchase_order_sync_apis.po_company_type')
         check_po_sync = param.get_param('purchase_order_sync_apis.enable_po_sync')
         print("child---", child, check_po_sync)
@@ -182,7 +183,8 @@ class PurchaseOrderInheritSync(models.Model):
                     # parent record env
                     sale_quotation = env['sale.order'].sudo()
                     exist_in_parent = sale_quotation.search(
-                        [('child_po_id_ref', '=', str(rec.id)), ('child_db', '=', child_database)], limit=1,
+                        [('child_po_id_ref', '=', str(rec.id)), ('child_db', '=', child_database)],
+                        limit=1,
                         order='id desc')
                     # company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                     print("purchase order=====", exist_in_parent)

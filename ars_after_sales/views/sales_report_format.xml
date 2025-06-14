@@ -28,6 +28,7 @@
                     <field name="doc_type"/>
                     <field name="vin"/>
                     <field name="model_code"/>
+                    <field name="master_name"/>
                     <field name="model_description"/>
                     <field name="issue_date"/>
                     <field name="issue_quantity"/>
@@ -72,6 +73,83 @@
             <field name="view_type">form</field>
             <field name="search_view_id" ref="view_sales_report_format_report_search"/>
         </record>
+
+        <record id="view_sales_report_format_wizard" model="ir.ui.view">
+            <field name="name">Sales Report</field>
+            <field name="model">sales.report.format.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please Select the Dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="sales_after_report_qty" string="Sales Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_report_wizard" model="ir.actions.act_window">
+            <field name="name">Sales Report Wizard</field>
+            <field name="res_model">sales.report.format.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_after_sales.view_sales_report_format_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+
+<!--        <record id="view_sales_report_format_wizard" model="ir.ui.view">-->
+<!--            <field name="name">Sales Report</field>-->
+<!--            <field name="model">sales.report.format.wizard</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Choose your Ro Closed From Date to date">-->
+<!--                    <group>-->
+<!--                        <span>-->
+<!--                            <h3>Please Select the Dealers</h3>-->
+<!--                        </span>-->
+<!--                        <field name="company_id" widget="many2many_tags"/>-->
+<!--                        <group>-->
+<!--                            <span>-->
+<!--                                <b>From</b>-->
+<!--                            </span>-->
+<!--                            <field name="start_date"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <span>-->
+<!--                                <b>To</b>-->
+<!--                            </span>-->
+<!--                            <field name="end_date"/>-->
+<!--                        </group>-->
+<!--                    </group>-->
+<!--                    <footer>-->
+<!--                        <button name="sales_after_report_qty" string="Sales Report" type="object"-->
+<!--                                class="btn-primary"/>-->
+<!--                        &lt;!&ndash;                        <button string="Cancel" class="btn-default" special="cancel"/>&ndash;&gt;-->
+<!--                    </footer>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="action_after_sales_report_wizard" model="ir.actions.act_window">-->
+<!--            <field name="name">Sales Report Wizard</field>-->
+<!--            <field name="res_model">sales.report.format.wizard</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">form</field>-->
+<!--            <field name="view_id" ref="ars_after_sales.view_sales_report_format_wizard"/>-->
+<!--            <field name="target">new</field>-->
+<!--        </record>-->
 
 
     </data>

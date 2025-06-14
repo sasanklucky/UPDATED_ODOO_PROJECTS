@@ -27,6 +27,7 @@
                     <field name="customer_state"/>
                     <field name="vin"/>
                     <field name="registration_no"/>
+
                     <field name="model"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
@@ -66,6 +67,7 @@
                     <field name="irn_no"/>
                     <field name="selling_dealer"/>
                     <field name="service_advisor"/>
+                    <field name="master_name"/>
                 </tree>
             </field>
         </record>
@@ -96,6 +98,7 @@
                     <!--                    <field name="bill_to_customer" string="Bill To Customer"/>-->
                     <field name="vin"/>
                     <field name="registration_no"/>
+
                     <field name="model"/>
                     <field name="last_service_dealer"/>
                     <field name="last_service_date"/>
@@ -127,6 +130,7 @@
                     <field name="customer_voc"/>
                     <field name="e_invoice_generated"/>
                     <field name="irn_no"/>
+                    <field name="master_name"/>
                 </tree>
             </field>
         </record>
@@ -243,8 +247,114 @@
         <record id="menu_after_sales_credit_report" model="ir.ui.menu">
             <field name="name">After-Sales Credit Note Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_after_sales_credit_report_act_window"/>
+            <field name="action" ref="action_after_sales_credit_note_report_wizard"/>
             <field name="parent_id" ref="account.account_reports_management_menu"/>
+        </record>
+
+        <record id="view_credit_report_after_sales_wizard" model="ir.ui.view">
+            <field name="name">After-Sales Credit Note Report</field>
+            <field name="model">credit.report.after.sales.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>Credit Note From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>Credit Note To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="credit_stock_qty" string="Open After-sales Credit Note Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_credit_note_report_wizard" model="ir.actions.act_window">
+            <field name="name">After-Sales Credit Note Report Wizard</field>
+            <field name="res_model">credit.report.after.sales.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_credit_report_after_sales_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_after_sale_report_sales_wizard" model="ir.ui.view">
+            <field name="name">After-Sales PSF Report</field>
+            <field name="model">after.sale.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>Ro Closed From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>Ro Closed To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="sale_stock_qty" string="After-Sales PSF Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_psf_report_wizard" model="ir.actions.act_window">
+            <field name="name">After-Sales PSF Report Wizard</field>
+            <field name="res_model">after.sale.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_after_sale_report_sales_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+
+        <record id="view_repair_order_report_wizard" model="ir.ui.view">
+            <field name="name">Repair Order Report</field>
+            <field name="model">repair.order.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="repair_order_stock_qty" string="Repair Order Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_repair_order_report_wizard" model="ir.actions.act_window">
+            <field name="name">Repair Order Report Wizard</field>
+            <field name="res_model">repair.order.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_repair_order_report_wizard"/>
+            <field name="target">new</field>
         </record>
 
 

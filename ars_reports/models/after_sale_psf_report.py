@@ -36,6 +36,7 @@ class AfterSaleReport(models.Model):
     doc_type = fields.Char(string="Type")
     user_id = fields.Many2one('res.users', string="Service Advisor", track_visibility='onchange')
     reg_no = fields.Many2one('fleet.vehicle', string="Reg No.")
+    master_name = fields.Char(string='Model Group Name')
     model = fields.Many2one('product.product', string="Model")
     delivery_date = fields.Date(string="Delivery Date")
     ro_ageing = fields.Integer('Ro Ageing', compute='ro_ageing_compute')
@@ -52,43 +53,68 @@ class AfterSaleReport(models.Model):
             else:
                 record.ro_ageing = 0
 
-    @api.model_cr
-    def init(self):
+    @api.multi
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-        select row_number() over(order by so.id desc) as id,
-        initcap(to_char(inv.date_invoice, 'month')) as month,
-        inv.company_id as dealer_name_id,
-        inv.number as invoice_number, 
-        so.confirmation_date::date as ro_open_date,
-        inv.origin as ro_number,
-        inv.date_invoice as invoice_date,
-        inv.create_date::date as ro_close_date,
-        inv.vin as vin,
-        so.partner_id as partner_id,
-        rp.mobile as mobile,
-        rp.city as city,
-        rp.phone as phone,
-        rp.pan_no as pan_no,
-        inv.amount_untaxed as amount_untaxed,
-        inv.amount_tax as amount_tax,
-        inv.amount_total as amount_total,
-        so.service_options as service_options_id,
-        so.service_type as service_type_id,
-        rp2.name as selling_dealer,
-        ru.id as user_id,
-        so.doc_type as doc_type,
-        inv.reg_no as reg_no,
-        inv.model as model,
-        inv.gate_pass_date as delivery_date
-        from account_invoice inv left join sale_order so on so.name = inv.origin
-        left join res_partner rp on rp.id = so.partner_id 
-        left join res_users ru on ru.id = so.user_id 
-        left join res_company rc on ru.company_id = rc.id
-        left join res_partner rp2 on so.sold_by = rp2.id
-        where inv.state not in ('draft', 'cancelled') and so.sale_aftersales = 'after_sales'
-        and rp.opt_out = 'False' )""" % (
-            self._table))
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = tuple(companys)
+
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND inv.create_date::date BETWEEN {start_date_str} AND {end_date_str}"
+        self.env.cr.execute(f"""
+                CREATE OR REPLACE VIEW {self._table} AS (
+                    select row_number() over(order by so.id desc) as id,
+                    initcap(to_char(inv.date_invoice, 'month')) as month,
+                    inv.company_id as dealer_name_id,
+                    inv.number as invoice_number, 
+                    so.confirmation_date::date as ro_open_date,
+                    inv.origin as ro_number,
+                    inv.date_invoice as invoice_date,
+                    inv.create_date::date as ro_close_date,
+                    inv.vin as vin,
+                    so.partner_id as partner_id,
+                    rp.mobile as mobile,
+                    rp.city as city,
+                    rp.phone as phone,
+                    rp.pan_no as pan_no,
+                    inv.amount_untaxed as amount_untaxed,
+                    inv.amount_tax as amount_tax,
+                    inv.amount_total as amount_total,
+                    so.service_options as service_options_id,
+                    so.service_type as service_type_id,
+                    rp2.name as selling_dealer,
+                    ru.id as user_id,
+                    so.doc_type as doc_type,
+                    inv.reg_no as reg_no,
+                    
+                    inv.model as model,
+                    inv.gate_pass_date as delivery_date,
+                    mg.name as master_name
+                    from account_invoice inv left join sale_order so on so.name = inv.origin
+            
+                    left join res_partner rp on rp.id = so.partner_id 
+                    left join res_users ru on ru.id = so.user_id 
+                    left join res_company rc on ru.company_id = rc.id
+                    left join res_partner rp2 on so.sold_by = rp2.id
+                    left join fleet_vehicle fv on fv.id = inv.reg_no
+                    left join product_template pt on pt.id = fv.model_id
+                    left join model_groups mg on mg.id = pt.master_id
+                    WHERE inv.state NOT IN ('draft', 'cancelled')
+                      AND so.sale_aftersales = 'after_sales'
+                      AND rp.opt_out = 'False'
+                      AND rc.id IN {company_ids}
+                      {date_filter}
+            )
+        """)
 
     def export_xls(self, param=None):
         output = io.BytesIO()
@@ -201,3 +227,28 @@ class AfterSaleReport(models.Model):
                 'target': 'current',
             }
 
+
+
+class AfterSalesPSFReportWizard(models.TransientModel):
+    _name = 'after.sale.report.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def sale_stock_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['after.sale.report']
+        query.sudo().sql_query(companys=comp_ids, start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'AfterSale Report',
+            'res_model': 'after.sale.report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }

@@ -49,19 +49,20 @@ class ARSMailActivity(models.Model):
         sheets.write(1, 0, 'Sl No', format21)
         sheets.write(1, 2, 'Sales Person', format21)
         sheets.write(1, 3, 'Date of Delivery', format21)
-        sheets.write(1, 4, 'Model', format21)
-        sheets.write(1, 5, 'VIN No', format21)
-        sheets.write(1, 6, 'Customer Name', format21)
-        sheets.write(1, 7, 'Contact Person', format21)
-        sheets.write(1, 8, 'Contact No', format21)
-        sheets.write(1, 9, 'Delivery Type', format21)
-        sheets.write(1, 10, 'After Sales Introduction', format21)
-        sheets.write(1, 11, 'Due Date', format21)
-        sheets.write(1, 12, 'Contact Status', format21)
-        sheets.write(1, 13, 'PSF Status.', format21)
-        sheets.write(1, 14, 'VOC', format21)
+        sheets.write(1, 4, 'Model group', format21)
+        sheets.write(1, 5, 'Model', format21)
+        sheets.write(1, 6, 'VIN No', format21)
+        sheets.write(1, 7, 'Customer Name', format21)
+        sheets.write(1, 8, 'Contact Person', format21)
+        sheets.write(1, 9, 'Contact No', format21)
+        sheets.write(1, 10, 'Delivery Type', format21)
+        sheets.write(1, 11, 'After Sales Introduction', format21)
+        sheets.write(1, 12, 'Due Date', format21)
+        sheets.write(1, 13, 'Contact Status', format21)
+        sheets.write(1, 14, 'PSF Status.', format21)
+        sheets.write(1, 15, 'VOC', format21)
         if questions_list:
-            q_rw = 15
+            q_rw = 16
             for quest in questions_list:
                 sheets.write(1, q_rw, quest.question, format21)
                 q_rw += 1
@@ -100,30 +101,36 @@ class ARSMailActivity(models.Model):
                 gate_pass_date = gate_date.strftime('%d-%m-%Y')
                 sheets.write(row, column + 3, gate_pass_date, format11)
             vin_no = self.env['account.invoice.line'].search([('invoice_id', '=', invoice.id)], limit=1).vin_no
-            sheets.write(row, column + 4, vin_no.product_id.name, format11)
-            sheets.write(row, column + 5, vin_no.name, format11)
-            sheets.write(row, column + 6, rec.res_name, format11)
+            if vin_no and vin_no.product_id and vin_no.product_id.master_id:
+                sheets.write(row, column + 4, vin_no.product_id.master_id.name, format11)
+            else:
+                sheets.write(row, column + 4, '', format11)
+            sheets.write(row, column + 5, vin_no.product_id.name, format11)
+            sheets.write(row, column + 6, vin_no.name, format11)
+            sheets.write(row, column + 7, rec.res_name, format11)
             # sheets.write(row, column + 7, vin_no.contact_name.name, format11)   #to be corrcted
+
+
             if rec.mobile:
                 # sheets.write(row, column + 8, rec.mobile, format11)
-                sheets.write(row, column + 8, '******' + rec.mobile[-4:] , format11)
+                sheets.write(row, column + 9, '******' + rec.mobile[-4:] , format11)
             if invoice.delivery_type:
                 select_del_type = dict(invoice.fields_get(allfields=['delivery_type'])['delivery_type']
                                        ['selection'])[invoice.delivery_type]
-                sheets.write(row, column + 9, select_del_type, format11)
+                sheets.write(row, column + 10, select_del_type, format11)
             if invoice.after_sale_intro:
                 select_after_intro = dict(invoice.fields_get(allfields=['after_sale_intro'])['after_sale_intro']
                                           ['selection'])[invoice.after_sale_intro]
-                sheets.write(row, column + 10, select_after_intro, format11)
+                sheets.write(row, column + 11, select_after_intro, format11)
             if invoice.gate_pass_date:
                 create_date = fields.Datetime.from_string(invoice.gate_pass_date)
                 psf_date_calc = create_date + timedelta(days=3)
                 psf_date = psf_date_calc.strftime("%d-%m-%Y")
 
-                sheets.write(row, column + 11, psf_date, format11)
-            sheets.write(row, column + 12, rec.stages, format11)
-            sheets.write(row, column + 13, rec.survey_percentage, format11)
-            an_cl = 15
+                sheets.write(row, column + 12, psf_date, format11)
+            sheets.write(row, column + 13, rec.stages, format11)
+            sheets.write(row, column + 14, rec.survey_percentage, format11)
+            an_cl = 16
             for question in questions_list:
                 quest_vals = False
                 for qst_vals in rec.response_id.user_input_line_ids:
