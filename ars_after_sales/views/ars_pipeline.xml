@@ -3127,7 +3127,7 @@
                                         <field name="name"/>
                                         <field name="product_uom_qty"/>
                                         <field name="qty_delivered"/>
-                                        <field name="product_uom" options='{"no_open": True, "no_create:True"}'/>
+                                        <field name="product_uom" options='{"no_open": True, "no_create":True}'/>
                                         <field name="category" options='{"no_open": True, "no_create":True}'/>
                                         <field name="price_unit"/>
                                         <field name="qty_invoiced" invisible="1"/>
