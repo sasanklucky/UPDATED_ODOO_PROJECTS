@@ -60,7 +60,8 @@ class AccountInvoice_inherit(models.Model):
         sale_followup_days = param.get_param('ars_mail_survey.sale_followup_days')
         postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
         today = date.today()
-        sale_order_search = self.env['mail.activity'].search([('psf_order_id', '=', self.order_id.id)])
+        # sale_order_search = self.env['mail.activity'].search([('psf_order_id', '=', self.order_id.id)])
+        sale_order_search = self.env['mail.activity'].browse(self.order_id.id)
         if not sale_order_search and not self.partner_id.opt_out:
             if (self and self.team_id.team_type == 'sales' and self.order_id.counter_parts == False
                     and self.type not in ['in_refund', 'in_invoice']):
@@ -91,7 +92,7 @@ class AccountInvoice_inherit(models.Model):
                 })
             if (
                     self and self.team_id.team_type == 'after_sales' and self.order_id.counter_parts == False and self.type not in [
-                'in_refund', 'in_invoice']
+                'in_refund', 'in_invoice', 'out_refund']
                     and not self.service_options.psf_restrict):
                 user_id = self._determine_user_to_assign(type='post_service')
                 self.env['mail.activity'].sudo().create({
