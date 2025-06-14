@@ -244,12 +244,7 @@
             <field name="parent_id" ref="account.account_reports_management_menu"/>
         </record>
 
-        <record id="menu_after_sales_credit_report" model="ir.ui.menu">
-            <field name="name">After-Sales Credit Note Report</field>
-            <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_after_sales_credit_note_report_wizard"/>
-            <field name="parent_id" ref="account.account_reports_management_menu"/>
-        </record>
+
 
         <record id="view_credit_report_after_sales_wizard" model="ir.ui.view">
             <field name="name">After-Sales Credit Note Report</field>
@@ -284,6 +279,13 @@
             <field name="view_mode">form</field>
             <field name="view_id" ref="ars_reports.view_credit_report_after_sales_wizard"/>
             <field name="target">new</field>
+        </record>
+
+        <record id="menu_after_sales_credit_report" model="ir.ui.menu">
+            <field name="name">After-Sales Credit Note Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_after_sales_credit_note_report_wizard"/>
+            <field name="parent_id" ref="account.account_reports_management_menu"/>
         </record>
 
         <record id="view_after_sale_report_sales_wizard" model="ir.ui.view">
@@ -321,6 +323,13 @@
             <field name="target">new</field>
         </record>
 
+        <record id="menu_after_sale_report" model="ir.ui.menu" >
+            <field name="name">After-Sales PSF Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_after_sales_psf_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+
 
         <record id="view_repair_order_report_wizard" model="ir.ui.view">
             <field name="name">Repair Order Report</field>
@@ -355,6 +364,13 @@
             <field name="view_mode">form</field>
             <field name="view_id" ref="ars_reports.view_repair_order_report_wizard"/>
             <field name="target">new</field>
+        </record>
+
+        <record id="menu_repair_order_so_report" model="ir.ui.menu" >
+            <field name="name">Repair Order Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_repair_order_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
 
 
