@@ -59,60 +59,79 @@ class AfterSlaesRetailReport(models.Model):
     # product_catalog_id = fields.Many2one('product.catalog', 'Catalog Type')
     # bill_to_customer = fields.Char()
 
-    @api.model_cr
-    def init(self):
+    @api.multi
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-            select row_number() over(order by sol.id desc) as id,
-            so.id as order_id,
-            sol.id as line_item_id,
-            rs.dealer_code as dealer_code,
-            so.company_id as dealer_id,
-            so.vin_no as vin,
-            so.regn_no as registration_no,
-            so.model as model,
-            inv.id as invoice_id,
-            cn.id as credit_note_id,
-            cn.number as credit_note_number,
-            cn.date_invoice as credit_note_date,
-            inv.create_date as ro_close_date,
-            mg.name as master_name,
-            (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
-            (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
-            (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
-            (select so.confirmation_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = tuple(companys)
 
-            so.service_type as service_type,
-            (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
-            (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
-            so.mileage_in as odoometer,
-            cnl.product_id as part_id,
-            cnl.name as part_description,
-            cnl.price_unit as price_unit,
-            cnl.discount as discount,
-            cnl.price_subtotal as part_price,
-            cnl.price_total as total_part_price,
-            (select 
-                case when inv.irn_no is not null then 'Yes' 
-                else 'No' 
-                end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
-            inv.irn_no as irn_no
-            --sol.product_uom_qty as product_uom_qty,
-            --sol.product_catalog_id as product_catalog_id
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND inv.create_date::date BETWEEN {start_date_str} AND {end_date_str}"
+        self.env.cr.execute(f"""
+                CREATE OR REPLACE VIEW {self._table} AS (
+                    select row_number() over(order by sol.id desc) as id,
+                    so.id as order_id,
+                    sol.id as line_item_id,
+                    rs.dealer_code as dealer_code,
+                    so.company_id as dealer_id,
+                    so.vin_no as vin,
+                    so.regn_no as registration_no,
+                    so.model as model,
+                    inv.id as invoice_id,
+                    cn.id as credit_note_id,
+                    cn.number as credit_note_number,
+                    cn.date_invoice as credit_note_date,
+                    inv.create_date as ro_close_date,
+                    mg.name as master_name,
+                    (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
+                    (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
+                    (select so.name from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc  limit 1) as ro_number,
+                    (select so.confirmation_date from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as ro_open_date,
+        
+                    so.service_type as service_type,
+                    (select servicetype from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as ro_type,
+                    (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_ro_close_date,
+                    so.mileage_in as odoometer,
+                    cnl.product_id as part_id,
+                    cnl.name as part_description,
+                    cnl.price_unit as price_unit,
+                    cnl.discount as discount,
+                    cnl.price_subtotal as part_price,
+                    cnl.price_total as total_part_price,
+                    (select 
+                        case when inv.irn_no is not null then 'Yes' 
+                        else 'No' 
+                        end as e_invoice_generated from account_invoice ai where ai.id = inv.id) AS e_invoice_generated,
+                    inv.irn_no as irn_no
+                    --sol.product_uom_qty as product_uom_qty,
+                    --sol.product_catalog_id as product_catalog_id
+        
+                    from account_invoice_line cnl
+                    left join account_invoice cn on cnl.invoice_id = cn.id
+                    left join account_invoice inv on cn.origin = inv.number
+                    left join account_invoice_line inli on inli.invoice_id = inv.id
+                    left join sale_order_line_invoice_rel invl on invl.invoice_line_id = inli.id
+                    left join sale_order_line sol on sol.id = invl.order_line_id
+                    left join sale_order so on so.id = sol.order_id
+                    left join res_company rs on rs.id = so.company_id
+                    left join fleet_vehicle fv on fv.id = inv.reg_no
+                    left join product_template pt on pt.id = fv.model_id
+                    left join model_groups mg on mg.id = pt.master_id
+                    where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
+                AND rs.id IN {company_ids}
+                  {date_filter}
+            )
+        """)
 
-            from account_invoice_line cnl
-            left join account_invoice cn on cnl.invoice_id = cn.id
-            left join account_invoice inv on cn.origin = inv.number
-            left join account_invoice_line inli on inli.invoice_id = inv.id
-            left join sale_order_line_invoice_rel invl on invl.invoice_line_id = inli.id
-            left join sale_order_line sol on sol.id = invl.order_line_id
-            left join sale_order so on so.id = sol.order_id
-            left join res_company rs on rs.id = so.company_id
-            left join fleet_vehicle fv on fv.id = inv.reg_no
-            left join product_template pt on pt.id = fv.model_id
-            left join model_groups mg on mg.id = pt.master_id
-            where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
-            )""" % (self._table))
 
 
         #     from sale_order_line sol
@@ -167,3 +186,30 @@ class AfterSlaesRetailReport(models.Model):
 # bill to customer ---no need
 # ro number, open date, close date ---no need
 # inv number, inv date, service type,
+
+
+
+
+class AfterSalesCreditNoteWizard(models.TransientModel):
+    _name = 'credit.report.after.sales.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def credit_stock_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['credit.report.after.sales']
+        query.sudo().sql_query(companys=comp_ids, start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Credit Note Report',
+            'res_model': 'credit.report.after.sales',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
