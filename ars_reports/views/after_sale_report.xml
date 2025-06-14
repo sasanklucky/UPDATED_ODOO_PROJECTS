@@ -80,7 +80,7 @@
         <record id="menu_after_sale_report" model="ir.ui.menu" >
             <field name="name">After-Sales PSF Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_after_sale_report_act_window" />
+            <field name="action" ref="action_after_sales_psf_report_wizard" />
             <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
 
