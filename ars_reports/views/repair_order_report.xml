@@ -96,7 +96,7 @@
         <record id="menu_repair_order_so_report" model="ir.ui.menu" >
             <field name="name">Repair Order Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_repair_order_report_act_window" />
+            <field name="action" ref="action_repair_order_report_wizard" />
             <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
     </data>
