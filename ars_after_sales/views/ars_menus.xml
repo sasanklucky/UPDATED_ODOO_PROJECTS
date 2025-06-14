@@ -345,12 +345,16 @@
                   name="Opportunities"
                   parent="crm.crm_menu_report"
                   action="ars_after_sales.action_crm_lead_opportunities_appointment"
-                  sequence="5"/>
+                  sequence="5"
+                  active="False"/>
         <menuitem id="crm_resellers"
                   name="Resellers"
                   parent="crm.crm_menu_config"
                   action="ars_after_sales.action_crm_lead_opportunities_appointment"
-                  sequence="5"/>
+                  sequence="5"
+                  active="False"
+        />
+
         <!--Sales Menu & Aftersales-->
         <menuitem
                 id="sales_dashboard"
@@ -432,7 +436,7 @@
 
         <menuitem id="menu_sales_report_format"
                   name="Sales Report"
-                  action="sales_report_format_action"
+                  action="action_after_sales_report_wizard"
                   parent="ars_after_sales.menu_aftersales_reporting"
                   sequence="99"/>
 
@@ -873,6 +877,14 @@
         <!--id="menu_barcode_nomenclatures"-->
         <!--parent="menu_product_after" sequence="3"-->
         <!--name="Barcode Nomenclatures"/>-->
+
+        <record id="crm.crm_activity_report_menu" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
+
+        <record id="crm.sales_team_menu_report_crm" model="ir.ui.menu">
+            <field name="active" eval="False"/>
+        </record>
 
     </data>
 </odoo>
