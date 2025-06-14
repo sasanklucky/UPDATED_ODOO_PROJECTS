@@ -82,10 +82,52 @@
         <record id="menu_vehicle_sale_psf_report_accounting" model="ir.ui.menu" >
             <field name="name">Vehicle Sales PSF Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_vehicle_sale_psf_report_act_window" />
+<!--            <field name="action" ref="action_vehicle_sale_psf_report_act_window" />-->
+            <field name="action" ref="action_vehicle_sale_psf_report_wizard" />
             <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
 
+
+        <record id="view_vehicle_sale_psf_report_wizard" model="ir.ui.view">
+            <field name="name">Vehicle Sales PSF Report</field>
+            <field name="model">vehicle.sale.psf.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span>
+                            <h3>Please select the dealers</h3>
+                        </span>
+                        <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span>
+                                <b>From</b>
+                            </span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span>
+                                <b>To</b>
+                            </span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="vehicle_psf_qty" string="Vehicle Sales PSF Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_vehicle_sale_psf_report_wizard" model="ir.actions.act_window">
+            <field name="name">Vehicle Sales PSF Report Wizard</field>
+            <field name="res_model">vehicle.sale.psf.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ac_vehicle_management.view_vehicle_sale_psf_report_wizard"/>
+            <field name="target">new</field>
+        </record>
 
 
     </data>
