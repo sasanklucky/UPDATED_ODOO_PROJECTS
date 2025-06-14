@@ -79,13 +79,13 @@
         </record>
 
         <!-- Main menu for "retail.report" -->
-        <record id="menu_vehicle_sale_psf_report_accounting" model="ir.ui.menu" >
-            <field name="name">Vehicle Sales PSF Report</field>
-            <!-- <field name="sequence" eval="10" /> -->
-<!--            <field name="action" ref="action_vehicle_sale_psf_report_act_window" />-->
-            <field name="action" ref="action_vehicle_sale_psf_report_wizard" />
-            <field name="parent_id" ref="account.account_reports_management_menu" />
-        </record>
+<!--        <record id="menu_vehicle_sale_psf_report_accounting" model="ir.ui.menu" >-->
+<!--            <field name="name">Vehicle Sales PSF Report</field>-->
+<!--            &lt;!&ndash; <field name="sequence" eval="10" /> &ndash;&gt;-->
+<!--&lt;!&ndash;            <field name="action" ref="action_vehicle_sale_psf_report_act_window" />&ndash;&gt;-->
+<!--            <field name="action" ref="action_vehicle_sale_psf_report_wizard" />-->
+<!--            <field name="parent_id" ref="account.account_reports_management_menu" />-->
+<!--        </record>-->
 
 
         <record id="view_vehicle_sale_psf_report_wizard" model="ir.ui.view">
@@ -128,6 +128,15 @@
             <field name="view_id" ref="ac_vehicle_management.view_vehicle_sale_psf_report_wizard"/>
             <field name="target">new</field>
         </record>
+
+         <record id="menu_vehicle_sale_psf_report_accounting" model="ir.ui.menu" >
+            <field name="name">Vehicle Sales PSF Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+<!--            <field name="action" ref="action_vehicle_sale_psf_report_act_window" />-->
+            <field name="action" ref="action_vehicle_sale_psf_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+
 
 
     </data>
