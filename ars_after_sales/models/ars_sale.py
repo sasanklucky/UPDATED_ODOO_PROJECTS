@@ -1314,3 +1314,23 @@ class ars_sale_advance_payment_inv(models.TransientModel):
                         _('For one of the lines customer is not selected. Please add customer before proceeding.'))
         super(ars_sale_advance_payment_inv, self).create_invoices()
         return {'type': 'ir.actions.act_window_close'}
+
+
+
+class AccountInvoice(models.Model):
+    _inherit = 'account.invoice'
+
+    @api.multi
+    def _get_payment_widget_reconciled_info(self):
+        result = super(AccountInvoice, self)._get_payment_widget_reconciled_info()
+
+        for item in result.get('content', []):
+            # Get move record using move_id
+            move = self.env['account.move'].browse(item.get('move_id'))
+
+            # Try getting branch from move's journal or related document
+            branch = move.branch_id or move.invoice_id.branch_id or move.payment_id.branch_id
+
+            item['branch_name'] = branch.name if branch else 'Unknown'
+
+        return result
