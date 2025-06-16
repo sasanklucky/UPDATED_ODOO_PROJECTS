@@ -25,11 +25,9 @@
         <field name="model">fleet.vehicle</field>
         <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='model_id']" position="after">
-                <div class="oe_edit_only">
-                    <label for="master_id">Model Group</label>
-                </div>
-                <field name="master_id" string="Model Group"/>
+            <xpath expr="//field[@name='model_id']" position="before">
+
+                <field name="master_id" string="Model Group" readonly="1"/><br/>
 
             </xpath>
         </field>
