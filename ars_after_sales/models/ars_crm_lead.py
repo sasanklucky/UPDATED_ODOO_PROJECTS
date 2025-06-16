@@ -873,7 +873,7 @@ class ARSSaleOrderLine(models.Model):
                                copy=False)
     # price_unit = fields.Float(related='product_id.list_price', string="Price")
     category = fields.Many2one('order.line.category', string="Category")
-    qty_available_line = fields.Float(string='Qty Available',
+    qty_available_line = fields.Float(string='Available Qty',
                                       compute='_compute_product_qty_on_hand')
     admin_access = fields.Boolean(related='order_id.admin_access')
     admin_access_sale = fields.Boolean(compute="_compute_admin_access_sale", string='Admin Sale Access')

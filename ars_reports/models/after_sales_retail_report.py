@@ -69,22 +69,25 @@ class AfterSlaesRetailReport(models.Model):
     selling_dealer = fields.Char(string="Selling Dealer")
     service_advisor = fields.Many2one('res.users', 'Service Advisor', related='order_id.user_id')
 
-
-
     @api.multi
-    def sql_query(self, companys,start_date, end_date):
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
         if len(companys) == 1:
             company_ids = f"({companys[0]})"
         else:
             company_ids = tuple(companys)
-        if isinstance(start_date, str):
-            start_date = fields.Datetime.from_string(start_date)
-        if isinstance(end_date, str):
-            end_date = fields.Datetime.from_string(end_date)
-        start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
-        end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
-        self.env.cr.execute(""" CREATE or REPLACE VIEW {table_name} as (
+
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND inv.create_date::date BETWEEN {start_date_str} AND {end_date_str}"
+        self.env.cr.execute(f"""
+                CREATE OR REPLACE VIEW {self._table} AS (
                 select row_number() over(order by inli.id desc) as id,
                 so.id as order_id,
                 inli.id as line_item_id,
@@ -135,8 +138,15 @@ class AfterSlaesRetailReport(models.Model):
     			left join fleet_vehicle fv on fv.id = inv.reg_no
                 left join product_template pt on pt.id = fv.model_id
                 left join model_groups mg on mg.id = pt.master_id
-                where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales' and rs.id in {company_ids} and inv.create_date::date BETWEEN {start_date} AND {end_date}
-            )""".format(table_name=self._table, company_ids=company_ids,start_date=start_date_str, end_date=end_date_str))
+                where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
+                AND rs.id IN {company_ids}
+                  {date_filter}
+            )
+        """)
+
+
+
+            # format(table_name=self._table, company_ids=company_ids,start_date=start_date_str, end_date=end_date_str))
 
 
     @api.multi

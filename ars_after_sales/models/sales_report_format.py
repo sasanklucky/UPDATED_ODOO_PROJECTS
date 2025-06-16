@@ -126,27 +126,71 @@ class SalesReportFormat(models.Model):
         ('walkin', 'Walkin'),
     ], string='Service Order Type')
 
-    @api.model_cr
-    def init(self):
+    @api.multi
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        print("table name", self._table);
-        self.env.cr.execute(f"""  CREATE or REPLACE VIEW %s as (
-                    select row_number() over() as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
-                    a.date_invoice::Date as invoice_date,mg.name as master_name,
-                    (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
-                    (select confirmation_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
-                    (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
-                    al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id,
-                    CASE 
-                    WHEN al.category IS NOT NULL THEN 
-                        (SELECT name FROM order_line_category WHERE id = al.category)
-                    ELSE 
-                        a.cust_invoice_type
-                    END as category_id
-                    from account_invoice a join account_invoice_line al on a.id = al.invoice_id
-                    left join fleet_vehicle fv on fv.id = a.reg_no
-                    left join product_template pt on pt.id = fv.model_id
-                    left join model_groups mg on mg.id = pt.master_id
-                    where a.type = 'out_invoice' 
-                    and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc OFFSET 0)
-        )""" % (self._table))
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = str(tuple(companys))
+
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND a.date_invoice::date BETWEEN {start_date_str} AND {end_date_str}"
+
+        self.env.cr.execute(f"""
+                      CREATE OR REPLACE VIEW {self._table} AS (
+                          select row_number() over(order by a.id desc) as id,a.id as invoice_id,a.company_id,a.state as invoice_state,
+                          a.date_invoice::Date as invoice_date,mg.name as master_name,
+                          (select warehouse_id from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as warehouse_id,al.product_id,
+                          (select confirmation_date::Date from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as repair_date,
+                          (select doc_type from sale_order where name = a.origin order by id desc limit 1 OFFSET 0) as doc_type,a.delivery_date::Date as issue_date,
+                          al.quantity as issue_quantity,al.price_subtotal as amount,al.id as invoice_line_id,
+                          CASE
+                          WHEN al.category IS NOT NULL THEN
+                              (SELECT name FROM order_line_category WHERE id = al.category)
+                          ELSE
+                              a.cust_invoice_type
+                          END as category_id
+                          from account_invoice a join account_invoice_line al on a.id = al.invoice_id
+                          left join fleet_vehicle fv on fv.id = a.reg_no
+                          left join product_template pt on pt.id = fv.model_id
+                          left join model_groups mg on mg.id = pt.master_id
+                          where a.type = 'out_invoice' and a.team_id in (select id from crm_team where team_type = 'after_sales' order by id desc OFFSET 0)
+                              AND a.company_id IN {company_ids}
+                                  {date_filter}
+                  )
+              """)
+
+
+class SalesReportWizard(models.TransientModel):
+    _name = 'sales.report.format.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def sales_after_report_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['sales.report.format']
+        query.sudo().sql_query(companys=comp_ids, start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Sales Report',
+            'res_model': 'sales.report.format',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'domain': [('product_id.product_tmpl_id.catalog_type.code', '=', 'PAR')],
+            'context': self.env.context,
+            'target': 'current',
+        }
+

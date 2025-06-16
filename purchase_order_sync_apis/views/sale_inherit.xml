@@ -8,13 +8,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group/group/field[@name='validity_date']"
                        position="before">
-                       <field name="child_po_ref" readonly='1'/>
+                       <field name="child_po_ref" readonly='1'  invisible="1"/>
                        <!-- <field name="test_css" invisible='1'/> -->
                 </xpath>
                  <xpath expr="//form/sheet/group/group/field[@name='validity_date']"
                        position="after">
-                       <field name="sync_so" readonly='1'/>
-                       <field name="ready_for_sync" readonly='1'/>
+                       <field name="sync_so" readonly='1'  invisible="1"/>
+                       <field name="ready_for_sync" readonly='1'  invisible="1"/>
                        <field name="child_po_id_ref" readonly='1' invisible="1"/>
                        <field name="child_db" readonly='1' invisible="1"/>
                 </xpath>

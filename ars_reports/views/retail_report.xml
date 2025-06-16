@@ -83,12 +83,48 @@
                 </p>
             </field>
         </record>
+
+        <record id="view_retail_report_report_wizard" model="ir.ui.view">
+            <field name="name">Retail Report</field>
+            <field name="model">retail.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retail_report_qty" string="Retail Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_repair_report_wizard" model="ir.actions.act_window">
+            <field name="name">Repair Report Wizard</field>
+            <field name="res_model">retail.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_retail_report_report_wizard"/>
+            <field name="target">new</field>
+        </record>
+
         
         <!-- Main menu for "retail.report" -->
         <record id="menu_retail_report" model="ir.ui.menu" >
             <field name="name">Retail Report</field>
             <!-- <field name="sequence" eval="10" /> -->
-            <field name="action" ref="action_retail_report_act_window" />
+            <field name="action" ref="action_repair_report_wizard" />
             <field name="parent_id" ref="account.account_reports_management_menu" />
         </record>
         

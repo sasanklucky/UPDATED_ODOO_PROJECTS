@@ -49,43 +49,64 @@ class VehicleSalePsfReport(models.Model):
     delivery_address1 = fields.Char(string="Delivery Address 1")
     delivery_address2 = fields.Char(string="Delivery Address 2")
 
-    @api.model_cr
-    def init(self):
+    @api.multi
+    def sql_query(self, companys, start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
-        select row_number() over(order by inv.id desc) as id,
-        initcap(to_char(inv.date_invoice, 'month'))  as month,
-        CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
-        inv.company_id as dealer_name_id,
-        inv.number as invoice_number, 
-        inv.date_invoice as invoice_date,
-        so.partner_id as partner_id,
-        so.user_id as user_id,
-        rp.mobile as mobile,
-        rp.city as city,
-        rp.phone as phone,
-        rp.pan_no as pan_no,
-        invl.vin_no as vin_no,
-        lot.name as vin,
-        inv.amount_untaxed as amount_untaxed,
-        inv.amount_tax as amount_tax,
-        inv.amount_total as amount_total,
-        invl.name as model,
-        invl.product_template_id,
-        inv.gate_pass_date as delivery_date,
-        rp.street as delivery_address1,
-        rp.street2 as delivery_address2,
-        mg.name AS model_group
-        from  account_invoice inv
-        left join account_invoice_line invl on invl.invoice_id = inv.id
-        left join sale_order so on inv.order_id=so.id
-        left join res_partner rp on rp.id = so.partner_id
-        left join stock_production_lot lot on invl.vin_no = lot.id
-        LEFT JOIN product_template pt ON pt.id = invl.product_template_id
-        LEFT JOIN model_groups mg ON mg.id = pt.master_id
-        where inv.type='out_invoice'  and inv.state not in ('draft', 'cancel')and 
-        inv.ars_invoice_type = 'vehicle' and invl.vin_no is not null)
-        """ % (self._table))
+        if len(companys) == 1:
+            company_ids = f"({companys[0]})"
+        else:
+            company_ids = str(tuple(companys))
+
+        date_filter = ""
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
+            date_filter = f"AND inv.date_invoice::date BETWEEN {start_date_str} AND {end_date_str}"
+
+        self.env.cr.execute(f"""
+                CREATE OR REPLACE VIEW {self._table} AS (
+                    select row_number() over(order by inv.id desc) as id,
+                    initcap(to_char(inv.date_invoice, 'month'))  as month,
+                    CAST(extract(year from inv.date_invoice) AS INTEGER) as year,
+                    inv.company_id as dealer_name_id,
+                    inv.number as invoice_number, 
+                    inv.date_invoice as invoice_date,
+                    so.partner_id as partner_id,
+                    so.user_id as user_id,
+                    rp.mobile as mobile,
+                    rp.city as city,
+                    rp.phone as phone,
+                    rp.pan_no as pan_no,
+                    invl.vin_no as vin_no,
+                    lot.name as vin,
+                    inv.amount_untaxed as amount_untaxed,
+                    inv.amount_tax as amount_tax,
+                    inv.amount_total as amount_total,
+                    invl.name as model,
+                    invl.product_template_id,
+                    inv.gate_pass_date as delivery_date,
+                    rp.street as delivery_address1,
+                    rp.street2 as delivery_address2,
+                    mg.name AS model_group
+                    from  account_invoice inv
+                    left join account_invoice_line invl on invl.invoice_id = inv.id
+                    left join sale_order so on inv.order_id=so.id
+                    left join res_partner rp on rp.id = so.partner_id
+                    left join stock_production_lot lot on invl.vin_no = lot.id
+                    LEFT JOIN product_template pt ON pt.id = invl.product_template_id
+                    LEFT JOIN model_groups mg ON mg.id = pt.master_id
+                    WHERE inv.type = 'out_invoice'
+                        AND inv.state NOT IN ('draft', 'cancel')
+                        AND inv.ars_invoice_type = 'vehicle'
+                        AND invl.vin_no IS NOT NULL
+                        AND inv.company_id IN {company_ids}
+                        {date_filter}
+            )
+        """)
 
     def export_xls(self, param=None):
         output = io.BytesIO()
@@ -430,3 +451,30 @@ class VehicleSalePsfReport(models.Model):
                 }
         else:
             False
+
+
+
+
+class VehicleSalesPSFWizard(models.TransientModel):
+    _name = 'vehicle.sale.psf.report.wizard'
+
+    company_id = fields.Many2many('res.company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
+
+    def vehicle_psf_qty(self):
+        self.ensure_one()
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query = self.env['vehicle.sale.psf.report']
+        query.sudo().sql_query(companys=comp_ids,start_date=self.start_date, end_date=self.end_date)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Vehicle Sales PSF Report',
+            'res_model': 'vehicle.sale.psf.report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
