@@ -309,6 +309,22 @@ class AccountInvoice(models.Model):
 
         return res
 
+class CrmLeadLostStage(models.Model):
+    _inherit = 'crm.lead'
+
+    stage_name = fields.Char(related='stage_id.name', store=True)
+
+    @api.multi
+    def action_set_lost(self):
+        # Call original method to archive the lead
+        res = super(CrmLeadLostStage, self).action_set_lost()
+
+        for rec in self:
+            lost_stage = self._stage_find(team_id=rec.team_id.id, domain=[('name', 'ilike', 'Lost'), ('fold', '=', True)])
+            if lost_stage:
+                self.write({'stage_id': lost_stage.id})
+
+        return res
 # class ConfigParameterCrm(models.Model):
 #     _inherit = 'ir.config_parameter'
 #
