@@ -147,7 +147,6 @@ class PurchaseOrderInheritSync(models.Model):
         """ connect to parent db set up in general settings """
         # try:
         param = self.env['ir.config_parameter'].sudo()
-        print("param..........",param)
         child = param.get_param('purchase_order_sync_apis.po_company_type')
         check_po_sync = param.get_param('purchase_order_sync_apis.enable_po_sync')
         print("child---", child, check_po_sync)
@@ -183,8 +182,7 @@ class PurchaseOrderInheritSync(models.Model):
                     # parent record env
                     sale_quotation = env['sale.order'].sudo()
                     exist_in_parent = sale_quotation.search(
-                        [('child_po_id_ref', '=', str(rec.id)), ('child_db', '=', child_database)],
-                        limit=1,
+                        [('child_po_id_ref', '=', str(rec.id)), ('child_db', '=', child_database)], limit=1,
                         order='id desc')
                     # company = env['res.company'].sudo().search([('dealer_code','=',rec.company_id.dealer_code)],order='id desc',limit=1)
                     print("purchase order=====", exist_in_parent)
@@ -387,7 +385,8 @@ class PurchaseOrderInheritSync(models.Model):
                             'pricelist_id': pricelist_id.id if pricelist_id else False,
                             'user_id': customer.user_id.id if customer.user_id else False,
                             'payment_term_id': payment_term_id.id if payment_term_id else False,
-                            'warehouse_id': warehouse.id if warehouse else False,  # This is critical
+                            'warehouse_id': warehouse.id if warehouse else False,
+                            # 'user_id': customer.user_id.id if customer.user_id else False,
                             'picking_policy': 'direct',
                             'team_id': customer.team_id.id if customer.team_id else team_id.id,
                             'date_order': current_time,
@@ -398,8 +397,8 @@ class PurchaseOrderInheritSync(models.Model):
                             "parent_db": database,
                             'child_po_ref': f"{rec.company_id.name}-{rec.name}",
                             "note": rec.notes,
+
                         }
-                        print("warehouse_id: warehouse.id.......", data['warehouse_id'])
                         for line_data in rec.order_line:
                             print("line_data=====", line_data)
                             if rec.purchase_type == 'after_sales':
@@ -547,10 +546,6 @@ class PurchaseOrderInheritSync(models.Model):
                         print("----stop sync-------", stop_sync)
                         """ Insert new records """
                         if data and not stop_sync:
-                            print("Selected Warehouse:", warehouse.name, "ID:", warehouse.id)
-                            print("Warehouse Out Type:",
-                                  warehouse.out_type_id.name if warehouse.out_type_id else "None")
-                            print("Selected data:",data)
                             print("--------------------Create----------------------------")
                             new_recordds = env['sale.order'].sudo().create(data)
                             print("new_recordds===", new_recordds)
@@ -562,27 +557,6 @@ class PurchaseOrderInheritSync(models.Model):
                             record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                             print("record_set===", record_set)
                             if new_recordds:
-                                warehouse_id_pick_type_id_to_line = new_recordds.warehouse_id.in_type_id.id
-                                cr.execute(
-                                    "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.default_vehicle_wh_id' LIMIT 1")
-                                vehicle_wh_id = cr.fetchone()
-
-                                cr.execute(
-                                    "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.enable_vehicle_multi_warehouse' LIMIT 1")
-                                vehicle_wssh_id = cr.fetchone()
-
-                                vehicle_wh_id = vehicle_wh_id[0] if vehicle_wh_id else None
-                                print("vehicle_wh_id",vehicle_wh_id)
-
-                                # param_ims_wh_id = env['ir.config_parameter'].sudo()
-                                # print("param...record",param_ims_wh_id)
-                                # default_warehouse_id = param_ims_wh_id.get_param('eg_sale_multi_warehouse.default_vehicle_wh_id')
-                                default_warehouse_id = vehicle_wh_id
-                                print("default_warehouse_id...record", default_warehouse_id)
-                                if default_warehouse_id:
-                                    warehouse_id_warehouse_id_to_line = int(default_warehouse_id)
-                                    print("warehouse_id_warehousesssss_id_to_lin", warehouse_id_warehouse_id_to_line)
-
                                 rec.sudo().write({'sync_po': True, 'state': 'done'})
                                 for pr_data in data['order_line']:
                                     data_list = pr_data[2]
@@ -590,23 +564,17 @@ class PurchaseOrderInheritSync(models.Model):
                                         lambda x: x.product_id.id == data_list['product_id'])
                                     cr.execute(f"""
                                         UPDATE sale_order 
-                                        SET sale_type = '{data['sale_type']}',
-                                            counter_parts = {data['counter_parts']},
-                                            sale_aftersales = '{data['sale_aftersales']}'
-                                        WHERE id = {new_recordds.id};
+                                        SET sale_type = {"'" + (str(data['sale_type']) + "'")},
+                                            counter_parts = {data['counter_parts']}
+                                        WHERE id ={new_recordds.id};
                                     """)
-
-
                                     for record in records:
                                         cr.execute(f"""
                                             UPDATE sale_order_line
                                             SET product_catalog_id = {data_list['product_catalog_id']} ,
-                                                product_template_id = {data_list['product_template_id']},
-                                                picking_type_id = {warehouse_id_pick_type_id_to_line},
-                                                warehousesssss_id = {warehouse_id_warehouse_id_to_line}
+                                                product_template_id = {data_list['product_template_id']}
                                             WHERE id ={record.id} ;
                                         """)
-                                        # print("record.....record",record.picking_type_id.name)
                             print("Created new records-----", new_recordds)
                     else:
                         print("Record already present in parent DB.")
