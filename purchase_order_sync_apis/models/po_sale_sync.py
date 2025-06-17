@@ -298,11 +298,12 @@ class PurchaseOrderInheritSync(models.Model):
 
                             if vehicle_wh_id and vehicle_multi_warehouse_id:
                                 default_warehouse_id = vehicle_wh_id
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('ars_type', '=', rec.purchase_type), ('id', '=', default_warehouse_id)], limit=1)
                             else:
-                                default_warehouse_id = 1
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('ars_type', '=', rec.purchase_type)], limit=1)
 
-                            warehouse = env['stock.warehouse'].sudo().search(
-                                [('ars_type', '=', rec.purchase_type),('id', '=', default_warehouse_id)], limit=1)
                             print("warehousewa warehouse", warehouse.id)
                         else:
                             # For vehicle orders, explicitly check the product category
