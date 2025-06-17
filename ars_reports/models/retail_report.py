@@ -20,7 +20,7 @@ class RetailReport(models.Model):
     vin_no = fields.Many2one('stock.production.lot',string="VIN")
     customer_name = fields.Many2one('res.partner',string="Customer Name")
     product_template_id = fields.Many2one('product.template',string="Model")
-    master_group = fields.Char(string="Master Group")
+    master_group = fields.Char(string="Model Group")
 
     product_id = fields.Many2one('product.product',string="Product")
     color = fields.Char(string="Color",compute="get_color")

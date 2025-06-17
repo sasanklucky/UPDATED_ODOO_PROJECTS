@@ -36,7 +36,7 @@ class AfterSaleReport(models.Model):
     doc_type = fields.Char(string="Type")
     user_id = fields.Many2one('res.users', string="Service Advisor", track_visibility='onchange')
     reg_no = fields.Many2one('fleet.vehicle', string="Reg No.")
-    master_name = fields.Char(string='Model Group Name')
+    master_name = fields.Char(string='Model Group')
     model = fields.Many2one('product.product', string="Model")
     delivery_date = fields.Date(string="Delivery Date")
     ro_ageing = fields.Integer('Ro Ageing', compute='ro_ageing_compute')

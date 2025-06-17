@@ -103,7 +103,7 @@ class customer_dump_mis_report(models.Model):
     mobile = fields.Char("Mobile")
     email = fields.Char('Email ID')
     product_id = fields.Many2one('product.product', 'Variant')
-    master_group = fields.Char(string="Master Group")
+    master_group = fields.Char(string="Model Group")
     make = fields.Char(related="product_id.product_tmpl_id.brand_id.name")
     model = fields.Char(related="product_id.product_tmpl_id.name")
     color = fields.Char(compute="get_color")
