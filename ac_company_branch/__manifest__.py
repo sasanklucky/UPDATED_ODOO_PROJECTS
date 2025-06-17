@@ -21,6 +21,7 @@
         'views/ars_company_branch_master.xml',
         'views/ars_company_branch.xml',
 
+
     ],
     'qweb': [
         'static/src/xml/SwitchBranchMenu.xml'
