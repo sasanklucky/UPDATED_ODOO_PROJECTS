@@ -22,3 +22,9 @@ class ARS_Stage(models.Model):
         else:
             raise ValidationError('You cannot Create Stages')
         return super(ARS_Stage,self).create(vals)
+
+    def write(self, vals):
+        user = self.env.user
+        if user.has_group('base.group_system'):
+            return super(ARS_Stage, self).write(vals)
+        return False  # silently block the write for non-admin users
