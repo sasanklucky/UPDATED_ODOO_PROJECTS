@@ -762,8 +762,11 @@ class AccountInvoice(models.Model):
             # Try to get linked sale or purchase order from origin
             sale_order = purchase_order = None
             if invoice.origin:
-                sale_order = self.env['sale.order'].search([('name', '=', invoice.origin)], limit=1)
-                purchase_order = self.env['purchase.order'].search([('name', '=', invoice.origin)], limit=1)
+                if self.order_id:
+                    sale_order = self.env['sale.order'].browse(self.order_id.id)
+                else:
+                    sale_order = self.env['sale.order'].search([('name', '=', invoice.origin),('company_id','=',invoice.company_id.id)], limit=1)
+                purchase_order = self.env['purchase.order'].search([('name', '=', invoice.origin),('company_id','=',invoice.company_id.id)], limit=1)
 
             if sale_order:
                 transaction_branch = sale_order.branch_id
