@@ -91,7 +91,7 @@
                 </p>
             </field>
         </record>
-        
+        2
         <!-- Main menu for "repair.order.report" -->
 <!--        <record id="menu_repair_order_so_report" model="ir.ui.menu" >-->
 <!--            <field name="name">Repair Order Report</field>-->
