@@ -281,13 +281,41 @@ class PurchaseOrderInheritSync(models.Model):
                         # -------------------------------------------------------------------------------
                         if rec.purchase_type:
                             team_id = env['crm.team'].sudo().search([('team_type', 'ilike', rec.purchase_type)],
-                                                                    order='id desc', limit=1)
-                            warehouse = env['stock.warehouse'].sudo().sudo().search(
+                                                                    limit=1)
+                            warehouse = env['stock.warehouse'].sudo().search(
                                 [('ars_type', '=', rec.purchase_type)], limit=1)
                         else:
-                            team_id = env['crm.team'].sudo().search([('name', 'ilike', 'Sales')], order='id desc',
-                                                                    limit=1)
-                            warehouse = env['stock.warehouse'].sudo().sudo().search([('code', '=', 'VEH')], limit=1)
+                            # For vehicle orders, explicitly check the product category
+                            is_vehicle_order = any(
+                                line.product_id.categ_id.is_vehicle_category or
+                                'vehicle' in (line.product_id.name or '').lower()
+                                for line in rec.order_line
+                            )
+
+                            if is_vehicle_order:
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('code', '=', 'VEH')], limit=1)
+                                if not warehouse:
+                                    warehouse = env['stock.warehouse'].sudo().search(
+                                        [('name', 'ilike', 'Vehicle')], limit=1)
+                            else:
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('code', '=', 'WH')], limit=1)
+
+                            team_id = env['crm.team'].sudo().search(
+                                [('name', 'ilike', 'Sales')], limit=1)
+
+                        # Add validation
+                        if not warehouse:
+                            sync_log_dict['sync_message'] = 'Warning: No warehouse found, using default'
+                            warehouse = env['stock.warehouse'].sudo().search([], limit=1)
+                            if not warehouse:
+                                sync_log_dict['sync_message'] = 'Error: No warehouses configured!'
+                                record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                continue
+
+
+
                         pricelist_id = env['product.pricelist'].sudo().search(
                             [('name', '=', customer.property_product_pricelist.name)], order='id desc', limit=1)
                         print("---------------------data--------", customer, team_id, pricelist_id, warehouse,
@@ -306,16 +334,24 @@ class PurchaseOrderInheritSync(models.Model):
                                 limit=1)
                             counter_parts = True
                             sale_type = 'parts'
+                            sale_aftersales = 'aftersales'
                         else:
                             seq = env['ir.sequence'].sudo().search([('code', '=', 'sale.order'), ('active', '=', True)],
                                                                    limit=1)
+                            counter_parts = False
+                            sale_type = 'vehicle'  # Explicitly set to vehicle
+                            sale_aftersales = 'sales'  # Required for vehicle sales filter
                         addr = customer.address_get(['delivery', 'invoice', 'workshop_billing', 'workshop_shipping'])
                         code = f"{seq.prefix}" + f"{seq.number_next_actual}"
                         print("seq===================", seq, code)
                         current_time = fields.Datetime.from_string(fields.Datetime.now())
+                        # Ensure warehouse is properly set on the sale order
                         data = {
                             'name': code,
                             'partner_id': customer.id if customer else False,
+                            'sale_type': sale_type,
+                            'sale_aftersales': sale_aftersales,
+                            'counter_parts': counter_parts,
                             'mobile': customer.mobile if customer.mobile else '',
                             'email': customer.email if customer.email else '',
                             'partner_invoice_id': addr['workshop_billing'] if rec.purchase_type == 'after_sales' else
@@ -325,22 +361,19 @@ class PurchaseOrderInheritSync(models.Model):
                             'pricelist_id': pricelist_id.id if pricelist_id else False,
                             'user_id': customer.user_id.id if customer.user_id else False,
                             'payment_term_id': payment_term_id.id if payment_term_id else False,
-                            'warehouse_id': warehouse.id if warehouse else False,
-                            # 'user_id': customer.user_id.id if customer.user_id else False,
+                            'warehouse_id': warehouse.id if warehouse else False,  # This is critical
                             'picking_policy': 'direct',
                             'team_id': customer.team_id.id if customer.team_id else team_id.id,
                             'date_order': current_time,
                             'fiscal_position_id': fiscal_position_id.id if fiscal_position_id else False,
                             'product_catalog_id': catalog_data.id if catalog_data else False,
-                            'counter_parts': counter_parts,
                             'child_po_id_ref': rec.id,
-                            'sale_type': sale_type,
                             'child_db': child_database,
                             "parent_db": database,
                             'child_po_ref': f"{rec.company_id.name}-{rec.name}",
                             "note": rec.notes,
-
                         }
+                        print("warehouse_id: warehouse.id.......", data['warehouse_id'])
                         for line_data in rec.order_line:
                             print("line_data=====", line_data)
                             if rec.purchase_type == 'after_sales':
@@ -466,11 +499,13 @@ class PurchaseOrderInheritSync(models.Model):
                                 'product_template_id': template_data.id if template_data else False,
                                 'product_id': product_data.id if product_data else line_data.product_id.id,
                                 'order_id': rec.id,
+
                                 'product_uom_qty': line_data.product_qty if line_data.product_qty else False,
                                 'product_uom': product_uom.id if product_uom else line_data.product_uom.id,
                                 'price_unit': product_data.lst_price if product_data.lst_price else product_data.standard_price,
                                 'child_po_id_ref': line_data.id,
-                                'child_db': child_database
+                                'child_db': child_database,
+                                'warehouse_id': warehouse.id if warehouse else False,
                             }
                             # 'tax_id':[(6, 0, parent_tax_data.ids if parent_tax_data else False)],
                             print("One2many data", one2many_data)
@@ -486,6 +521,10 @@ class PurchaseOrderInheritSync(models.Model):
                         print("----stop sync-------", stop_sync)
                         """ Insert new records """
                         if data and not stop_sync:
+                            print("Selected Warehouse:", warehouse.name, "ID:", warehouse.id)
+                            print("Warehouse Out Type:",
+                                  warehouse.out_type_id.name if warehouse.out_type_id else "None")
+                            print("Selected data:",data)
                             print("--------------------Create----------------------------")
                             new_recordds = env['sale.order'].sudo().create(data)
                             print("new_recordds===", new_recordds)
@@ -497,6 +536,23 @@ class PurchaseOrderInheritSync(models.Model):
                             record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
                             print("record_set===", record_set)
                             if new_recordds:
+                                warehouse_id_pick_type_id_to_line = new_recordds.warehouse_id.in_type_id.id
+                                cr.execute(
+                                    "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.default_vehicle_wh_id' LIMIT 1")
+                                vehicle_wh_id = cr.fetchone()
+
+                                vehicle_wh_id = vehicle_wh_id[0] if vehicle_wh_id else None
+                                print("vehicle_wh_id",vehicle_wh_id)
+
+                                # param_ims_wh_id = env['ir.config_parameter'].sudo()
+                                # print("param...record",param_ims_wh_id)
+                                # default_warehouse_id = param_ims_wh_id.get_param('eg_sale_multi_warehouse.default_vehicle_wh_id')
+                                default_warehouse_id = vehicle_wh_id
+                                print("default_warehouse_id...record", default_warehouse_id)
+                                if default_warehouse_id:
+                                    warehouse_id_warehouse_id_to_line = int(default_warehouse_id)
+                                    print("warehouse_id_warehousesssss_id_to_lin", warehouse_id_warehouse_id_to_line)
+
                                 rec.sudo().write({'sync_po': True, 'state': 'done'})
                                 for pr_data in data['order_line']:
                                     data_list = pr_data[2]
@@ -504,17 +560,23 @@ class PurchaseOrderInheritSync(models.Model):
                                         lambda x: x.product_id.id == data_list['product_id'])
                                     cr.execute(f"""
                                         UPDATE sale_order 
-                                        SET sale_type = {"'" + (str(data['sale_type']) + "'")},
-                                            counter_parts = {data['counter_parts']}
-                                        WHERE id ={new_recordds.id};
+                                        SET sale_type = '{data['sale_type']}',
+                                            counter_parts = {data['counter_parts']},
+                                            sale_aftersales = '{data['sale_aftersales']}'
+                                        WHERE id = {new_recordds.id};
                                     """)
+
+
                                     for record in records:
                                         cr.execute(f"""
                                             UPDATE sale_order_line
                                             SET product_catalog_id = {data_list['product_catalog_id']} ,
-                                                product_template_id = {data_list['product_template_id']}
+                                                product_template_id = {data_list['product_template_id']},
+                                                picking_type_id = {warehouse_id_pick_type_id_to_line},
+                                                warehousesssss_id = {warehouse_id_warehouse_id_to_line}
                                             WHERE id ={record.id} ;
                                         """)
+                                        # print("record.....record",record.picking_type_id.name)
                             print("Created new records-----", new_recordds)
                     else:
                         print("Record already present in parent DB.")
