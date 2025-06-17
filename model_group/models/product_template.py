@@ -33,5 +33,5 @@ class Accountinvoice(models.Model):
         string='Model Group',
         related='model.master_id',
         store=True,
-        readonly=False  # Optional: only make it editable if needed
+        readonly=True  # Optional: only make it editable if needed
     )
