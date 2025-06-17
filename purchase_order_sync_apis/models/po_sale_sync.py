@@ -282,8 +282,28 @@ class PurchaseOrderInheritSync(models.Model):
                         if rec.purchase_type:
                             team_id = env['crm.team'].sudo().search([('team_type', 'ilike', rec.purchase_type)],
                                                                     limit=1)
+
+                            # param = env['ir.config_parameter'].sudo()
+                            # default_warehouse_id = param.get_param('eg_sale_multi_warehouse.default_vehicle_wh_id')
+
+                            cr.execute(
+                                "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.default_vehicle_wh_id' LIMIT 1")
+                            vehicle_wh_id = cr.fetchone()
+                            print("vehicle_wh_id", vehicle_wh_id)
+
+                            cr.execute(
+                                "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.enable_vehicle_multi_warehouse' LIMIT 1")
+                            vehicle_multi_warehouse_id = cr.fetchone()
+                            print("vehicle_multi_warehouse_id", vehicle_multi_warehouse_id)
+
+                            if vehicle_wh_id and vehicle_multi_warehouse_id:
+                                default_warehouse_id = vehicle_wh_id
+                            else:
+                                default_warehouse_id = 1
+
                             warehouse = env['stock.warehouse'].sudo().search(
-                                [('ars_type', '=', rec.purchase_type)], limit=1)
+                                [('ars_type', '=', rec.purchase_type),('id', '=', default_warehouse_id)], limit=1)
+                            print("warehousewa warehouse", warehouse.id)
                         else:
                             # For vehicle orders, explicitly check the product category
                             is_vehicle_order = any(
@@ -292,9 +312,13 @@ class PurchaseOrderInheritSync(models.Model):
                                 for line in rec.order_line
                             )
 
+
+
                             if is_vehicle_order:
+
                                 warehouse = env['stock.warehouse'].sudo().search(
                                     [('code', '=', 'VEH')], limit=1)
+
                                 if not warehouse:
                                     warehouse = env['stock.warehouse'].sudo().search(
                                         [('name', 'ilike', 'Vehicle')], limit=1)
@@ -309,6 +333,7 @@ class PurchaseOrderInheritSync(models.Model):
                         if not warehouse:
                             sync_log_dict['sync_message'] = 'Warning: No warehouse found, using default'
                             warehouse = env['stock.warehouse'].sudo().search([], limit=1)
+
                             if not warehouse:
                                 sync_log_dict['sync_message'] = 'Error: No warehouses configured!'
                                 record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
@@ -318,7 +343,7 @@ class PurchaseOrderInheritSync(models.Model):
 
                         pricelist_id = env['product.pricelist'].sudo().search(
                             [('name', '=', customer.property_product_pricelist.name)], order='id desc', limit=1)
-                        print("---------------------data--------", customer, team_id, pricelist_id, warehouse,
+                        print("---------------------data--------", customer, team_id, pricelist_id, warehouse.id,
                               rec.company_id.partner_id, env.user.company_id, env.user.company_id)  # "currency_id"
                         order_line_list = []
                         # import pdb
@@ -540,6 +565,10 @@ class PurchaseOrderInheritSync(models.Model):
                                 cr.execute(
                                     "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.default_vehicle_wh_id' LIMIT 1")
                                 vehicle_wh_id = cr.fetchone()
+
+                                cr.execute(
+                                    "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.enable_vehicle_multi_warehouse' LIMIT 1")
+                                vehicle_wssh_id = cr.fetchone()
 
                                 vehicle_wh_id = vehicle_wh_id[0] if vehicle_wh_id else None
                                 print("vehicle_wh_id",vehicle_wh_id)
