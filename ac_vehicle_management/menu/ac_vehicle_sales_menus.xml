@@ -92,7 +92,7 @@
         <record id="menu_vehicle_sales_psf_report" model="ir.ui.menu">
             <field name="name">Vehicle Sales PSF Report</field>
             <field name="sequence" eval="2"/>
-            <field name="action" ref="action_vehicle_sale_psf_report_act_window"/>
+            <field name="action" ref="action_vehicle_sale_psf_report_wizard"/>
             <field name="parent_id" ref="ac_vehicle_management.menu_ac_vehicle_management_sale_report"/>
         </record>
 
