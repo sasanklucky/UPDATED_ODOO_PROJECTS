@@ -52,7 +52,10 @@
 
                 <!-- Hide button with name='360' based on stage name -->
                 <xpath expr="//form/header/button[@name='360']" position="attributes">
-                    <attribute name="attrs">{'invisible': [('stage_name', 'in', ['Booked', 'Retail'])]}</attribute>
+                    <attribute name="attrs">{'invisible': ['|', ('stage_name', 'in', ['Booked', 'Retail']), ('active', '=', False)]}</attribute>
+                </xpath>
+                <xpath expr="//form/header/button[@name='get_prod_action']" position="attributes">
+                    <attribute name="attrs">{'invisible': [('active', '=', False)]}</attribute>
                 </xpath>
                 <xpath expr="//form/sheet/div[@name='button_box']/button[@name='toggle_active']" position="attributes">
                     <attribute name="groups">base.group_system</attribute>
