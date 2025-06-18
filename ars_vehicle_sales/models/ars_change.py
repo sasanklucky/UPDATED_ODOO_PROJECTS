@@ -280,7 +280,7 @@ class ars_sale_crm_sale(models.Model):
                 if transfer_type == 'internal_transfer':
                     node.set('domain', "[('is_dealer', '=', True)]")
                     node.set('options', "{'no_create': True}")
-                    node.set('readonly', '1')
+                    node.set('readonly', '0')
                 else:
                     node.set('domain', "[]")
 
