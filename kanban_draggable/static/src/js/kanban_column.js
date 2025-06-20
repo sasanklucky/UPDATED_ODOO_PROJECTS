@@ -15,6 +15,10 @@ KanbanColumn.include({
                 e.stopPropagation();
                 e.preventDefault();
             });
+            this.$('.o_kanban_quick_add').off('click').on('click', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            });
         }
 
     },
