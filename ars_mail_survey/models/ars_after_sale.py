@@ -61,7 +61,7 @@ class AccountInvoice_inherit(models.Model):
         postsale_followup_days = param.get_param('ars_mail_survey.postsale_followup_days')
         today = date.today()
         # sale_order_search = self.env['mail.activity'].search([('psf_order_id', '=', self.order_id.id)])
-        sale_order_search = self.env['mail.activity'].browse(self.order_id.id)
+        sale_order_search = self.env['mail.activity'].search([('psf_order_id', '=', self.order_id.id)])
         if not sale_order_search and not self.partner_id.opt_out:
             if (self and self.team_id.team_type == 'sales' and self.order_id.counter_parts == False
                     and self.type not in ['in_refund', 'in_invoice']):
