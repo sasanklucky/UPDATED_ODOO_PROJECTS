@@ -4,6 +4,8 @@
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/kanban_draggable/static/src/js/kanban_renderer.js"/>
             <script type="text/javascript" src="/kanban_draggable/static/src/js/kanban_column.js"/>
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/sale_order_button_control.js"/>
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/schedule_chatter_extension.js"/>
         </xpath>
     </template>
 </odoo>

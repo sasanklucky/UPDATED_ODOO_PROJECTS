@@ -2,6 +2,17 @@
 
 <odoo>
 
+    <record id="view_sale_order_form_inherit_set_quotation" model="ir.ui.view">
+        <field name="name">sale.order.form.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form/header/button[@name='action_draft']" position="attributes">
+                <attribute name="groups">base.group_system</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_sale_order_form_inherit_booking" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.booking</field>
         <field name="model">sale.order</field>

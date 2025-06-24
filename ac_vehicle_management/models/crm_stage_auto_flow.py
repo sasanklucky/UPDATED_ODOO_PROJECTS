@@ -132,29 +132,29 @@ class MailActivity(models.Model):
 
         _logger.info("CRM Lead Stages Update Cron Job Completed.")
 
-    def unlink(self):
-        """Override unlink to check if there are remaining scheduled activities for the CRM lead"""
-        for activity in self:
-            if activity.res_model == 'crm.lead' and activity.res_id:
-                lead = self.env['crm.lead'].browse(activity.res_id)
-                if lead.stage_id.name not in ['RETAIL', 'Retail', 'retail', 'BOOKED', 'Booked', 'booked'] and lead.stage_id:
-                    # Check if any other scheduled activities exist for the lead
-                    other_activities = self.env['mail.activity'].search_count([
-                        ('res_model', '=', 'crm.lead'),
-                        ('res_id', '=', lead.id),
-                        ('id', '!=', activity.id)  # Exclude the one being deleted
-                    ])
-                    team_id = lead.team_id.id if lead.team_id else False
-                    # Find "Booked" stage
-                    stage_new = lead._stage_find(team_id=team_id, domain=[('name', 'in', ['New', 'NEW', 'new'])])
-                    if not stage_new:
-                        raise ValidationError(
-                            _(f"Please create a 'New' stage under the {lead.team_id.name} before proceeding."))
-                    if other_activities == 0:
-                        _logger.info(f"No scheduled activities left for CRM Lead {lead.id} ({lead.name})")
-                        lead.stage_id = stage_new.id
-
-        return super(MailActivity, self).unlink()
+    # def unlink(self):
+    #     """Override unlink to check if there are remaining scheduled activities for the CRM lead"""
+    #     for activity in self:
+    #         if activity.res_model == 'crm.lead' and activity.res_id:
+    #             lead = self.env['crm.lead'].browse(activity.res_id)
+    #             if lead.stage_id.name not in ['RETAIL', 'Retail', 'retail', 'BOOKED', 'Booked', 'booked'] and lead.stage_id:
+    #                 # Check if any other scheduled activities exist for the lead
+    #                 other_activities = self.env['mail.activity'].search_count([
+    #                     ('res_model', '=', 'crm.lead'),
+    #                     ('res_id', '=', lead.id),
+    #                     ('id', '!=', activity.id)  # Exclude the one being deleted
+    #                 ])
+    #                 team_id = lead.team_id.id if lead.team_id else False
+    #                 # Find "Booked" stage
+    #                 stage_new = lead._stage_find(team_id=team_id, domain=[('name', 'in', ['New', 'NEW', 'new'])])
+    #                 if not stage_new:
+    #                     raise ValidationError(
+    #                         _(f"Please create a 'New' stage under the {lead.team_id.name} before proceeding."))
+    #                 if other_activities == 0:
+    #                     _logger.info(f"No scheduled activities left for CRM Lead {lead.id} ({lead.name})")
+    #                     lead.stage_id = stage_new.id
+    #
+    #     return super(MailActivity, self).unlink()
 
 class SaleOrderInherit(models.Model):
     _inherit = 'sale.order'
@@ -309,6 +309,22 @@ class AccountInvoice(models.Model):
 
         return res
 
+class CrmLeadLostStage(models.Model):
+    _inherit = 'crm.lead'
+
+    stage_name = fields.Char(related='stage_id.name', store=True)
+
+    @api.multi
+    def action_set_lost(self):
+        # Call original method to archive the lead
+        res = super(CrmLeadLostStage, self).action_set_lost()
+
+        for rec in self:
+            lost_stage = self._stage_find(team_id=rec.team_id.id, domain=[('name', 'ilike', 'Lost'), ('fold', '=', True)])
+            if lost_stage:
+                self.write({'stage_id': lost_stage.id})
+
+        return res
 # class ConfigParameterCrm(models.Model):
 #     _inherit = 'ir.config_parameter'
 #

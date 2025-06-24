@@ -68,6 +68,33 @@
             </field>
         </record>
 
+        <record id="crm_case_form_view_oppor_inherit_context" model="ir.ui.view">
+            <field name="name">crm.lead.oppor.inherit.add.context</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="sale_crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <!-- Match by button name and icon -->
+                <xpath expr="//button[@type='action'][@name='%(sale_crm.sale_action_quotations)d']" position="attributes">
+                    <attribute name="context">
+                        {'default_partner_id': partner_id,
+                         'search_default_draft': 1,
+                         'search_default_sent': 1,
+                         'from_crm': True}
+                    </attribute>
+                </xpath>
+                <xpath expr="//button[@type='action'][@name='%(sale_crm.sale_action_orders)d']" position="attributes">
+                    <attribute name="context">
+                        {'search_default_partner_id': partner_id,
+                        'default_partner_id': partner_id,
+                        'search_default_sales': 1,
+                        'from_crm': True
+                        }
+                    </attribute>
+                </xpath>
+            </field>
+        </record>
+
+
         <record id="ars_sale_order_inherit_edit" model="ir.ui.view">
             <field name="name">sale.order.form.simple.edit</field>
             <field name="model">sale.order</field>
@@ -161,7 +188,10 @@
 
                 <xpath expr="//form/sheet/div[@name='button_box']" position="inside">
                     <button class="oe_stat_button" type="action" icon="fas fa-car"
-                            name="%(ars_test_drive_tree_action)d">
+                            name="%(ars_test_drive_tree_action)d"
+                            context="{
+                                       'from_crm': True
+                                      }">
                         <div class="o_stat_info">
                             <field name="no_of_test_drive"/>
                             <span class="o_stat_text">Test Drive</span>
