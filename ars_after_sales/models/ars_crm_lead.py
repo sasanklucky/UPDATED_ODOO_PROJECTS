@@ -687,12 +687,11 @@ class CRMLeadStage(models.Model):
     name = fields.Char(string="Name")
 
 
-
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
     vehicle_line = fields.One2many('crm.lead.line', 'lead_order_id', string='Vehicle Lines')
-    model_id = fields.Many2one('product.template', string='Model', compute='_compute_vehicle_info', store=True)
+    model_id = fields.Many2one('product.template', string='Model')
     readonly_crm_qty = fields.Boolean(string="Read-Only CRM Qty", compute="_compute_readonly_crm_qty", store=True)
 
     @api.depends('order_ids.state')
@@ -773,7 +772,6 @@ class CrmLead(models.Model):
                 action = action_rec.read([])[0]
                 action['res_id'] = sale_order.id
                 return action
-
 
 
 class ARS_crm_lead_line(models.Model):
