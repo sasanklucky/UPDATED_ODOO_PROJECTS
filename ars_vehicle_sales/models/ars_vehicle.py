@@ -1,11 +1,98 @@
 from dateutil.relativedelta import relativedelta
 import json
-from odoo import api, fields, models, _
+from odoo import api, fields, models, _, sql_db, SUPERUSER_ID
 from datetime import datetime, timedelta
 from odoo.exceptions import ValidationError, UserError
 import logging
+import contextlib
+import threading
+from odoo.addons.bus.models.bus import dispatch
 
-_logger = logging.getLogger("_____")
+
+_logger = logging.getLogger(__name__)
+
+
+def update_customer_ownership_threading(current_record_id, db_name, user):
+    try:
+        connection = sql_db.db_connect(db_name)
+        with contextlib.closing(connection.cursor()) as cr_current_db:
+            cr_current_db.autocommit(True)
+            # connect with the current database
+            with api.Environment.manage():
+                current_env = api.Environment(cr_current_db, SUPERUSER_ID, {})
+                lot_obj = current_env['stock.production.lot']
+                sale_order_line_obj = current_env['sale.order.line']
+                fleet_vehicle = current_env['fleet.vehicle'].search([('id', '=', current_record_id)], limit=1)
+                for rec in fleet_vehicle:
+                    if rec.vehicle_status != 'customer' or not rec.vin_sn:
+                        continue
+
+                    # Get or find the lot
+                    lot_id = rec.lot_id
+                    if not lot_id:
+                        lot_id = lot_obj.sudo().search([('name', '=', rec.vin_sn)], order='id desc', limit=1)
+                        if not lot_id:
+                            continue
+
+                    # Get sale lines for that VIN
+                    sale_lines = sale_order_line_obj.search([('vin_no', '=', lot_id.id)])
+                    sale_lines_by_partner = {}
+                    invoice_dates_by_partner = {}
+
+                    for line in sale_lines:
+                        partner = line.order_id.partner_id
+                        if partner not in sale_lines_by_partner:
+                            sale_lines_by_partner[partner] = []
+                            invoice_dates_by_partner[partner] = set()
+                        sale_lines_by_partner[partner].append(line)
+                        if not partner.supplier:
+                            invoice_dates_by_partner[partner].update(
+                                line.order_id.invoice_ids.filtered(lambda inv: inv.state not in ['draft', 'cancel']).mapped('date_invoice')
+                            )
+
+                    # Clean up incorrect customer_ids
+                    to_unlink_ids = []
+                    for record in rec.customer_ids:
+                        partner = record.custmer_name
+                        invoice_dates = invoice_dates_by_partner.get(partner, set())
+                        if record.date_of_ownership not in invoice_dates or not record.sold_by.id:
+                            to_unlink_ids.append(record.id)
+
+                    if to_unlink_ids:
+                        rec.customer_ids.browse(to_unlink_ids).unlink()
+
+                    # Retain only the latest valid owner record
+                    owner_data = rec.customer_ids.filtered(
+                        lambda r: r.custmer_name in sale_lines_by_partner and not r.custmer_name.supplier and r.date_of_ownership in invoice_dates_by_partner.get(r.custmer_name, set())
+                    )
+                    if len(owner_data) > 1:
+                        owner_data.sorted(key=lambda r: r.id, reverse=True)[1:].unlink()
+
+                    # If customer_ids is empty, create ownership record
+                    if not rec.customer_ids:
+                        ownership_history = []
+                        for sale in sale_lines:
+                            partner = sale.order_id.partner_id
+                            if partner == rec.driver_id and not partner.supplier:
+                                for invoice in sale.order_id.invoice_ids:
+                                    if invoice.state not in ['draft', 'cancel']:
+                                        ownership_history.append((0, 0, {
+                                            'custmer_name': partner.id,
+                                            'order': sale.order_id.id,
+                                            'date_of_ownership': invoice.date_invoice,
+                                            'address': partner.city,
+                                            'mobile': partner.mobile,
+                                            'sold_by': sale.order_id.company_id.partner_id.id,
+                                        }))
+                        if ownership_history:
+                            rec.customer_ids = ownership_history
+                        # continue  # Skip the rest if we just added ownership
+                # current_env['res.users'].search([('id','=', user)], limit=1).notify_info(f'Ownership update done for VIN: {rec.vin_sn}')
+                user_obj = current_env['res.users'].search([('id', '=', user)], limit=1)
+                user_obj.notify_info(f'Ownership update done for VIN: {rec.vin_sn}')
+    except Exception as e:
+        _logger.exception("Threaded Update Owner Ship Failed failed: %s", str(e))
+        raise UserError("Threaded Update Owner Ship Failed failed")
 
 
 class FleetVehicle(models.Model):
@@ -274,6 +361,23 @@ class FleetVehicle(models.Model):
     #     if vehicle_details:
     #         for res in customer_details:
     #             res.create({'vin_no':vehicle_details.id})
+
+    def update_vehicle_owner_ship(self):
+        for rec in self:
+            current_record_id = rec.id
+            db_name = self._cr.dbname
+            user = self.env.user.id
+            thread = threading.Thread(
+                target=update_customer_ownership_threading,
+                args=(current_record_id, db_name, user),
+                daemon=True
+            )
+            thread.start()
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',  # Or use 'display' with an empty view
+        }
 
     @api.multi
     def update_customer_ownership(self):
