@@ -111,6 +111,7 @@ class account_invoice(models.Model):
                 warehouse = self.env['stock.warehouse'].search(
                     [('company_id', '=', self.company_id.id), ('configure_einvoice', '=', True)], limit=1)
                 return warehouse
+        return None
 
     @api.onchange('transporter_id', 'vehicle_no')
     def onchange_ewaybill_details(self):
