@@ -173,9 +173,6 @@ class SaleOrderInherit(models.Model):
             if crm_lead and order.sale_type == 'vehicle':
                 if 'state' in vals and vals['state'] == 'cancel' and previous_state != 'cancel':
                     if order.opportunity_id and order.lost_reason_id and order.child_lost_reason_id.id:  # Check if it's linked to a CRM lead
-                        crm_lead.write({'lost_reason': order.lost_reason_id.id,
-                                        'child_lost_reason': order.child_lost_reason_id.id})  # Assign reason
-
                         # Post log note in CRM lead chatter
                         # crm_lead.message_post(
                         #     body=f"Opportunity marked as lost due to sale order cancellation. <br/>"
@@ -183,7 +180,14 @@ class SaleOrderInherit(models.Model):
                         #     subtype="mail.mt_note"
                         # )
                         # Mark the lead as lost
-                        crm_lead.action_set_lost()
+                        related_orders = self.env['sale.order'].search([
+                            ('opportunity_id', '=', crm_lead.id),
+                            ('state', '!=', 'cancel')
+                        ])
+                        if not related_orders:
+                            crm_lead.write({'lost_reason': order.lost_reason_id.id,
+                                            'child_lost_reason': order.child_lost_reason_id.id})
+                            crm_lead.action_set_lost()
 
 
 
@@ -322,6 +326,14 @@ class CrmLeadLostStage(models.Model):
         for rec in self:
             lost_stage = self._stage_find(team_id=rec.team_id.id, domain=[('name', 'ilike', 'Lost'), ('fold', '=', True)])
             if lost_stage:
+                sale_orders = self.env['sale.order'].search([('opportunity_id', '=', self.id), ('state', 'not in', ['cancel', 'done'])])
+                if sale_orders:
+                    for sale_rec in sale_orders:
+                        cancel_wizard = self.env['sale.order.cancel'].with_context({'active_ids': [sale_rec.id]}).create({
+                            'lost_reason_id': rec.lost_reason_id.id,
+                            'child_lost_reason_id': rec.child_lost_reason_id.id,
+                        })
+                        cancel_wizard.confirm_cancel()
                 self.write({'stage_id': lost_stage.id})
 
         return res

@@ -11,6 +11,9 @@
                     Choose the reason for the cancellation of the
                     sale order.
                 </p>
+                 <group>
+                     <field name="check_sales_ids" readonly="1" nolabel="1"/>
+                 </group>
                 <group>
                     <field name="reason_id" widget="selection" invisible="1"/>
                     <field name="sale_lost_reason_id" widget="selection" invisible="1"/>
