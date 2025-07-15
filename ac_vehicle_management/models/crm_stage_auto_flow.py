@@ -236,36 +236,41 @@ class ArsSaleAdvancePaymentStageCheck(models.TransientModel):
         return super(ArsSaleAdvancePaymentStageCheck, self).create_invoices()
 
 
-# ''' Commented the code because not to lost the crm lead when user need to create credit note'''
-# class CreditNoteReason(models.TransientModel):
-#     _inherit = "account.invoice.refund"
-#
-#     # Added field for credit note reason purpose.
-#     lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason')
-    # ''' Commented the code because not to lost the crm lead when user need to create credit note'''
+class CreditNoteReason(models.TransientModel):
+    _inherit = "account.invoice.refund"
 
-    # @api.multi
-    # def compute_refund(self, mode='refund'):
-    #     """Override refund process to update Lost Reason in the related CRM lead."""
-    #     result = super(CreditNoteReason, self).compute_refund(mode)
-    #
-    #     invoices = self.env['account.invoice'].browse(self._context.get('active_ids', []))
-    #     sale_orders = invoices.mapped('order_id')
-    #
-    #     # If the invoice is a refund (Credit Note)
-    #     if not sale_orders and invoices.mapped('refund_invoice_id'):
-    #         sale_orders = invoices.mapped('refund_invoice_id.order_id')
-    #
-    #     for sale_order in sale_orders:
-    #         leads = sale_order.mapped('opportunity_id')
-    #         if leads and self.lost_reason_id:
-    #             leads.write({'lost_reason': self.lost_reason_id.id})
-    #
-    #             leads.message_post(body=_("Lost Reason updated: %s") % self.lost_reason_id.name)
-    #
-    #             leads.action_set_lost()
-    #
-    #     return result
+    # Added field for credit note reason purpose.
+    lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason')
+
+    @api.multi
+    def compute_refund(self, mode='refund'):
+        """
+        Override refund process to update Lost Reason in the related CRM lead.
+        Ensures each opportunity is updated only once, even if multiple sale orders point to the same opportunity.
+        """
+        result = super(CreditNoteReason, self).compute_refund(mode)
+
+        invoices = self.env['account.invoice'].browse(self._context.get('active_ids', []))
+        sale_orders = invoices.mapped('order_id')
+
+        # If the invoice is a refund (Credit Note)
+        if not sale_orders and invoices.mapped('refund_invoice_id'):
+            sale_orders = invoices.mapped('refund_invoice_id.order_id')
+
+        # Collect unique opportunity_ids from all sale orders
+        opportunity_ids = sale_orders.mapped('opportunity_id').ids
+        if opportunity_ids:
+            leads = self.env['crm.lead'].browse(opportunity_ids)
+            # leads.write({'lost_reason': self.lost_reason_id.id})
+            # leads.message_post(body=_("Lost Reason updated: %s") % self.lost_reason_id.name)
+            booked_stage = leads._stage_find(team_id=leads.team_id.id,
+                                            domain=[('name', 'ilike', 'Booked')])
+            if booked_stage:
+                leads.write({"stage_id" : booked_stage.id})
+            else:
+                raise ValidationError(_(f"Please create a 'Booked' stage under the {leads.team_id.name} before proceeding."))
+
+        return result
 
 
 class AccountInvoice(models.Model):
@@ -289,12 +294,12 @@ class AccountInvoice(models.Model):
 
         if 'state' in vals:  # Check if invoice state changed
             for invoice in self:
-                if invoice.ars_invoice_type == 'vehicle' and invoice.type == 'out_invoice':
-                    sale_orders = invoice.mapped('order_id')
+                sale_orders = invoice.mapped('order_id')
 
-                    # Check if it's a Credit Invoice (Refund)
-                    if not sale_orders and invoice.refund_invoice_id:
-                        sale_orders = invoice.refund_invoice_id.mapped('order_id')
+                # Check if it's a Credit Invoice (Refund)
+                if not sale_orders and invoice.refund_invoice_id:
+                    sale_orders = invoice.refund_invoice_id.mapped('order_id')
+                if invoice.ars_invoice_type == 'vehicle' and invoice.type == 'out_invoice':
 
                     for sale_order in sale_orders:
                         leads = sale_order.mapped('opportunity_id')
@@ -303,13 +308,48 @@ class AccountInvoice(models.Model):
                                 ('refund_invoice_id', 'in', sale_order.invoice_ids.ids)
                             ])  # Include related refunds
 
-                            has_done_invoice = any(inv.state in ['open', 'paid'] for inv in all_invoices)
-
-                            if has_done_invoice:
+                            all_cancelled = all(inv.state in ['cancel'] for inv in all_invoices)
+                            if all_cancelled and all_invoices:
+                                booked_stage = lead._stage_find(team_id=lead.team_id.id,
+                                                                domain=[('name', 'ilike', 'Booked')])
+                                if booked_stage:
+                                    lead.stage_id = booked_stage.id
+                                else:
+                                    raise ValidationError(
+                                        _(f"Please create a 'Booked' stage under the {lead.team_id.name} before proceeding."))
+                            elif any(inv.state in ['open', 'paid'] for inv in all_invoices):
                                 retail_stage = lead._stage_find(team_id=lead.team_id.id,
                                                                 domain=[('name', 'ilike', 'Retail')])
                                 if retail_stage:
                                     lead.stage_id = retail_stage.id
+                                else:
+                                    raise ValidationError(
+                                        _(f"Please create a 'Retail' stage under the {lead.team_id.name} before proceeding."))
+                elif invoice.ars_invoice_type == 'vehicle' and invoice.type == 'out_refund':
+                    for sale_order in sale_orders:
+                        leads = sale_order.mapped('opportunity_id')
+                        for lead in leads:
+                            all_invoices = sale_order.invoice_ids | self.env['account.invoice'].search([
+                                ('refund_invoice_id', 'in', sale_order.invoice_ids.ids)
+                            ])  # Include related refunds
+
+                            all_cancelled = any(inv.state in ['cancel'] and inv.type == 'out_refund' for inv in all_invoices)
+                            if all_cancelled and any(inv.state in ['open', 'paid'] and inv.type == 'out_invoice' for inv in all_invoices):
+                                booked_stage = lead._stage_find(team_id=lead.team_id.id,
+                                                                domain=[('name', 'ilike', 'Retail')])
+                                if booked_stage:
+                                    lead.stage_id = booked_stage.id
+                                else:
+                                    raise ValidationError(
+                                        _(f"Please create a 'Booked' stage under the {lead.team_id.name} before proceeding."))
+                            elif not all_cancelled and any(inv.state in ['open', 'paid'] and inv.type == 'out_refund' for inv in all_invoices):
+                                retail_stage = lead._stage_find(team_id=lead.team_id.id,
+                                                                domain=[('name', 'ilike', 'Booked')])
+                                if retail_stage:
+                                    lead.stage_id = retail_stage.id
+                                else:
+                                    raise ValidationError(
+                                        _(f"Please create a 'Retail' stage under the {lead.team_id.name} before proceeding."))
 
         return res
 
