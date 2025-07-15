@@ -252,7 +252,7 @@ class ARS_crm_lead(models.Model):
                 order_id = orderid.create({'opportunity_id': self.id,
                                            'user_id': record.user_id.id,
                                            'partner_id': record.partner_id.id, 'sale_type': sale_type,
-                                           'order_line': lines, 'mobile': self.mobile, 'email': self.email_from,'warehouse_id': warehouse.id})
+                                           'order_line': lines, 'mobile': self.mobile, 'email': self.email_from})
                 action['res_id'] = order_id.id
                 return action
 
