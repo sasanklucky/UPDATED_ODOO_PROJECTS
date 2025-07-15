@@ -240,6 +240,7 @@ class ARS_crm_lead(models.Model):
             sale_type = 'parts'
         else:
             sale_type = 'others'
+
         for record in self:
             if action_rec:
                 action = action_rec.read([])[0]
@@ -251,7 +252,7 @@ class ARS_crm_lead(models.Model):
                 order_id = orderid.create({'opportunity_id': self.id,
                                            'user_id': record.user_id.id,
                                            'partner_id': record.partner_id.id, 'sale_type': sale_type,
-                                           'order_line': lines, 'mobile': self.mobile, 'email': self.email_from})
+                                           'order_line': lines, 'mobile': self.mobile, 'email': self.email_from,'warehouse_id': warehouse.id})
                 action['res_id'] = order_id.id
                 return action
 
@@ -717,6 +718,14 @@ class CrmLead(models.Model):
         else:
             sale_type = 'others'
 
+        warehouse = self.env['stock.warehouse'].search([
+            ('ars_type', '=', sale_type),
+            ('company_id', '=', self.env.user.company_id.id)
+        ], limit=1)
+
+        if not warehouse:
+            raise UserError(_('No matching warehouse found for sale type: %s') % sale_type)
+
         for record in self:
             # Search for existing sale order
             sale_order = order_model.search([('opportunity_id', '=', record.id)], limit=1)
@@ -766,7 +775,8 @@ class CrmLead(models.Model):
                     'sale_type': sale_type,
                     'order_line': lines,
                     'mobile': record.mobile,
-                    'email': record.email_from
+                    'email': record.email_from,
+                    'warehouse_id': warehouse.id
                 })
 
                 action = action_rec.read([])[0]
