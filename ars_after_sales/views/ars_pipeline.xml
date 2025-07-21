@@ -3184,6 +3184,7 @@
 
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="source_id"/>
+                    <field name="is_published"/>
                 </xpath>
 
             </field>
@@ -3197,6 +3198,7 @@
 
                 <xpath expr="//field[@name='name']" position="after">
                     <field name="source_id"/>
+                    <field name="is_published"/>
                 </xpath>
 
             </field>

@@ -100,6 +100,7 @@ class UTMMedium(models.Model):
     _inherit = "utm.medium"
 
     source_id = fields.Many2one("utm.source", string="Source")
+    is_published = fields.Boolean(string="Published")
 
 
 class CRMLead(models.Model):
@@ -109,10 +110,17 @@ class CRMLead(models.Model):
     medium_id = fields.Many2one(
         "utm.medium",
         string="Medium",
-        domain="[('source_id', '=', source_id)]",
         help="Only show mediums linked to the selected source"
     )
 
     @api.onchange('source_id')
     def _onchange_source_id(self):
         self.medium_id = False
+        return {
+            'domain': {
+                'medium_id': [
+                    ('source_id', '=', self.source_id.id),
+                    ('is_published', '=', True)
+                ]
+            }
+        }
