@@ -73,11 +73,29 @@ class FleetVehicle(models.Model):
         param = self.env['ir.config_parameter'].sudo()
 
         cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
-        print("cons......")
+        # print("cons......")
         is_cons_enable = param.get_param('ac_vehicle_history.is_consolidation')
 
         for vehicle in self.filtered(lambda v: v.vehicle_status == 'customer' and v.service_ids):
-            # --- Step 3: Consolidation Sync ---
+            # print('vehicle',vehicle)
+
+            # Step 0: Remove duplicate service history records by ro_number
+            seen = {}
+            duplicates = []
+            for rec in vehicle.service_ids.sorted(key=lambda r: r.id):
+                key = rec.ro_number.strip() if rec.ro_number else None
+                if key:
+                    if key in seen:
+                        duplicates.append(rec)
+                    else:
+                        seen[key] = rec
+
+            if duplicates:
+                duplicates_to_unlink = ServiceHistory.browse([r.id for r in duplicates])
+                print('hii')
+                duplicates_to_unlink.sudo().unlink()
+
+            # Step 1: Sync with consolidation DB
             if is_cons_enable and cons_db_name:
                 try:
                     db = sql_db.db_connect(cons_db_name)
@@ -98,16 +116,20 @@ class FleetVehicle(models.Model):
                             dealer_id = env['ars.consolidation.setup'].sudo().search(
                                 [('dealer_code', '=', dealer_code)], limit=1)
                             if not dealer_id:
-                                raise ValidationError(_("Dealer code does not match with consolidation setup"))
+                                if self._cr.dbname == cons_db_name:
+                                    print('i am in consolidation')
+                                    continue
+                                else:
+                                    raise ValidationError(_("Dealer code does not match with consolidation setup"))
 
                             con_service_recs = cons_vehicle_card.service_ids
                             local_service_recs = vehicle.service_ids
 
-                            # --- Insert missing records from consolidated to local ---
-                            remaining_con_service_recs = con_service_recs.filtered(
-                                lambda x: x.id not in local_service_recs.mapped('cons_service_history_id'))
-                            for rec in remaining_con_service_recs:
-                                self.env['service.history'].sudo().create({
+                            # Step 2: Insert missing from consolidated -> local
+                            existing_keys = set((rec.ro_number, rec.date) for rec in local_service_recs)
+                            for rec in con_service_recs.filtered(
+                                    lambda r: (r.ro_number, r.date) not in existing_keys):
+                                ServiceHistory.sudo().create({
                                     'vehicle_id': vehicle.id,
                                     'ro_id': rec.ro_id,
                                     'ro_number': rec.ro_number,
@@ -123,7 +145,7 @@ class FleetVehicle(models.Model):
                                     'cons_service_history_id': rec.id,
                                 })
 
-                            # --- Insert missing records from local to consolidated ---
+                            # Step 3: Insert missing from local -> consolidated
                             remaining_local_service = local_service_recs.filtered(
                                 lambda x: not x.cons_service_history_id)
                             for rec in remaining_local_service:
@@ -145,8 +167,10 @@ class FleetVehicle(models.Model):
                                 rec.sudo().write({'cons_service_history_id': cons_rec.id})
 
                 except Exception as e:
-                    _logger.error(f"Consolidation sync error: {e}")
+                    import traceback
+                    _logger.error("Consolidation sync error:\n%s", traceback.format_exc())
                     raise UserError(_("Error during consolidation sync: %s") % e)
+
             # --- Step 1: Update local service.history with order details ---
             service_records = ServiceHistory.search([('vehicle_id', '=', vehicle.id)])
             to_update = service_records.filtered(lambda s: s.order.id)
@@ -361,6 +385,55 @@ class FleetVehicle(models.Model):
     #         except Exception as e:
     #             _logger.error(e)
     #             raise UserError(_(e))
+    def open_wizard_with_consolidation_dealers(self):
+        param = self.env['ir.config_parameter'].sudo()
+        cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
+        print("cons......",cons_db_name)
+        if self._cr.dbname == cons_db_name:
+            consolidation_db = self.env['ars.consolidation.setup'].sudo().search_read(fields=['dealer_name','dealer_code','db_name'])
+            vals = {
+                'vehicle_sync_id': self.id,
+            }
+            wizard = self.env['sync.service.update'].create(vals)
+            for rec in consolidation_db:
+                self.env['sync.service.update.line'].create({
+                    'sync_service_id': wizard.id,
+                    'dealer_name': rec['dealer_name'],
+                    'dealer_code': rec['dealer_code'],
+                    'db_name': rec['db_name']
+                })
+            print(self.id, 'current record id')
+            res = {
+                'name': 'Update & Sync',
+                'type': 'ir.actions.act_window',
+                'res_model': 'sync.service.update',
+                'res_id': wizard.id,
+                'view_mode': 'form',
+                'view_id': self.env.ref('ac_vehicle_history.view_fleet_sync_service_update_wizard_form').id,
+                'target': 'new',
+            }
+            return res
+        else:
+            vals = {
+                'vehicle_sync_id': self.id,
+                'cons_db': cons_db_name
+            }
+            wizard = self.env['sync.service.update'].create(vals)
+            # for rec in consolidation_db:
+            self.env['sync.service.update.line'].create({
+                'sync_service_id': wizard.id,
+            })
+            res = {
+                'name': 'Update & Sync',
+                'type': 'ir.actions.act_window',
+                'res_model': 'sync.service.update',
+                'res_id': wizard.id,
+                'view_mode': 'form',
+                'view_id': self.env.ref('ac_vehicle_history.view_fleet_sync_service_update_wizard_form').id,
+                'target': 'new',
+            }
+
+            return res
 
 
 class WholesaleHistory(models.Model):

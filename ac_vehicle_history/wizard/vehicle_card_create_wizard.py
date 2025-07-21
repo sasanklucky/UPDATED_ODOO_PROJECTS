@@ -42,23 +42,130 @@ class CreateVehicleCardWizard(models.TransientModel):
 
                 if cons_fleet_obj.vehicle_status == 'customer' and cons_fleet_obj:
                     customer_id = cons_fleet_obj.driver_id
-                    partner_obj = self.env['res.partner'].sudo().search(
-                        ['|', '|', ('customer_code', '=', customer_id.customer_code), ('email', '=', customer_id.email),
-                         ('mobile', '=', customer_id.mobile)], limit=1)
+                    dealer_partner_parent = False
+                    dealer_partner_child = False
+                    new_customer = False
 
-                    if not partner_obj:
-                        customer_vals = {
-                            'name': customer_id.name,
-                            'customer_code': customer_id.customer_code or '',
-                            'city': customer_id.city or '',
-                            'street': customer_id.street or '',
-                            'mobile': customer_id.mobile or '',
-                            'email': customer_id.email or '',
-                            'customer': True,
-                        }
-                        new_customer = self.env['res.partner'].create(customer_vals)
+                    cons_contact = env['res.partner'].sudo().browse(customer_id.id)
+                    if cons_contact.exists():
+                        # 1. Handle Parent (linking only — no separate card)
+                        if cons_contact.parent_id:
+                            cons_parent = cons_contact.parent_id
+                            print('cons_parent', cons_parent, cons_parent.name, cons_parent.mobile, cons_parent.email)
+
+                            domain_parent = []
+                            if cons_parent.customer_code:
+                                domain_parent.append(('customer_code', '=', cons_parent.customer_code))
+                            if cons_parent.email:
+                                domain_parent.append(('email', '=', cons_parent.email))
+                            if cons_parent.mobile:
+                                domain_parent.append(('mobile', '=', cons_parent.mobile))
+
+                            if domain_parent:
+                                print(domain_parent, 'domain_parent')
+                                # Search without parent restriction first
+                                dealer_partner_parent = self.env['res.partner'].sudo().search(domain_parent, limit=1)
+                                print('dealer_partner_parent found:', dealer_partner_parent,
+                                      dealer_partner_parent.name if dealer_partner_parent else '')
+
+                            if not dealer_partner_parent:
+                                print('NOT DEALER PARTNER')
+                                contact_vals_parent = {
+                                    'name': cons_parent.name,
+                                    'is_company': True,
+                                    'customer': False,
+                                    'supplier': False,
+                                    'active': False,  # hides it from UI
+                                    'customer_code': cons_parent.customer_code,
+                                    'city': cons_parent.city,
+                                    'mobile': cons_parent.mobile,
+                                    'email': cons_parent.email,
+                                    'street': cons_parent.street
+                                }
+                                dealer_partner_parent = self.env['res.partner'].sudo().create(contact_vals_parent)
+                                print('Created hidden parent for hierarchy only:', dealer_partner_parent.name)
+
+                        # 2. Handle Child (main contact shown in UI)
+                        # Build domain with proper OR conditions
+                        domain_child = []
+                        if cons_contact.customer_code or cons_contact.email or cons_contact.mobile:
+                            # Start with the first condition
+                            if cons_contact.customer_code:
+                                domain_child.append(('customer_code', '=', cons_contact.customer_code))
+
+                            # Add OR for email if exists
+                            if cons_contact.email:
+                                if domain_child:  # If we already have conditions, add OR
+                                    domain_child.insert(0, '|')
+                                domain_child.append(('email', '=', cons_contact.email))
+
+                            # Add OR for mobile if exists
+                            if cons_contact.mobile:
+                                if len(domain_child) > 1:  # If we already have multiple conditions
+                                    domain_child.insert(0, '|')
+                                domain_child.append(('mobile', '=', cons_contact.mobile))
+
+                        print('Final child domain:', domain_child)
+
+                        if domain_child:
+                            # First search without parent restriction
+                            dealer_partner_child = self.env['res.partner'].sudo().search(domain_child, limit=1)
+                            print('Initial search for child contact:', dealer_partner_child)
+
+                            # If not found and we have a parent, search with parent restriction
+                            if not dealer_partner_child and dealer_partner_parent:
+                                domain_child_with_parent = domain_child.copy()
+                                domain_child_with_parent.append(('parent_id', '=', dealer_partner_parent.id))
+                                dealer_partner_child = self.env['res.partner'].sudo().search(domain_child_with_parent,
+                                                                                             limit=1)
+                                print('Search with parent restriction:', dealer_partner_child)
+
+                        if not dealer_partner_child:
+                            contact_vals_child = {
+                                'name': cons_contact.name,
+                                'customer_code': cons_contact.customer_code,
+                                'city': cons_contact.city,
+                                'street': cons_contact.street,
+                                'mobile': cons_contact.mobile,
+                                'email': cons_contact.email,
+                                'customer': True,
+                                'parent_id': dealer_partner_parent.id if dealer_partner_parent else False,
+                            }
+                            dealer_partner_child = self.env['res.partner'].sudo().create(contact_vals_child)
+                            print('Created new child customer (main contact):', dealer_partner_child.name)
+                            new_customer = dealer_partner_child
+                        else:
+                            updated_vals = {}
+                            if not dealer_partner_child.customer_code and cons_contact.customer_code:
+                                updated_vals['customer_code'] = cons_contact.customer_code
+                            if not dealer_partner_child.email and cons_contact.email:
+                                updated_vals['email'] = cons_contact.email
+                            if not dealer_partner_child.mobile and cons_contact.mobile:
+                                updated_vals['mobile'] = cons_contact.mobile
+                            if cons_contact.name and dealer_partner_child.name != cons_contact.name:
+                                updated_vals['name'] = cons_contact.name
+                            if dealer_partner_parent and dealer_partner_child.parent_id != dealer_partner_parent:
+                                updated_vals['parent_id'] = dealer_partner_parent.id
+
+                            if updated_vals:
+                                dealer_partner_child.sudo().write(updated_vals)
+                                print('Updated child contact fields:', updated_vals)
+
+                            # Optional: Update back to consolidation if required
+                            cons_update_vals = {}
+                            if not cons_contact.customer_code and dealer_partner_child.customer_code:
+                                cons_update_vals['customer_code'] = dealer_partner_child.customer_code
+                            if not cons_contact.email and dealer_partner_child.email:
+                                cons_update_vals['email'] = dealer_partner_child.email
+                            if not cons_contact.mobile and dealer_partner_child.mobile:
+                                cons_update_vals['mobile'] = dealer_partner_child.mobile
+
+                            if cons_update_vals:
+                                cons_contact.sudo().write(cons_update_vals)
+
+                            new_customer = dealer_partner_child
                     else:
-                        new_customer = partner_obj
+                        raise ValidationError("Consolidation contact not found.")
 
                     product_id = self.env['product.product'].sudo().search([('default_code', '=', cons_fleet_obj.mvariant_id.default_code),('active','=',True)])
                     if not product_id:

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_fleet_sync_service_update_wizard_form" model="ir.ui.view">
+        <field name="name">fleet.sync.service.update.wizard.form</field>
+        <field name="model">sync.service.update</field>
+        <field name="arch" type="xml">
+            <form string="Sync and Update">
+                <field name="vehicle_sync_id" invisible="1"/>
+                <field name="is_current_db" invisible="1"/>
+                <field name="cons_db" invisible="1"/>
+                <field name="show_consolidated_dealers" invisible="1"/>
+                <field name="hide_dealer_group" invisible="1"/>
+                <field name="hide_service_fields" invisible="1"/>
+                <group string="System Mode" attrs="{'invisible':[('show_consolidated_dealers', '=', False)]}">
+                    <field name="mode" widget="radio"/>
+                </group>
+                <group string="Consolidated Dealers" attrs="{'invisible':[('hide_dealer_group', '=', True)]}">
+                    <field name="sync_line_ids" nolabel="1">
+                        <tree editable="True" create="0" delete="false" limit="5">
+                            <field name="select_dealers" readonly="0"/>
+                            <field name="dealer_code" readonly="1"/>
+                            <field name="dealer_name" readonly="1"/>
+                        </tree>
+                    </field>
+                </group>
+                <div class="row mt16 o_settings_container" name="fetching and updating">
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="service_hist" attrs="{'invisible': [('hide_service_fields', '=', True)]}"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="service_hist" attrs="{'invisible': [('hide_service_fields', '=', True)]}"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="ownership_hist" attrs="{'invisible': [('hide_service_fields', '=', True)]}"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="ownership_hist" attrs="{'invisible': [('hide_service_fields', '=', True)]}"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="wholesales_hist"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="wholesales_hist"/>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    <button name="sync_update_comparison_action" type="object" string="Comparison" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_unmatched_record_tree" model="ir.ui.view">
+        <field name="name">unmatched.record.tree</field>
+        <field name="model">unmatched.record</field>
+        <field name="arch" type="xml">
+            <tree string="Unmatched Records">
+                <field name="dealer_name"/>
+                <field name="ro_reference"/>
+                <field name="customer_ownership_name"/>
+                <field name="date_of_ownership"/>
+                <field name="so_number"/>
+                <field name="status"/>
+                <field name="conso_db" invisible="1"/>
+                <field name="dealer_db" invisible="1"/>
+                <button name="action_update_merge" string="Merge" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('status', 'not in', ['missing_in_dealer', 'missing_in_cons'])]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_unmatched_record_form" model="ir.ui.view">
+        <field name="name">unmatched.record.form</field>
+        <field name="model">unmatched.record</field>
+        <field name="arch" type="xml">
+            <form>
+                <h4>
+                    <field name="no_unmatched_message" readonly="1" nolabel="1"/>
+                </h4>
+                <footer>
+                    <button name="done_action" string="Done" type="object" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_warning_message_wizard_form" model="ir.ui.view">
+        <field name="name">warning.message.wizard.form</field>
+        <field name="model">warning.message.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Warning">
+                <sheet>
+                    <div class="oe_title">
+                        <h3>
+                            <field name="title" readonly="True"/>
+                        </h3>
+                    </div>
+                    <div class="oe_edit_only">
+                        <field name="message" readonly="1"/>
+                    </div>
+                    <footer>
+                        <button name="action_confirm" string="OK" type="object" class="btn-primary"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
