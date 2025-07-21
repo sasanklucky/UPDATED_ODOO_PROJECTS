@@ -31,13 +31,13 @@ class AccountInvoice(models.Model):
                             if not vehicle_card:
                                 _logger.warning("Vehicle card with VIN %s not found", vin_sn)
                                 continue
-                            for wholesale_id in vehicle_card.wholesale_ids:
+                            for wholesale_id in vehicle_card.wholesale_ids[-1]:
                                 if self.origin or (self.sale_order_number == wholesale_id.so_number):
                                     wholesale_id.write({'invoice_number': self.number, 'invoice_id': self.id,
                                                         'delivery_date': self.date_invoice})
                             cons_vehicle_card = env['fleet.vehicle'].sudo().browse(
                                 vehicle_card.consolidate_vehicle_card_id)
-                            for wholesale_id in cons_vehicle_card.wholesale_ids:
+                            for wholesale_id in cons_vehicle_card.wholesale_ids[-1]:
                                 if self.origin or (self.sale_order_number == wholesale_id.so_number):
                                     wholesale_id.write({'invoice_number': self.number, 'invoice_id': self.id,
                                                         'delivery_date': self.date_invoice})

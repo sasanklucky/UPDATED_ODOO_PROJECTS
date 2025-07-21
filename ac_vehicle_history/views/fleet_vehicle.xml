@@ -11,16 +11,16 @@
                 <page string="Wholesale History">
                     <field name="wholesale_ids" readonly="1">
                         <tree editable="False" create="0" delete="0">
-                            <field name="dealer_code" string="Dealer Code"/>
                             <field name="dealer_name" string="Dealer Name"/>
                             <field name="so_number" string="SO Number"/>
-                            <field name="po_number" string="PO Reference"/>
+                            <field name="so_id" string="SO ID" invisible="1"/>
                             <field name="delivery_date" string="Delivery Date"/>
                             <field name="invoice_number" string="Invoice Number"/>
-                             <field name="transfer_type" string="Transfer Type"/>
-                            <field name="dealer_master_id" string="Dealer Setup"/>
-                            <field name="so_id" string="SO ID" invisible="1"/>
                             <field name="invoice_id" string="Invoice ID" invisible="1"/>
+                            <field name="po_number" string="PO Reference"/>
+                            <field name="transfer_type" string="Transfer Type"/>
+                            <field name="dealer_code" string="Dealer Code"/>
+                            <field name="dealer_master_id" string="Dealer Setup"/>
                         </tree>
                     </field>
                 </page>

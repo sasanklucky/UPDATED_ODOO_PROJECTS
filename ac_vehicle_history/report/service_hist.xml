@@ -315,7 +315,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr t-foreach="[sol for sol in service_history['order_line'] if sol['name'] == 'Parts']" t-as="sol">
+                                            <tr t-foreach="[sol for sol in service_history['order_line'] if sol['name'] == 'Parts' and sol['qty_delivered'] > 0]" t-as="sol">
                                             <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
                                                 <span t-esc="i_parts"/><t t-set="i_parts" t-value="i_parts + 1"/>
                                             </td>

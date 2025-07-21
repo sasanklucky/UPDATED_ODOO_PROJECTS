@@ -25,5 +25,19 @@
                     records.update_vehicle_service_history()
             </field>
         </record>
+
+        <record id="action_sync_and_updates_dealer" model="ir.actions.server">
+            <field name="name">Sync and Update</field>
+            <field name="model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                action = records.open_wizard_with_consolidation_dealers()
+                action
+            </field>
+        </record>
+
     </data>
 </odoo>
