@@ -758,7 +758,8 @@ class ARS_sale_order_line(models.Model):
         for line in self:
             tax_amount = 0.0
             subtotal = 0.0
-
+            discounted_price = 0.0
+            print("KRISHNA11143", line.tax_id)
             if line.tax_id:
                 # Adjust the price for the discount
                 discounted_price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
@@ -776,7 +777,18 @@ class ARS_sale_order_line(models.Model):
                 # print('tax_amount', tax_amount)
                 subtotal = taxes['total_excluded']
                 # print(subtotal, 'subtotal')
-
+            else:
+                taxes = line.tax_id.compute_all(
+                    price_unit=line.price_unit,
+                    currency=line.order_id.currency_id,
+                    quantity=line.product_uom_qty,
+                    product=line.product_id,
+                    partner=line.order_id.partner_id
+                )
+                print(taxes, 'Sasank ')
+                # tax_amount = sum([t['amount'] for t in taxes['taxes'] if t])  # Tax total
+                # # print('tax_amount', tax_amount)
+                # subtotal = taxes['total_excluded']
             line.price_subtotal = subtotal
             line.amount_tax = tax_amount
             line.order_amount_total = subtotal + tax_amount
@@ -847,6 +859,16 @@ class ARS_account_invoice_line(models.Model):
         taxes = False
         if self.invoice_line_tax_ids:
             taxes = self.invoice_line_tax_ids.compute_all(price, currency, self.quantity, product=self.product_id,
+                                                          partner=self.invoice_id.partner_id)
+
+            self.price_subtotal = taxes['total_excluded'] if taxes else self.quantity * price
+            self.price_total = taxes['total_included'] if taxes else self.price_subtotal
+
+            sign = self.invoice_id.type in ['in_refund', 'out_refund'] and -1 or 1
+            self.price_subtotal_signed = self.price_subtotal * sign
+        else:
+            # print('SASANK')
+            taxes = self.invoice_line_tax_ids.compute_all(self.price_unit, currency, self.quantity, product=self.product_id,
                                                           partner=self.invoice_id.partner_id)
 
             self.price_subtotal = taxes['total_excluded'] if taxes else self.quantity * price
