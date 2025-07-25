@@ -488,10 +488,13 @@ class StockPicking(models.Model):
                             service_type_code = env['service.type'].search([('name', '=', 'PDI Service')]).code
                             cons_service_ids = [service.cons_service_history_id for service in
                                                 vehicle_card.service_ids]
+                            services_done = cons_fleet_obj.service_ids.mapped('service_code')
+                            if not service_type_code in services_done:
+                                raise ValidationError(
+                                    _("Should be Complete PDI Service Before Selling this Vehicle"))
                             for con_service in cons_fleet_obj.service_ids:
-                                if not con_service.service_code == service_type_code:
-                                    raise ValidationError(
-                                        _("Should be Complete PDI Service Before Selling this Vehicle"))
+                                # if not con_service.service_code == service_type_code:
+                                print(con_service,'con_service')
                                 if con_service.id not in cons_service_ids:
                                     service_vals = {
                                         'vehicle_id': vehicle_card.id,
@@ -679,14 +682,23 @@ class StockPicking(models.Model):
                                     'phone': partner.phone,
                                     'company_type': 'person',
                                     'is_dealer': False,
-                                    'customer_code': partner.customer_code,
+                                    'customer_code': customer_code,
                                     'customer': True,
                                 })
                                 #print('Created customer :', cons_customer)
 
 
                             company_id = env['res.company'].sudo().search([('dealer_code', '=', current_dealer_code)])
-                            cons_customer = env['res.partner'].sudo().search([('mobile', '=', partner.mobile),('parent_id', '=', cons_parent.id)], limit=1)
+                            search_domain = ['|',
+                                             ('mobile', '=', partner.mobile),
+                                             ('email', '=', partner.email)
+                                             ]
+
+                            # Add parent_id condition with AND
+                            if cons_parent:
+                                search_domain += [('parent_id', '=', cons_parent.id)]
+                            cons_customer = env['res.partner'].sudo().search(search_domain, limit=1)
+                            # print(cons_customer,'NNNN')
                             cons_ownership_data = {
                                 'custmer_name': cons_customer.id,
                                 'date_of_ownership': datetime.now(),
@@ -703,11 +715,11 @@ class StockPicking(models.Model):
                             })
 
                             # --- Now update all other dealers ---
-                            cons_search_domain = ['|', '|',
-                                                                        ('customer_code', '=', customer_code),
-                                                                        ('email', '=', partner.email),
-                                                                        ('mobile', '=', partner.mobile),
-                                                                        ]
+                            # cons_search_domain = ['|', '|',
+                            #                                             ('customer_code', '=', customer_code),
+                            #                                             ('email', '=', partner.email),
+                            #                                             ('mobile', '=', partner.mobile),
+                            #                                             ]
                             all_dealers = env['ars.consolidation.setup'].sudo().search([])
                             vin_sn = consolidate_vehicle_card.vin_sn
                             cons_driver = consolidate_vehicle_card.driver_id
@@ -753,7 +765,7 @@ class StockPicking(models.Model):
                                                     'company_type': 'company',
                                                     'customer': False,
                                                     'supplier': False,
-                                                    'active': False,
+                                                    'active': True,
                                                     'customer_code': cons_parent.customer_code,
                                                     'city': cons_parent.city,
                                                     'street': cons_parent.street,
