@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_tax_tcs_form_inherited" model="ir.ui.view">
+            <field name="name">account.tax.form.inherited</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='tax_adjustment']" position="after">
+                    <field name="tcs_add_on_tax"/>
+                </xpath>
+                <xpath expr="//notebook/page" position="inside">
+                    <group>
+                        <label for="tcs_amt_percentage"
+                               attrs="{'invisible':[('tcs_add_on_tax','!=', True)]}"/>
+                        <div attrs="{'invisible':[('tcs_add_on_tax','!=', True)]}">
+                            <field name="tcs_amt_percentage" class="oe_inline"/>
+                            <label string="%" class="oe_inline" attrs="{'invisible':[('tcs_add_on_tax','!=', True)]}"/>
+                        </div>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

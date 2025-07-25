@@ -32,6 +32,7 @@
         'views/account_invoice.xml',
         'views/after_sales_invoice.xml',
         'views/stock_warehouse.xml',
+        'views/account_tax_view.xml',
     ],
     'application': True,
     'installable': True,

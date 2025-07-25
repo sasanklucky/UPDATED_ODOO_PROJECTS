@@ -417,6 +417,8 @@ class account_invoice(models.Model):
                                     #         (inv_line.price_unit * inv_line.quantity) - inv_line.price_subtotal), 2)
                                     assmt = inv_line.price_subtotal
                                     tax_rate += child.amount
+                            elif tax.tcs_add_on_tax:
+                                tax_rate = tax.tcs_amt_percentage
                             else:
                                 tax_rate = tax.amount
                             if tax.amount_type != 'group':
