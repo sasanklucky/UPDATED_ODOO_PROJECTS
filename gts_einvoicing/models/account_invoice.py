@@ -381,7 +381,7 @@ class account_invoice(models.Model):
         total_sgst = 0.0
         total_sgsts = 0.0
         total = 0.0
-        total_round, tcs_amount = 0.0, 0.0
+        total_round, tcs_amount, total_tcs = 0.0, 0.0, 0.0
         round_of_val = 0
         assmt = 0.0
         for idx, inv_line in enumerate(self.invoice_line_ids):
@@ -418,7 +418,9 @@ class account_invoice(models.Model):
                                     assmt = inv_line.price_subtotal
                                     tax_rate += child.amount
                             elif tax.tcs_add_on_tax:
-                                tax_rate = tax.tcs_amt_percentage
+                                total_tcs = tcs_amount = inv_line.price_subtotal * tax.amount / 100
+                                # print(total_tcs)
+                                # tax_rate = tax.tcs_amt_percentage
                             else:
                                 tax_rate = tax.amount
                             if tax.amount_type != 'group':
