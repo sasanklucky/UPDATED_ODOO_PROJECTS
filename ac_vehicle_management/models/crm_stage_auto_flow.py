@@ -366,6 +366,7 @@ class CrmLeadLostStage(models.Model):
         for rec in self:
             lost_stage = self._stage_find(team_id=rec.team_id.id, domain=[('name', 'ilike', 'Lost'), ('fold', '=', True)])
             if lost_stage:
+
                 sale_orders = self.env['sale.order'].search([('opportunity_id', '=', self.id), ('state', 'not in', ['cancel', 'done'])])
                 if sale_orders:
                     for sale_rec in sale_orders:
@@ -375,7 +376,6 @@ class CrmLeadLostStage(models.Model):
                         })
                         cancel_wizard.confirm_cancel()
                 self.write({'stage_id': lost_stage.id})
-
         return res
 # class ConfigParameterCrm(models.Model):
 #     _inherit = 'ir.config_parameter'

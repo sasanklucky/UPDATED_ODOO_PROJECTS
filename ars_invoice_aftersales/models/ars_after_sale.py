@@ -785,7 +785,7 @@ class ARS_sale_order_line(models.Model):
                     product=line.product_id,
                     partner=line.order_id.partner_id
                 )
-                print(taxes, 'Sasank ')
+
                 # tax_amount = sum([t['amount'] for t in taxes['taxes'] if t])  # Tax total
                 # # print('tax_amount', tax_amount)
                 # subtotal = taxes['total_excluded']

@@ -115,7 +115,8 @@ class ars_sale_crm_lead(models.Model):
     def _set_booking_date(self):
         booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
         if booking_stage and self.stage_id.id == int(booking_stage):
-            self.booking_date = datetime.now()
+            if not self.booking_date:
+                self.booking_date = datetime.now()
 
     enquiry_date = fields.Datetime(string=" Enquiry Date", default=fields.Datetime.now)
 
@@ -150,6 +151,9 @@ class ars_sale_crm_lead(models.Model):
     # Mandatory fields (street, pan no, zip) when pipline stage is going to booked
     @api.multi
     def write(self, vals):
+        new_stage = None
+        uid = self.env.context['uid'] if 'uid' in self.env.context else False
+        user_id = self.env['res.users'].browse(uid)
         if 'stage_id' in vals:
             company = self.env.user.company_id.id
             user = self.env.user.id
@@ -168,11 +172,19 @@ class ars_sale_crm_lead(models.Model):
                     if not lead.partner_id.street or not lead.partner_id.pan_no or not lead.partner_id.zip:
                         raise ValidationError(
                             "Please fill the mandatory fields in Customer - Street, PIN Code, and PAN No.")
-        booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+        # booking_stage = self.env['ir.config_parameter'].sudo().get_param('ars_vehicle_sales.booking_stage_id')
+        booking_stage = user_id.company_id.booking_stage_id
         stage = vals.get('stage_id')
         if stage and booking_stage:
-            if int(stage) == int(booking_stage):
-                vals['booking_date'] = datetime.now()
+            if int(stage) == int(booking_stage.id):
+                if not self.booking_date:
+                    vals['booking_date'] = datetime.now()
+                    test_msg = {'message': f'Booking successfully confirmed for [{self.contact_name if self.contact_name else ""}]. Awaiting further instructions.', 'title': 'title', 'sticky': True}
+                    self.env.user.notify_info(**test_msg)
+        elif stage:
+            test_msg = {'message': f'Pipeline updated: [{new_stage.name if new_stage is not None else ""}]',
+                        'title': 'title', 'sticky': True}
+            self.env.user.notify_info(**test_msg)
         if len(self.ids) == 1:
             previous_state_id = self.stage_id
         result = super(ars_sale_crm_lead, self).write(vals)
@@ -287,7 +299,7 @@ class ars_sale_crm_sale(models.Model):
                 if transfer_type == 'internal_transfer':
                     node.set('domain', "[('is_dealer', '=', True)]")
                     node.set('options', "{'no_create': True}")
-                    node.set('readonly', '1')
+                    node.set('readonly', '0')
                 else:
                     node.set('domain', "[]")
 

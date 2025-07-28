@@ -381,45 +381,73 @@ class FleetVehicle(models.Model):
 
     @api.multi
     def update_customer_ownership(self):
-        ownership_history = []
+        lot_obj = self.env['stock.production.lot']
+        sale_order_line_obj = self.env['sale.order.line']
+
         for rec in self:
-            history = False
-            if rec.vehicle_status == 'customer':
-                if rec.vin_sn:
-                    lot_Obj = self.env['stock.production.lot']
-                    lot_id = rec.lot_id if rec.lot_id else lot_Obj.sudo().search([('name', '=', rec.vin_sn)],
-                                                                                 order='id desc', limit=1)
-                    sale_line = self.env['sale.order.line'].search([('vin_no', '=', lot_id.id)])
-                    if sale_line:
-                        for record in rec.customer_ids:
-                            history = False
-                            for sale in sale_line:
-                                _logger.info(
-                                    f"Sale line for update owner history for {sale.vin_no.name} with {sale.order_id.partner_id.name}")
-                                if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier and record.custmer_name == sale.order_id.partner_id:
-                                    for invoice in sale.order_id.invoice_ids:
-                                        if invoice.date_invoice == record.date_of_ownership:
-                                            history = True
-                            if not history:
-                                record.unlink()
-                    elif len(rec.customer_ids) > 1:
-                        owner = rec.customer_ids.sorted(key=lambda r: r.id, reverse=True)
-                        i = 0
-                        while owner[-1] != owner[i]:
-                            owner[i].sudo().unlink()
-                            i += 1
-                    if len(rec.customer_ids) == 0:
-                        for sale in sale_line:
-                            if sale.order_id.partner_id == rec.driver_id and not sale.order_id.partner_id.supplier:
-                                for invoice in sale.order_id.invoice_ids:
-                                    if invoice.state not in ['draft', 'cancel']:
-                                        ownership_history.append([0, 0, {'custmer_name': sale.order_id.partner_id.id,
-                                                                         'order': sale.order_id.id,
-                                                                         'date_of_ownership': invoice.date_invoice,
-                                                                         'address': sale.order_id.partner_id.city,
-                                                                         'mobile': sale.order_id.partner_id.mobile,
-                                                                         'sold_by': sale.order_id.company_id.partner_id.id}])
-                        rec.customer_ids = ownership_history
+            if rec.vehicle_status != 'customer' or not rec.vin_sn:
+                continue
+
+            # Get or find the lot
+            lot_id = rec.lot_id
+            if not lot_id:
+                lot_id = lot_obj.sudo().search([('name', '=', rec.vin_sn)], order='id desc', limit=1)
+                if not lot_id:
+                    continue
+
+            # Get sale lines for that VIN
+            sale_lines = sale_order_line_obj.search([('vin_no', '=', lot_id.id)])
+            sale_lines_by_partner = {}
+            invoice_dates_by_partner = {}
+
+            for line in sale_lines:
+                partner = line.order_id.partner_id
+                if partner not in sale_lines_by_partner:
+                    sale_lines_by_partner[partner] = []
+                    invoice_dates_by_partner[partner] = set()
+                sale_lines_by_partner[partner].append(line)
+                if not partner.supplier:
+                    invoice_dates_by_partner[partner].update(
+                        line.order_id.invoice_ids.filtered(lambda inv: inv.state not in ['draft', 'cancel']).mapped('date_invoice')
+                    )
+
+            # If customer_ids is empty, create ownership record
+            if not rec.customer_ids:
+                ownership_history = []
+                for sale in sale_lines:
+                    partner = sale.order_id.partner_id
+                    if partner == rec.driver_id and not partner.supplier:
+                        for invoice in sale.order_id.invoice_ids:
+                            if invoice.state not in ['draft', 'cancel']:
+                                ownership_history.append((0, 0, {
+                                    'custmer_name': partner.id,
+                                    'order': sale.order_id.id,
+                                    'date_of_ownership': invoice.date_invoice,
+                                    'address': partner.city,
+                                    'mobile': partner.mobile,
+                                    'sold_by': sale.order_id.company_id.partner_id.id,
+                                }))
+                if ownership_history:
+                    rec.customer_ids = ownership_history
+                continue  # Skip the rest if we just added ownership
+
+            # Clean up incorrect customer_ids
+            to_unlink_ids = []
+            for record in rec.customer_ids:
+                partner = record.custmer_name
+                invoice_dates = invoice_dates_by_partner.get(partner, set())
+                if record.date_of_ownership not in invoice_dates:
+                    to_unlink_ids.append(record.id)
+
+            if to_unlink_ids:
+                rec.customer_ids.browse(to_unlink_ids).unlink()
+
+            # Retain only the latest valid owner record
+            owner_data = rec.customer_ids.filtered(
+                lambda r: r.custmer_name in sale_lines_by_partner and not r.custmer_name.supplier and r.date_of_ownership in invoice_dates_by_partner.get(r.custmer_name, set())
+            )
+            if len(owner_data) > 1:
+                owner_data.sorted(key=lambda r: r.id, reverse=True)[1:].unlink()
 
 
 class CrmLeadLost(models.TransientModel):

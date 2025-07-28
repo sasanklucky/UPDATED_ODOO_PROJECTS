@@ -16,6 +16,9 @@ class SaleOrder(models.Model):
     booking_amount_total = fields.Integer(compute="_compute_booking_amount_total", string="Booking Count")
     booking_amount_total_value = fields.Float(compute="_compute_booking_amount_total_value", string="Total Booking Amount")
 
+    mileage_in = fields.Integer(string="Mileage")
+    mileage_out = fields.Integer(string="Kilometer Out")
+
     def _compute_booking_amount_total_value(self):
         """Compute the total booking amount for the customer."""
         for order in self:
