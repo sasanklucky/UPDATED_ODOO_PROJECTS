@@ -40,6 +40,7 @@
                     <field name="lost_reason" string="Why not booking reason"/>
                     <field name="sale_cancel_reason" string="Cancellation of booking reason"/>
                     <field name="partner_id" invisible="1"/>
+                    <field name="master_group" string="Model Group"/>
                     <field name="model" string="Vehicle Model"/>
                     <field name="product_id"/>
                     <field name="color" string="Color"/>

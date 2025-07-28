@@ -62,6 +62,7 @@
         'views/ars_menu_access.xml',
         'views/service_vehicle_setup.xml',
         'views/ars_sign_up_view.xml',
+        'views/assets.xml'
     ],
     'qweb': [
         'static/src/xml/rolesetup.xml',

@@ -34,6 +34,9 @@ class CustBookingContractMISReport(models.Model):
     cancel_date = fields.Datetime(string="Cancel Date")
     no_of_cars_purchased = fields.Integer(string="No of Cars Purchased",compute="_get_no_of_cars_purchased")
     product_id = fields.Many2one('product.product',string="Product")
+
+    model_group = fields.Char(string="Model Group")
+
     product_name = fields.Char(related="product_id.name",string="Variant")
     vehicle_colour = fields.Char(string="Vehicle Colour",compute="_get_vehicle_colour")
     vehicle_make = fields.Many2one('fleet.vehicle.model.brand',string="Vehicle Make")
@@ -45,65 +48,69 @@ class CustBookingContractMISReport(models.Model):
         booking_amount = 0.0
         no_of_cars_purchased = 0
         query = f""" CREATE or REPLACE VIEW %s as (
-            with company as
-            (
-                select id,dealer_zone,dealer_code,name from res_company
+            WITH company AS (
+                SELECT id, dealer_zone, dealer_code, name FROM res_company
             ),
-            partner as
-            (
-                select rp.id,rp.name,rp.phone, rp.title,rp.mobile,
-                CONCAT(rp.street,',',rp.street2,',',rp.city,',',rcs.name,',',rc.name,',',zip) as address
-                from res_partner rp
-                left join res_country_state rcs on rcs.id = rp.state_id
-                left join res_country rc on rc.id = rp.country_id
+            partner AS (
+                SELECT rp.id, rp.name, rp.phone, rp.title, rp.mobile,
+                    CONCAT(rp.street, ',', rp.street2, ',', rp.city, ',', rcs.name, ',', rc.name, ',', zip) AS address
+                FROM res_partner rp
+                LEFT JOIN res_country_state rcs ON rcs.id = rp.state_id
+                LEFT JOIN res_country rc ON rc.id = rp.country_id
             ),
-            lead as
-            (
-                select id, name, date_deadline, description, referred,medium_id,source_id,create_uid,create_date from crm_lead
+            lead AS (
+                SELECT id, name, date_deadline, description, referred, medium_id, source_id, create_uid, create_date
+                FROM crm_lead
             ),
-            vehicle as 
-            (
-                select sol.order_id,sol.product_id,fvmb.id as make, pt.id as model 
-                from sale_order_line sol 
-                left join product_catalog pc on pc.id = sol.product_catalog_id
-                left join product_template pt on pt.id = sol.product_template_id
-                left join product_product pp on pp.id = sol.product_id
-                left join fleet_vehicle_model_brand fvmb on fvmb.id = pt.brand_id
-                where pc.name='Vehicle'
+            vehicle AS (
+                SELECT 
+                    sol.order_id,
+                    sol.product_id,
+                    fvmb.id AS make,
+                    pt.id AS model,
+                    mg.name AS model_group
+                FROM sale_order_line sol
+                LEFT JOIN product_catalog pc ON pc.id = sol.product_catalog_id
+                LEFT JOIN product_template pt ON pt.id = sol.product_template_id
+                LEFT JOIN product_product pp ON pp.id = sol.product_id
+                LEFT JOIN model_groups mg ON mg.id = pt.master_id
+                LEFT JOIN fleet_vehicle_model_brand fvmb ON fvmb.id = pt.brand_id
+                WHERE pc.name = 'Vehicle'
             )
-
-            select row_number() over() as id, 
-            c.dealer_zone as dealer_zone, 
-            c.dealer_code as dealer_code,
-            so.company_id as company_id,
-            so.id as contract_id, 
-            so.create_date as order_date,
-            p.title as salutation_id, 
-            p.id as partner_id, 
-            p.phone as phone, 
-            p.mobile as mobile,
-            p.address as address,
-            so.commitment_date as expected_delivery_date, 
-            l.create_date as enquiry_creation_date, 
-            l.date_deadline as expected_purchase_date,
-            so.user_id as sales_executive_id, 
-            l.description as commitments_offers_to_customer,
-            l.referred as referred_by,
-            l.source_id as source_id,
-            l.medium_id as medium_id,
-            v.product_id as product_id,
-            v.make as vehicle_make,
-            v.model as vehicle_model,
-            l.create_uid as created_by,
-            case when so.state='cancel' then so.write_date else null end as cancel_date,
-            {booking_amount} as booking_amount,
-            {no_of_cars_purchased} as no_of_cars_purchased
-            from sale_order so
-            left join company c on c.id = so.company_id
-            left join partner p on p.id = so.partner_id
-            left join lead l on l.id = so.opportunity_id
-            left join vehicle v on v.order_id = so.id
-            where so.invoice_status = 'to invoice' and so.sale_aftersales = 'sales'
+            SELECT 
+                row_number() OVER() AS id,
+                c.dealer_zone AS dealer_zone,
+                c.dealer_code AS dealer_code,
+                so.company_id AS company_id,
+                so.id AS contract_id,
+                so.create_date AS order_date,
+                p.title AS salutation_id,
+                p.id AS partner_id,
+                p.phone AS phone,
+                p.mobile AS mobile,
+                p.address AS address,
+                so.commitment_date AS expected_delivery_date,
+                l.create_date AS enquiry_creation_date,
+                l.date_deadline AS expected_purchase_date,
+                so.user_id AS sales_executive_id,
+                l.description AS commitments_offers_to_customer,
+                l.referred AS referred_by,
+                l.source_id AS source_id,
+                l.medium_id AS medium_id,
+                v.product_id AS product_id,
+                v.make AS vehicle_make,
+                v.model AS vehicle_model,
+                v.model_group AS model_group,
+                l.create_uid AS created_by,
+                CASE WHEN so.state = 'cancel' THEN so.write_date ELSE NULL END AS cancel_date,
+                {booking_amount} AS booking_amount,
+                {no_of_cars_purchased} AS no_of_cars_purchased
+            FROM sale_order so
+            LEFT JOIN company c ON c.id = so.company_id
+            LEFT JOIN partner p ON p.id = so.partner_id
+            LEFT JOIN lead l ON l.id = so.opportunity_id
+            LEFT JOIN vehicle v ON v.order_id = so.id
+            WHERE so.invoice_status = 'to invoice' AND so.sale_aftersales = 'sales'
         )""" % (self._table)
         self.env.cr.execute(query)
 

@@ -279,16 +279,70 @@ class PurchaseOrderInheritSync(models.Model):
                         # -------------------------------------------------------------------------------
                         if rec.purchase_type:
                             team_id = env['crm.team'].sudo().search([('team_type', 'ilike', rec.purchase_type)],
-                                                                    order='id desc', limit=1)
-                            warehouse = env['stock.warehouse'].sudo().sudo().search(
-                                [('ars_type', '=', rec.purchase_type)], limit=1)
-                        else:
-                            team_id = env['crm.team'].sudo().search([('name', 'ilike', 'Sales')], order='id desc',
                                                                     limit=1)
-                            warehouse = env['stock.warehouse'].sudo().sudo().search([('code', '=', 'VEH')], limit=1)
+
+                            # param = env['ir.config_parameter'].sudo()
+                            # default_warehouse_id = param.get_param('eg_sale_multi_warehouse.default_vehicle_wh_id')
+
+                            cr.execute(
+                                "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.default_vehicle_wh_id' LIMIT 1")
+                            vehicle_wh_id = cr.fetchone()
+                            print("vehicle_wh_id", vehicle_wh_id)
+
+                            cr.execute(
+                                "SELECT value FROM ir_config_parameter WHERE key = 'eg_sale_multi_warehouse.enable_vehicle_multi_warehouse' LIMIT 1")
+                            vehicle_multi_warehouse_id = cr.fetchone()
+                            print("vehicle_multi_warehouse_id", vehicle_multi_warehouse_id)
+
+                            if vehicle_wh_id and vehicle_multi_warehouse_id:
+                                default_warehouse_id = vehicle_wh_id
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('ars_type', '=', rec.purchase_type), ('id', '=', default_warehouse_id)], limit=1)
+                            else:
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('ars_type', '=', rec.purchase_type)], limit=1)
+
+                            print("warehousewa warehouse", warehouse.id)
+                        else:
+                            # For vehicle orders, explicitly check the product category
+                            is_vehicle_order = any(
+                                line.product_id.categ_id.is_vehicle_category or
+                                'vehicle' in (line.product_id.name or '').lower()
+                                for line in rec.order_line
+                            )
+
+
+
+                            if is_vehicle_order:
+
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('code', '=', 'VEH')], limit=1)
+
+                                if not warehouse:
+                                    warehouse = env['stock.warehouse'].sudo().search(
+                                        [('name', 'ilike', 'Vehicle')], limit=1)
+                            else:
+                                warehouse = env['stock.warehouse'].sudo().search(
+                                    [('code', '=', 'WH')], limit=1)
+
+                            team_id = env['crm.team'].sudo().search(
+                                [('name', 'ilike', 'Sales')], limit=1)
+
+                        # Add validation
+                        if not warehouse:
+                            sync_log_dict['sync_message'] = 'Warning: No warehouse found, using default'
+                            warehouse = env['stock.warehouse'].sudo().search([], limit=1)
+
+                            if not warehouse:
+                                sync_log_dict['sync_message'] = 'Error: No warehouses configured!'
+                                record_set = self.env['po_sync_log'].sudo().create(sync_log_dict)
+                                continue
+
+
+
                         pricelist_id = env['product.pricelist'].sudo().search(
                             [('name', '=', customer.property_product_pricelist.name)], order='id desc', limit=1)
-                        print("---------------------data--------", customer, team_id, pricelist_id, warehouse,
+                        print("---------------------data--------", customer, team_id, pricelist_id, warehouse.id,
                               rec.company_id.partner_id, env.user.company_id, env.user.company_id)  # "currency_id"
                         order_line_list = []
                         # import pdb
@@ -304,16 +358,24 @@ class PurchaseOrderInheritSync(models.Model):
                                 limit=1)
                             counter_parts = True
                             sale_type = 'parts'
+                            sale_aftersales = 'aftersales'
                         else:
                             seq = env['ir.sequence'].sudo().search([('code', '=', 'sale.order'), ('active', '=', True)],
                                                                    limit=1)
+                            counter_parts = False
+                            sale_type = 'vehicle'  # Explicitly set to vehicle
+                            sale_aftersales = 'sales'  # Required for vehicle sales filter
                         addr = customer.address_get(['delivery', 'invoice', 'workshop_billing', 'workshop_shipping'])
                         code = f"{seq.prefix}" + f"{seq.number_next_actual}"
                         print("seq===================", seq, code)
                         current_time = fields.Datetime.from_string(fields.Datetime.now())
+                        # Ensure warehouse is properly set on the sale order
                         data = {
                             'name': code,
                             'partner_id': customer.id if customer else False,
+                            'sale_type': sale_type,
+                            'sale_aftersales': sale_aftersales,
+                            'counter_parts': counter_parts,
                             'mobile': customer.mobile if customer.mobile else '',
                             'email': customer.email if customer.email else '',
                             'partner_invoice_id': addr['workshop_billing'] if rec.purchase_type == 'after_sales' else
@@ -330,9 +392,7 @@ class PurchaseOrderInheritSync(models.Model):
                             'date_order': current_time,
                             'fiscal_position_id': fiscal_position_id.id if fiscal_position_id else False,
                             'product_catalog_id': catalog_data.id if catalog_data else False,
-                            'counter_parts': counter_parts,
                             'child_po_id_ref': rec.id,
-                            'sale_type': sale_type,
                             'child_db': child_database,
                             "parent_db": database,
                             'child_po_ref': f"{rec.company_id.name}-{rec.name}",
@@ -464,11 +524,13 @@ class PurchaseOrderInheritSync(models.Model):
                                 'product_template_id': template_data.id if template_data else False,
                                 'product_id': product_data.id if product_data else line_data.product_id.id,
                                 'order_id': rec.id,
+
                                 'product_uom_qty': line_data.product_qty if line_data.product_qty else False,
                                 'product_uom': product_uom.id if product_uom else line_data.product_uom.id,
                                 'price_unit': product_data.lst_price if product_data.lst_price else product_data.standard_price,
                                 'child_po_id_ref': line_data.id,
-                                'child_db': child_database
+                                'child_db': child_database,
+                                'warehouse_id': warehouse.id if warehouse else False,
                             }
                             # 'tax_id':[(6, 0, parent_tax_data.ids if parent_tax_data else False)],
                             print("One2many data", one2many_data)

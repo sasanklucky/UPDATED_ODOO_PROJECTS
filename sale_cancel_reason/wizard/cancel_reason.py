@@ -27,6 +27,7 @@ class SaleOrderCancel(models.TransientModel):
     lost_reason_id = fields.Many2one('crm.lost.reason', 'Lost Reason', required=True)
     #
     child_lost_reason_id = fields.Many2one('crm.lost.reason.child', 'Child Lost Reason', required=True)
+    check_sales_ids = fields.Text('Message')
 
     @api.multi
     def confirm_cancel(self):
@@ -59,3 +60,27 @@ class SaleOrderCancel(models.TransientModel):
             return {'domain': {'lost_reason_id': [('id', 'in', parent_lost_reasons.ids)]}}
         else:
             return {'domain': {'lost_reason_id': [('id', 'in', False)]}}
+
+    @api.model
+    def default_get(self, fields):
+        res = super(SaleOrderCancel, self).default_get(fields)
+
+        active_ids = self._context.get('active_ids') or []
+        if not active_ids:
+            return res
+
+        # Use browse to avoid repeated searches
+        orders = self.env['sale.order'].browse(active_ids)
+        lead_ids = orders.mapped('opportunity_id').ids
+
+        if lead_ids:
+            sale_orders = self.env['sale.order'].search([
+                ('opportunity_id', 'in', lead_ids),
+            ])
+            if sale_orders:
+                res['check_sales_ids'] = (
+                        "Warning: This lead has linked quotations/sale orders:\n" +
+                        "\n".join("- %s (%s)" % (so.name, so.state) for so in sale_orders)
+                )
+
+        return res

@@ -20,7 +20,8 @@
             <field name="state">code</field>
             <field name="code">
                 if records:
-                    records.update_customer_ownership()
+                        records.update_vehicle_owner_ship()
+<!--                    records.update_customer_ownership()-->
             </field>
         </record>
     </data>

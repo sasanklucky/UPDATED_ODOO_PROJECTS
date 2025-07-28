@@ -114,6 +114,8 @@ class report_epv_sales_enquiry(models.Model):
     email = fields.Char('Email ID')
     product_id = fields.Many2one('product.product', 'Variant')
     make = fields.Char(related="product_id.product_tmpl_id.brand_id.name")
+    master_group = fields.Char(string="Model Group")
+
     model = fields.Char(related="product_id.product_tmpl_id.name")
     color = fields.Char(compute="get_color")
     source_id = fields.Many2one('utm.source', 'Source')
@@ -163,11 +165,15 @@ class report_epv_sales_enquiry(models.Model):
                     end as test_drive,inv.id as invoice_id,
                     a.user_id,a.partner_id,a.title,a.contact_name,
                     a.phone,a.mobile,a.email_from as email,a.source_id,a.medium_id,a.stage_id,a.lost_reason,b.product_id,
+                     mg.name AS master_group,
                     a.referred as referred,pic.date_done::Date as delivery_date
                     from crm_lead a join crm_lead_line b on a.id = b.lead_order_id
                     left join sale_order so on so.opportunity_id = a.id
                     left join account_invoice inv on inv.order_id = so.id
                     left join stock_picking pic on pic.sale_id = so.id
+                    LEFT JOIN product_product pp ON pp.id = b.product_id
+                    LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                    LEFT JOIN model_groups mg ON mg.id = pt.master_id
                     where a.type = 'opportunity'
             )""".format(table_name=self._table, company_idss=company_ids))
 

@@ -20,6 +20,7 @@
                     <field name="email_from" widget="email" string="Email *"/>
                     <field name="phone" widget="phone"/>
                     <field name="function"/>
+                    <field name="readonly_crm_qty" invisible="1"/>
                     <!--                    <field name="lead_token" readonly="1"/>-->
                     <field name="crm_lead_stage"/>
                     <field name="model_id" force_save="1" readonly="1" string="Model *"/>
@@ -91,16 +92,17 @@
                 </field> -->
                 <xpath expr="//form/sheet/notebook/page[1]" position="before">
                     <page string="Model Intrested">
-                        <field name="vehicle_line">
-                            <tree name="CrmLeadLine" string="Crm Lead Lines" editable="bottom">
+                        <field name="vehicle_line" force_save="1" >
+                            <tree name="CrmLeadLine" string="Crm Lead Lines" editable="bottom" >
                                 <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]"
-                                       options="{'no_create':True, 'no_open':True}"/>
-                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}"/>
+                                       options="{'no_create':True, 'no_open':True}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
                                 <field name="product_id" string="Variant"
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
                                        options="{'no_create':True, 'no_open':True}"
-                                       context="{'form_view_ref':'product.product_normal_form_view'}"/>
-                                <field name="name"/>
+                                       context="{'form_view_ref':'product.product_normal_form_view'}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                 <field name="crm_ordered_qty" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                <field name="name" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
                             </tree>
                         </field>
                     </page>
@@ -120,7 +122,7 @@
                 <xpath expr="//form/sheet/group/group[4]/field[@name='tag_ids']" position="after">
                     <field name="source_id" options="{'no_create': True, 'no_open': True}" string="Source *" attrs="{'required': True}"/>
                     <field name="campaign_id" options="{'no_create': False, 'no_open': False}"/>
-                    <field name="medium_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': True}"/>
+                    <field name="medium_id" options="{'no_create': True, 'no_open': True}" attrs="{'required': True}" string="Medium *"/>
                     <field name="referred"/>
                 </xpath>
 
@@ -173,7 +175,7 @@
                 </xpath>
 
                 <field name="medium_id" position="replace">
-                    <field name="medium_id"/>
+                    <field name="medium_id" string="Medium *"/>
                 </field>
 
             </field>
@@ -230,6 +232,7 @@
                 <!--</xpath>-->
                 <field name="partner_id" position="before">
                     <field name="company_type" required="True" string="Customer Type *"/>
+                    <field name="readonly_crm_qty" invisible="1"/>
                 </field>
                 <field name="partner_id" position="after">
                     <field name="opportunity_conversion_date" readonly="1"/>
@@ -279,16 +282,17 @@
 
                 <xpath expr="//form/sheet/notebook/page[1]" position="before">
                     <page string="Model Intrested">
-                        <field name="vehicle_line">
+                        <field name="vehicle_line" force_save="1" >
                             <tree name="SaleOrderLine" string="Sales Order Lines" editable="bottom">
                                 <field name="product_catalog_id" domain="[('name', '=', 'Vehicle')]"
-                                       options="{'no_create':True}"/>
-                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}"/>
+                                       options="{'no_create':True}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                <field name="product_template_id" options="{'no_create':True, 'no_open':True}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
                                 <field name="product_id" string="Variant"
                                        domain="[('catalog_type.name', '=', 'Vehicle'),('sale_ok', '=', True)]"
                                        context="{'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
-                                       options="{'no_create':True, 'no_open':True}"/>
-                                <field name="name"/>
+                                       options="{'no_create':True, 'no_open':True}" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                <field name="crm_ordered_qty" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
+                                <field name="name" attrs="{'readonly': [('parent.readonly_crm_qty', '=', True)]}"/>
                             </tree>
                         </field>
                     </page>
@@ -402,9 +406,13 @@
                            context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id,'form_view_ref':'ars_vehicle_sales.product_product_form_view_inherit'}"
                            options="{'no_create':True, 'no_open':True}"
                     />
-                    <field name="qty_available_line"/>
+
                     <field name="admin_access" invisible="1"/>
                     <field name="admin_access_sale" invisible="1"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='name']"
+                       position="after">
+                        <field name="qty_available_line"/>
                 </xpath>
                 <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='price_unit']"
                        position="replace">

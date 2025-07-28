@@ -62,7 +62,9 @@
                         <td>
                             <span t-field="doc.model"/>
                         </td>
+
                     </tr>
+
                     <tr>
                         <td>VIN Number</td>
                         <td>:</td>

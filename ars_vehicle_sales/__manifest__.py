@@ -13,7 +13,7 @@
     'website': "www.autochip.in",
     'category': 'Uncategorized',
     'version': '0.1',
-    'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr','contacts','ac_product_catalog','sale_crm',
+    'depends': ['product', 'stock', 'purchase', 'sale', 'fleet', 'account', 'hr','contacts','ac_product_catalog','sale_crm','web',
                 'ac_vehicle_service_history',
                 'crm'],
     'data': [

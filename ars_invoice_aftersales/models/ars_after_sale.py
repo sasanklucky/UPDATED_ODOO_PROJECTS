@@ -758,7 +758,8 @@ class ARS_sale_order_line(models.Model):
         for line in self:
             tax_amount = 0.0
             subtotal = 0.0
-
+            discounted_price = 0.0
+            print("KRISHNA11143", line.tax_id)
             if line.tax_id:
                 # Adjust the price for the discount
                 discounted_price = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
@@ -784,6 +785,7 @@ class ARS_sale_order_line(models.Model):
                     product=line.product_id,
                     partner=line.order_id.partner_id
                 )
+
                 # tax_amount = sum([t['amount'] for t in taxes['taxes'] if t])  # Tax total
                 # # print('tax_amount', tax_amount)
                 # subtotal = taxes['total_excluded']

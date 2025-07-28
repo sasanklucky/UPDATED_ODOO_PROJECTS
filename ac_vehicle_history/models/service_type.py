@@ -104,6 +104,7 @@ class FleetVehicleConsolepdf(models.Model):
                                                   'category_type': sol.category.name,
                                                   'product_uom_qty': sol.product_uom_qty,
                                                   'warranty_claim': data.warranty_ids.name,
+                                                  'qty_delivered': sol.qty_delivered,
                                                   })
                             res.update({'customer_voice': cust_voice, 'order_line': line_item})
                             print('line_item',line_item)

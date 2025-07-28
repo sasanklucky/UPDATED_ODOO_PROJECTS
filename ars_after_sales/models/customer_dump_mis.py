@@ -103,6 +103,7 @@ class customer_dump_mis_report(models.Model):
     mobile = fields.Char("Mobile")
     email = fields.Char('Email ID')
     product_id = fields.Many2one('product.product', 'Variant')
+    master_group = fields.Char(string="Model Group")
     make = fields.Char(related="product_id.product_tmpl_id.brand_id.name")
     model = fields.Char(related="product_id.product_tmpl_id.name")
     color = fields.Char(compute="get_color")
@@ -180,6 +181,7 @@ class customer_dump_mis_report(models.Model):
                 a.stage_id,
                 a.lost_reason,
                 b.product_id,
+                mg.name AS master_group,
                 a.referred AS referred,
                 CASE WHEN a.is_test_drive = True THEN 'YES' ELSE 'NO' END AS test_drive,
                 act1.summary AS note_1,
@@ -223,6 +225,9 @@ class customer_dump_mis_report(models.Model):
             FROM
                 crm_lead a
                 JOIN crm_lead_line b ON a.id = b.lead_order_id
+                LEFT JOIN product_product pp ON pp.id = b.product_id
+                LEFT JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                LEFT JOIN model_groups mg ON mg.id = pt.master_id
                 LEFT JOIN utm_medium utm ON a.medium_id = utm.id
                 LEFT JOIN activity_log act1 ON a.id = act1.lead_id AND act1.rn = 3
                 LEFT JOIN activity_log act2 ON a.id = act2.lead_id AND act2.rn = 2

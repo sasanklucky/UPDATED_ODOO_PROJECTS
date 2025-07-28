@@ -25,7 +25,7 @@ class ARS_MailActivity(models.Model):
         compute="_compute_response_create_date",
         store=True
     )
-
+    cancel_remark = fields.Char("Cancel Remark")
     @api.depends('response_id.create_date')
     def _compute_response_create_date(self):
         for rec in self:

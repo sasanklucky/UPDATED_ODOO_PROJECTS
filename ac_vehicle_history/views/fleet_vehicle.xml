@@ -27,10 +27,10 @@
 
             </xpath>
             <xpath expr="//field[@name='transmission']" position="after">
-                <field name="service_type_sequence" />
+                <field name="service_type_sequence" invisible="1"/>
             </xpath>
             <xpath expr="//field[@name='location']" position="after">
-                <field name="po_ref" />
+                <field name="po_ref" groups="base.group_no_one"/>
             </xpath>
 
 

@@ -85,6 +85,7 @@
                                               </t>
                                             </td>
                                         </tr> -->
+
                                         <tr>
                                             <td>Vehicle Model</td>
                                             <td>:</td>
@@ -92,7 +93,9 @@
                                                 <span t-field="doc.model.product_tmpl_id"/>
                                             </td>
                                         </tr>
+
                                         <tr>
+
                                             <td>Color</td>
                                             <td>:</td>
                                             <td>
