@@ -696,7 +696,7 @@ class StockPicking(models.Model):
 
                             # Add parent_id condition with AND
                             if cons_parent:
-                                search_domain += [('parent_id', '=', cons_parent.id)]
+                                search_domain.append(('parent_id', '=', cons_parent.id))
                             cons_customer = env['res.partner'].sudo().search(search_domain, limit=1)
                             # print(cons_customer,'NNNN')
                             cons_ownership_data = {
