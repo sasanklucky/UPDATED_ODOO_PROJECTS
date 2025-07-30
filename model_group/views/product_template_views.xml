@@ -1,9 +1,9 @@
 <!-- views/product_template_views.xml -->
 <odoo>
-    <record id="view_product_template_form_inherit" model="ir.ui.view">
-        <field name="name">product.template.form.inherit</field>
+    <record id="view_product_template_form_inherit_model_group" model="ir.ui.view">
+        <field name="name">product.template.model.group.form.inherit</field>
         <field name="model">product.template</field>
-        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='type']" position="before">
                 <!-- 1. Add catalog_type as invisible field -->
@@ -14,7 +14,6 @@
                 <field name="master_id"
                        widget="many2one_quick_create"
                        options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                       required="1"
                        attrs="{'invisible': [('catalog_type_name', '!=', 'Vehicle')]}"/>
             </xpath>
         </field>
