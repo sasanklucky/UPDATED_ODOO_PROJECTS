@@ -488,13 +488,10 @@ class StockPicking(models.Model):
                             service_type_code = env['service.type'].search([('name', '=', 'PDI Service')]).code
                             cons_service_ids = [service.cons_service_history_id for service in
                                                 vehicle_card.service_ids]
-                            services_done = cons_fleet_obj.service_ids.mapped('service_code')
-                            if not service_type_code in services_done:
-                                raise ValidationError(
-                                    _("Should be Complete PDI Service Before Selling this Vehicle"))
                             for con_service in cons_fleet_obj.service_ids:
-                                # if not con_service.service_code == service_type_code:
-                                print(con_service,'con_service')
+                                if not con_service.service_code == service_type_code:
+                                    raise ValidationError(
+                                        _("Should be Complete PDI Service Before Selling this Vehicle"))
                                 if con_service.id not in cons_service_ids:
                                     service_vals = {
                                         'vehicle_id': vehicle_card.id,
@@ -566,273 +563,89 @@ class StockPicking(models.Model):
                             vin_sn = line.lot_id.name if line.lot_id else line.lot_name
                             vehicle_card = fleet_obj.sudo().search([('vin_sn', '=', vin_sn)], limit=1)
 
-                            if not vehicle_card:
-                                # print(f"[Dealer] No vehicle card found for VIN: {vin_sn}")
-                                continue
+                            if vehicle_card:
+                                db_name = self._cr.dbname
+                                customer_code = self.sale_id.partner_id.customer_code or f"{db_name}_{self.sale_id.partner_id.id}"
+                                dealer_master_id = env['ars.consolidation.setup'].sudo().search(
+                                    [('dealer_code', '=', self.env.user.company_id.dealer_code)], limit=1)
+                                ownership_data = {
+                                    'custmer_name': self.sale_id.partner_id.id,
+                                    'date_of_ownership': datetime.now(),
+                                    'address': self.sale_id.partner_id.city,
+                                    'mobile': self.sale_id.partner_id.mobile,
+                                    # 'dealer_id':dealer_master_id.id,
+                                    'sold_by': self.env.user.company_id.partner_id.id,
+                                }
+                                vehicle_card.customer_ids = [(0, 0, ownership_data)]
+                                vehicle_card.write({'driver_id': self.sale_id.partner_id.id,
+                                                    'contact_name': self.sale_id.partner_id.id,
+                                                    'vehicle_status': 'customer'})
+                                consolidate_vehicle_card = env['fleet.vehicle'].sudo().browse(
+                                    vehicle_card.consolidate_vehicle_card_id)
+                                if not consolidate_vehicle_card:
+                                    consolidate_vehicle_card = env['fleet.vehicle'].sudo().search(
+                                        [('vin_sn', '=', vin_sn)])
+                                if not consolidate_vehicle_card:
+                                    raise ValidationError(_("Vehicle card Missing in Consolidated Database"))
 
-                            db_name = self._cr.dbname
-                            partner = self.sale_id.partner_id
-                            current_dealer_code = self.env.user.company_id.dealer_code
-                            customer_code = partner.customer_code or f"{db_name}_{partner.id}"
+                                consolidate_customer_obj = env['res.partner'].sudo()
+                                email, mobile = self.sale_id.partner_id.email, self.sale_id.partner_id.mobile
+                                cons_customer_obj = consolidate_customer_obj.search([
+                                    '|', '|',
+                                    ('email', '=', email),
+                                    ('mobile', '=', mobile),
+                                    ('customer_code', '=', customer_code)
+                                ], limit=1)
 
-                            ownership_data = {
-                                'custmer_name': partner.id,
-                                'date_of_ownership': datetime.now(),
-                                'address': partner.city,
-                                'mobile': partner.mobile,
-                                'sold_by': self.env.user.company_id.partner_id.id,
-                            }
-                            vehicle_card.write({
-                                'customer_ids': [(0, 0, ownership_data)],
-                                'driver_id': partner.id,
-                                'contact_name': partner.id,
-                                'vehicle_status': 'customer'
-                            })
+                                if not cons_customer_obj:
+                                    new_customer_data = {
+                                        'name': self.sale_id.partner_id.name,
+                                        'email': email,
+                                        'mobile': mobile,
+                                        'city': self.sale_id.partner_id.city,
+                                        'phone': self.sale_id.partner_id.phone,
+                                        'is_dealer': False,
+                                        'customer_code': customer_code
+                                    }
+                                    new_customer = consolidate_customer_obj.sudo().create(new_customer_data)
+                                    _logger.info("New Customer Created in consolidation database %s", new_customer)
 
-                            if vehicle_card.driver_id:
-                                current_card = vehicle_card.driver_id
-                                # print('DRIVER ID', current_card.id)
-                                current_customer_card = self.env['res.partner'].sudo().browse(current_card.id)
-                                # print(current_customer_card.parent_id.id, 'PARENT ID')
-
-                                current_parent = current_customer_card.parent_id
-                                # print(current_parent.name,'PARENET NAME')
-
-                            # Consolidation vehicle card
-                            consolidate_vehicle_card = env['fleet.vehicle'].sudo().browse(
-                                vehicle_card.consolidate_vehicle_card_id) if vehicle_card.consolidate_vehicle_card_id else None
-                            # print(consolidate_vehicle_card,'consolidate_vehicle_card')
-                            if not consolidate_vehicle_card:
-                                consolidate_vehicle_card = env['fleet.vehicle'].sudo().search(
-                                    [('vin_sn', '=', vin_sn)], limit=1)
-                                # print(consolidate_vehicle_card.vin_sn,'VIN NUMBER')
-
-                            if not consolidate_vehicle_card:
-                                raise ValidationError(_("Vehicle card Missing in Consolidated Database"))
-
-                            # --- Sync Parent Contact in Consolidation DB ---
-                            cons_parent = False
-                            if current_parent:
-                                cons_parent_domain = []
-                                if current_parent.customer_code:
-                                    # print(current_parent.customer_code,'PARENT CUSTOMER CODE')
-                                    cons_parent_domain.append(('customer_code', '=', current_parent.customer_code))
-                                if current_parent.email:
-                                    # print(current_parent.email,'PARENT EMAIL')
-                                    cons_parent_domain.append(('email', '=', current_parent.email))
-                                if current_parent.mobile:
-                                    cons_parent_domain.append(('mobile', '=', current_parent.mobile))
-                                    # print(current_parent.email, 'PARENT mobile')
-
-                                final_domain = []
-                                for condition in cons_parent_domain:
-                                    final_domain = OR([final_domain, [condition]])
-                                cons_parent = env['res.partner'].sudo().search(final_domain, limit=1)
-                                # print(cons_parent,':cons_parent cons_parent')
-                                if not cons_parent:
-                                    # Create hidden parent contact in consolidation
-                                    duplicate_mobile = self.env['res.partner'].sudo().search([('mobile','=',current_parent.mobile)]).filtered(lambda x: not x.parent_id)
-                                    # print(duplicate_mobile,'IDS')
-                                    for partner in duplicate_mobile:
-                                        # print(partner, 'UNIQUE')
-
-                                        # Check if it's a parent company contact
-                                        if partner.company_type == 'company':
-                                            # print(partner.mobile, 'COMPANY MOBILE')
-                                            # print(partner.email, 'EMAIL')
-                                            # Create parent
-                                            cons_parent = env['res.partner'].sudo().create({
-                                                'name': partner.name,
-                                                'company_type': 'company',
-                                                'customer': False,
-                                                'supplier': False,
-                                                'active': True,
-                                                'customer_code': customer_code,
-                                                'city': partner.city,
-                                                # 'mobile': partner.mobile,
-                                                # 'email': partner.email,
-                                                'street': partner.street
-                                            })
-                                            # print('Created cons_parent:', cons_parent)
-                                            _logger.info("Created parent in consolidation DB: %s", cons_parent.name)
-                                            if partner.child_ids:
-                                                for rec in partner.child_ids:
-                                                   child_vals = {
-                                                        'name': rec.name,
-                                                        'company_type': 'person',
-                                                        'customer': False,
-                                                        'supplier': False,
-                                                        'active': True,
-                                                        'parent_id': cons_parent.id,
-                                                        'customer_code':customer_code,
-                                                        'city': rec.city,
-                                                        'mobile': rec.mobile,
-                                                        'email': rec.email,
-                                                        'street': rec.street
-                                                    }
-                                                   cons_childs = env['res.partner'].sudo().create(child_vals)
-                            elif partner.company_type == 'person':
-                                #print(partner, 'CHILD RECORD FOUND but no parent')
-                                cons_customer = env['res.partner'].sudo().create({
-                                    'name': partner.name,  # use current_parent for child's name
-                                    'email': partner.email,
-                                    'mobile': partner.mobile,
-                                    'city': partner.city,
-                                    'street': partner.street,
-                                    'phone': partner.phone,
-                                    'company_type': 'person',
-                                    'is_dealer': False,
-                                    'customer_code': customer_code,
-                                    'customer': True,
-                                })
-                                #print('Created customer :', cons_customer)
-
-
-                            company_id = env['res.company'].sudo().search([('dealer_code', '=', current_dealer_code)])
-                            search_domain = ['|',
-                                             ('mobile', '=', partner.mobile),
-                                             ('email', '=', partner.email)
-                                             ]
-
-                            # Add parent_id condition with AND
-                            if cons_parent:
-                                search_domain.append(('parent_id', '=', cons_parent.id))
-                            cons_customer = env['res.partner'].sudo().search(search_domain, limit=1)
-                            # print(cons_customer,'NNNN')
-                            cons_ownership_data = {
-                                'custmer_name': cons_customer.id,
-                                'date_of_ownership': datetime.now(),
-                                'address': cons_customer.city,
-                                'mobile': cons_customer.mobile,
-                                'sold_by': company_id.partner_id.id,
-                            }
-
-                            consolidate_vehicle_card.write({
-                                'customer_ids': [(0, 0, cons_ownership_data)],
-                                'driver_id': cons_customer.id,
-                                'contact_name': cons_customer.id,
-                                'vehicle_status': 'customer'
-                            })
-
-                            # --- Now update all other dealers ---
-                            # cons_search_domain = ['|', '|',
-                            #                                             ('customer_code', '=', customer_code),
-                            #                                             ('email', '=', partner.email),
-                            #                                             ('mobile', '=', partner.mobile),
-                            #                                             ]
-                            all_dealers = env['ars.consolidation.setup'].sudo().search([])
-                            vin_sn = consolidate_vehicle_card.vin_sn
-                            cons_driver = consolidate_vehicle_card.driver_id
-                            cons_parent = cons_driver.parent_id
-                            customer_code = cons_driver.customer_code
-                            for dealer in all_dealers:
-                                if dealer.dealer_code == current_dealer_code:
-                                    continue
-                                try:
-                                    db = sql_db.db_connect(dealer.db_name)
-                                    with contextlib.closing(db.cursor()) as cr:
-                                        cr.autocommit(True)
-                                        dealer_env = api.Environment(cr, SUPERUSER_ID, {})
-
-                                        dealer_vehicle = dealer_env['fleet.vehicle'].search([
-                                            ('vin_sn', '=', vin_sn)
-                                        ], limit=1)
-
-                                        if not dealer_vehicle:
-                                            _logger.warning("Vehicle not found in dealer %s", dealer.db_name)
-                                            continue
-                                        dealer_parent = None
-                                        dealer_customer = None
-
-                                        if cons_parent:
-                                            domain = []
-                                            if cons_parent.customer_code:
-                                                domain.append(('customer_code', '=', cons_parent.customer_code))
-                                            if cons_parent.email:
-                                                domain.append(('email', '=', cons_parent.email))
-                                            if cons_parent.mobile:
-                                                domain.append(('mobile', '=', cons_parent.mobile))
-
-                                            search_domain = []
-                                            for cond in domain:
-                                                search_domain = OR([search_domain, [cond]])
-
-                                            dealer_parent = dealer_env['res.partner'].sudo().search(search_domain, limit=1)
-
-                                            if not dealer_parent:
-                                                dealer_parent = dealer_env['res.partner'].sudo().create({
-                                                    'name': cons_parent.name,
-                                                    'company_type': 'company',
-                                                    'customer': False,
-                                                    'supplier': False,
-                                                    'active': True,
-                                                    'customer_code': cons_parent.customer_code,
-                                                    'city': cons_parent.city,
-                                                    'street': cons_parent.street,
-                                                })
-                                                _logger.info("Created parent in dealer DB %s: %s", dealer.db_name,
-                                                             dealer_parent.name)
-
-                                            dealer_customer = dealer_env['res.partner'].sudo().search([
-                                                ('mobile', '=', cons_driver.mobile),
-                                                ('parent_id', '=', dealer_parent.id)
-                                            ], limit=1)
-
-                                            if not dealer_customer:
-                                                dealer_customer = dealer_env['res.partner'].sudo().create({
-                                                    'name': cons_driver.name,
-                                                    'email': cons_driver.email,
-                                                    'mobile': cons_driver.mobile,
-                                                    'city': cons_driver.city,
-                                                    'street': cons_driver.street,
-                                                    'phone': cons_driver.phone,
-                                                    'company_type': 'person',
-                                                    'is_dealer': False,
-                                                    'customer_code': customer_code,
-                                                    'customer': True,
-                                                    'parent_id': dealer_parent.id,
-                                                })
-                                                _logger.info("Created child under parent in dealer DB %s: %s", dealer.db_name,
-                                                             dealer_customer.name)
-
-                                        else:
-                                            # Standalone customer
-                                            dealer_customer = dealer_env['res.partner'].sudo().search([
-                                                ('mobile', '=', cons_driver.mobile),
-                                                ('parent_id', '=', False)
-                                            ], limit=1)
-
-                                            if not dealer_customer:
-                                                dealer_customer = dealer_env['res.partner'].sudo().create({
-                                                    'name': cons_driver.name,
-                                                    'email': cons_driver.email,
-                                                    'mobile': cons_driver.mobile,
-                                                    'city': cons_driver.city,
-                                                    'street': cons_driver.street,
-                                                    'phone': cons_driver.phone,
-                                                    'company_type': 'person',
-                                                    'is_dealer': False,
-                                                    'customer_code': customer_code,
-                                                    'customer': True,
-                                                })
-                                                _logger.info("Created standalone customer in dealer DB %s: %s", dealer.db_name,
-                                                             dealer_customer.name)
-
-                                        # --- Step 2: Update vehicle in dealer DB ---
-                                        # company_id = dealer_env['res.company'].sudo().search(
-                                        #     [('dealer_code', '=', dealer.dealer_code)], limit=1)
-                                        # print(company_id,'COMPANY')
-                                        # print(company_id.dealer_code,'DEALER CODE')
-
-                                        dealer_vehicle.write({
-                                            'driver_id': dealer_customer.id,
-                                            'contact_name': dealer_customer.id,
-                                            'vehicle_status': 'customer',
-                                        })
-                                        _logger.info("Updated vehicle VIN %s in dealer DB %s", vin_sn, dealer.db_name)
-
-                                except Exception as e:
-                                    _logger.error("Failed updating dealer %s: %s", dealer.db_name, str(e))
+                                    company_id = env['res.company'].sudo().search(
+                                        [('dealer_code', '=', self.env.user.company_id.dealer_code)])
+                                    dealer_master_id = env['ars.consolidation.setup'].sudo().search(
+                                        [('dealer_code', '=', self.env.user.company_id.dealer_code)], limit=1)
+                                    cons_ownership_data = {
+                                        'custmer_name': new_customer.id,
+                                        'date_of_ownership': datetime.now(),
+                                        'address': new_customer.city,
+                                        'mobile': new_customer.mobile,
+                                        'dealer_id': dealer_master_id.id,
+                                        'sold_by': company_id.partner_id.id,
+                                    }
+                                    consolidate_vehicle_card.customer_ids = [(0, 0, cons_ownership_data)]
+                                    consolidate_vehicle_card.write(
+                                        {'driver_id': new_customer.id, 'contact_name': new_customer.id,
+                                         'vehicle_status': 'customer'})
+                                else:
+                                    existing_customer = cons_customer_obj[0]
+                                    company_id = env['res.company'].sudo().search(
+                                        [('dealer_code', '=', self.env.user.company_id.dealer_code)])
+                                    dealer_master_id = env['ars.consolidation.setup'].sudo().search(
+                                        [('dealer_code', '=', self.env.user.company_id.dealer_code)], limit=1)
+                                    cons_ownership_data = {
+                                        'custmer_name': existing_customer.id,
+                                        'date_of_ownership': datetime.now(),
+                                        'address': existing_customer.city,
+                                        'mobile': existing_customer.mobile,
+                                        'dealer_id': dealer_master_id.id,
+                                        'sold_by': company_id.partner_id.id,
+                                    }
+                                    consolidate_vehicle_card.customer_ids = [(0, 0, cons_ownership_data)]
+                                    consolidate_vehicle_card.write(
+                                        {'driver_id': existing_customer.id, 'contact_name': existing_customer.id,
+                                         'vehicle_status': 'customer'})
+                                    _logger.info("Ownership history updated consolidation database %s",
+                                                 consolidate_vehicle_card.id)
                         return super(StockPicking, self).button_validate()
             return super(StockPicking, self).button_validate()
         else:
