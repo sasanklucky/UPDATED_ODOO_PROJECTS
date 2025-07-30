@@ -3,7 +3,7 @@
     'version': '1.0',
     'summary': 'Adds Master Product concept',
     "author": "Autochip",
-    'depends': ['base','product','stock','ars_after_sales','ars_vehicle_sales','ac_vehicle_management', 'ars_reports', 'fleet','account'],
+    'depends': ['base','product','stock','ars_after_sales','ars_vehicle_sales', 'fleet','account'],
     'data': [
         'security/ir.model.access.csv',
         'security/security.xml',
