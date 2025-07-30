@@ -12,7 +12,7 @@
     'depends': ['base','sale','crm','purchase','purchase_requisition','web', 'mail',
                 'ac_product_catalog',
                 'ars_after_sales',
-                'ars_vehicle_sales'],
+                'ars_vehicle_sales','model_group'],
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',

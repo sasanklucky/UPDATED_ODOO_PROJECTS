@@ -13,7 +13,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','crm','ars_after_sales','ars_vehicle_sales'],
+    'depends': ['base','crm','ars_after_sales','ars_vehicle_sales','model_group'],
 
     # always loaded
     'data': [
