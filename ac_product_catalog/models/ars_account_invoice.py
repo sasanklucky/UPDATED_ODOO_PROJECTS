@@ -60,7 +60,6 @@ class ARSCatalogInvoice(models.Model):
 
     def _prepare_invoice_line_from_po_line(self, line):
         res = super(ARSCatalogInvoice, self)._prepare_invoice_line_from_po_line(line)
-        print(res)
         if 'name' in res:
             po_line = self.env['purchase.order.line'].search([('id', '=', res['purchase_line_id'])])
             if po_line.product_id.default_code:
