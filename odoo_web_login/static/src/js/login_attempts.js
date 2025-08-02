@@ -27,7 +27,7 @@ odoo.define('odoo_web_login.login_attempts', function (require) {
     // Render reCAPTCHA when loaded
     window.recaptchaLoaded = function () {
         grecaptcha.render("recaptcha-container", {
-            sitekey: "6LeTGvQqAAAAAEBA3VIqO03T4ha_vwcuz6siUeCd", // Replace with your actual site key
+            sitekey: "6Le9n5crAAAAAGFUKFruBMoSpeimiOwxaQv3PhUX", // Replace with your actual site key
         });
     };
 
