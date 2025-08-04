@@ -70,7 +70,7 @@ class LoginHome(Home):
         set_background()
         if request.httprequest.method == 'POST':
             recaptcha_response = kw.get('g-recaptcha-response')
-            secret_key = "6LeTGvQqAAAAAEFoIzqaRgCZxQjvY1J6h83Lt8Bt"  # Replace with your actual secret key
+            secret_key = "6LeWl5grAAAAAElMRAWXgSs02sqqB92M0HFdCMU8"  # Replace with your actual secret key
 
             # Verify reCAPTCHA
             if recaptcha_response:
