@@ -1487,10 +1487,10 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     def _get_new_picking_values(self):
-        if not self.sale_line_id.order_id.branch_id:
-            raise ValidationError(f"""⚠️ Branch Not Selected or Mismatched {self.sale_line_id.order_id.branch_id.name}
-                                    Please ensure a branch is selected and that it matches the appropriate branch for this sale order.
-                                    The sale order cannot proceed without a valid and matching branch.""")
+        # if not self.sale_line_id.order_id.branch_id:
+        #     raise ValidationError(f"""⚠️ Branch Not Selected or Mismatched {self.sale_line_id.order_id.branch_id.name}
+        #                             Please ensure a branch is selected and that it matches the appropriate branch for this sale order.
+        #                             The sale order cannot proceed without a valid and matching branch.""")
         res = super(StockMove, self)._get_new_picking_values()
 
         # Pass branch_id from sale order if available
