@@ -371,7 +371,7 @@ class CrmLeadLostStage(models.Model):
                 if sale_orders:
                     for sale_rec in sale_orders:
                         cancel_wizard = self.env['sale.order.cancel'].with_context({'active_ids': [sale_rec.id]}).create({
-                            'lost_reason_id': rec.lost_reason_id.id,
+                            'lost_reason_id': rec.lost_reason.id,
                             'child_lost_reason_id': rec.child_lost_reason_id.id,
                         })
                         cancel_wizard.confirm_cancel()
