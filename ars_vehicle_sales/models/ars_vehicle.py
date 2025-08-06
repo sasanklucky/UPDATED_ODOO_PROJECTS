@@ -132,8 +132,7 @@ class FleetVehicle(models.Model):
 
     contact_name = fields.Many2one('res.partner', string='Contact Person')
     vehicle_status = fields.Selection(
-        [('demo', 'Demo'), ('customer', 'Customer'), ('own', 'Own'), ('new', 'New Vehicle')], 'Vehicle Status',
-        select=True, default='customer')
+        [('demo', 'Demo'), ('customer', 'Customer'), ('own', 'Own'), ('new', 'New Vehicle')], 'Vehicle Status')
     # kilometer_till = fields.Integer(string='Kilometer Till')
     #     reg_no = fields.Char(string='Regn No.')
     age = fields.Integer(string='Age', compute="_age")

@@ -17,7 +17,7 @@
             <field name="dpi">90</field>
         </record>
     <report
-            id="sale_action_service_history_invoice"
+            id="sale_action_service_history_invoice_old"
             string="Service History PDF"
             model="fleet.vehicle"
             report_type="qweb-pdf"
