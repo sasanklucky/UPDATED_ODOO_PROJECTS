@@ -13,6 +13,7 @@ from openerp.exceptions import UserError, ValidationError
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+
     booking_amount_total = fields.Integer(compute="_compute_booking_amount_total", string="Booking Count")
     booking_amount_total_value = fields.Float(compute="_compute_booking_amount_total_value", string="Total Booking Amount")
 

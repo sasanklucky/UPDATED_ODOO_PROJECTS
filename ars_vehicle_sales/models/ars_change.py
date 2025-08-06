@@ -553,6 +553,7 @@ class ars_sale_order_line(models.Model):
 
 class ars_sale_invoice(models.Model):
     _inherit = 'account.invoice'
+    e_invoice_status = fields.Char()
 
     delivery_type = fields.Selection([('home_delivery', 'Home Delivery'), ('showroom', 'Showroom')])
     after_sale_intro = fields.Selection([('yes', 'Yes'), ('no', 'No')])
