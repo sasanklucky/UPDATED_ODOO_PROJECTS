@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="view_order_form_inherit1" model="ir.ui.view">
-            <field name="name">sale.order.form.inherit</field>
+            <field name="name">sale.order.form.inherit1</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
             <field name="arch" type="xml">
@@ -11,12 +11,16 @@
                             string="RO Closed"
                             type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('stages', 'in', ['estimation', 'repair_order','waiting_for_parts','ro_closed'])]}"/>
+                            attrs="{'invisible': [('stages', 'in', ['estimation', 'repair_order','waiting_for_parts','ro_closed','cancel'])]}"/>
                     />
                 </xpath>
                 <xpath expr="//button[@name='293']" position="attributes">
-                    <attribute name="attrs">{'invisible': ['|',('invoice_status', '!=', 'no'),('state', '!=', 'sale'),('stages', '!=', 'ro_closed')]}</attribute>
-<!--                    <attribute name="attrs">{'invisible': ['|',('stages', '!=', 'ro_closed'),('invoice_status', '!=', 'no')]}</attribute>-->
+                    <attribute name="attrs">{'invisible': ['|',('invoice_status', '!=', 'no'),('state', '!=',
+                        'sale'),('stages', '!=', 'ro_closed')]}
+                    </attribute>
+                    <!--                    <attribute name="attrs">{'invisible': ['|','|',('invoice_status', '!=', 'no'),('state', '!=',-->
+                    <!--                        'sale'),('stages', '!=', 'ro_closed')]}-->
+                    <!--                    </attribute>-->
                 </xpath>
                 <xpath expr="//sheet/group" position="before">
                     <field name="stages" widget="statusbar"
@@ -47,6 +51,11 @@
                            statusbar_visible="ro_closed"
                            style="float: right;"
                            attrs="{'invisible': [('stages', '!=', 'ro_closed')]}"/>
+                    <!--  cancel   -->
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="cancel"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'cancel')]}"/>
                 </xpath>
                 <xpath expr="//button[@name='action_unlock']" position="attributes">
                     <button name="action_unlock" type="object" string="Unlock"
@@ -65,6 +74,21 @@
                             groups="ac_ars_campaigns.group_reopen_sale_order"/>
 
                 </xpath>
+                <xpath expr="//field[@name='sold_by']" position="after">
+                    <field name="ro_closed_date" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_ro_close_date_updates" model="ir.actions.server">
+            <field name="name">Ro Close Update</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                records.ro_closed_update_action()
             </field>
         </record>
     </data>

@@ -1,5 +1,47 @@
-from odoo import models, fields, api,_
+from email.policy import default
+import threading
+import contextlib
+import logging
+from odoo import models, fields, api,_, SUPERUSER_ID, sql_db
 from odoo.exceptions import UserError, ValidationError
+from datetime import datetime
+import time
+_logger = logging.getLogger(__name__)
+
+
+def threaded_ro_closed_update(record_ids, db_name, user_id):
+    start_time = time.time()
+    _logger.info("RO Close Update Thread started at: %s", time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(start_time)))
+
+    try:
+        connection = sql_db.db_connect(db_name)
+        with contextlib.closing(connection.cursor()) as cr:
+            with api.Environment.manage():
+                env = api.Environment(cr, user_id, {'lang': 'en_US'})
+                sale_orders = env['sale.order'].browse(record_ids).filtered(lambda so: so.state in ('done', 'sale') and not so.ro_closed_date)
+
+                _logger.info("Processing %d sale orders", len(sale_orders))
+
+                for rec in sale_orders:
+                    _logger.info(f"Updating RO Close for: {rec.name}")
+                    if rec.invoice_ids:
+                        invoice = rec.invoice_ids.sorted(key=lambda inv: inv.id)[0]
+                        rec.write({'ro_closed_date': invoice.create_date})
+                        _logger.info(f"RO Close Date updated for {rec.name} to {invoice.create_date}")
+                        env.user.notify_info(f"Ro Closed Date {rec.ro_closed_date} Updated Successfully")
+
+                env.cr.commit()
+                _logger.info("All RO Close Dates committed successfully.")
+
+
+    except Exception as e:
+        _logger.exception("Threaded RO Close Update failed: %s", str(e))
+
+    end_time = time.time()
+    duration = end_time - start_time
+    _logger.info("Thread ended at: %s", time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(end_time)))
+    _logger.info("Total time taken for RO Close update (seconds): %.2f", duration)
+
 
 class SalesOrders(models.Model):
     _inherit = "sale.order"
@@ -10,8 +52,11 @@ class SalesOrders(models.Model):
         ('waiting_for_parts', 'Waiting For Parts'),
         ('wip', 'Work In Progress'),
         ('ro_closed', 'Ro Closed'),
-    ], string='Stage', default='estimation', tracking=True,copy=False)
+        ('cancel', 'Cancelled'),
+    ], string='Stage', default='estimation',tracking=True, copy=False)
     campaign_his_id = fields.Many2one('campaign.history', string="Campaign History")
+    ro_closed_date = fields.Datetime('Ro Closed Date')
+
 
     @api.multi
     def action_unlock(self):
@@ -32,25 +77,31 @@ class SalesOrders(models.Model):
         for record in self:
             categories = record.order_line.mapped('product_id.categ_id.name')
             if categories and set(categories) == {'Labor'}:
-                print(categories,'cccc')
                 record.write({'stages': 'wip'})
             else:
                 record.write({'stages': 'waiting_for_parts'})
-                print(categories,'rrrr')
         return super(SalesOrders, self).action_confirm()
 
     def action_cancel(self):
-        self.write({'stages':'estimation'})
+        self.write({'stages':'cancel'})
         return super(SalesOrders, self).action_cancel()
 
-    # def action_convert(self):
-    #     res = super(SalesOrders,self).action_convert()
-    #     self.write({'stages':'repair_order'})
-    #     return res
 
+    def action_draft(self):
+        res = super(SalesOrders, self).action_draft()
+        for rec in self:
+            if rec.state == 'draft':
+                rec.write({'stages':'estimation'})
+        return res
+
+
+    @api.multi
     def ro_closed_action(self):
         action = self.action_done()
-        self.write({'stages':'ro_closed'})
+        self.write({'ro_closed_date': datetime.now(),
+                    'stages':'ro_closed'})
+        self.env.user.notify_info(f"Ro Closed Date {self.ro_closed_date} Updated Successfully")
+
         model_with_fields = {}
         for record in self:
             for order_line_item in record.order_line:
@@ -69,9 +120,7 @@ class SalesOrders(models.Model):
                     raise ValidationError("No vehicle found with VIN: %s" % self.vin_no)
 
                 for field_name in fields:
-                    print(field_name,'aaa')
                     if field_name in vehicle._fields:
-                        print(f"{field_name} -> {vehicle[field_name]}")
                         mandatory_fields = []
                         if not vehicle[field_name]:
                             mandatory_fields.append(field_name)
@@ -89,8 +138,29 @@ class SalesOrders(models.Model):
                 'context': {'default_vehicle': vehicle.id,
                             'default_sale_id': self.id}
             }
-        else:
-            print('No Mandaitory fileds')
+
+    # Server Action Function
+    @api.multi
+    def ro_closed_update_action(self):
+        db_name = self._cr.dbname
+        user_id = self.env.user.id
+        record_ids = [rec.id for rec in self]
+        _logger.info("Launching RO Close Update Thread for %d records", len(record_ids))
+
+        thread = threading.Thread(
+            target=threaded_ro_closed_update,
+            args=(record_ids, db_name, user_id),
+            daemon=True
+        )
+        thread.start()
+
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'reload',
+        }
+
+
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
