@@ -634,6 +634,12 @@ class ars_sale_invoice(models.Model):
         for sale in self:
             sale.amount_total_words = sale.currency_id.amount_to_text(sale.amount_total)
 
+    def get_amount_total_words_rounded(self):
+        """Return the rounded amount_total in words for the record."""
+        self.ensure_one()
+        rounded_total = round(self.amount_total, 0)
+        return self.currency_id.amount_to_text(rounded_total)
+
     @api.multi
     def action_print_gate_pass_button(self):
         if self.state in ['open', 'paid']:
