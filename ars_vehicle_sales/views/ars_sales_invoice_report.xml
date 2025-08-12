@@ -326,7 +326,7 @@
                                         <td style="background-color:#FFF;padding: 0px 2px;">
                                             :
                                         </td>
-                                        <td style="padding: 0px 2px;" class="text-right"><span t-field="doc.order_id.amount_total_words"/> only</td>
+                                        <td style="padding: 0px 2px;" class="text-right"><span t-esc="doc.get_amount_total_words_rounded()"/> only</td>
                                     </tr>
                                     <tr>
                                         <td style="padding: 0px 2px;"><span>Amount of Tax subject to Reverse Charges</span></td>
