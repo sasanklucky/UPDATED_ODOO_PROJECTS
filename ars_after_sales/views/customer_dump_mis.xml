@@ -57,12 +57,44 @@
             </field>
         </record>
 
+<!--        <record id="customer_dump_mis_action" model="ir.actions.act_window">-->
+<!--            <field name="name">Customer Enquiry Dump Mis Report</field>-->
+<!--            <field name="type">ir.actions.act_window</field>-->
+<!--            <field name="res_model">customer_dump_mis_report</field>-->
+<!--            <field name="view_mode">tree</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--        </record>-->
+
+
         <record id="customer_dump_mis_action" model="ir.actions.act_window">
             <field name="name">Customer Enquiry Dump Mis Report</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">customer_dump_mis_report</field>
-            <field name="view_mode">tree</field>
+            <field name="res_model">customer_dump_mis_report.wiz</field>
+            <field name="view_mode">form</field>
             <field name="view_type">form</field>
+            <field name="view_id" ref="ars_after_sales.view_customer_dump_mis_action_wiz"/>
+            <field name="target">new</field>
+        </record>
+
+
+
+
+        <record id="view_customer_dump_mis_action_wiz" model="ir.ui.view">
+            <field name="name">Customer Enquiry Dump Mis Report Wizard</field>
+            <field name="model">customer_dump_mis_report.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Choose Companies">
+                    <group>
+                        <group>
+                            <field name="company_id" widget="many2many_tags" readonly="0"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retrieve_customer_report" string="Get Customer Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
         </record>
         
         

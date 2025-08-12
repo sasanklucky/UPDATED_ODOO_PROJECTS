@@ -417,7 +417,7 @@
                   sequence="5"/>
 
         <menuitem id="menu_aftersales_cust_enq_dump_mis"
-                  name="Customer Enquiry Dumps MIS"
+                  name="Customer one Enquiry Dumps MIS"
                   action="customer_dump_mis_action"
                   parent="crm.crm_menu_report"
                   sequence="0"/>

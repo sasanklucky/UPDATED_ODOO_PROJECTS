@@ -38,6 +38,30 @@ class activity_log_report(models.Model):
     activity_cr_date_3 = fields.Date('Activity Date')
 
 
+
+class customer_dump_mis_report(models.TransientModel):
+    _name = 'customer_dump_mis_report.wiz'
+
+    company_id = fields.Many2many('res.company', string='Company', default=lambda self: self.env.user.company_ids)
+
+    def retrieve_customer_report(self):
+        self.ensure_one()
+        query = self.env['customer_dump_mis_report']
+        comp_ids = []
+        for rec in self.company_id:
+            comp_ids.append(rec.id)
+        query.sudo()._refresh_view(user=comp_ids)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Epv Report',
+            'res_model': 'customer_dump_mis_report',
+            'view_mode': 'tree',
+            'view_type': 'form',
+            'context': self.env.context,
+            'target': 'current',
+        }
+
+
 class customer_dump_mis_report(models.Model):
     _name = 'customer_dump_mis_report'
     _description = 'Customer Enquiry Dump Mis Report'
@@ -133,10 +157,17 @@ class customer_dump_mis_report(models.Model):
     activity_cr_date_3 = fields.Date('Activity Date(3)')
 
     @api.model_cr
-    def init(self):
+    def _refresh_view(self, user):
         tools.drop_view_if_exists(self.env.cr, self._table)
-        print("table name", self._table);
-        self.env.cr.execute(f""" CREATE or REPLACE VIEW %s as (
+
+        # Handle single company ID case properly
+        if len(user) == 1:
+            company_condition = f"= {user[0]}"
+        else:
+            company_condition = f"IN {tuple(user)}"
+
+        query = f"""
+        CREATE or REPLACE VIEW {self._table} AS (
             WITH activity_log AS (
                 SELECT
                     lead_id,
@@ -185,7 +216,6 @@ class customer_dump_mis_report(models.Model):
                 a.referred AS referred,
                 CASE WHEN a.is_test_drive = True THEN 'YES' ELSE 'NO' END AS test_drive,
                 act1.summary AS note_1,
-                -- act1.note AS remarks_1,
                 regexp_replace(
                 regexp_replace(
                     regexp_replace(
@@ -196,7 +226,6 @@ class customer_dump_mis_report(models.Model):
                     '&quot;', '"', 'g'),
                     '<[^>]*>', '', 'g') AS remarks_1,
                 act2.summary AS note_2,
-                --act2.note 
                 regexp_replace(
                 regexp_replace(
                     regexp_replace(
@@ -207,7 +236,6 @@ class customer_dump_mis_report(models.Model):
                     '&quot;', '"', 'g'),
                     '<[^>]*>', '', 'g') AS remarks_2,
                 act3.summary AS note_3,
-                --act3.note 
                 regexp_replace(
                 regexp_replace(
                     regexp_replace(
@@ -235,7 +263,10 @@ class customer_dump_mis_report(models.Model):
                 LEFT JOIN test_drive td ON a.id = td.opportunity_id AND td.rn = 1
             WHERE
                 a.type = 'opportunity'
-        )""" % (self._table))
+                AND a.company_id {company_condition}
+        )"""
+
+        self.env.cr.execute(query)
 
         # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline
         #     as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,
