@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+       <record id="view_crm_lead_form_inherit_readonly_partner" model="ir.ui.view">
+    <field name="name">crm.lead.form.readonly.partner</field>
+    <field name="model">crm.lead</field>
+    <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+    <field name="arch" type="xml">
+
+        <!-- Insert the computed field invisibly -->
+        <form position="inside">
+            <field name="has_quotation" invisible="1"/>
+        </form>
+
+        <!-- Apply readonly attribute -->
+        <field name="partner_id" position="attributes">
+            <attribute name="attrs">{'readonly': [('has_quotation', '=', True)]}</attribute>
+        </field>
+        <field name="mobile" position="attributes">
+            <attribute name="attrs">{'readonly': [('type', '=', 'opportunity')]}</attribute>
+        </field>
+
+    </field>
+</record>
+
+
+
+
+
+    </data>
+</odoo>
