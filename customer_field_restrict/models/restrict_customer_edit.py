@@ -20,3 +20,16 @@ class Customerfieldrestrict(models.Model):
             if lead.type == 'opportunity' and 'mobile' in vals:
                 raise exceptions.UserError(_("You cannot change the mobile number for an opportunity."))
         return super(Customerfieldrestrict, self).write(vals)
+
+class SaleOrder(models.Model):
+    _inherit = 'sale.order'
+
+    sale_has_opportunities = fields.Boolean(
+        string="Has Opportunity",
+        compute="_compute_has_opportunity",
+        store=False
+    )
+
+    def _compute_has_opportunity(self):
+        for order in self:
+            order.sale_has_opportunities = bool(order.opportunity_id)

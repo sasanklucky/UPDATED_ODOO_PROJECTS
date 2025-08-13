@@ -22,7 +22,26 @@
     </field>
 </record>
 
+<record id="view_order_form_inherit_readonly_customer" model="ir.ui.view">
+        <field name="name">sale.order.form.readonly.customer</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
 
+            <!-- Insert boolean field (invisible) for attrs condition -->
+            <xpath expr="//sheet" position="inside">
+                <field name="sale_has_opportunities" invisible="1"/>
+            </xpath>
+
+            <!-- Make Customer readonly if has_opportunity is True -->
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('sale_has_opportunities', '=', True)]}</attribute>
+            </xpath>
+
+
+
+        </field>
+    </record>
 
 
 
