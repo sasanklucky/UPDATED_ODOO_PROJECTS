@@ -8,10 +8,10 @@ class AfterSlaesRetailReport(models.Model):
 
     dealer_code = fields.Char(string="Dealer Code")
     dealer_id = fields.Many2one('res.company', 'Dealer Name')
-    dealer_state_id = fields.Many2one('res.country.state', string="State", related="dealer_id.state_id")
-    dealer_city_id = fields.Char(string="City", related="dealer_id.city")
+    dealer_state_id = fields.Many2one('res.country.state', string="State")
+    dealer_city_id = fields.Char(string="City")
     order_id = fields.Many2one('sale.order', string="Order")
-    customer_name = fields.Many2one('res.partner', related='order_id.partner_id')
+    customer_name = fields.Many2one('res.partner')
     line_item_id = fields.Many2one('account.invoice.line', string="Invoice Line")
     vin = fields.Char(string="VIN")
     registration_no = fields.Many2one('fleet.vehicle', string="Registration No")
@@ -24,7 +24,7 @@ class AfterSlaesRetailReport(models.Model):
     ro_open_date = fields.Datetime(string="RO Open Date")
     ro_close_date = fields.Date(string="RO Close Date")
     invoice_id = fields.Many2one('account.invoice', string="Invoice Number")
-    invoice_date = fields.Date(string="Invoice Date", related="invoice_id.date_invoice")
+    invoice_date = fields.Date(string="Invoice Date")
     service_type = fields.Many2one('service.type', string="Service Type")
     ro_type = fields.Char(string="RO Type")
     last_ro_close_date = fields.Datetime(string="Last RO Close Date")
@@ -33,19 +33,19 @@ class AfterSlaesRetailReport(models.Model):
     discount = fields.Float(string="Discount")
     part_id = fields.Many2one('product.product', string="Parts Replace")
     part_description = fields.Text(string="Product Description")
-    default_code = fields.Char(related='part_id.default_code')
-    l10n_in_hsn_code = fields.Char(related='part_id.l10n_in_hsn_code', string='HSN/SAC Code')
+    default_code = fields.Char( )
+    l10n_in_hsn_code = fields.Char(string='HSN/SAC Code')
     part_price = fields.Float(string="Product price(W/O Tax)")
     total_part_price = fields.Float(string="Total amount")
     customer_voc = fields.Text(string="Customer VOC", compute="_compute_customer_voc")
     cgst_per = fields.Float(string="CGST %", compute="_compute_tax_percentage")
     sgst_per = fields.Float(string="SGST %", compute="_compute_tax_percentage")
     igst_per = fields.Float(string="IGST %", compute="_compute_tax_percentage")
-    dealer_gst = fields.Char(string='Dealer GST Number', related='dealer_id.vat')
-    customer_gst = fields.Char('Customer GST Number', related='customer_name.vat')
-    customer_ph = fields.Char(string='Customer Mobile No', related='customer_name.mobile')
-    customer_city = fields.Char(string='Customer City', related='customer_name.city')
-    customer_state = fields.Many2one(string='Customer State', related='customer_name.state_id')
+    dealer_gst = fields.Char(string='Dealer GST Number')
+    customer_gst = fields.Char('Customer GST Number')
+    customer_ph = fields.Char(string='Customer Mobile No')
+    customer_city = fields.Char(string='Customer City')
+    customer_state = fields.Many2one('res.country.state',string='Customer State')
     cgst_amt = fields.Float('CGST Amount', compute='_compute_tax_percentage')
     sgst_amt = fields.Float(string='SGST Amount', compute='_compute_tax_percentage')
     igst_amt = fields.Float(string='IGST Amount', compute='_compute_tax_percentage')
@@ -67,7 +67,7 @@ class AfterSlaesRetailReport(models.Model):
     e_invoice_generated = fields.Char(string="E-Invoice Generated")
     irn_no = fields.Char(string="IRN Number")
     selling_dealer = fields.Char(string="Selling Dealer")
-    service_advisor = fields.Many2one('res.users', 'Service Advisor', related='order_id.user_id')
+    service_advisor = fields.Many2one('res.users', 'Service Advisor')
 
     @api.multi
     def sql_query(self, companys, start_date, end_date):
@@ -98,6 +98,7 @@ class AfterSlaesRetailReport(models.Model):
                 so.model as model,
                 rp2.name as selling_dealer,
                 inv.id as invoice_id,
+                inv.date_invoice as invoice_date,
                 inv.create_date as ro_close_date,
                 inv.cust_invoice_type as cust_invoice_type,
                 inv.type as invoice_type,
@@ -124,6 +125,20 @@ class AfterSlaesRetailReport(models.Model):
     			so.work_type as work_type,
     			rp.zip as pincode,
                 rp.vat as bill_to_customer_gst,
+                
+                res_par.state_id as dealer_state_id,
+                res_par.city as dealer_city_id,
+                res_par.vat as dealer_gst,
+                sale_res_par.id as customer_name,
+                res_user.id as service_advisor,
+                sale_res_par.vat as customer_gst,
+                sale_res_par.mobile as customer_ph,
+                sale_res_par.city as customer_city,
+                sale_res_par.state_id as customer_state,
+                prod_temp.default_code as default_code,
+                prod_temp.l10n_in_hsn_code as l10n_in_hsn_code,
+                
+                
                 (select 
                     case when inv.irn_no is not null then 'Yes' 
                     else 'No' 
@@ -133,10 +148,16 @@ class AfterSlaesRetailReport(models.Model):
     			left join account_invoice inv on inv.id = inli.invoice_id
                 left join sale_order so on so.id = inv.order_id
                 left join res_company rs on rs.id = so.company_id
+                left join res_partner res_par on res_par.id = rs.id
     			left join res_partner rp on inv.partner_id = rp.id
     			left join res_partner rp2 on so.sold_by = rp2.id
+    			left join res_partner sale_res_par on sale_res_par.id = so.partner_id
+    			left join res_users res_user on res_user.id = so.user_id
     			left join fleet_vehicle fv on fv.id = inv.reg_no
                 left join product_template pt on pt.id = fv.model_id
+                left join product_product prod_prod on prod_prod.id = inli.product_id
+                left join product_template prod_temp on prod_temp.id = prod_prod.product_tmpl_id
+                
                 left join model_groups mg on mg.id = pt.master_id
                 where so.state not in ('draft', 'sent', 'cancel') and so.sale_aftersales = 'after_sales'
                 AND rs.id IN {company_ids}
