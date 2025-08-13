@@ -91,5 +91,17 @@
                 records.ro_closed_update_action()
             </field>
         </record>
+
+        <record id="view_order_tree_inherit_add_stage" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.stage</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ars_after_sales.view_order_tree_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='mileage_in']" position="after">
+                    <field name="stages" string="Stage"/>
+                </xpath>
+            </field>
+        </record>
+
     </data>
 </odoo>
