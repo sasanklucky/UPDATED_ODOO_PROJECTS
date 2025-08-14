@@ -11,7 +11,7 @@ class Customerfieldrestrict(models.Model):
         for lead in self:
             count = self.env['sale.order'].search_count([
                 ('opportunity_id', '=', lead.id),
-                ('state', 'in', ['draft', 'sent'])
+                ('state', 'in', ['draft', 'sent','sale','done'])
             ])
             lead.has_quotation = bool(count)
 
