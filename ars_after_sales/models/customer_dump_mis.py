@@ -178,7 +178,7 @@ class customer_dump_mis_report(models.Model):
 
             start_date_str = "'{}'".format(start_date.strftime('%d-%m-%Y %H:%M:%S'))
             end_date_str = "'{}'".format(end_date.strftime('%d-%m-%Y %H:%M:%S'))
-            date_filter = f"AND a.enquiry_date::date BETWEEN {start_date_str} AND {end_date_str}"
+            date_filter = f"AND a.enquiry_date BETWEEN {start_date_str} AND {end_date_str}"
 
 
 
