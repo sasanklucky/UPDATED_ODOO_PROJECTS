@@ -43,6 +43,8 @@ class customer_dump_mis_report(models.TransientModel):
     _name = 'customer_dump_mis_report.wiz'
 
     company_id = fields.Many2many('res.company', string='Company', default=lambda self: self.env.user.company_ids)
+    start_date = fields.Datetime(string='Start Date')
+    end_date = fields.Datetime(string='End Date')
 
     def retrieve_customer_report(self):
         self.ensure_one()
@@ -50,7 +52,7 @@ class customer_dump_mis_report(models.TransientModel):
         comp_ids = []
         for rec in self.company_id:
             comp_ids.append(rec.id)
-        query.sudo()._refresh_view(user=comp_ids)
+        query.sudo()._refresh_view(user=comp_ids,start_date=self.start_date, end_date=self.end_date)
         return {
             'type': 'ir.actions.act_window',
             'name': 'Epv Report',
@@ -157,7 +159,7 @@ class customer_dump_mis_report(models.Model):
     activity_cr_date_3 = fields.Date('Activity Date(3)')
 
     @api.model_cr
-    def _refresh_view(self, user):
+    def _refresh_view(self, user,start_date, end_date):
         tools.drop_view_if_exists(self.env.cr, self._table)
 
         # Handle single company ID case properly
@@ -166,7 +168,21 @@ class customer_dump_mis_report(models.Model):
         else:
             company_condition = f"IN {tuple(user)}"
 
-        query = f"""
+        date_filter = ""
+
+        if start_date and end_date:
+            if isinstance(start_date, str):
+                start_date = fields.Datetime.from_string(start_date)
+            if isinstance(end_date, str):
+                end_date = fields.Datetime.from_string(end_date)
+
+            start_date_str = "'{}'".format(start_date.strftime('%d-%m-%Y %H:%M:%S'))
+            end_date_str = "'{}'".format(end_date.strftime('%d-%m-%Y %H:%M:%S'))
+            date_filter = f"AND a.enquiry_date::date BETWEEN {start_date_str} AND {end_date_str}"
+
+
+
+        self.env.cr.execute(f"""
         CREATE or REPLACE VIEW {self._table} AS (
             WITH activity_log AS (
                 SELECT
@@ -189,7 +205,7 @@ class customer_dump_mis_report(models.Model):
                 ROW_NUMBER() OVER() AS id,
                 a.id AS record_id,
                 a.company_id,
-                a.enquiry_date::Date AS enquiry_date,
+                CAST(a.enquiry_date AS DATE) AS enquiry_date,
                 a.date_deadline AS purchase_date,
                 a.date_deadline - a.enquiry_date::Date AS no_of_days,
                 a.create_date::Date AS lead_creation_date,
@@ -264,9 +280,9 @@ class customer_dump_mis_report(models.Model):
             WHERE
                 a.type = 'opportunity'
                 AND a.company_id {company_condition}
-        )"""
+                {date_filter}
+        )""")
 
-        self.env.cr.execute(query)
 
         # select row_number() over() as id,a.id as record_id,a.company_id,a.create_date::Date as enquiry_date,a.date_deadline
         #     as purchase_date,a.date_deadline - a.create_date::Date as no_of_days,
