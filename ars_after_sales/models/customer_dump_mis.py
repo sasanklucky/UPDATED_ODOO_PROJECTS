@@ -176,8 +176,14 @@ class customer_dump_mis_report(models.Model):
             if isinstance(end_date, str):
                 end_date = fields.Datetime.from_string(end_date)
 
-            start_date_str = "'{}'".format(start_date.strftime('%d-%m-%Y %H:%M:%S'))
-            end_date_str = "'{}'".format(end_date.strftime('%d-%m-%Y %H:%M:%S'))
+            # start_date_str = "'{}'".format(start_date.strftime('%d-%m-%Y %H:%M:%S'))
+            # print(start_date_str,start_date,"sssssssss")
+            # end_date_str = "'{}'".format(end_date.strftime('%d-%m-%Y %H:%M:%S'))
+            # date_filter = f"AND a.enquiry_date BETWEEN {start_date_str} AND {end_date_str}"
+
+            start_date_str = "'{}'".format(start_date.strftime('%Y-%m-%d %H:%M:%S'))
+            print(start_date_str, start_date, "sssssssss")
+            end_date_str = "'{}'".format(end_date.strftime('%Y-%m-%d %H:%M:%S'))
             date_filter = f"AND a.enquiry_date BETWEEN {start_date_str} AND {end_date_str}"
 
 
