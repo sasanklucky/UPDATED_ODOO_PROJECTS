@@ -139,6 +139,7 @@
                                 <group>
                                     <group colspan="4" string="Vehicle Information">
                                         <field name="vehicle_status"
+                                               force_save="1"
                                                attrs="{'readonly':[('vehicle_status','=','new')]}"/>
                                         <field name="initial_reg_no"/>
                                         <field name="vin_sn" string="VIN" required="1"/>
