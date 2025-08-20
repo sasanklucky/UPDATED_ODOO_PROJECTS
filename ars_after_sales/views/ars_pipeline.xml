@@ -822,7 +822,7 @@
                             <separator string="Service Details" colspan="4"/>
                             <group>
                                 <field name="doc_type" string="Visit Type" required="1"
-                                       attrs="{'readonly': ['|',('state','not in', ('draft', 'so')), ('doc_type', 'in', ('p&amp;d', 'P&amp;D'))]}"/>
+                                       attrs="{'readonly': ['|',('state','not in', ('draft', 'so')), ('doc_type', '=', ['p&amp;d'])]}"/>
                                 <field name="pick_up_drop"/>
                                 <field name="work_type" string="Work Type"
                                        attrs="{'readonly': [('state','not in', ('draft', 'so'))]}"/>
