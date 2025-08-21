@@ -143,7 +143,7 @@ class RepairOrderReport(models.Model):
                             mg.name AS master_name,
                             so.confirmation_date AS ro_open_date,
                             so.confirmation_date AS last_ro_close_date,
-                            inv.create_date AS ro_close_date,
+                            so.ro_closed_date AS ro_close_date,
                             so.mileage_in AS odoometer,
                             sol.product_id AS part_id,
                             sol.name AS part_description,

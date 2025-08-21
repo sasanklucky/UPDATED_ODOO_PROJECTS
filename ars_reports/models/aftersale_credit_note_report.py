@@ -90,7 +90,7 @@ class AfterSlaesRetailReport(models.Model):
                     cn.id as credit_note_id,
                     cn.number as credit_note_number,
                     cn.date_invoice as credit_note_date,
-                    inv.create_date as ro_close_date,
+                    so.ro_closed_date as ro_close_date,
                     mg.name as master_name,
                     (select rs.dealer_code from service_history sh where sh.vehicle_id = so.regn_no and sh.order = so.id order by id desc limit 1) as last_service_dealer,
                     (select date from service_history where vehicle_id = so.regn_no order by id desc  limit 1) as last_service_date,
