@@ -1,6 +1,6 @@
 # models/product_template.py
 from odoo import models, fields,api
-
+from odoo.exceptions import ValidationError
 
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
@@ -10,6 +10,12 @@ class ProductTemplate(models.Model):
         string='Model Group',
         index=True
     )
+
+    @api.constrains('master_id', 'catalog_type_name')
+    def _check_master_id_required(self):
+        for rec in self:
+            if rec.catalog_type_name == 'Vehicle' and not rec.master_id:
+                raise ValidationError("Model Group is required when Catalog Type is Vehicle.")
 
 
 
