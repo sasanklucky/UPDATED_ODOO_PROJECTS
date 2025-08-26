@@ -14,7 +14,10 @@
                 <field name="master_id"
                        widget="many2one_quick_create"
                        options="{'no_create': True, 'no_create_edit': True, 'no_open': True}"
-                       attrs="{'invisible': [('catalog_type_name', '!=', 'Vehicle')]}"/>
+                       attrs="{
+                       'required': [('catalog_type_name', '=', 'Vehicle')],
+                       'invisible': [('catalog_type_name', '!=', 'Vehicle')]
+                   }"/>
             </xpath>
         </field>
     </record>
