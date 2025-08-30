@@ -14,11 +14,17 @@
                   action="ars_after_sales.action_quotations_inherit"
                   parent="menu_aftersales_operation"
                   sequence="0"/>
-        <menuitem id="menu_service_order"
+        <!--        <menuitem id="menu_service_order"-->
+        <!--                  name="Service Orders"-->
+        <!--                  action="ars_after_sales.action_orders_inherit"-->
+        <!--                  parent="menu_aftersales_operation"-->
+        <!--                  sequence="1"/>-->
+        <menuitem id="menu_service_orders_py"
                   name="Service Orders"
-                  action="ars_after_sales.action_orders_inherit"
                   parent="menu_aftersales_operation"
+                  action="ars_after_sales.action_orders_inherit_py"
                   sequence="1"/>
+
         <menuitem id="menu_aftersales_invoicing"
                   name="Service Invoicing"
                   parent="menu_aftersales" sequence="3"/>
@@ -362,35 +368,35 @@
                 parent="sale.sale_menu_root"
                 action="stock.stock_picking_type_action"
                 sequence="0"/>
-<!--        <menuitem id="sale.sale_order_menu"-->
-<!--                  name="Vehicle Operations"-->
-<!--                  parent="sale.sale_menu_root"-->
-<!--                  sequence="1"/>-->
+        <!--        <menuitem id="sale.sale_order_menu"-->
+        <!--                  name="Vehicle Operations"-->
+        <!--                  parent="sale.sale_menu_root"-->
+        <!--                  sequence="1"/>-->
 
-<!--        <menuitem id="aftersale_parts_operation"-->
-<!--                  name="Parts Operations"-->
-<!--                  parent="sale.sale_menu_root"-->
-<!--                  sequence="2"/>-->
-<!--        <menuitem id="menu_aftersales_quotation"-->
-<!--                  name="Estimation"-->
-<!--                  action="ars_after_sales.action_quotations_inherit"-->
-<!--                  parent="aftersale_parts_operation"-->
-<!--                  sequence="0"/>-->
-<!--        <menuitem id="menu_aftersales_orders"-->
-<!--                  name="Orders"-->
-<!--                  action="ars_after_sales.action_orders_inherit"-->
-<!--                  parent="aftersale_parts_operation"-->
-<!--                  sequence="1"/>-->
-<!--        <menuitem id="parts_menu_sale_quotations"-->
-<!--                  name="Quotations"-->
-<!--                  action="ars_after_sales.counter_sale_action_qotations"-->
-<!--                  parent="aftersale_parts_operation"-->
-<!--                  sequence="2" groups="sales_team.group_sale_salesman"/>-->
-<!--        <menuitem id="parts_menu_sale_order"-->
-<!--                  name="Orders"-->
-<!--                  action="ars_after_sales.counter_sale_action_orders"-->
-<!--                  parent="aftersale_parts_operation"-->
-<!--                  sequence="3" groups="sales_team.group_sale_salesman"/>-->
+        <!--        <menuitem id="aftersale_parts_operation"-->
+        <!--                  name="Parts Operations"-->
+        <!--                  parent="sale.sale_menu_root"-->
+        <!--                  sequence="2"/>-->
+        <!--        <menuitem id="menu_aftersales_quotation"-->
+        <!--                  name="Estimation"-->
+        <!--                  action="ars_after_sales.action_quotations_inherit"-->
+        <!--                  parent="aftersale_parts_operation"-->
+        <!--                  sequence="0"/>-->
+        <!--        <menuitem id="menu_aftersales_orders"-->
+        <!--                  name="Orders"-->
+        <!--                  action="ars_after_sales.action_orders_inherit"-->
+        <!--                  parent="aftersale_parts_operation"-->
+        <!--                  sequence="1"/>-->
+        <!--        <menuitem id="parts_menu_sale_quotations"-->
+        <!--                  name="Quotations"-->
+        <!--                  action="ars_after_sales.counter_sale_action_qotations"-->
+        <!--                  parent="aftersale_parts_operation"-->
+        <!--                  sequence="2" groups="sales_team.group_sale_salesman"/>-->
+        <!--        <menuitem id="parts_menu_sale_order"-->
+        <!--                  name="Orders"-->
+        <!--                  action="ars_after_sales.counter_sale_action_orders"-->
+        <!--                  parent="aftersale_parts_operation"-->
+        <!--                  sequence="3" groups="sales_team.group_sale_salesman"/>-->
         <menuitem id="sale.menu_sale_invoicing"
                   name="Vehicle Invoicing"
                   parent="sale.sale_menu_root"
@@ -484,14 +490,14 @@
                   sequence="4"/>
 
         <!--Purchases Menu Sales & Aftersales-->
-<!--        <menuitem id="purchase_dashboard"-->
-<!--                  name="Dashboard"-->
-<!--                  action="stock.stock_picking_type_action"-->
-<!--                  parent="purchase.menu_purchase_root"-->
-<!--                  sequence="0"/>-->
+        <!--        <menuitem id="purchase_dashboard"-->
+        <!--                  name="Dashboard"-->
+        <!--                  action="stock.stock_picking_type_action"-->
+        <!--                  parent="purchase.menu_purchase_root"-->
+        <!--                  sequence="0"/>-->
 
-<!--        <menuitem id="purchase.menu_procurement_management" name="Vehicle Operations"-->
-<!--                  parent="purchase.menu_purchase_root" sequence="1"/>-->
+        <!--        <menuitem id="purchase.menu_procurement_management" name="Vehicle Operations"-->
+        <!--                  parent="purchase.menu_purchase_root" sequence="1"/>-->
 
         <!--<menuitem id="purchase_agreements" name="Purchase Agreements"-->
         <!--parent="purchase.menu_procurement_management"-->
@@ -501,37 +507,37 @@
         <!--parent="purchase.menu_procurement_management"-->
         <!--action="purchase_requisition.action_purchase_requisition" sequence="6"/>-->
 
-<!--        <menuitem id="purchase_parts" name="Parts Operations"-->
-<!--                  parent="purchase.menu_purchase_root" sequence="2"/>-->
+        <!--        <menuitem id="purchase_parts" name="Parts Operations"-->
+        <!--                  parent="purchase.menu_purchase_root" sequence="2"/>-->
 
-<!--        <menuitem action="purchase.purchase_rfq" id="parts_purchase_rfq"-->
-<!--                  name="Requests for Quotation"-->
-<!--                  parent="purchase_parts"-->
-<!--                  sequence="0"/>-->
+        <!--        <menuitem action="purchase.purchase_rfq" id="parts_purchase_rfq"-->
+        <!--                  name="Requests for Quotation"-->
+        <!--                  parent="purchase_parts"-->
+        <!--                  sequence="0"/>-->
 
-<!--        <menuitem action="purchase.purchase_form_action" id="parts_purchase_form"-->
-<!--                  name="Purchase Orders"-->
-<!--                  parent="purchase_parts"-->
-<!--                  sequence="1"/>-->
+        <!--        <menuitem action="purchase.purchase_form_action" id="parts_purchase_form"-->
+        <!--                  name="Purchase Orders"-->
+        <!--                  parent="purchase_parts"-->
+        <!--                  sequence="1"/>-->
 
         <!--<menuitem id="purchase_agreements_parts" name="Purchase Agreements"-->
         <!--parent="purchase_parts"-->
         <!--action="base.action_partner_supplier_form" sequence="2"/>-->
 
-<!--        <menuitem id="purchase_agreements_parts" name="Purchase Agreements"-->
-<!--                  parent="purchase_parts"-->
-<!--                  action="purchase_requisition.action_purchase_requisition" sequence="2"/>-->
+        <!--        <menuitem id="purchase_agreements_parts" name="Purchase Agreements"-->
+        <!--                  parent="purchase_parts"-->
+        <!--                  action="purchase_requisition.action_purchase_requisition" sequence="2"/>-->
 
 
-<!--        <menuitem id="purchase.menu_purchase_control"-->
-<!--                  name="Vehicle Control"-->
-<!--                  parent="purchase.menu_purchase_root"-->
-<!--                  sequence="3"/>-->
+        <!--        <menuitem id="purchase.menu_purchase_control"-->
+        <!--                  name="Vehicle Control"-->
+        <!--                  parent="purchase.menu_purchase_root"-->
+        <!--                  sequence="3"/>-->
 
-<!--        <menuitem id="parts_purchase_control"-->
-<!--                  name="Parts Control"-->
-<!--                  parent="purchase.menu_purchase_root"-->
-<!--                  sequence="4"/>-->
+        <!--        <menuitem id="parts_purchase_control"-->
+        <!--                  name="Parts Control"-->
+        <!--                  parent="purchase.menu_purchase_root"-->
+        <!--                  sequence="4"/>-->
         <menuitem id="parts_incomings"
                   name="Incoming Products"
                   action="stock.action_receipt_picking_move"
@@ -541,58 +547,58 @@
                   action="purchase.action_invoice_pending"
                   parent="parts_purchase_control" sequence="2"/>
 
-<!--        <menuitem id="purchase.menu_procurement_management_supplier_name" name="Vendors"-->
-<!--                  parent="purchase.menu_purchase_root"-->
-<!--                  action="base.action_partner_supplier_form" sequence="5"/>-->
-<!--
-        <menuitem
-                id="purchase_catalog"
-                name="Catalog"
-                parent="purchase.menu_purchase_root"
-                sequence="6"/>
-        <menuitem
-                id="purchase_cata_vehicle"
-                name="Vehicle"
-                action="fleet.fleet_vehicle_action"
-                parent="purchase_catalog"
-                sequence="0"/>
-        <menuitem
-                id="purchase.menu_procurement_partner_contact_form"
-                name="Models"
-                action="ars_vehicle_sales.action_models"
-                parent="purchase_catalog"
-                sequence="1"/>
-        <menuitem
-                id="purchase.product_product_menu"
-                name="Model Variants"
-                action="ars_vehicle_sales.action_models_variants"
-                parent="purchase_catalog"
-                sequence="2"/>
-        <menuitem
-                id="purchase_accessories"
-                name="Accessories"
-                action="ars_after_sales.action_accessories"
-                parent="purchase_catalog"
-                sequence="3"/>
-        <menuitem
-                id="purchase_cata_parts"
-                name="Parts"
-                action="ars_after_sales.action_parts"
-                parent="purchase_catalog"
-                sequence="4"/>
+        <!--        <menuitem id="purchase.menu_procurement_management_supplier_name" name="Vendors"-->
+        <!--                  parent="purchase.menu_purchase_root"-->
+        <!--                  action="base.action_partner_supplier_form" sequence="5"/>-->
+        <!--
+                <menuitem
+                        id="purchase_catalog"
+                        name="Catalog"
+                        parent="purchase.menu_purchase_root"
+                        sequence="6"/>
+                <menuitem
+                        id="purchase_cata_vehicle"
+                        name="Vehicle"
+                        action="fleet.fleet_vehicle_action"
+                        parent="purchase_catalog"
+                        sequence="0"/>
+                <menuitem
+                        id="purchase.menu_procurement_partner_contact_form"
+                        name="Models"
+                        action="ars_vehicle_sales.action_models"
+                        parent="purchase_catalog"
+                        sequence="1"/>
+                <menuitem
+                        id="purchase.product_product_menu"
+                        name="Model Variants"
+                        action="ars_vehicle_sales.action_models_variants"
+                        parent="purchase_catalog"
+                        sequence="2"/>
+                <menuitem
+                        id="purchase_accessories"
+                        name="Accessories"
+                        action="ars_after_sales.action_accessories"
+                        parent="purchase_catalog"
+                        sequence="3"/>
+                <menuitem
+                        id="purchase_cata_parts"
+                        name="Parts"
+                        action="ars_after_sales.action_parts"
+                        parent="purchase_catalog"
+                        sequence="4"/>
 
-        <menuitem id="purchase_vehicle"
-                  name="Vehicle"
-                  action="fleet.fleet_vehicle_action"
-                  parent="purchase.purchase_report"
-                  sequence="0"/>
-        <menuitem id="purchase_report_parts"
-                  name="Parts"
-                  action="fleet.fleet_vehicle_action"
-                  parent="purchase.purchase_report"
-                  sequence="1"/>
+                <menuitem id="purchase_vehicle"
+                          name="Vehicle"
+                          action="fleet.fleet_vehicle_action"
+                          parent="purchase.purchase_report"
+                          sequence="0"/>
+                <menuitem id="purchase_report_parts"
+                          name="Parts"
+                          action="fleet.fleet_vehicle_action"
+                          parent="purchase.purchase_report"
+                          sequence="1"/>
 
-                               -->
+                                       -->
 
         <!--<menuitem id="purchase_type"-->
         <!--name="Purchase Agreement Type"-->
@@ -703,11 +709,11 @@
                   sequence="4"
                   action="ars_after_sales.action_stock_quantity_history2"/>
 
-<!--         <menuitem id="stock_closing_report_menu"
-                  name="Stock Closing Report"
-                  parent="ac_parts_management.stock_parts_reporting"
-                  sequence="4"
-                  action="ars_after_sales.action_stock_closing"/> -->
+        <!--         <menuitem id="stock_closing_report_menu"
+                          name="Stock Closing Report"
+                          parent="ac_parts_management.stock_parts_reporting"
+                          sequence="4"
+                          action="ars_after_sales.action_stock_closing"/> -->
         <!-- <menuitem id="valuation_parts"
                   name="Parts Inventory Valuation"
                   parent="stock.menu_warehouse_report"

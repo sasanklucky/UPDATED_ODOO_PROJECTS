@@ -90,7 +90,8 @@
                                                options="{'no_create': True}"/>
                                         <field name="campaign_id"/>
                                         <field name="medium_id" options="{'no_create': True, 'no_open': True}"/>
-                                        <field name="source_id" options="{'no_create': True, 'no_open': True}" string="Source *"/>
+                                        <field name="source_id" options="{'no_create': True, 'no_open': True}"
+                                               string="Source *"/>
                                         <field name="referred"/>
                                     </group>
                                     <group string="Analysis" groups="base.group_no_one">
@@ -671,11 +672,11 @@
                     <field name="message_needaction" invisible="1"/>
                     <field name="name" string="Quotation Number"/>
 
-<!--                    <field name="regn_no" required="1" string="Reg No"/>-->
+                    <!--                    <field name="regn_no" required="1" string="Reg No"/>-->
 
                     <field name="date_order" string="Quotation Date"/>
                     <field name="partner_id"/>
-                     <field name="regn_no" required="1" string="Reg No"/>
+                    <field name="regn_no" required="1" string="Reg No"/>
                     <field name="vin_no"/>
                     <field name="user_id" required="1" string="Service Advisor"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
@@ -988,7 +989,8 @@
                                         <field name="product_uom"
                                                attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                                context="{'company_id': parent.company_id}"
-                                               groups="product.group_uom" options='{"no_open": True, "no_create":True}'/>
+                                               groups="product.group_uom"
+                                               options='{"no_open": True, "no_create":True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="admin_access" invisible="1"/>
@@ -1152,7 +1154,7 @@
                     <field name="state" invisible="1"/>
                     <field name="work_type"/>
                     <field name="service_type"/>
-<!--                    <field name="vin_no"/>-->
+                    <!--                    <field name="vin_no"/>-->
                     <field name="model"/>
                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
                 </tree>
@@ -2039,7 +2041,8 @@
                                         <field name="product_uom"
                                                attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
                                                context="{'company_id': parent.company_id}"
-                                               groups="product.group_uom" options='{"no_open": True, "no_create": True}'/>
+                                               groups="product.group_uom"
+                                               options='{"no_open": True, "no_create": True}'/>
                                         <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting"
                                                widget="many2many_tags" options="{'color_field': 'color'}"/>
                                         <field name="price_unit"
@@ -2177,35 +2180,43 @@
             </field>
         </record>
 
-        <record id="action_orders_inherit" model="ir.actions.act_window">
+        <!--        <record id="action_orders_inherit" model="ir.actions.act_window">-->
+        <!--            <field name="name">Service Orders</field>-->
+        <!--            <field name="type">ir.actions.act_window</field>-->
+        <!--            <field name="res_model">sale.order</field>-->
+        <!--            <field name="view_type">form</field>-->
+        <!--            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>-->
+        <!--            <field name="search_view_id" ref="sale_order_view_search_inherit_sale_inherit"/>-->
+        <!--            <field name="view_ids"-->
+        <!--                   eval="[(5, 0, 0),-->
+        <!--                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_order_tree_inherit')}),-->
+        <!--                                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_order_form_inherit')}),-->
+        <!--                                      (0, 0, {'view_mode': 'calendar'}),-->
+        <!--                                      (0, 0, {'view_mode': 'pivot'}),-->
+        <!--                                      (0, 0, {'view_mode': 'graph'})]"/>-->
+        <!--            <field name="context">{ 'default_sale_type': 'parts','default_sale_aftersales':'after_sales'}</field>-->
+        <!--            <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),-->
+        <!--                ('sale_aftersales','=','after_sales')]-->
+        <!--            </field>-->
+        <!--            <field name="help" type="html">-->
+        <!--                <p class="oe_view_nocontent_create">-->
+        <!--                    Create a Quotation, the first step of a new sale.-->
+        <!--                </p>-->
+        <!--                <p>-->
+        <!--                    Once the quotation is confirmed, it becomes a sales order.-->
+        <!--                    You'll be able to invoice it and collect payments.-->
+        <!--                    From the <i>Sales Orders</i> menu, you can track delivery-->
+        <!--                    orders or services.-->
+        <!--                </p>-->
+        <!--            </field>-->
+        <!--        </record>-->
+
+
+        <record id="action_orders_inherit_py" model="ir.actions.server">
             <field name="name">Service Orders</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">sale.order</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
-            <field name="search_view_id" ref="sale_order_view_search_inherit_sale_inherit"/>
-            <field name="view_ids"
-                   eval="[(5, 0, 0),
-                                      (0, 0, {'view_mode': 'tree', 'view_id': ref('view_order_tree_inherit')}),
-                                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_order_form_inherit')}),
-                                      (0, 0, {'view_mode': 'calendar'}),
-                                      (0, 0, {'view_mode': 'pivot'}),
-                                      (0, 0, {'view_mode': 'graph'})]"/>
-            <field name="context">{ 'default_sale_type': 'parts','default_sale_aftersales':'after_sales'}</field>
-            <field name="domain">[('state', 'not in', ('draft', 'sent', 'cancel')),
-                ('sale_aftersales','=','after_sales')]
-            </field>
-            <field name="help" type="html">
-                <p class="oe_view_nocontent_create">
-                    Create a Quotation, the first step of a new sale.
-                </p>
-                <p>
-                    Once the quotation is confirmed, it becomes a sales order.
-                    You'll be able to invoice it and collect payments.
-                    From the <i>Sales Orders</i> menu, you can track delivery
-                    orders or services.
-                </p>
-            </field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="state">code</field>
+            <field name="code">action = env['sale.order'].action_orders_inherit()</field>
         </record>
 
         <!--Base sale order action inherit for domain -->
@@ -2614,7 +2625,9 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form,calendar,graph,pivot,kanban</field>
             <field name="context">{'create': False}</field>
-            <field name="domain">[('invoice_status','=','to invoice'),('sale_aftersales','=', 'after_sales'),('sale_type','in',['after_sales', 'parts'])]</field>
+            <field name="domain">[('invoice_status','=','to invoice'),('sale_aftersales','=',
+                'after_sales'),('sale_type','in',['after_sales', 'parts'])]
+            </field>
             <field name="search_view_id" ref="view_sales_order_filter_inherit"/>
             <field name="help" type="html">
                 <p>
@@ -2651,7 +2664,8 @@
                         <button name="ars_action_invoice_open" type="object" states="draft" string="Validate"
                                 class="oe_highlight o_invoice_validate" groups="account.group_account_invoice"/>
                         <button name="action_invoice_open" type="object" states="draft" string="Validate"
-                                class="oe_highlight o_invoice_validate" groups="account.group_account_invoice" invisible="1"/>
+                                class="oe_highlight o_invoice_validate" groups="account.group_account_invoice"
+                                invisible="1"/>
                         <button name="%(account.action_account_invoice_refund)d" type='action' string='Add Credit Note'
                                 groups="account.group_account_invoice"
                                 attrs="{'invisible': ['|',('type', '=', 'out_refund'), ('state', 'not in', ('open','paid'))]}"/>
@@ -2723,7 +2737,8 @@
                                        attrs="{'required': True}">
                                     <tree string="Invoice Lines" editable="bottom">
                                         <field name="sequence" widget="handle"/>
-                                        <field name="product_id" domain="[('sale_ok','=',True)]" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="product_id" domain="[('sale_ok','=',True)]"
+                                               options="{'no_create': True, 'no_open': True}"/>
                                         <field name="origin" invisible="1"/>
                                         <field name="is_rounding_line" invisible="1"/>
                                         <field name="name"/>
@@ -2849,13 +2864,13 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group" position="after">
                     <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
-                         <b>
-                             <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                        <b>
+                            <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
                                 <span style="color: darkred;">
                                     Invoice
                                 </span>
                                 <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
-                             </div>
+                            </div>
                         </b>
                     </div>
                 </xpath>
@@ -2868,17 +2883,17 @@
             <field name="inherit_id" ref="account.invoice_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/sheet/group" position="after">
-                <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
-                    <b>
-                        <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
-                            <span style="color: darkred;">
-                                Invoice
-                            </span>
-                            <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
-                        </div>
-                    </b>
-                </div>
-            </xpath>
+                    <div style="float: right;margin-top: -30px;margin-right:5px;align-items:center">
+                        <b>
+                            <div attrs="{'invisible': [('modified_invoice_status', '!=', 'modified')]}">
+                                <span style="color: darkred;">
+                                    Invoice
+                                </span>
+                                <field name="modified_invoice_status" style="color: darkred;" readonly="1"/>
+                            </div>
+                        </b>
+                    </div>
+                </xpath>
                 <xpath expr="//notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']"
                        position="after">
                     <field name="admin_access" invisible="1"/>
@@ -2895,7 +2910,7 @@
                             class="oe_highlight o_invoice_validate" groups="account.group_account_invoice"/>
                 </xpath>
                 <xpath expr="//form/header/button[@name='action_invoice_open']" position="attributes">
-                   <attribute name="invisible">1</attribute>
+                    <attribute name="invisible">1</attribute>
                 </xpath>
                 <field name="journal_id" position="before">
                     <field name="service_type"
@@ -2947,7 +2962,8 @@
                            attrs="{'readonly': [('admin_access_1', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[2]//field[@name='origin']" position="after">
-                    <field name="create_date" string="Vendor Bill Creation Date" widget="date" attrs="{'readonly': True}"/>
+                    <field name="create_date" string="Vendor Bill Creation Date" widget="date"
+                           attrs="{'readonly': True}"/>
                 </xpath>
             </field>
         </record>
@@ -2968,7 +2984,8 @@
                            attrs="{'readonly': [('admin_access_1', 'not in', [True])]}"/>
                 </xpath>
                 <xpath expr="//form//header" position="inside">
-                    <button class="btn btn-primary" name="action_print_gate_pass_button" type="object" string="Print Gate Pass"
+                    <button class="btn btn-primary" name="action_print_gate_pass_button" type="object"
+                            string="Print Gate Pass"
                             attrs="{'invisible':[('state','not in', ('open','paid'))]}"/>
                 </xpath>
                 <xpath expr="//form/sheet/group/group[1]" position="attributes">
@@ -3130,8 +3147,10 @@
                                         <field name="product_catalog_id" options="{'no_create': True, 'no_open': True}"
                                                required='1'/>
                                         <field name="product_id_domain" invisible="1"/>
-                                        <field name="product_template_id" domain="product_id_domain" options="{'no_create':True, 'no_open':True}"/>
-                                        <field name="product_id" domain="product_id_domain" string="Variant" options="{'no_create': True, 'no_open': True}"/>
+                                        <field name="product_template_id" domain="product_id_domain"
+                                               options="{'no_create':True, 'no_open':True}"/>
+                                        <field name="product_id" domain="product_id_domain" string="Variant"
+                                               options="{'no_create': True, 'no_open': True}"/>
                                         <field name="name"/>
                                         <field name="product_uom_qty"/>
                                         <field name="qty_delivered"/>
@@ -3180,9 +3199,7 @@
                   action="ARS_instructions_action_window"/>
 
 
-
-
-<!--        CRM LEAD Medium value depends on source value-->
+        <!--        CRM LEAD Medium value depends on source value-->
 
         <record id="utm_medium_form_view" model="ir.ui.view">
             <field name="name">UTM Medium</field>
