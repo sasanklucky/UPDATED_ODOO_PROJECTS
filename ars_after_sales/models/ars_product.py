@@ -86,3 +86,45 @@ class AccountInvoice(models.Model):
                 (self.env.ref('ars_after_sales.invoice_form_inherit').id, 'form'),  # fixed
             ],
         }
+
+
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
+
+    def action_orders_inherit(self):
+        """Service Orders Action"""
+        return {
+            'name': 'Service Orders',
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'view_mode': 'tree,kanban,form,calendar,pivot,graph',
+            'views': [
+                (self.env.ref('ars_after_sales.view_order_tree_inherit').id, 'tree'),
+                (self.env.ref('ars_after_sales.view_order_form_inherit').id, 'form'),
+                (False, 'kanban'),
+                (False, 'calendar'),
+                (False, 'pivot'),
+                (False, 'graph'),
+            ],
+            'search_view_id': self.env.ref('ars_after_sales.sale_order_view_search_inherit_sale_inherit').id,
+            'context': {
+                'default_sale_type': 'parts',
+                'default_sale_aftersales': 'after_sales',
+            },
+            'domain': [
+                ('state', 'not in', ('draft', 'sent', 'cancel')),
+                ('sale_aftersales', '=', 'after_sales'),
+                ('company_id', 'in', self.env.user.company_ids.ids),
+            ],
+            'help': """
+                <p class="oe_view_nocontent_create">
+                    Create a Quotation, the first step of a new sale.
+                </p>
+                <p>
+                    Once the quotation is confirmed, it becomes a sales order.
+                    You'll be able to invoice it and collect payments.
+                    From the <i>Sales Orders</i> menu, you can track delivery
+                    orders or services.
+                </p>
+            """,
+        }
