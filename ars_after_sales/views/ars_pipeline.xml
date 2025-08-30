@@ -3057,17 +3057,25 @@
                 </xpath>
             </field>
         </record>
-        <record id="action_invoice_sal_tree1" model="ir.actions.act_window">
+        <!--        <record id="action_invoice_sal_tree1" model="ir.actions.act_window">-->
+        <!--            <field name="name">After-Sales Invoices</field>-->
+        <!--            <field name="res_model">account.invoice</field>-->
+        <!--            <field name="domain">[('type','=','out_invoice'),('team_id.team_type','=','after_sales')]</field>-->
+        <!--            <field name="context">{'type':'out_invoice', 'journal_type':-->
+        <!--                'sale','default_ars_invoice_type':'after_sales'}-->
+        <!--            </field>-->
+        <!--            <field name="view_ids" eval="[(5,0,0),-->
+        <!--                                      (0,0,{'view_mode':'tree','view_id': ref('account.invoice_tree')}),-->
+        <!--                                      (0,0,{'view_mode':'form', 'view_id': ref('invoice_form_inherit')})]"/>-->
+        <!--        </record>-->
+
+        <record id="action_invoice_sal_tree1_py" model="ir.actions.server">
             <field name="name">After-Sales Invoices</field>
-            <field name="res_model">account.invoice</field>
-            <field name="domain">[('type','=','out_invoice'),('team_id.team_type','=','after_sales')]</field>
-            <field name="context">{'type':'out_invoice', 'journal_type':
-                'sale','default_ars_invoice_type':'after_sales'}
-            </field>
-            <field name="view_ids" eval="[(5,0,0),
-                                      (0,0,{'view_mode':'tree','view_id': ref('account.invoice_tree')}),
-                                      (0,0,{'view_mode':'form', 'view_id': ref('invoice_form_inherit')})]"/>
+            <field name="model_id" ref="account.model_account_invoice"/>
+            <field name="state">code</field>
+            <field name="code">action = env['account.invoice'].action_invoice_sal_tree1()</field>
         </record>
+
         <!--Action Invoice of sales - inherited action from base invoices -->
         <record id="account.action_invoice_tree1" model="ir.actions.act_window">
             <field name="domain">[('type','=','out_invoice'),('team_id.team_type','=','sales')]</field>

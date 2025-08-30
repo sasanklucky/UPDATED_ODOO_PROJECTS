@@ -728,15 +728,15 @@
 
 
         <menuitem name="After-Sales Invoices"
-                  action="ars_after_sales.action_invoice_sal_tree1"
-                  id="menu_action_aftersales_invoice_tree1"
+                  action="ars_after_sales.action_invoice_sal_tree1_py"
+                  id="menu_action_aftersales_invoice_tree1_py"
                   parent="account.menu_finance_receivables_documents"
                   groups="group_aftersale"
                   sequence="1"/>
 
         <menuitem name="After-Sales Invoices"
-                  action="ars_after_sales.action_invoice_sal_tree1"
-                  id="menu_action_aftersales_invoice_in_sales"
+                  action="ars_after_sales.action_invoice_sal_tree1_py"
+                  id="menu_action_aftersales_invoice_in_sales_py"
                   parent="menu_aftersales_invoicing"
                   groups="group_aftersale"
                   sequence="5"/>
