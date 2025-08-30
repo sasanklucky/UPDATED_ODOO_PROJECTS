@@ -44,7 +44,7 @@
 
 		</record>
 
-		<record model="ir.ui.menu" id="ars_after_sales.menu_action_aftersales_invoice_tree1">
+		<record model="ir.ui.menu" id="ars_after_sales.menu_action_aftersales_invoice_tree1_py">
 
 			<field name="groups_id" eval="[(6, 0, [ref('group_aftersale_invoice')])]"/>
 

@@ -61,3 +61,28 @@ class ARS_stock_quant(models.Model):
         for case in quant_ids:
             if not case.category_id:
                 case.category_id = case.product_id.categ_id
+
+
+class AccountInvoice(models.Model):
+    _inherit = "account.invoice"
+
+    def action_invoice_sal_tree1(self):
+        return {
+            'name': 'After-Sales Invoices',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.invoice',
+            'domain': [
+                ('type', '=', 'out_invoice'),
+                ('team_id.team_type', '=', 'after_sales'),
+                ('company_id', 'in', self.env.user.company_ids.ids),
+            ],
+            'context': {
+                'type': 'out_invoice',
+                'journal_type': 'sale',
+                'default_ars_invoice_type': 'after_sales',
+            },
+            'views': [
+                (self.env.ref('account.invoice_tree').id, 'tree'),
+                (self.env.ref('ars_after_sales.invoice_form_inherit').id, 'form'),  # fixed
+            ],
+        }
