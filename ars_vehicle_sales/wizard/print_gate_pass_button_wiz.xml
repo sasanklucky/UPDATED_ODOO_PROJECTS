@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+  <record id="view_gate_pass_wizard_form" model="ir.ui.view">
+    <field name="name">ars.gate.pass.wizard.form</field>
+    <field name="model">ars.gate.pass.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Print Gate Pass">
+        <group>
+          <field name="remarks"/>
+        </group>
+        <footer>
+          <button string="Print Gate Pass" name="action_print_gate_pass" type="object" class="btn-primary"/>
+          <button string="Cancel" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_gate_pass_wizard" model="ir.actions.act_window">
+    <field name="name">Gate Pass Wizard</field>
+    <field name="res_model">ars.gate.pass.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+</odoo>
