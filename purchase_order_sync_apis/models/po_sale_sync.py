@@ -300,16 +300,23 @@ class PurchaseOrderInheritSync(models.Model):
                         sale_type = False
                         if rec.purchase_type == 'after_sales':
                             seq = env['ir.sequence'].sudo().search(
-                                [('code', '=', 'parts.sale.quotation'), ('active', '=', True)],
+                                [('code', '=', 'parts.sale.quotation'), ('active', '=', True),
+                                 ('company_id', '=', self.company_id),
+                                 ('branch', '=', self.branch_id)
+                                 ],
                                 limit=1)
                             counter_parts = True
                             sale_type = 'parts'
                         else:
-                            seq = env['ir.sequence'].sudo().search([('code', '=', 'sale.order'), ('active', '=', True)],
+                            seq = env['ir.sequence'].sudo().search([('code', '=', 'sale.order'), ('active', '=', True),
+                                                                    ('company_id', '=', self.company_id),
+                                                                    ('branch', '=', self.branch_id)
+                                                                    ],
                                                                    limit=1)
+                        if not seq:
+                            raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
                         addr = customer.address_get(['delivery', 'invoice', 'workshop_billing', 'workshop_shipping'])
                         code = f"{seq.prefix}" + f"{seq.number_next_actual}"
-                        print("seq===================", seq, code)
                         current_time = fields.Datetime.from_string(fields.Datetime.now())
                         data = {
                             'name': code,
