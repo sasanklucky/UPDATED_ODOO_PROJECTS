@@ -604,7 +604,17 @@ class ARS_sale_order(models.Model):
         if vals.get('name', _('New')) == _('New'):
             if sale_team or 'sale_type' in vals:
                 if sale_team.team_type == 'after_sales' and vals['sale_type'] == 'parts':
-                    vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
+                    # vals['name'] = self.env['ir.sequence'].next_by_code('sale_estimate')
+                    seq = self.env['ir.sequence'].search([
+                        ('code', '=', 'sale_estimate'),
+                        ('company_id', '=', vals['company_id']),
+                        ('branch', '=', vals['branch_id'])
+                    ], limit=1)
+                    if seq:
+                        vals['name'] = seq.next_by_id()
+                    else:
+                        raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
                     if 'default_counter_parts' in self.env.context and self.env.context.get('default_counter_parts'):
                         vals['counter_parts'] = 'parts'
                     else:
@@ -625,22 +635,68 @@ class ARS_sale_order(models.Model):
                 self.regn_no.write({'odometer': self.mileage_in})
         if sale_team.team_type == 'sales' and self.sale_type == 'vehicle':
             if self.company_id and not self.sale_order_number:
-                seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
-                    'vehicle.sale.order') or _('New')
+                # seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                #     'vehicle.sale.order') or _('New')
+
+                seq = self.env['ir.sequence'].search([
+                    ('code', '=', 'vehicle.sale.order'),
+                    ('branch', '=', self.branch_id.id)
+                ], limit=1)
+
+                if seq:
+                    seq_number = seq.with_context(force_company=self.company_id.id).next_by_id()
+                else:
+                    raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
                 self.name = seq_number
                 self.sale_order_number = seq_number
             else:
-                seq_number = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
+                # seq_number = self.env['ir.sequence'].next_by_code('vehicle.sale.order') or _('New')
+
+                seq = self.env['ir.sequence'].search([
+                    ('code', '=', 'vehicle.sale.order'),
+                    ('branch', '=', self.branch_id.id)
+                ], limit=1)
+
+                if seq:
+                    seq_number = seq.next_by_id()
+                else:
+                    raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
                 self.name = seq_number
                 self.sale_order_number = seq_number
         elif self.sale_type == 'parts' and self.counter_parts and not self.sale_order_number:
             if self.company_id:
-                seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
-                    'parts.sale.order') or _('New')
+                # seq_number = self.env['ir.sequence'].with_context(force_company=self.company_id.id).next_by_code(
+                #     'parts.sale.order') or _('New')
+
+                seq = self.env['ir.sequence'].search([
+                    ('code', '=', 'parts.sale.order'),
+                    ('branch', '=', self.branch_id.id)
+                ], limit=1)
+
+                if seq:
+                    seq_number = seq.with_context(force_company=self.company_id.id).next_by_id()
+                else:
+                    raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
+
                 self.name = seq_number
                 self.sale_order_number = seq_number
             else:
-                seq_number = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
+                # seq_number = self.env['ir.sequence'].next_by_code('parts.sale.order') or _('New')
+
+                seq = self.env['ir.sequence'].search([
+                    ('code', '=', 'parts.sale.order'),
+                    ('branch', '=', self.branch_id.id)
+                ], limit=1)
+
+                if seq:
+                    seq_number = seq.next_by_id()
+                else:
+                    raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
+
                 self.name = seq_number
                 self.sale_order_number = seq_number
         elif sale_team.team_type == 'after_sales' and self.sale_type in ['parts',
@@ -652,7 +708,17 @@ class ARS_sale_order(models.Model):
             else:
                 raise ValidationError('Please Configure the Sequence for Company')
         elif not self.sale_order_number:
-            seq_number = self.env['ir.sequence'].next_by_code('sale.order')
+            # seq_number = self.env['ir.sequence'].next_by_code('sale.order')]
+            seq = self.env['ir.sequence'].search([
+                ('code', '=', 'sale.order'),
+                ('company_id', '=', self.company_id.id),
+                ('branch', '=', self.branch_id.id)
+            ], limit=1)
+
+            if seq:
+                seq_number = seq.next_by_id()
+            else:
+                raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
             self.name = seq_number
             self.sale_order_number = seq_number
         result = super(ARS_sale_order, self).action_confirm()

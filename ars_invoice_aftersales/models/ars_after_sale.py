@@ -112,7 +112,16 @@ class ARS_After_sale_order(models.Model):
 
                 if warnVals:
                     if not warranty_ids:
-                        warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+                        # warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+                        seq = self.env['ir.sequence'].search([
+                            ('code', '=', 'warranty_claims'),
+                            ('company_id', '=', od.company_id),
+                            ('branch', '=', od.branch_id)
+                        ], limit=1)
+                        if seq:
+                            warnVals['name'] = seq.next_by_id()
+                        else:
+                            raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
                         self.env['ars.sale.warranty'].create(warnVals)
                         print('999999', warnVals, not warranty_ids)
                     else:
@@ -235,7 +244,18 @@ class ARS_After_sale_order(models.Model):
                             warnVals.update({'state': 'cancel'})
 
                             # Create a new warranty record with a sequence number
-                        warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+                        # warnVals['name'] = self.env['ir.sequence'].next_by_code('warranty_claims')
+
+                        seq = self.env['ir.sequence'].search([
+                            ('code', '=', 'warranty_claims'),
+                            ('company_id', '=', order.company_id),
+                            ('branch', '=', order.branch_id)
+                        ], limit=1)
+                        if seq:
+                            warnVals['name'] = seq.next_by_id()
+                        else:
+                            raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+
                         self.env['ars.sale.warranty'].create(warnVals)
                         print(f'Created new warranty record: {warnVals}')
                     else:
