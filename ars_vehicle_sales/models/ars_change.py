@@ -347,7 +347,7 @@ class ars_sale_crm_sale(models.Model):
 
                         seq = self.env['ir.sequence'].search([
                             ('code', '=', 'vehicle.sale.quotation'),
-                            ('branch', '=', self.branch_id)
+                            ('branch', '=', vals['branch_id'])
                         ], limit=1)
                         if seq:
                             vals['name'] = seq.next_by_id()
@@ -363,22 +363,22 @@ class ars_sale_crm_sale(models.Model):
 
                         seq = self.env['ir.sequence'].search([
                             ('code', '=', 'parts.sale.quotation'),
-                            ('branch', '=', self.branch_id)
+                            ('branch', '=', vals['branch_id'])
                         ], limit=1)
                         if seq:
                             vals['name'] = seq.with_context(force_company=self.company_id.id).next_by_id()
                         else:
-                            raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+                            raise UserError(f"Please create a sequence for branch {vals['branch_id']}")
 
                     else:
                         seq = self.env['ir.sequence'].search([
                             ('code', '=', 'parts.sale.quotation'),
-                            ('branch', '=', self.branch_id)
+                            ('branch', '=', vals['branch_id'])
                         ], limit=1)
                         if seq:
                             vals['name'] = seq.next_by_id()
                         else:
-                            raise UserError(f"Please create a sequence for branch {self.branch_id.name}")
+                            raise UserError(f"Please create a sequence for branch {vals['branch_id']}")
                         # vals['name'] = self.env['ir.sequence'].next_by_code('parts.sale.quotation') or _('New')
         res = super(ars_sale_crm_sale, self).create(vals)
         return res
