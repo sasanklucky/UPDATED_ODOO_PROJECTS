@@ -336,7 +336,7 @@ class ars_sale_crm_sale(models.Model):
 
                         seq = self.env['ir.sequence'].search([
                             ('code', '=', 'vehicle.sale.quotation'),
-                            ('branch', '=', self.branch_id)
+                            ('branch', '=', vals['branch_id'])
                         ], limit=1)
                         if seq:
                             vals['name'] = seq.with_context(force_company=self.company_id.id).next_by_id()
