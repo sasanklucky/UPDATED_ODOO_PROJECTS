@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- model.name tree view -->
+        <record id="sales_report_format_tree" model="ir.ui.view">
+            <field name="name">sales_report_format</field>
+            <field name="model">sales.report.format</field>
+            <field name="arch" type="xml">
+                <tree string="Sales Report" create="false" import="false" delete="false">
+                    <field name="invoice_id" invisible="1"/>
+                    <field name="dealer_zone"/>
+                    <field name="dealer_code"/>
+                    <field name="company_id"/>
+                    <field name="warehouse_id"/>
+                    <field name="product_id" invisible="1"/>
+                    <field name="part_number"/>
+                    <field name="part_description"/>
+                    <field name="hsn_code"/>
+                    <field name="part_type"/>
+                    <field name="category_id"/>
+                    <field name="invoice_no"/>
+                    <field name="invoice_state" string="Invoice Status"/>
+                    <field name="invoice_date"/>
+                    <field name="bill_to_customer"/>
+                    <field name="repair_no"/>
+                    <field name="repair_date"/>
+                    <field name="doc_type"/>
+                    <field name="vin"/>
+                    <field name="model_code"/>
+                    <field name="master_name"/>
+                    <field name="model_description"/>
+                    <field name="issue_date"/>
+                    <field name="issue_quantity"/>
+                    <field name="standard_price"/>
+                    <field name="amount"/>
+                    <field name="invoice_line_id" invisible="1"/>
+                    <field name="gst"/>
+                    <field name="gst_amount"/>
+                    <field name="cgst_amount"/>
+                    <field name="sgst_amount"/>
+                    <field name="igst_amount"/>
+                    <!--                    <field name="utgst_amount"/>-->
+                    <!--                    <field name="vat_amount"/>-->
+                    <field name="total_amount"/>
+                    <field name="service_advisor"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_sales_report_format_report_search" model="ir.ui.view">
+            <field name="name">view.sales.report.format.search</field>
+            <field name="model">sales.report.format</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <search string="sales_report_format_report_search">
+                    <field name="invoice_date"/>
+                    <filter name="invoice_date_filter" string="Customer Invoice date" domain="[]"
+                            context="{'group_by':'invoice_date:month'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="sales_report_format_action" model="ir.actions.act_window">
+            <field name="name">Sales Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">sales.report.format</field>
+            <field name="domain">[('product_id.product_tmpl_id.catalog_type.code', '=', 'PAR')]</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="view_sales_report_format_report_search"/>
+        </record>
+
+        <record id="view_sales_report_format_wizard" model="ir.ui.view">
+            <field name="name">Sales Report</field>
+            <field name="model">sales.report.format.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please Select the Dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="sales_after_report_qty" string="Sales Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_report_wizard" model="ir.actions.act_window">
+            <field name="name">Sales Report Wizard</field>
+            <field name="res_model">sales.report.format.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_after_sales.view_sales_report_format_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+
+<!--        <record id="view_sales_report_format_wizard" model="ir.ui.view">-->
+<!--            <field name="name">Sales Report</field>-->
+<!--            <field name="model">sales.report.format.wizard</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Choose your Ro Closed From Date to date">-->
+<!--                    <group>-->
+<!--                        <span>-->
+<!--                            <h3>Please Select the Dealers</h3>-->
+<!--                        </span>-->
+<!--                        <field name="company_id" widget="many2many_tags"/>-->
+<!--                        <group>-->
+<!--                            <span>-->
+<!--                                <b>From</b>-->
+<!--                            </span>-->
+<!--                            <field name="start_date"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <span>-->
+<!--                                <b>To</b>-->
+<!--                            </span>-->
+<!--                            <field name="end_date"/>-->
+<!--                        </group>-->
+<!--                    </group>-->
+<!--                    <footer>-->
+<!--                        <button name="sales_after_report_qty" string="Sales Report" type="object"-->
+<!--                                class="btn-primary"/>-->
+<!--                        &lt;!&ndash;                        <button string="Cancel" class="btn-default" special="cancel"/>&ndash;&gt;-->
+<!--                    </footer>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="action_after_sales_report_wizard" model="ir.actions.act_window">-->
+<!--            <field name="name">Sales Report Wizard</field>-->
+<!--            <field name="res_model">sales.report.format.wizard</field>-->
+<!--            <field name="view_type">form</field>-->
+<!--            <field name="view_mode">form</field>-->
+<!--            <field name="view_id" ref="ars_after_sales.view_sales_report_format_wizard"/>-->
+<!--            <field name="target">new</field>-->
+<!--        </record>-->
+
+
+    </data>
+</odoo>

@@ -1,0 +1,19 @@
+<odoo>
+  <data>
+   <record id="resource_resource_form_inherit" model="ir.ui.view">
+        <field name="name">resource.resource.form.inherit</field>
+        <field name="model">resource.resource</field>
+        <field name="inherit_id" ref="resource.resource_resource_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//form/group/group[2]/field[@name='time_efficiency']" position="after">
+                <field name="resource_category"/>
+                <field name="resource_partner"/>
+                <field name="resource_skill"/>
+            </xpath>
+        </field>
+    </record>
+
+
+
+  </data>
+</odoo>

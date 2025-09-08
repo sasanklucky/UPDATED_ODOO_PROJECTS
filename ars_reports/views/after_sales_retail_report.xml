@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Tree view for "retail.report" -->
+        <record id="view_after_sales_retail_report_tree" model="ir.ui.view">
+            <field name="name">view.after.sales.retail_report.tree</field>
+            <field name="model">retail.report.after.sales</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <tree string="after_sales_retail_report_tree" create="false" delete="false" edit="false"
+                      default_order='id asc'>
+                    <field name="id" string="Sl. No."/>
+                    <field name="dealer_code"/>
+                    <field name="dealer_id"/>
+                    <field name="dealer_gst"/>
+                    <field name="dealer_state_id"/>
+                    <field name="dealer_city_id"/>
+                    <!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
+                    <!-- <field name="line_item_id" /> -->
+                    <field name="customer_name" string="Customer Name"/>
+                    <field name="customer_gst"/>
+                    <field name="customer_ph"/>
+                    <field name="customer_city"/>
+                    <field name="customer_state"/>
+                    <field name="vin"/>
+                    <field name="registration_no"/>
+
+                    <field name="model"/>
+                    <field name="last_service_dealer"/>
+                    <field name="last_service_date"/>
+                    <field name="ro_number"/>
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
+                    <field name="invoice_id"/>
+                    <field name="invoice_date"/>
+                    <field name="invoice_type" string="Invoice Category" groups="base.group_no_one"/>
+                    <field name="invoice_reference"/>
+                    <field name="origin"/>
+                    <field name="cust_invoice_type" string="Invoice Type"/>
+                    <field name="work_type"/>
+                    <field name="service_type"/>
+                    <field name="ro_type"/>
+                    <field name="last_ro_close_date"/>
+                    <field name="odoometer"/>
+                    <field name="product_catalog_id"/>
+                    <field name="product_uom_qty"/>
+                    <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
+                    <field name="default_code"/>
+                    <field name="part_description" string="Product Description"/>
+                    <field name="l10n_in_hsn_code"/>
+                    <field name="part_price" string="Product price(W/O Tax)"/>
+                    <field name="cgst_per"/>
+                    <field name="cgst_amt"/>
+                    <field name="sgst_per"/>
+                    <field name="sgst_amt"/>
+                    <field name="igst_per"/>
+                    <field name="igst_amt"/>
+                    <field name="total_part_price" string="Total amount"/>
+                    <field name="customer_voc"/>
+                    <field name="bill_to_customer" string="Bill To Customer"/>
+                    <field name="pincode"/>
+                    <field name="bill_to_customer_gst"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
+                    <field name="selling_dealer"/>
+                    <field name="service_advisor"/>
+                    <field name="master_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_after_sales_credit_report_tree" model="ir.ui.view">
+            <field name="name">view.after.sales.credit_report.tree</field>
+            <field name="model">credit.report.after.sales</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <tree string="after_sales_credit_report_tree" create="false" delete="false" edit="false"
+                      default_order='id asc'>
+                    <field name="id" string="Sl. No."/>
+                    <field name="dealer_code"/>
+                    <field name="dealer_id"/>
+                    <field name="dealer_gst"/>
+                    <field name="dealer_state_id"/>
+                    <field name="dealer_city_id"/>
+                    <!--                     <field name="order_id" />  Double time with different name "Ro Number" -->
+                    <!-- <field name="line_item_id" /> -->
+                    <field name="customer_name" string="Customer Name"/>
+                    <field name="customer_gst"/>
+                    <field name="customer_ph"/>
+                    <field name="customer_city"/>
+                    <field name="customer_state"/>
+                    <!--                    <field name="bill_to_customer" string="Bill To Customer"/>-->
+                    <field name="vin"/>
+                    <field name="registration_no"/>
+
+                    <field name="model"/>
+                    <field name="last_service_dealer"/>
+                    <field name="last_service_date"/>
+                    <field name="ro_number"/>
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
+                    <field name="invoice_id"/>
+                    <field name="credit_note_number"/>
+                    <field name="credit_note_date"/>
+                    <field name="invoice_date"/>
+                    <field name="service_type"/>
+                    <field name="ro_type"/>
+                    <field name="last_ro_close_date"/>
+                    <field name="odoometer"/>
+                    <!--                    <field name="product_catalog_id"/>-->
+                    <!--                    <field name="product_uom_qty"/>-->
+                    <!--                    <field name="part_id" />   Double time with different name "Ro Number"-->
+                    <field name="default_code"/>
+                    <field name="part_description" string="Product Description"/>
+                    <field name="l10n_in_hsn_code"/>
+                    <field name="part_price" string="Product price(W/O Tax)"/>
+                    <field name="cgst_per"/>
+                    <field name="cgst_amt"/>
+                    <field name="sgst_per"/>
+                    <field name="sgst_amt"/>
+                    <field name="igst_per"/>
+                    <field name="igst_amt"/>
+                    <field name="total_part_price" string="Total amount"/>
+                    <field name="customer_voc"/>
+                    <field name="e_invoice_generated"/>
+                    <field name="irn_no"/>
+                    <field name="master_name"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <!-- Search view for "retail.report" -->
+        <record id="view_after_sales_retail_report_search" model="ir.ui.view">
+            <field name="name">view.retail_report.search</field>
+            <field name="model">retail.report.after.sales</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <search string="retail_report_search">
+                    <field name="dealer_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="view_credit_report_search" model="ir.ui.view">
+            <field name="name">view.credit_report.search</field>
+            <field name="model">credit.report.after.sales</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16"/>
+            <field name="active" eval="True"/>
+            <field name="arch" type="xml">
+                <search string="credit_report_search">
+                    <field name="dealer_id"/>
+                </search>
+            </field>
+        </record>
+
+
+        <!-- Main window action for "retail.report" -->
+        <record id="action_after_sales_retail_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Retail Report</field>
+            <field name="res_model">retail.report.after.sales</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="search_view_id" ref="view_retail_report_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Retail Report
+                </p>
+            </field>
+        </record>
+
+        <record id="action_after_sales_credit_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Credit Note Report</field>
+            <field name="res_model">credit.report.after.sales</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="search_view_id" ref="view_credit_report_search"/>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Credit Note Report
+                </p>
+            </field>
+        </record>
+
+        <record id="view_after_sales_retail_report_wizard" model="ir.ui.view">
+            <field name="name">After-Sales retail Report wizard Form</field>
+            <field name="model">retail.report.after.sales.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>Ro Closed From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>Ro Closed To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retrieve_stock_qty" string="Open After-sales retail report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_retail_report_wizard" model="ir.actions.act_window">
+            <field name="name">After-Sales retail Report wizard</field>
+            <field name="res_model">retail.report.after.sales.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_after_sales_retail_report_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Main menu for "retail.report" -->
+        <record id="menu_after_sales_retail_report" model="ir.ui.menu">
+            <field name="name">After-Sales Retail Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_after_sales_retail_report_act_window"/>
+            <field name="parent_id" ref="account.account_reports_management_menu"/>
+        </record>
+
+
+
+        <record id="view_credit_report_after_sales_wizard" model="ir.ui.view">
+            <field name="name">After-Sales Credit Note Report</field>
+            <field name="model">credit.report.after.sales.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>Credit Note From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>Credit Note To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="credit_stock_qty" string="Open After-sales Credit Note Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_credit_note_report_wizard" model="ir.actions.act_window">
+            <field name="name">After-Sales Credit Note Report Wizard</field>
+            <field name="res_model">credit.report.after.sales.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_credit_report_after_sales_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="menu_after_sales_credit_report" model="ir.ui.menu">
+            <field name="name">After-Sales Credit Note Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_after_sales_credit_note_report_wizard"/>
+            <field name="parent_id" ref="account.account_reports_management_menu"/>
+        </record>
+
+        <record id="view_after_sale_report_sales_wizard" model="ir.ui.view">
+            <field name="name">After-Sales PSF Report</field>
+            <field name="model">after.sale.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>Ro Closed From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>Ro Closed To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="sale_stock_qty" string="After-Sales PSF Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_after_sales_psf_report_wizard" model="ir.actions.act_window">
+            <field name="name">After-Sales PSF Report Wizard</field>
+            <field name="res_model">after.sale.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_after_sale_report_sales_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="menu_after_sale_report" model="ir.ui.menu" >
+            <field name="name">After-Sales PSF Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_after_sales_psf_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+
+
+        <record id="view_repair_order_report_wizard" model="ir.ui.view">
+            <field name="name">Repair Order Report</field>
+            <field name="model">repair.order.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="repair_order_stock_qty" string="Repair Order Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_repair_order_report_wizard" model="ir.actions.act_window">
+            <field name="name">Repair Order Report Wizard</field>
+            <field name="res_model">repair.order.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_repair_order_report_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        <record id="menu_repair_order_so_report" model="ir.ui.menu" >
+            <field name="name">Repair Order Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_repair_order_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="CRM_Main_Dashboard">
+        <div class="ac_dashboard">
+            <div class="dashboard row mt-5">
+                <div class="col-lg-12">
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-8">
+                                    <p class="h3">Dashboard</p>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <t t-call="MainDashboard"></t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+    <t t-name="MainDashboard">
+        <div class="row">
+            <div class="col-sm-12 byd_portlet">
+                <div class="card byd_portlet" style="padding-bottom: 0;">
+                    <div class="card-body text-center" style="padding-bottom: 0;">
+                        <span class="text-center h1 text-danger"><t t-esc="widget.revenue_data[0]" /> Rs.</span> / <span class="portlet-header-name" ><span class="count" > <u><t t-esc="widget.revenue_data[1]" /></u></span> Opportunities </span>
+                        <p class="text-center h3 text-muted">Revenue</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 byd_portlet">
+                <div class="card byd_portlet">
+                    <div class="card-header">
+                        
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <span class="portlet-header-name">Leads Generated</span>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span class="fa fa-filter portlet-filter" id="filter_leads_generated"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_leads_generated"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="leads-generated-filter-wrapper">
+                            <div class="leads_generated_container d-flex align-items-center flex-column justify-content-center">
+                                <div class="card">
+                                    <div class="card-header dashboard row">
+                                        <div class="col-sm-6 pl-1">
+                                            <span class="portlet-header-name"> Filter </span>
+                                        </div>
+                                        <div class="col-sm-6 pr-1 text-right">
+                                            <button class="btn dropdown-toggle btn-xs o-no-caret btn" id="close_leads_generated_filter">
+                                                <span class="fa fa-times"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body px-0">
+                                        <table class="table table-borderless leads-generated-filter-table">
+                                            <tr id="filter_lead_year" class="d-none">
+                                                <td class="font-weight-bold">Year</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="lead-year-select">
+                                                        <t t-foreach="widget.year_data" t-as="year">
+                                                            <option t-att-value="year['year_index']"><t t-esc="year['year']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_lead_sales_person" class="d-none">
+                                                <td class="font-weight-bold">Sales Person</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="lead-sales-person-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
+                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_lead_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="lead-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-danger" id="filter_leads_generated_button">Filter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="leades-generated"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 byd_portlet">
+                <div class="card byd_portlet">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <span class="portlet-header-name">Opportunities</span>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span class="fa fa-filter portlet-filter" id="filter_opportunities"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_opportunities"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="opportunities-filter-wrapper">
+                            <div class="opportunities_container d-flex align-items-center flex-column justify-content-center">
+                                <div class="card">
+                                    <div class="card-header dashboard row">
+                                        <div class="col-sm-6 pl-1">
+                                            <span class="portlet-header-name"> Filter </span>
+                                        </div>
+                                        <div class="col-sm-6 pr-1 text-right">
+                                            <button class="btn dropdown-toggle btn-xs o-no-caret btn" id="close_opportunities_filter">
+                                                <span class="fa fa-times"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body px-0">
+                                        <table class="table table-borderless opportunities-filter-table">
+                                            <tr id="filter_opportunities_year" class="d-none">
+                                                <td class="font-weight-bold">Year</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="opportunities-year-select">
+                                                        <t t-foreach="widget.year_data" t-as="year">
+                                                            <option t-att-value="year['year_index']"><t t-esc="year['year']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_opportunities_sales_person" class="d-none">
+                                                <td class="font-weight-bold">Sales Person</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="opportunities-sales-person-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
+                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_oppotunities_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="opportunities-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-danger" id="filter_opportunities_button">Filter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="opportunities"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 byd_portlet">
+                <div class="card byd_portlet">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <span class="portlet-header-name">Quotations / Sale Order </span>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span class="fa fa-filter portlet-filter" id="filter_quotations"></span>
+                                <span class="fa fa-repeat portlet-filter" id="refresh_quotations"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="quotations-filter-wrapper">
+                            <div class="quotations_container d-flex align-items-center flex-column justify-content-center">
+                                <div class="card">
+                                    <div class="card-header dashboard row">
+                                        <div class="col-sm-6 pl-1">
+                                            <span class="portlet-header-name"> Filter </span>
+                                        </div>
+                                        <div class="col-sm-6 pr-1 text-right">
+                                            <button class="btn dropdown-toggle btn-xs o-no-caret btn" id="close_quotations_filter">
+                                                <span class="fa fa-times"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body px-0">
+                                        <table class="table table-borderless quotations-filter-table">
+                                            <tr id="filter_quotations_year" class="d-none">
+                                                <td class="font-weight-bold">Year</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="quotations-year-select">
+                                                        <t t-foreach="widget.year_data" t-as="year">
+                                                            <option t-att-value="year['year_index']"><t t-esc="year['year']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_quotations_sales_person" class="d-none">
+                                                <td class="font-weight-bold">Sales Person</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="quotations-sales-person-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
+                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_quotations_models" class="d-none">
+                                                <td class="font-weight-bold">Models</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="quotations-model-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.model_data" t-as="model">
+                                                            <option t-att-value="model['id']"><t t-esc="model['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-danger" id="filter_quotations_button">Filter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="quotations"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 byd_portlet">
+                <div class="card byd_portlet">
+                    <div class="card-header">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <span class="portlet-header-name">Model Wise Sale</span>
+                            </div>
+                            <div class="col-xs-6 text-right">
+                                <span class="fa fa-filter portlet-filter" id="filter_model_wise_sale"></span>
+                                <span class="fa fa-repeat portlet-filter"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="model-wise-sale-filter-wrapper">
+                            <div class="model_wise_sale_container d-flex align-items-center flex-column justify-content-center">
+                                <div class="card">
+                                    <div class="card-header dashboard row">
+                                        <div class="col-sm-6 pl-1">
+                                            <span class="portlet-header-name"> Filter </span>
+                                        </div>
+                                        <div class="col-sm-6 pr-1 text-right">
+                                            <button class="btn dropdown-toggle btn-xs o-no-caret btn" id="close_model_wise_sale_filter">
+                                                <span class="fa fa-times"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body px-0">
+                                        <table class="table table-borderless model-wise-sale-filter-table">
+                                            <tr id="filter_model_wise_year" class="d-none">
+                                                <td class="font-weight-bold">Year</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="model-wise-year-select">
+                                                        <t t-foreach="widget.year_data" t-as="year">
+                                                            <option t-att-value="year['year_index']"><t t-esc="year['year']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr id="filter_model_wise_sales_person" class="d-none">
+                                                <td class="font-weight-bold">Sales Person</td>
+                                                <td class="font-weight-bold">:</td>
+                                                <td>
+                                                    <select class="form-controls" id="model-wise-sales-person-select">
+                                                        <option value="0" selected="selected">Select</option>
+                                                        <t t-foreach="widget.sales_person_data" t-as="sales">
+                                                            <option t-att-value="sales['id']"><t t-esc="sales['name']" /></option>
+                                                        </t>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="text-center mb-2">
+                                            <button class="btn btn-danger" id="filter_model_wise_sale_button">Filter</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="model-wise-sale"></div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </t>
+</templates>

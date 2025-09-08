@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <template id="ars_footer_custom" inherit_id="website.layout" name="Footer">
+            <xpath expr="//div[@id='footer']" position="replace">
+                <div class="oe_structure footer" id="footer" t-if='not no_footer'>
+                    <section class="s_company_team">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row s_no_resize_cols">
+                                        <div class="col-md-4">
+                                            <img src="ars_vehicle_sales/static/src/img/phone.png"
+                                                 class="img-responsive img-circle center-block shadow"
+                                                 data-original-title="" title="" style="width: 100%;"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h4 class="o_default_snippet_text">+918042109381</h4>
+                                            <h4 class="o_default_snippet_text">Call Us</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row s_no_resize_cols">
+                                        <div class="col-md-4">
+                                            <img src="ars_vehicle_sales/static/src/img/send.png"
+                                                 class="img-responsive img-circle center-block shadow"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h4>
+                                                <a href="https://autochip.odoo.com/#" class="title"
+                                                   data-original-title="" title="">mail@autochip.in
+                                                </a>
+                                            </h4>
+                                            <h4>Email Us</h4>
+                                            <p class="text-muted">&amp;nbsp;</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-12 col-sm-12 col-xs-12">
+                                    <div class="row s_no_resize_cols">
+                                        <div class="col-md-4">
+                                            <img src="ars_vehicle_sales/static/src/img/location.png"
+                                                 class="img-responsive img-circle center-block shadow"/>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <div class="icon js-animate-icon"/>
+                                            <a href="https://autochip.odoo.com/#" class="title">
+                                                <font style="font-size: 18px;">Bengaluru, India</font>
+                                            </a>
+                                            <p class="text-muted">
+                                                <font style="color: rgb(247, 247, 247); font-size: 18px;">S-505, Manipal
+                                                    Center, Dickenson Road
+                                                </font>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

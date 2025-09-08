@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    	<report 
+            id="estimate_order"
+            model="sale.order"
+            string="Estimate"
+            report_type="qweb-pdf"
+            name="ars_after_sales.report_estimate"
+            file="ars_after_sales.report_estimate"
+            groups="ars_after_sales.group_aftersale"
+        />
+    </data>
+</odoo>

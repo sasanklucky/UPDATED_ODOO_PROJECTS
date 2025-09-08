@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<odoo>
+    <data>
+        <template id="web_web_layout_inherit" inherit_id="web.layout" name="Web layout">
+            <xpath expr="//title" position="replace">
+                <title t-esc="title or 'Autochip'"/>
+            </xpath>
+        </template>
+
+
+        <template id="frontend_layout" inherit_id="portal.frontend_layout" name="Frontend Layout">
+            <xpath expr="//span[@t-field='res_company.logo']" position="replace">
+                <img src="/logo.png" t-att-alt="'Logo of %s' % res_company.name" t-att-title="res_company.name"/>
+            </xpath>
+        </template>
+
+<!--        <template id="web_menu_secondary_inherit" inherit_id="web.menu_secondary" name="Secondary Menu1">-->
+<!--            <xpath expr="//div[@class='o_sub_menu_footer']" position="replace">-->
+<!--                <div class="oe_footer">-->
+<!--                    Powered by-->
+<!--                    <a href="http://www.autochip.in/" target="_blank">-->
+<!--                        <span>Autochip</span>-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--                <style>-->
+<!--                    .error {-->
+<!--                    position: fixed;-->
+<!--                    top: 70%;-->
+<!--                    left:80%;-->
+<!--                    width:35%;-->
+<!--                    transform: translateX(-50%);-->
+<!--                    padding: 15px;-->
+<!--                    background-color: #c7709f;-->
+<!--                    border: 1px solid #ccc;-->
+<!--                    border-radius: 5px;-->
+<!--                    box-shadow: 0 0 10px rgba(0,0,0,0.1);-->
+<!--                    z-index: 1000; /* Ensure it appears above other elements */-->
+<!--                    }-->
+
+<!--                    .error__icon {-->
+<!--                    width: 20px;-->
+<!--                    height: 20px;-->
+<!--                    transform: translateY(-2px);-->
+<!--                    margin-right: 8px;-->
+<!--                    }-->
+
+<!--                    .error__icon path {-->
+<!--                    fill: #fff;-->
+<!--                    }-->
+
+<!--                    .error__title {-->
+<!--                    font-weight: 500;-->
+<!--                    font-size: 14px;-->
+<!--                    color: #fff;-->
+<!--                    }-->
+
+<!--                    .error__close {-->
+<!--                    width: 20px;-->
+<!--                    height: 20px;-->
+<!--                    cursor: pointer;-->
+<!--                    margin-left: auto;-->
+<!--                    }-->
+
+<!--                    .error__close path {-->
+<!--                    fill: #fff;-->
+<!--                    }-->
+<!--                    @-webkit-keyframes blinker {-->
+<!--                    from {opacity: 1.0;}-->
+<!--                    to {opacity: 0.0;}-->
+<!--                    }-->
+
+<!--                    .blink{-->
+<!--                    text-decoration: blink;-->
+<!--                    -webkit-animation-name: blinker;-->
+<!--                    -webkit-animation-duration: 0.60s;-->
+<!--                    -webkit-animation-iteration-count:infinite;-->
+<!--                    -webkit-animation-timing-function:ease-in-out;-->
+<!--                    -webkit-animation-direction: alternate;-->
+<!--                    }-->
+
+<!--                    .blink:hover {-->
+<!--                      -webkit-animation-name: none;-->
+<!--                    }-->
+<!--                </style>-->
+<!--                <script>-->
+<!--                    function closeNotification() {-->
+<!--                    var notification = document.querySelector("body > div.o_main > div.o_sub_menu > div.error");-->
+<!--                    notification.style.display = 'none';-->
+<!--                    // notification.textContent = 'This is a simple notification message.';-->
+
+<!--                    // Automatically hide the notification after 3 seconds-->
+<!--                    //setTimeout(function() {-->
+<!--                    // notification.style.display = 'none';-->
+<!--                    //}, 3000);-->
+<!--                    }-->
+<!--                </script>-->
+<!--                <div class="error blink">-->
+<!--                    <div class="error__icon">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" height="24" fill="none">-->
+<!--                            <path fill="#393a37"-->
+<!--                                  d="m13 13h-2v-6h2zm0 4h-2v-2h2zm-1-15c-1.3132 0-2.61358.25866-3.82683.7612-1.21326.50255-2.31565 1.23915-3.24424 2.16773-1.87536 1.87537-2.92893 4.41891-2.92893 7.07107 0 2.6522 1.05357 5.1957 2.92893 7.0711.92859.9286 2.03098 1.6651 3.24424 2.1677 1.21325.5025 2.51363.7612 3.82683.7612 2.6522 0 5.1957-1.0536 7.0711-2.9289 1.8753-1.8754 2.9289-4.4189 2.9289-7.0711 0-1.3132-.2587-2.61358-.7612-3.82683-.5026-1.21326-1.2391-2.31565-2.1677-3.24424-.9286-.92858-2.031-1.66518-3.2443-2.16773-1.2132-.50254-2.5136-.7612-3.8268-.7612z"></path>-->
+<!--                        </svg>-->
+<!--                    </div>-->
+<!--&lt;!&ndash;                    <div class="error__title">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <p>&ndash;&gt;-->
+<!--&lt;!&ndash;                            If you experience any difficulty while using the application,&ndash;&gt;-->
+<!--&lt;!&ndash;                            <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;                            Kindly feel free to contact us, we are here to help you please…!&ndash;&gt;-->
+<!--&lt;!&ndash;                        </p>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <b>DMS &amp; IMS - Support Desk Number 07969410000 (please prefix “0”)&ndash;&gt;-->
+<!--&lt;!&ndash;                            <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;                            byd.supportdesk@autochip.in&ndash;&gt;-->
+<!--&lt;!&ndash;                        </b>&ndash;&gt;-->
+<!--&lt;!&ndash;                        <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;                        Timings : Monday to Saturday (9AM to 6PM)&ndash;&gt;-->
+<!--&lt;!&ndash;                    </div>&ndash;&gt;-->
+<!--                    <div class="error__close" onclick="closeNotification()">-->
+<!--                        <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 20 20" height="20">-->
+<!--                            <path fill="#393a37"-->
+<!--                                  d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"></path>-->
+<!--                        </svg>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </xpath>-->
+<!--        </template>-->
+    </data>
+</odoo>

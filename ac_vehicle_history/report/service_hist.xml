@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="vehicle_service_hist_template" name="Pro-Forma After Sales">
+        <t t-call="web.basic_layout">
+            <div class="page" style="">
+                <div class="text-left"  style="margin-bottom: -36px; margin-top: -25px;">
+                    <img t-if="doc.company_id.logo"
+                         t-att-src="'data:image/png;base64,%s' % to_text(doc.company_id.logo)"
+                         style="max-height: 150px;"/>
+                </div>
+                <!--                <div style="font-weight:bold;width:100%;background-color:#bbd7ef;padding: 0px 2px;text-align: center;">-->
+                <!--                    <span style="font-size:20px;color:black;font-weight:bold;">Vehicle Service History</span>-->
+                <!--                </div>-->
+                <br></br>
+                <br></br>
+
+                <div style="font-weight:bold;width:100%;background-color:#bbd7ef;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:14px;color:black;font-weight:bold;"><u> VEHICLE DETAILS </u></span>
+                </div>
+                <table class="table table-sm"
+                       style="border:1px solid black;border-collapse: collapse;margin-top:2px; margin-bottom:1px;">
+                    <tr>
+
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold; background-color:#bbd7ef; font-size: 11px; text-align: left; vertical-align: middle;">
+                            VIN
+                        </td>
+<!--                        <td style="border:1px solid black;padding: 0px 2px;">-->
+                        <td style="border:1px solid black; padding: 5px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+
+                            <span t-field="doc.vin_sn"/>
+                        </td>
+
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold; background-color:#bbd7ef; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            Customer Type
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().custmer_name">
+                                    <span t-field="doc._get_ownership_details().custmer_name.company_type"/>
+                                </t>
+                            </t>
+                        </td>
+
+                        <td style="border:1px solid black;padding: 0px 2px;font-weight:bold;background-color:#bbd7ef; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            Model
+                        </td>
+                        <td style="border:1px solid black;padding: 0px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            <span t-field="doc.model_id.name"/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 1px 2px;font-weight:bold; background-color:#bbd7ef; font-size: 11px; text-align: left; vertical-align: middle;">
+                            Regn. No
+                        </td>
+                        <td style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                            <span t-field="doc.license_plate"/>
+                        </td>
+
+                        <td style="border:1px solid black;padding: 1px 2px;font-weight:bold; background-color:#bbd7ef; font-size: 11px; text-align: left; vertical-align: middle;">
+                            Customer Name
+                        </td>
+                        <td style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().custmer_name">
+                                    <span t-field="doc._get_ownership_details().custmer_name.name"/>
+                                </t>
+                            </t>
+                        </td>
+
+                        <td style="border:1px solid black;padding: 1px 2px;font-weight:bold; background-color:#bbd7ef; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            Mobile
+                        </td>
+                        <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().mobile">
+                                    <t t-esc="doc._get_ownership_details().mobile"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;padding: 1px 2px;font-weight:bold;background-color:#bbd7ef;font-size: 11px;; text-align: left; vertical-align: middle;">
+                            Date of Sale
+                        </td>
+                        <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().date_of_ownership" t-options='{"widget": "date"}'>
+                                    <t t-esc="doc._get_ownership_details().date_of_ownership" t-options='{"widget": "date"}'/>
+                                </t>
+                            </t>
+                        </td>
+
+                        <td style="border:1px solid black;padding: 1px 2px;font-weight:bold;background-color:#bbd7ef; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            Selling Dealer
+                        </td>
+                        <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+                            <t t-if="doc._get_ownership_details()">
+                                <t t-if="doc._get_ownership_details().sold_by.name">
+                                    <t t-esc="doc._get_ownership_details().sold_by.name"/>
+                                </t>
+                            </t>
+                        </td>
+                    </tr>
+
+                </table>
+                <br>
+                </br>
+            </div>
+<!--            <br></br>-->
+
+<!--            <xpath expr="//div/div" position="replace"/>-->
+<!--            <xpath expr="//t[@t-foreach='doc.service_ids']" position="replace">-->
+            <t t-set="data" t-value="doc._get_service_history_from_pdf()"/>
+<!--            <t t-esc="data"/>-->
+            <t t-set="all_service_history" t-value="data['all_service_details']"/>
+            <t t-set="summary_service_history" t-value="data['service_details']"/>
+<!--                <t t-esc="summary_service_history"/>-->
+
+                <div style="font-weight:bold;width:100%;background-color:#f6af83;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:12px;color:black;font-weight:bold;"><u> SUMMARY OF SERVICE HISTORY </u></span>
+                </div>
+<!--                <br></br>-->
+
+                <th class="text-center" style="border:1px solid black;font-size: 11px;">Total Number of Services Done -</th>
+                <t t-esc="len(doc.service_ids)"/>
+
+                <table class="table-bordered" name="service_line_table"
+                       style="border:1px solid black;margin-bottom: 2px;width: 100%;">
+                    <thead>
+                        <tr style="background-color:#bbd7ef">
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">Date of Job Card</th>-->
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">Date of Job Card</th>
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">Servicing Dealer</th>
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">Date of Complaint</th>
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">RO Number</th>
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">KM Reading</th>
+                            <th class="text-left" style="border:1px solid black;max-width: 250px;font-size: 11px;; vertical-align: middle;">Type of Service</th>
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">Servicing Dealer</th>-->
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">Date of Complaint</th>-->
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">RO Number</th>-->
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">KM Reading</th>-->
+<!--                            <th class="text-center" style="border:1px solid black;font-size: 11px; vertical-align: middle;">Type of Service</th>-->
+                        </tr>
+                    </thead>
+                    <tbody class="service_line_body">
+                        <tr t-foreach="summary_service_history" t-as="l">
+<!--                        <tr t-foreach="doc.service_ids" t-as="o">-->
+                            <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().date"/>-->
+                                <span t-esc="l['sr_close_date']" t-options='{"widget": "date"}'/>
+                            </td>
+
+                            <td style="border:1px solid black;padding: 1px 3px;font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().order.company_id"/>-->
+                                <span t-esc="l['dealer_short_name']"/>
+<!--                                <span t-esc="l['dealer_name']"/>-->
+                            </td>
+
+                             <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().date"/>-->
+                                 <span t-esc="l['date_order']" t-options='{"widget": "date"}'/>
+                            </td>
+
+                            <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().order"/>-->
+                                <span t-esc="l['name']"/>
+                            </td>
+
+                            <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().mileage"/>-->
+                                <span t-esc="l['mileage']"/>
+                            </td>
+
+                            <td style="border:1px solid black;padding: 1px 2px; font-size: 11px;; text-align: left; vertical-align: middle;">
+<!--                                <span t-field="o.sudo().servicetype"/>-->
+                                <span t-esc="l['servicetype']"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <br></br>
+
+                <div style="font-weight:bold;width:100%;background-color:#f6af83;padding: 0px 2px;text-align: center;">
+                    <span style="font-size:12px;color:black;font-weight:bold;"><u> DETAILED SERVICE HISTORY </u></span>
+                </div>
+<!--                <br></br>-->
+
+
+<!--                <t t-foreach="doc.service_ids" t-as="sol">-->
+<!--                    <t t-foreach="range(len(doc.service_ids))" t-as="i">-->
+                    <t t-set="service_type_counter" t-value="1"/>
+
+                    <t t-foreach="all_service_history" t-as="service_history">
+                        <table class="table-bordered" name="service_line_table"
+                               style="border:1px solid black;margin-bottom: 2px;width: 100%;margin-top: 2px;">
+                                <t t-set="i" t-value="1"/>
+
+                            <thead>
+
+                                <tr style="background-color:#feff01;margin-top: 37px;">
+<!--                                    <th class="text-center" style="border:1px solid black;">S.No</th>-->
+                                    <th class="text-center" style="border:1px solid black;font-size: 11px;">
+
+                                       <t t-esc="service_type_counter"/>
+<!--                                            <span t-esc="i"/>-->
+<!--                                            <t t-set="i" t-value="i+1"/>-->
+                                    </th>
+                                    <th class="text-center" style="border:1px solid black;max-width: 250px; text-align: left; vertical-align: bottom;font-size: 11px;padding: 1px 2px;">
+                                        Service Type
+                                        <t t-esc="service_type_counter"/>
+<!--                                       <span t-esc="i"/><t t-set="i" t-value="i+1"/>-->
+                                    </th>
+                                </tr>
+                                <tr style="background-color:#bbd7ef">
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Date of Job Card</th>
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">RO Number</th>
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Service Dealer Code</th>
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Service Dealer Name</th>
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Dealer City</th>
+                                    <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">KM Reading</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody class="service_line_body">
+                                <td style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">
+                                    <!--                                        <span t-field="doc.service_ids[i].sudo().date"/>-->
+                                    <span t-esc="service_history['sr_close_date']"
+                                          t-options='{"widget": "date"}'/>
+                                </td>
+
+                                    <td style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                        <span t-esc="service_history['name']"/>
+<!--                                        <span t-field="doc.service_ids[i].sudo().order"/>-->
+        <!--                                <span t-field="doc.service_ids[i].sudo().order.company_id"/>-->
+                                    </td>
+
+                                    <td style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                        <span t-esc="service_history['dealer_code']"/>
+<!--                                        <span t-field="doc.service_ids[i].sudo().order.company_id.dealer_code"/>-->
+                                    </td>
+
+                                    <td style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">
+                                        <span t-esc="service_history['dealer_short_name']"/>
+<!--                                        <span t-esc="service_history['dealer_name']"/>-->
+<!--                                        <span t-field="doc.service_ids[i].sudo().order.company_id"/>-->
+                                    </td>
+
+                                    <td style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">
+                                        <span t-esc="service_history['dealer_city']"/>
+<!--                                        <span t-field="doc.service_ids[i].sudo().order.company_id.city"/>-->
+                                    </td>
+
+                                    <td style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                        <span t-esc="service_history['mileage']"/>
+<!--                                        <span t-field="doc.service_ids[i].sudo().servicetype"/>-->
+                                    </td>
+                            </tbody>
+                            <tr>
+
+                                <td style="border:1px solid black;padding: 1px 2px;font-weight:bold; background-color:#bbd7ef;text-align: left;vertical-align: middle; font-size: 11px;">
+                                    Remarks -
+                                </td>
+                                <td style="border:1px solid black;padding: 1px 2px" colspan="2">
+                                </td>
+
+                                <td style="border:1px solid black;padding: 1px 2px;font-weight:bold; background-color:#bbd7ef;text-align: left;vertical-align: middle; font-size: 11px;">
+                                    Customer VOC
+                                </td>
+                                <td style="border:1px solid black;padding: 1px 2px; width:25px; text-align: left; font-size: 11px;" colspan="4">
+                                    <t t-set="last_index" t-value="len(service_history['customer_voice']) - 1"/>
+                                    <t t-foreach="enumerate(service_history['customer_voice'])" t-as="l">
+                                        <span t-esc="l[1]['name']"/>
+                                        <t t-if="l[0] != last_index">,</t>
+                                    </t>
+<!--                                    <t t-foreach="service_history['customer_voice']" t-as="l">-->
+<!--                                        <span t-esc="l['name']"/>,-->
+<!--                                    </t>-->
+                                </td>
+                            </tr>
+
+                            <style>
+                                .table-bordered th, .table-bordered td {
+                                border: 1px solid black;
+                                padding: 2px;
+                                font-size: 11px;
+                                }
+                            </style>
+
+                            <table class="table-bordered" name="service_line_table" style="border-collapse: collapse; width: 100%; border: 1px solid black;">
+
+                                <t t-set="i_parts" t-value="1"/>
+                                <t t-set="i_labor" t-value="1"/>
+
+                                 <t t-if="'Parts' in [sol['name'] for sol in service_history['order_line']]">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" colspan="6" style="padding: 0px 2px;font-size: 11px;border:1px solid black; border-color: #FFFFFF;">
+                                                PARTS DETAIL
+                                            </th>
+<!--                                            <th colspan="6" style="font-size: 11px; border: 1px solid black;">PARTS DETAIL</th>-->
+                                        </tr>
+                                        <tr>
+                                            <th style="border:1px solid black;padding: 0px 2px;"></th>
+                                        </tr>
+                                        <tr style="background-color:#bbd7ef">
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> S. No. </th>
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> Part Number </th>
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> Part Description </th>
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> Part Quantity </th>
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> Bill To </th>
+                                            <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;"> Claim Number  </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr t-foreach="[sol for sol in service_history['order_line'] if sol['name'] == 'Parts' and sol['qty_delivered'] > 0]" t-as="sol">
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="i_parts"/><t t-set="i_parts" t-value="i_parts + 1"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['default_code']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['description']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="round(sol['product_uom_qty'])"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['category_type']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <t t-if="sol['category_type'] == 'Warranty'">
+                                                        <span t-esc="sol['warranty_claim']"/>
+                                                </t>
+                                                <t t-else="">
+                                                </t>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </t>
+                                <br/>
+
+                                <!-- Labor Table -->
+                                <t t-if="'Labor' in [sol['name'] for sol in service_history['order_line']]">
+                                    <thead>
+                                        <th style="padding: 7px; border-color: #FFFFFF;"></th>
+                                        <tr>
+                                            <th class="text-left" colspan="6" style="font-weight:bold;padding: 0px 0px;font-size: 11px;border:1px solid black; border-color: #FFFFFF; ">
+                                                LABOR DETAIL
+                                            </th>
+<!--                                            <th colspan="6" style="font-size: 11px; border: 1px solid black;">LABOR DETAIL</th>-->
+                                        </tr>
+                                        <tr>
+                                            <th style="border:1px solid black;padding: 0px 0px;"></th>
+                                        </tr>
+                                        <tr style="border:1px ;background-color:#bbd7ef">
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">S. No.</th>
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Code</th>
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Description</th>
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Hours</th>
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">Bill To</th>
+                                            <th class="text-left" style="border:1px solid black;font-size: 11px;">Claim Number</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr t-foreach="[sol for sol in service_history['order_line'] if sol['name'] != 'Parts']" t-as="sol">
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="i_labor"/><t t-set="i_labor" t-value="i_labor + 1"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['default_code']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['description']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['product_uom_qty']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <span t-esc="sol['category_type']"/>
+                                            </td>
+                                            <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">
+                                                <t t-if="sol['category_type'] == 'Warranty'">
+                                                        <span t-esc="sol['warranty_claim']"/>
+                                                </t>
+                                                <t t-else="">
+                                                </t>
+                                            </td>
+<!--                                            <td>-->
+<!--                                                <span t-esc="sol['warranty_claim']" t-if="sol['category_type'] == 'Warranty'"/>-->
+<!--                                            </td>-->
+                                        </tr>
+                                    </tbody>
+                                </t>
+                            </table>
+
+
+
+
+<!--                            <table class="table-bordered" name="service_line_table" style="border-collapse: collapse; width: 100%; border: 1px solid black;">-->
+<!--&lt;!&ndash;                                    <br/>&ndash;&gt;-->
+<!--&lt;!&ndash;                                    <t t-set="i" t-value="1"/>&ndash;&gt;-->
+<!--                                <t t-set="i_parts" t-value="1"/>-->
+<!--                                <t t-set="i_labor" t-value="1"/>-->
+<!--                                <t t-set="header_parts" t-value="True"/>-->
+<!--                                <t t-set="header_labor" t-value="True"/>-->
+<!--                                <tr t-foreach="service_history['order_line']" t-as="sol">-->
+<!--                                    <t t-esc="sol['name']"/>-->
+<!--                                        <thead>-->
+<!--                                            <t t-if="sol['name'] == 'Parts'">-->
+<!--                                                <t t-if="header_parts">-->
+<!--                                                    <th style="padding: 8px; border-color: #FFFFFF;"></th>-->
+<!--                                                    <tr>-->
+<!--                                                        <th class="text-left" colspan="6"-->
+<!--                                                            style="padding: 0px 2px;font-size: 11px;border:1px solid black; border-color: #FFFFFF;">-->
+<!--                                                            PARTS DETAIL-->
+<!--                                                        </th>-->
+<!--                                                    </tr>-->
+<!--                                                    <tr >-->
+<!--                                                        <th style="border:1px solid black;padding: 0px 2px;"></th>-->
+<!--                                                    </tr>-->
+<!--                                                    <tr style="background-color:#bbd7ef">-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">S. No.</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Part Number</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Part Description</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Part Quantity</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Bill To</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black; font-size: 11px; vertical-align: middle;">Claim Number</th>-->
+<!--                                                    </tr>-->
+
+<!--                                                    <t t-set="header_parts" t-value="False"/>-->
+<!--                                                </t>-->
+<!--    &lt;!&ndash;                                        </t>&ndash;&gt;-->
+<!--    &lt;!&ndash;                                        <t t-if="sl.product_catalog_id.name == 'Parts'">&ndash;&gt;-->
+<!--                                                    <td class="text-center"-->
+<!--                                                        style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="i_parts"/>-->
+<!--                                                        <t t-set="i_parts" t-value="i_parts + 1"/>-->
+<!--                                                        &lt;!&ndash;                                                            <span t-esc="i"/>&ndash;&gt;-->
+<!--                                                        &lt;!&ndash;                                                            <t t-set="i" t-value="i+1"/>&ndash;&gt;-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--    &lt;!&ndash;                                                        <td class="text-center" style="background-color:#FFF;">&ndash;&gt;-->
+<!--                                                        <span t-esc="sol['default_code']"/>-->
+<!--    &lt;!&ndash;                                                            <span t-field="sol.product_id.default_code"/>&ndash;&gt;-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['description']"/>-->
+<!--                                                    </td>-->
+<!--    -->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="round(sol['product_uom_qty'])"/>-->
+<!--                                                    </td>-->
+<!--    -->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['category_type']"/>-->
+<!--                                                    </td>-->
+<!--    -->
+<!--                                                    <t t-if="sol['category_type'] == 'Warranty'">-->
+<!--                                                        <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                            <span t-esc="sol['warranty_claim']"/>-->
+<!--    &lt;!&ndash;                                                                <span t-field="sol.category"/>&ndash;&gt;-->
+<!--                                                        </td>-->
+<!--                                                    </t>-->
+<!--                                                    <t t-else="">-->
+<!--                                                        <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        </td>-->
+<!--                                                    </t>-->
+
+<!--                                            </t>-->
+
+<!--                                            <t t-else="">-->
+<!--                                                <t t-if="header_labor">-->
+<!--                                                     <th style="padding: 8px; border-color: #FFFFFF;"></th>-->
+<!--    &lt;!&ndash;                                                        <br/>&ndash;&gt;-->
+
+<!--                                                    <tr>-->
+<!--    &lt;!&ndash;                                                            <br></br>&ndash;&gt;-->
+<!--                                                        <th class="text-left" colspan="6"-->
+<!--                                                            style="font-weight:bold;padding: 0px 0px;font-size: 11px;border:1px solid black; border-color: #FFFFFF; ">-->
+<!--                                                            LABOR DETAIL-->
+<!--                                                        </th>-->
+<!--                                                    </tr>-->
+<!--                                                    <tr>-->
+<!--                                                        <th style="border:1px solid black;padding: 0px 0px;"></th>-->
+<!--                                                    </tr>-->
+<!--                                                    <tr style="border:1px ;background-color:#bbd7ef">-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">S. No.</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Code</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Description</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">Labor Hours</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">Bill To</th>-->
+<!--                                                        <th class="text-left" style="border:1px solid black;font-size: 11px;">Claim Number</th>-->
+<!--                                                    </tr>-->
+<!--                                                    <t t-set="header_labor" t-value="False"/>-->
+<!--                                                </t>-->
+
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="i_labor"/>-->
+<!--                                                        <t t-set="i_labor" t-value="i_labor + 1"/>-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['default_code']"/>-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['description']"/>-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['product_uom_qty']"/>-->
+<!--                                                    </td>-->
+<!--                                                    <td class="text-center" style="border:1px solid black;padding: 1px 2px; font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        <span t-esc="sol['category_type']"/>-->
+<!--                                                    </td>-->
+<!--                                                    <t t-if="sol['category_type'] == 'Warranty'">-->
+<!--                                                        <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                            <span t-esc="sol['warranty_claim']"/>-->
+<!--                                                        </td>-->
+<!--                                                    </t>-->
+<!--                                                    <t t-else="">-->
+<!--                                                        <td class="text-center" style="border:1px solid black;padding: 1px 2px;font-size: 11px; text-align: left; vertical-align: middle;">-->
+<!--                                                        </td>-->
+<!--                                                    </t>-->
+
+<!--                                            </t>-->
+<!--                                        </thead>-->
+<!--                                    </tr>-->
+<!--&lt;!&ndash;                                        <br></br>&ndash;&gt;-->
+<!--                            </table>-->
+                            <br/>
+
+<!--                            </tr>-->
+
+                        </table>
+                        <br/>
+                        <t t-set="service_type_counter" t-value="service_type_counter + 1"/>
+
+                    </t>
+<!--            </xpath>-->
+        </t>
+<!--        <br/>-->
+
+<!--            </t>-->
+<!--        </xpath>-->
+
+
+    </template>
+
+</odoo>
+<!--
+
+-->

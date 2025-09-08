@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates id="template" xml:space="preserve">
+    <t t-name="fi_dashboard">
+        <div class="col-xs-12" style="margin-top: 3%;margin-left: -1%;">
+            <div class="col-xs-3" style="padding: 0%;" >
+                <img src="/ac_rms/static/src/img/PNG.png" style="width:117%"/>
+                <div style="position: absolute;margin-top: -62%;margin-left: 39%;color: white;font-weight:bold;">My Pending Tasks</div>
+                <div style="position: absolute;margin-top: -35%;margin-left: 8%;color: white;font-size: smaller;">Appointment<div class="w3-circle3s">0</div></div>
+                <div style="position: absolute;margin-left: 55%;margin-top: -10%;color: white;font-size: smaller;">My Tasks<div class="w3-circle4s">0</div></div>
+                <div style="position: absolute;margin-left: 95%;margin-top: -35%;color: white;font-size: smaller;width: 100%;">Walk In<div class="w3-circleexs">0</div></div>
+                <div style="position: absolute;margin-left: 5%;margin-top: -11%;color: white;font-size: smaller;width: 100%;">Waiting For SA<div class="w3-circlesa1">0</div></div>
+            </div>
+            <div class="col-xs-6" style="margin-top: 4%;margin-left: 5%;padding: 0px;">
+                <div style="position: absolute;top: -32%;left: 39%;font-weight: bold;">Status Today</div>
+                <a href="#" id="action_tree">
+                    <img src="/ac_rms/static/src/img/1a.png" href="#" id="action_tree" style="width: 23%;" ><div style="color: white;position: absolute;top: 38%;font-size: smaller;margin-left: 6%;">Appointment<div class="w3-circle5s">0</div></div></img>
+                </a>
+                <img src="/ac_rms/static/src/img/1b.png" style="width: 23%;"><div style="color: white;position: absolute;top: 38%;font-size: smaller;margin-left: 30%;">Turnup Till<div class="w3-circle6s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/1c.png" style="width: 23%;"><div style="color: white;position: absolute;top: 39%;font-size: smaller;margin-left: 56%;">Walk In<div class="w3-circle7s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/1f.png" style="width: 23%;"><div style="color: white;position: absolute;top: 37%;font-size: smaller;margin-left: 75%;">Delayed Orders<div class="w3-circledel">0</div></div></img>
+                <img src="/ac_rms/static/src/img/1d.png" style="width: 23%;"><div style="color: white;position: absolute;top: 89%;font-size: smaller;margin-left: 4%;">Delivered Today<div class="w3-circle8s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/1e.png" style="width: 23%;"><div style="color: white;position: absolute;top: 89%;font-size: smaller;margin-left: 28%;">Returned Vehicle<div class="w3-circle9s">55</div></div></img>
+                <img src="/ac_rms/static/src/img/1f.png" style="width: 23%;"><div style="color: white;position: absolute;top: 89%;font-size: smaller;margin-left: 55%;">No Show<div class="w3-circle10s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/1f.png" style="width: 23%;"><div style="color: white;position: absolute;top: 89%;font-size: smaller;margin-left: 80%;">blank<div class="w3-circlebs">0</div></div></img>
+            </div>
+            <div class="col-xs-3" style="margin-top: 4%;width: 22%;float: right;margin-right: -2%;padding-right: 0;">
+                <div style="margin-left: 15%;position: absolute;top: -32%;font-weight: bold;">Status Till</div>
+                <img src="/ac_rms/static/src/img/2a.png" style="width: 55%;margin-left: -17%;"><div style="color: white;position: absolute;top: 37%;font-size: smaller;margin-left: -3%;">Appointment<div class="w3-circle11s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/2b.png"  style="width: 55%;"><div style="color: white;position: absolute;top: 38%;font-size: 70%;margin-left: 42%;font-weight: bold;">Waiting For Delivery<div class="w3-circle12s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/2c.png" style="width: 55%;margin-top: 1%;margin-left: -17%;"><div style="color: white;position: absolute;top: 88%;font-size: smaller;margin-left: 7%;">WIP<div class="w3-circle13s">0</div></div></img>
+                <img src="/ac_rms/static/src/img/2c.png" style="width: 55%;margin-top: 1%;"><div style="color: white;position: absolute;top: 89%;font-size: smaller;margin-left: 59%;">Hold<div class="w3-circle14e">0</div></div></img>
+            </div>
+
+        </div>
+
+        <!--<div class="col-xs-1" style="margin-top: 1%;float:right;margin-right: 9%;">-->
+                <!--<img src="/ac_rms/static/src/img/3a.png" style="width: 238%;"><div style="color: white;position: absolute;top: 78%;font-size: smaller;margin-left: 47%;width: 100%;font-weight: bold;">Quick Link<div class="w3-circle14e">0</div></div></img>-->
+            <!--</div>-->
+            <!--<div class="col-xs-1" style="margin-left: 2%;margin-top: 9%;float: right;">-->
+                <!--<img src="/ac_rms/static/src/img/4a.png" style="width: 232%;margin-left: 161%;"><div style="color: white;position: absolute;top: 80%;font-size: 76%;margin-left: 136%;width: 100%;font-weight: bold;">My Performance<div class="w3-circle15e">0</div></div></img>-->
+            <!--</div>-->
+        <div>
+            <style>ul.tagit input[type="text"] {
+                color: black;
+                background: none;
+            }</style>
+            <div class="table-search-sect">
+                <input type="hidden" name="type" value="ta"/>
+                <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+                <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:15%;float:right;font-size: 0.8em;margin-right:48px;margin-top:21px;" >
+
+                </ul>
+                <div style="display:none;" id="search-value">Time Stamp</div>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <table class="tree_app_security cls-table-search" id="my_pending_task" style="font-size: 11px;color: #666666;width:98%;margin-left: 1%;">
+                    <t width="100%" style="border:1px solid grey;font-size:18px;text-align: center;color: #666666;">
+                        <thead>
+                            <tr style="background-color: #008041;height: 39px;" >
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 3%;" >Sr#</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 6%;" >Reg#</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 8%;" >Customer</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 8%;" >Mobile</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 6%;" >Type</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Gate Time</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Kilometer</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Doc #</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Appointment Date &amp; Time</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 12%;" >Handover Date &amp; Time </th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 9%;" >SA</th>
+                                <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                     </t>
+                </table>
+            </div>
+        </div>
+    </t>
+
+
+
+</templates>

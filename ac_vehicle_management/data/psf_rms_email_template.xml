@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--Email template-->
+        <record id="mail_template_send_psf_rsa_report" model="mail.template">
+            <field name="name">Vehicle-Sales PSF report(RSA)</field>
+            <field name="model_id" ref="ac_vehicle_management.model_vehicle_sale_psf_report"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="subject">Vehicle-Sales PSF report(RSA)</field>
+            <field name="lang"></field>
+            <field name="body_html" type="xml">
+                <div>
+                    <p>Hi Sir, Please find the attachment for Vehicle-Sales PSF report(RSA)</p>
+                    <br/>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_send_rsa_report" model="mail.template">
+            <field name="name">Vehicle-Sales RSA report</field>
+            <field name="model_id" ref="ac_vehicle_management.model_vehicle_sale_rsa_report"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="subject">Vehicle-Sales RSA report(RSA)</field>
+            <field name="lang"></field>
+            <field name="body_html" type="xml">
+                <div>
+                    <p>Hi Sir/Madam, Please find the enclosed vehicle details for RSA activation request</p>
+                    <br/>
+                </div>
+            </field>
+        </record>
+
+
+        <record id="mail_template_send_csi_ssi_report" model="mail.template">
+            <field name="name">CSI SSI Report</field>
+            <field name="model_id" ref="ac_vehicle_management.model_automated_report"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="subject">CSI SSI Report</field>
+            <field name="lang"></field>
+            <field name="body_html" type="xml">
+                <div>
+                    <p>Hi Sir, Please find the attachment for CSI SSI Report</p>
+                    <br/>
+                </div>
+            </field>
+        </record>
+
+        <record id="mail_template_send_ecb_report" model="mail.template">
+            <field name="name">ECB Report</field>
+            <field name="model_id" ref="ac_vehicle_management.model_vehicle_sale_psf_report"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="subject">ECB Report</field>
+            <field name="lang"></field>
+            <field name="body_html"><![CDATA[<html>
+                % set record = ctx.get('active_id')
+                % set dealer = ctx.get('dealer_name')
+                <p>Dear ${record}</p>
+                </br/>
+                <p>Please find attached the list of customers for whom the charger installation visit needs to be done for the region.</p>
+                <p>Request you to kindly contact the customer first take the address confirmation from then and go for FS.</p>
+                <br/>
+                <br/>
+                <p>Regards,</p>
+                <p>${dealer}</p>
+                </html>
+            ]]>
+            </field>
+        </record>
+    </data>
+</odoo>

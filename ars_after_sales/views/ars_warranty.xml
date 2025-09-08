@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<!--	<template id="warranty_claim" name="planner">
+	    <t t-call="website.layout">
+	    	<div id="wrap" class="oe_structure oe_empty">
+		  <section class="s_title bg-gray-light">
+			<div class="container">
+			  <div class="row">
+				<div class="col-md-12 mb0">
+				  <h1 class="text-center">Warranty Claim Approval <br/></h1>
+				</div>
+			  </div>
+			</div>
+		  </section>
+	    </t>
+	</template>-->
+
+	<template id="warranty_claim" name="Warranty">
+	  <t t-call="website.layout">
+		<style>.green{background:green;}
+			   .btn-lg{font-size:13px;}</style>
+		<div class="container">
+			<h2 style="text-align: center;"> Warranty Approval </h2>
+		  <div class="alert alert-info">
+			  <p><b>Warranty No: </b><span t-esc="warranty.name"/></p>
+			<p><b>Customer: </b><span t-esc="warranty.order_id.partner_id.name"/></p>
+			<p><b>Confirmation Date: </b><span t-esc="warranty.order_id.confirmation_date"/></p>
+			<p><b>Reg No: </b><span t-esc="warranty.regn_no and warranty.regn_no.license_plate"/></p>
+			<p><b>Vin: </b><span t-esc="warranty.vin_no"/></p>
+			<p><b>Model: </b><span t-esc="warranty.model_id.name"/></p>
+		  </div>
+
+		  <table class="table table-bordered table-striped">
+			<thead>
+			  <tr>
+				  <td><b>Product</b></td>
+				  <td><b>Ordered Qty.</b></td>
+				  <td><b>Base Price</b></td>
+				  <td><b>Warranty Price</b></td>
+				  <td><b>Subtotal</b></td>
+				  <td><b>Comment</b></td>
+				  <td style="width:35%;"></td>
+			  </tr>
+			</thead>
+			<tbody>
+				<tr t-foreach="warranty.order_lines" t-as="wrn">
+				<td><t t-esc="wrn.product_id.name"/></td>
+				<td><t t-esc="'%.2f' %wrn.product_uom_qty"/></td>
+				<td><t t-esc="'%.2f' %wrn.ars_std_price"/></td>
+				<td><input name="ars_warranty_price" class="form-control" t-att-value="'%.2f' %wrn.ars_warranty_price"/></td>
+				<td><t t-esc="'%.2f' %wrn.wrn_price_subtotal"/></td>
+				<td><input name="comment" class="form-control o_website_form_input"/></td>
+				<td><span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green approved btn-lg o_website_form_send' if wrn.apr_action == 'approved' else 'btn btn-primary approved btn-lg o_website_form_send' ">Approved</span>
+				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green re_submit btn-lg o_website_form_send' if wrn.apr_action == 're_submit' else 'btn btn-primary re_submit btn-lg o_website_form_send' ">Re-Submit</span>
+				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green reject btn-lg o_website_form_send' if wrn.apr_action == 'reject' else 'btn btn-primary reject btn-lg o_website_form_send' ">Reject</span>
+<!--				&amp;nbsp;&amp;nbsp;<span t-att-data-dbid="wrn.id" t-att-data-warranty_id="warranty.id" t-att-class="'btn btn-primary green resub btn-lg o_website_form_send' if wrn.apr_action == 're_submission' else 'btn btn-primary resub btn-lg o_website_form_send' ">Re-Submission</span>-->
+				</td>
+				</tr>
+			</tbody>
+		  </table>
+		</div>
+	  </t>
+	</template>
+
+
+</odoo>

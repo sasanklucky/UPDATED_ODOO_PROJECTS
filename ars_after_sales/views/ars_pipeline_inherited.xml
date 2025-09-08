@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="crm_lead_appointment_form_inherited" model="ir.ui.view">
+            <field name="name">CRM Appointment Lead Inherited</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="ars_after_sales.crm_case_form_view_oppor_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/group/group[1]/field[@name='partner_id']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[1]/field[@name='mobile']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/field[@name='vehicle_model']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/field[@name='vin_no']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/div/div[hasclass('oe_inline')]/field[@name='regn_no']"
+                       position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group[2]/group/field[@name='appo_date']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group/group[2]/field[@name='kilometer_in']" position="after">
+                    <field name="sale_date_to_customer" attrs="{'required': True}" string="Sale Date *"/>
+                </xpath>
+                <xpath expr="/form/sheet/group[2]/group/field[@name='user_id']" position="attributes">
+                    <attribute name="attrs">{'required': True}</attribute>
+                </xpath>
+                <xpath expr="/form/sheet/group[2]/group/field[@name='user_id']" position="after">
+                    <field name="service_options" attrs="{'required': True}" options="{'no_create': True, 'no_open': True}" string="Service Options *"/>
+                    <field name="service_type" attrs="{'required': True}" domain="[('service_option_id', '=',service_options)]" options="{'no_create': True,}" string="Service Type	*"/>
+                </xpath>
+                <xpath expr="/form/sheet/group[2]/group[2]/field[@name='date_conversion']" position="after">
+                    <field name="pick_up_drop_crm" attrs="{'required': True}" string="Pick Up and Drop *"/>
+                </xpath>
+            </field>
+        </record>
+<!--        <record id="rule_mail_activity_admin_only" model="ir.rule">-->
+<!--            <field name="name">Only Admin Can Archive/Delete</field>-->
+<!--            <field name="model_id" ref="mail.model_mail_activity"/>-->
+<!--            <field name="groups" eval="[(4, ref('base.group_system'))]"/>-->
+<!--            <field name="domain_force">[(1,'=',1)]</field>-->
+<!--            <field name="perm_unlink">True</field>-->
+<!--            <field name="perm_write">True</field>-->
+<!--        </record>-->
+
+<!--        <record id="rule_mail_activity_non_admin" model="ir.rule">-->
+<!--            <field name="name">Non-Admin Cannot Archive/Delete</field>-->
+<!--            <field name="model_id" ref="mail.model_mail_activity"/>-->
+<!--            <field name="groups" eval="[(4, ref('base.group_user'))]"/>-->
+<!--            <field name="domain_force">[(1,'=',1)]</field>-->
+<!--            <field name="perm_unlink">False</field>-->
+<!--        </record>-->
+
+    </data>
+</odoo>

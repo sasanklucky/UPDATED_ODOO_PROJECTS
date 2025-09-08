@@ -1,0 +1,45 @@
+.sb-icon-search {
+	color: #fff;
+	background: #228ce6;
+	z-index: 90;
+	font-size: 18px;
+	font-family: 'icomoon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	-webkit-font-smoothing: antialiased;
+}
+.process_class{
+	display: block;
+    max-width: 50%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    vertical-align: top;
+    position: relative;
+}
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

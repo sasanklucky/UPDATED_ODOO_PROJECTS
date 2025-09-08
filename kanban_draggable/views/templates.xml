@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="assets_backend" name="navybitss_kanban_draggable" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/kanban_renderer.js"/>
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/kanban_column.js"/>
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/sale_order_button_control.js"/>
+            <script type="text/javascript" src="/kanban_draggable/static/src/js/schedule_chatter_extension.js"/>
+        </xpath>
+    </template>
+</odoo>

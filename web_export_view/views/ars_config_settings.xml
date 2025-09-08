@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="view_res_config_setting_form_view_inherited" model="ir.ui.view">
+        <field name="name">res.config.settings.form</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/web_export_view/static/src/css/ars_password.css"/>
+            </xpath>
+            <xpath expr="//div[@id='invoice_ars_setup']" position="after">
+                <h2>Password</h2>
+                <div class="row mt16 o_settings_container" id="password_protection_id">
+                    <div class="col-xs-12 col-md-6 o_setting_box">
+                        <div class="o_setting_right_pane">
+                            <field name="password_protection" widget="booking_stage_mask"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+
+    <record id="view_res_company_form_view_inherited" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='report_footer']" position="after">
+                <field name="stored_password" invisible="1" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

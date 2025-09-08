@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="helpdesk_stage_bool_view_form_inherited" model="ir.ui.view">
+            <field name="name">helpdesk.stage.form</field>
+            <field name="model">helpdesk.stage</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_stage_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='team_ids']" position="after">
+                    <field name="is_close_stage"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="helpdesk_ticket_view_form_inherited" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.form</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet" position="inside">
+                        <notebook>
+                            <page string="Solution Provided">
+                                <field name="sol_ids" widget="one2many_list" readonly="True" groups="base.group_no_one" >
+                                </field>
+                            </page>
+                        </notebook>
+                </xpath>
+                <xpath expr="//field[@name='sla_id']" position="after">
+                    <field name="activity_source_id"/>
+                    <field name="source_complaint_id" options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//field[@name='tag_ids']" position="after">
+                    <field name="category_i_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="category_ii_id" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="close_date"/>
+                </xpath>
+
+                <field name="tag_ids" position="attributes">
+                    <attribute name="string">Complaint Type</attribute>
+                </field>
+
+                <xpath expr="//form/sheet/group" position="inside">
+                    <group>
+                        <field name="seller_dealer"/>
+                        <field name="date_of_sale"/>
+                        <field name="model" domain="[('catalog_type','=','Vehicle')]"/>
+                        <field name="milage"/>
+                        <field name="vin_number"/>
+                        <field name="vehicle_no"/>
+                    </group>
+                    <group>
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="update_user_company_server_action" model="ir.actions.server">
+            <field name="name">Update Company</field>
+            <field name="model_id" ref="model_helpdesk_ticket"/>
+            <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                records.update_user_company_info()
+            </field>
+        </record>
+    </data>
+</odoo>

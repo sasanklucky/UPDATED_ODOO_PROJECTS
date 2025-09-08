@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+{
+    'name': "ARS Vehicle Management",
+    'summary': """ARS Vehicle Management""",
+    'description': """ """,
+    'author': "Autochip India",
+    'website': "http://www.autochip.in",
+    # for the full list
+    'category': 'Uncategorized',
+    'version': '0.1',
+    # any module necessary for this one to work correctly
+    'depends': ['base','sale','crm','purchase','purchase_requisition','web', 'mail',
+                'ac_product_catalog',
+                'ars_after_sales',
+                'ars_vehicle_sales','model_group'],
+    # always loaded
+    'data': [
+        # 'security/ir.model.access.csv',
+        'demo/ars_vehicle_purchase.xml',
+        'demo/ars_vehicle_sales.xml',
+        'data/ir_config_parameter_data.xml',
+        'security/ars_vehicle_security.xml',
+        'views/views.xml',
+        'views/vehicle_purchase.xml',
+        'views/vehicle_sales_action.xml',
+        'views/vehicle_sale_psf_report.xml',
+        'views/automation_email_conf.xml',
+        'views/templates.xml',
+        'data/psf_rms_email_template.xml',
+        'data/psf_rsa_cron_job.xml',
+        'menu/ac_vehicle_sales_menus.xml',
+        'menu/ac_vehicle_menus.xml',
+    ],
+    # only loaded in demonstration mode
+    'demo': [
+        'demo/demo.xml',
+    ],
+}

@@ -1,0 +1,40 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="ac_shell_location_list">
+            <field name="name">ac_shell_location_list</field>
+            <field name="model">shell.location</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="display_name"/>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="company_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ac_shell_location_form">
+            <field name="name">ac_shell_location_form</field>
+            <field name="model">shell.location</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group col="4" string="Shelf Location">
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="parent_id"/>
+                        <field name="company_id"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="ac_shell_location_action_window">
+            <field name="name">Shelf Location Window</field>
+            <field name="res_model">shell.location</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_shell_location_config" action="ac_shell_location_action_window" name="Shelf Location" parent="stock.menu_warehouse_config" groups="base.group_user" sequence="6" />
+    </data>
+</odoo>

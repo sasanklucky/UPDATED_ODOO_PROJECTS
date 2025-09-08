@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+po_sync_check_wizard_access,po_sync_check_wizard,model_po_sync_check_wizard,,1,1,1,1
+update_sale_order_line_access,update_sale_order_line,model_update_sale_order_line,,1,1,1,0
+po_sync_log_access,po_sync_log,model_po_sync_log,,1,1,1,0

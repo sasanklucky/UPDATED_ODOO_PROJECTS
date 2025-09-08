@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="customer" name="rms_customer">
+	    <t t-call="website.layout">
+            <div class="container">
+  <h2>Customer Details</h2>
+  <form class="form-horizontal" action="/save_customer">
+      <div class="form-group">
+      <label class="control-label col-sm-2" for="customer_name">Name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="customer_name" placeholder="Name" name="customer_name"/>
+      </div>
+    </div>
+      <div class="form-group">
+      <label class="control-label col-sm-2" for="mobile">Name:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="mobile" placeholder="Mobile" name="mobile"/>
+      </div>
+    </div>
+      <div class="form-group">
+      <label class="control-label col-sm-2" for="email">Email:</label>
+      <div class="col-sm-10">
+        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="regn_no">Regn No:</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="pwd" placeholder="Enter Regn" name="regn" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-info">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+        </t>
+    </template>
+     <template id="modal" name="technician">
+        <div class="modal-dialog technician-popup">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Technician Task</h4>
+                </div>
+                <div class="modal-body">
+                    <!--<t t-if="show_task">-->
+                        <div class="row">
+                            <div class="col-xs-12">
+
+                                       <!-- <select id="tsk_bay" class="form-control" style="width:10% !important;">
+                                       <t t-set="task" t-value="[]"/>
+	                                    	<t t-foreach="tasks" t-as="o">
+	                                    	<t t-if="o.task_bay.name not in task">
+	                                    		<option t-att-value="o.id"><t t-esc="o.task_bay.name" /></option>
+	                                    		<t t-set="task" t-value="task+[o.task_bay.name]"/>
+	                                    	</t>
+	                                    	</t>
+                                    	</select>
+                                    <a id="loadbay" style="position: relative;top: -32px;left: -170px;">Load on Bay</a> -->
+                                    <div  class="col-xs-4">
+                                        <span id="bhmi_bays"></span>
+
+                                    </div>
+
+                                    <div  class="col-xs-8 tech_popup_header_section" style="font-size: 29px;color: #005dff;">
+                                        <div class="vehicle_details" style="padding: 0px 0px;">
+                                            <span id="so_id">
+                                                <t t-esc='order_id' invisible="1"/>
+                                            </span>
+                                            <span id="so_name">
+                                                <t t-esc='so_name' />
+                                            </span>  -  <span>
+                                                <t t-esc='regn_no' />
+                                            </span>
+                                            <span class="tech_event" style="display:none;"><t t-esc="event"/></span>
+                                        </div>
+
+
+
+                                        <span id="disabled_finish" style="display:none;"><t t-esc="finish_btn" /></span>
+                                        <button type="button" id="start_task" class="btn btn-success start_task" >Start</button>
+                                        <button type="button" id="pause_task" class="btn btn-danger pause_task"  data-target="#pause_task_modal">Hold</button>
+                                        <!--&lt;!&ndash;<button type="button" id="break_task" class="btn btn-info break_task">Break</button>&ndash;&gt;-->
+                                        <button type="button" id="finish_task" class="btn btn-warning finish_task" >Finish</button>
+                                    </div>
+                                    <!-- <span id="bhmi_bays"></span> -->
+                                    <!--<span id="disabled_finish" style="display:none;"><t t-esc="finish_btn" /></span>-->
+                                	<!--<button type="button" id="start_task" class="btn btn-success start_task">Start</button>-->
+	                                <!--<button type="button" id="pause_task" class="btn btn-danger pause_task" data-target="#pause_task_modal">Hold</button>-->
+	                                <!--<button type="button" id="break_task" class="btn btn-info break_task">Break</button>-->
+	                                <!--<button type="button" id="finish_task" class="btn btn-warning finish_task">Finish</button>-->
+                                    <!--<input type="hidden" name="voic" id="voices" t-att-value="appointment and appointment.id or False"/>
+                                    <a  style="margin-left: 7px;" data-toggle="modal" id="custvoice" t-att-data-sale_id="appointment and appointment.id or False">
+                                        Customer Voices
+                                    </a>-->
+                                <span id="reject" style="display:none;"><t t-esc='reject' /></span>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div id="pause_task_modal" style="display:none;">
+                                <div class="row">
+                                      <div class="col-xs-5" style="margin-top:17px;"></div>
+                                    <div class="col-xs-2" style="margin-top:15px;width:255px;">
+                                        <textarea class="form-control" placeholer="Message" id="brk_msg" style="display:none;"></textarea>
+                                        <input data-option="Waiting for Customer Approval" id="WaitingforCustomerApproval" name="onhold" value="otherreason" type="radio"/>Waiting for Customer Approval<br/>
+                                        <input data-option="Waiting for Parts" id="WaitingforParts" name="onhold" value="otherreason" type="radio"/>Waiting for Parts<br/>
+                                        <input data-option="Waiting for Diagnosis" id="WaitingforDiagnosis" name="onhold" value="otherreason" type="radio"/>Waiting for Diagnosis<br/>
+                                        <input data-option="Waiting for Decision" id="WaitingforDecision" name="onhold" value="otherreason" type="radio"/>Waiting for Decision<br/>
+                                        <input data-option="Others" id="Others" name="onhold" value="otherreason" type="radio"/>Others<br/>
+                                        <!--<span id="ckbx" type="radio" class="checkbox">-->
+                                            <!---->
+                                        <!--</span>-->
+                                        <select class="selectpicker" style="float:right;display:none;" id="brk_opt">
+                                        </select>
+
+                                    </div>
+
+                                    <!--
+                                    <div class="col-xs-2" style="margin-top:15px;">
+                                        <div id="rad" style="display:none;">
+                                            <input type="radio" name="b" value="lunch" /> Lunch Break<br/>
+                                            <input type="radio" name="b" value="regular"/> regular<br/>
+                                            <input type="radio" name="b" value="shiftend"/> regular
+                                        </div>
+                                    </div>-->
+
+
+                                </div>
+                                <div class="col-xs-12" style="margin-left:122px;">
+                                    <!--<div class="col-xs-3">-->
+                                        <!--<label class="other-class hidden">Select Remarks</label><select class="form-control hidden other-class" string="Remark" name="other_break" id="other_break">-->
+                                            <!--<option></option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+                                    <!--<label class="other-class hidden" string="Remarks" style="margin-left:-485px;" >Remarks: </label>-->
+                                    <div class="col-xs-6" style="margin-top:-137px;margin-left:451px;">
+                                        <input type="text" class="on_hold cust_approve-class hidden" placeholder="Waiting for Customer Approval" name="custapprove" id="custapprove"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-107px;margin-left:451px;">
+                                        <input type="text" class="on_hold wait-parts-class hidden" placeholder="Waiting for Parts" name="waitparts" id="waitparts"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-82px;margin-left:451px;">
+                                        <input type="text" class="on_hold wait-diagonis-class hidden" placeholder="Waiting for Diagnosis" name="waitdiagonis" id="waitdiagonis"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-49px;margin-left:451px;">
+                                        <input type="text" class="on_hold decision-class hidden" placeholder="Waiting for Decision" name="decisionreason" id="decisionreason"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:0px;margin-left:237px;">
+                                        <textarea class="on_hold other-class hidden" placeholder="Remarks" name="" id="otherreason"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 confirm_button" style="padding: 0;">
+                                    <button type="button" class="btn btn-success pause_reason" disabled="True">Confirm</button>
+                                </div>
+                            </div>
+                            <div id="break_task_modal" style="display:none;">
+                                <div class="row">
+                                      <div class="col-xs-5" style="margin-top:17px;"></div>
+
+                                    <div class="col-xs-2" style="margin-top:15px;">
+                                        <div id="rad">
+                                            <input type="radio" name="b" value="lunch" /> Lunch Break<br/>
+                                            <input type="radio" name="b" value="regular"/> Regular<br/>
+                                            <input type="radio" name="b" value="shiftend"/> Shift End <br/>
+                                            <input type="radio" name="b" value="others" id="others"/> Others
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12" style="margin-left:122px;">
+                                        <div class="col-xs-6" style="margin-top:0px;margin-left:268px;">
+                                            <textarea class="break-class hidden" placeholder="Remarks" name="breakreason" id="breakreason"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2" style="padding: 0;margin-left:413px;">
+                                        <button type="button" class="btn btn-success break_reason_btn">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!--</t>-->
+                    <div class="table-responsive mobile-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><span><a href="#" id='select_tech_chkbx'>Select All</a></span></th>
+                                    <th>Task Title</th>
+                                    <th>Resources</th>
+                                    <!--<th>Stage</th>-->
+                                    <th>Stage</th>
+                                    <th>Break Reason</th>
+                                    <!--<th>Break Type</th>-->
+                                    <th>Start time</th>
+                                   <!-- <th>Working Time Progress (%)</th> -->
+                                    <th>End time</th>
+                                    <th style="display:none;">Bay</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="tasks" t-as="o">
+                                    <tr>
+
+                                        <td>
+                                            <!--<t t-foreach="show_task" t-as="st">-->
+
+
+                                            <!--<t t-if="st.id == o.id">-->
+
+                                                    <input type="checkbox" id="stage_chkbx" t-att-name="'%s' % (o.id)" t-att-value="'%s' % (o.id)" />
+                                                <!--</t>-->
+                                            <!--</t>-->
+                                        </td>
+                                        <td><t t-esc="o.name"/></td>
+                                        <td>
+                                           <!--<t t-set="p" t-value="0"/>
+                                            <t t-set="q" t-value="''"/>-->
+                                            <t t-set="sheet_name" t-value="''"/>
+                                            <t t-foreach="o.timesheet_ids" t-as="sheet">
+                                                <t t-if="sheet.resource_type == tech_categ">
+                                                    <t t-if="sheet.entry_type == 'plan'">
+                                                        <t t-set="sheet_name" t-value="sheet.resource_name.name"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                            <t t-esc="sheet_name"/>
+                                                <!--<t t-if="p > 0">
+
+                                                    <t t-set="q" t-value="(q+','+resources.name)"/>
+                                                </t>
+                                                <t t-set="p" t-value="p+1"/>-->
+                                            <!--</t>-->
+                                            <!--<t t-esc="q" />-->
+                                        </td>
+                                        <!--<td>
+                                            <t t-esc="o.stage_id.sequence"/>
+                                        </td>-->
+                                        <td>
+                                            <t t-esc="o.stage_id.stage_display_name"/>
+                                        </td>
+
+                                        <td><t t-esc="o.break_reason_fn"/></td>
+                                        <!--<td>
+                                            &lt;!&ndash;<t t-esc="'Tea Break' if o.break_type == 'tea' else 'Lunch Break' if o.break_type == 'lunch' else 'Other Break' if o.break_type == 'others' else o.break_type"/>&ndash;&gt;
+                                        </td>-->
+                                        <td><t t-esc="o.start_datetime_fn"/></td>
+
+                                        <td><t t-esc="o.end_datetime_fn"/></td>
+                                        <td style="display:none;"><!--<t t-esc="o.task_bay.name"/>--></td>
+                                        <td style="display:none;"><!--<t t-esc="o.task_start_multech()"/>--></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </template>
+</odoo>

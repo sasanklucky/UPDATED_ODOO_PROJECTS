@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<data>
+    <template id="assets_backend" inherit_id="web.assets_backend" name="Master Menu back">
+		<xpath expr="." position="inside">
+			<script type="text/javascript" src="/ac_master_data_restriction/static/src/js/menu_logger.js"></script>
+		</xpath>
+	</template>
+    <!--General sales -->
+    <record id="ars_menu_form_view_gs" model="ir.ui.view">
+        <field name="model">master.menu.restriction</field>
+        <field name="arch" type="xml">
+            <form string="Menu">
+                <sheet>
+                    <group>
+                        <field name="general_sale_bool"/>
+                        <field name="general_sales_menus"/>
+                        <field name="models_able_restrict" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="g_sale_model" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="ars_menu_tree_view_gs" model="ir.ui.view">
+        <field name="model">master.menu.restriction</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="general_sale_bool" string=" General Sale type"/>
+                <field name="general_sales_menus" string="General Sales"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="ars_action_restrict_access_general_sales" model="ir.actions.act_window">
+        <field name="name">General Sales</field>
+        <field name="res_model">master.menu.restriction</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="ars_menu_form_view_gs"/>
+        <field name="view_id" ref="ars_menu_tree_view_gs"/>
+        <field name="context">{'ir.ui.menu.full_list':True}</field>
+    </record>
+
+    <!--    After sales -->
+
+    <record id="ars_menu_form_view_after_sale" model="ir.ui.view">
+        <field name="model">menu.restrict.aftersales</field>
+        <field name="arch" type="xml">
+            <form string="Menu">
+                <sheet>
+                    <group>
+                        <field name="after_sales_bool" string="After  Sale type"/>
+                        <field name="after_sales_menu" string="After Sales"/>
+                        <field name="models_able_restrict" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="a_sale_model" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="ars_menu_tree_view_after_sale" model="ir.ui.view">
+        <field name="model">menu.restrict.aftersales</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="after_sales_bool" string=" After Sale type"/>
+                <field name="after_sales_menu" string="After Sales"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ars_action_restrict_access_after_sale" model="ir.actions.act_window">
+        <field name="name">After Sales</field>
+        <field name="res_model">menu.restrict.aftersales</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="ars_menu_form_view_after_sale"/>
+        <field name="view_id" ref="ars_menu_tree_view_after_sale"/>
+        <field name="context">{'ir.ui.menu.full_list':True}</field>
+    </record>
+
+
+    <!--&lt;!&ndash;    Vehicle sales &ndash;&gt;-->
+
+    <record id="ars_menu_form_view_vehicle_sales" model="ir.ui.view">
+        <field name="model">menu.restrict.vehiclesales</field>
+        <field name="arch" type="xml">
+            <form string="Menu">
+                <sheet>
+
+                    <group>
+                        <field name="vehicle_sale_bool" string="Vehicle  Sale type"/>
+                        <field name="vehicle_sales_menus" string="Vehicle Sales"/>
+                        <field name="models_able_restrict" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="v_sale_model" widget="many2many_tags"/>
+                    </group>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="ars_menu_tree_view_vehicle_sales" model="ir.ui.view">
+        <field name="model">menu.restrict.vehiclesales</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="vehicle_sale_bool" string=" Vehicle Sale type"/>
+                <field name="vehicle_sales_menus" string="Vehicle Sales"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ars_action_restrict_access_vehicle_sale" model="ir.actions.act_window">
+        <field name="name">Vehicle Sales</field>
+        <field name="res_model">menu.restrict.vehiclesales</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="ars_menu_form_view_vehicle_sales"/>
+        <field name="view_id" ref="ars_menu_tree_view_vehicle_sales"/>
+        <field name="context">{}</field>
+    </record>
+
+    <!--    Others-->
+
+    <record id="ars_menu_form_view_others_sales" model="ir.ui.view">
+        <field name="model">menu.restrict.othersales</field>
+        <field name="arch" type="xml">
+            <form string="Menu">
+                <sheet>
+                    <group>
+                        <field name="others_sale_bool" string="Vehicle  Sale type"/>
+                        <field name="others_sales_menus" string="Vehicle Sales"/>
+                        <field name="models_able_restrict" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="o_sale_model" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="ars_menu_tree_view_others_sales" model="ir.ui.view">
+        <field name="model">menu.restrict.othersales</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="others_sale_bool" string=" Vehicle Sale type"/>
+                <field name="others_sales_menus" string="Vehicle Sales"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ars_action_restrict_access_others" model="ir.actions.act_window">
+        <field name="name">Others Sales</field>
+        <field name="res_model">menu.restrict.othersales</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="ars_menu_form_view_others_sales"/>
+        <field name="view_id" ref="ars_menu_tree_view_others_sales"/>
+        <field name="context">{'ir.ui.menu.full_list':True}</field>
+    </record>
+
+    <!--    menus -->
+
+    <menuitem id="ars_restrict_menu_access" parent="base.next_id_2" sequence="10" name="ARS  Menus Management "/>
+    <menuitem action="ars_action_restrict_access_general_sales" id="ars_restrict_menu_access_general_sale"
+              parent="ars_restrict_menu_access" sequence="1" string="General sales"/>
+    <menuitem action="ars_action_restrict_access_after_sale" id="ars_restrict_menu_access_after_sale"
+              parent="ars_restrict_menu_access" sequence="2" string="After sales"/>
+    <menuitem action="ars_action_restrict_access_vehicle_sale" id="ars_restrict_menu_access_vehicle_sale"
+              parent="ars_restrict_menu_access" sequence="3" string="Vehicle sales"/>
+    <menuitem action="ars_action_restrict_access_others" id="ars_restrict_menu_access_other"
+              parent="ars_restrict_menu_access" sequence="4" string="Other sales"/>
+
+<!--    <record id="res_partner_readonly_field" model="ir.ui.view">-->
+<!--        <field name="name">res_partner_readonly_field</field>-->
+<!--        <field name="model">res.partner</field>-->
+<!--        <field name="inherit_id" ref="base.view_partner_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//field[@name='name']" position="after">-->
+<!--                <field name="restrict_name_chnage"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='name']" position="attributes">-->
+<!--                <attribute name="attrs">{'readonly': [('restrict_name_chnage', '=', True)]}</attribute>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
+
+    <record id="view_sale_order_line_custom_form" model="ir.ui.view">
+        <field name="name">sale.order.line.custom.form</field>
+        <field name="model">sale.order.line</field>
+        <field name="arch" type="xml">
+            <form string="Custom Sale Order Line">
+                <sheet>
+                    <group>
+                        <field name="product_id"/>
+                        <field name="product_uom_qty"/>
+                        <field name="price_unit"/>
+                        <field name="order_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="action_sale_order_line_custom" model="ir.actions.act_window">
+        <field name="name">Sale Order Line Custom</field>
+        <field name="res_model">sale.order.line</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="ac_master_data_restriction.view_sale_order_line_custom_form"/>
+        <field name="target">new</field>
+    </record>
+
+
+</data>
+</odoo>

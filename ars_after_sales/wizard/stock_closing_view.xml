@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="view_parts_quantity_history" model="ir.ui.view">
+        <field name="name">Inventory Report</field>
+        <field name="model">stock.closing.report</field>
+        <field name="arch" type="xml">
+            <form string="Choose your date">
+                <group>
+                    <group>
+                        <field name="compute_at_date" widget="radio"/>
+                        <field name="date" attrs="{'invisible': [('compute_at_date', '=', 0)]}"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="open_table" string="Retrieve the Inventory Quantities" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_parts_product_tree" model="ir.ui.view">
+        <field name="name">product.parts.tree.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+
+            <field name="price" position="after">
+                <field name="model_id" invisible="1"/>
+                <field name="model_ids" widget="many2many_tags"/>
+                <field name="l10n_in_hsn_code"/>
+                <field name="categ_id" string="Part Type"
+                       domain="[('categ_id.name','not in', ('Labor','Accessories'))]"/>
+                <field name="catalog_type" string="Catalog Type"
+                       domain="[('catalog_type.name','not in', ('Labor','Accessories'))]"/>
+                <field name="mrp" string="MRP"/>
+
+            </field>
+            <field name="qty_available" position="after">
+                <field name="standard_price" string="Cost Price"/>
+                <field name="parts_value" sum="Value"/>
+            </field>
+            <field name="uom_id" position="after">
+                <field name="shell_location" string="Shelf Location" widget="many2many_tags"/>
+            </field>
+            <field name="lst_price" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="virtual_available" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="attribute_value_ids" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </field>
+            <field name="name" position="attributes">
+                <attribute name="string">Description</attribute>
+            </field>
+            <field name="default_code" position="before">
+                <field name="company_id" string="Dealer Name"/>
+            </field>
+
+        </field>
+    </record>
+
+    <record id="view_parts_product_template_tree" model="ir.ui.view">
+        <field name="name">product.template.parts.tree.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <tree position="inside">
+                <field name="mrp"/>
+                <field name="taxes_id" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_stock_closing" model="ir.actions.act_window">
+        <field name="name">Stock Closing Report</field>
+        <field name="res_model">stock.closing.report</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_parts_quantity_history"/>
+        <field name="context">{'default_compute_at_date': 0}</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

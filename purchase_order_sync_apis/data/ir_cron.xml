@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- <record id="purchase_order_update_cron" model="ir.cron">
+        <field name="name">Purchase Order: Sync All Purchase Order to Parent</field>
+        <field name="model_id" ref="model_purchase_order"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_update_purchase_order_to_parent()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record> -->
+
+    <record id="po_sync_so_update_cron" model="ir.cron">
+        <field name="name">Purchase Order: Sync PO to Create SO in Parent</field>
+        <field name="model_id" ref="model_purchase_order"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_sync_po_to_so_in_parent()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record>
+
+    <record id="so_sync_po_update_cron" model="ir.cron">
+        <field name="name">Sale Order: Sync SO to Create PO in Child</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_sync_so_to_po_in_child()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="doall" eval="False"/>
+    </record>
+</odoo>

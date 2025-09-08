@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="assets_frontend" inherit_id="web.assets_frontend" name="ARS Assets">
+	        <xpath expr="." position="inside">
+	            <link rel='stylesheet' href='/ac_rms/static/src/lib/fullcalendar.min.css' />
+	            <link rel='stylesheet' href='/ac_rms/static/src/css/scheduler.min.css' />
+	            <link rel='stylesheet' href='/ac_rms/static/src/css/style.css' />
+	            <link rel='stylesheet' href='/ac_rms/static/src/css/planner.css' />
+	            <script type="text/javascript" src="/ac_rms/static/src/lib/moment.min.js"></script>
+	            <script type="text/javascript" src="/ac_rms/static/src/lib/jquery-ui.min.js"></script>
+	            <script type="text/javascript" src="/ac_rms/static/src/lib/fullcalendar.min.js"></script>
+	            <script type="text/javascript" src="/ac_rms/static/src/js/scheduler.min.js"></script>
+	            
+	            <script type="text/javascript" src="/ac_rms/static/src/js/ars_planner_calender.js"></script>
+				<link href="/ac_rms/static/src/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+	        	<script type="text/javascript" src="/ac_rms/static/src/js/bootstrap-datetimepicker.js"></script>
+				<script type="text/javascript" src="/ac_rms/static/src/js/bootstrap-datetimepicker.min.js"></script>
+				<link href="/ac_rms/static/src/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+				<link href="/ac_rms/static/src/css/bootstrap-datetimepicker-standalone.css" rel="stylesheet" type="text/css" />
+				
+				<script type="text/javascript" src="/ac_rms/static/src/js/tour.js"></script>
+
+	            <script type="text/javascript" src="/ac_rms/static/src/js/bootstrap-datetimepicker.min.js"></script>
+
+				<script src='/ac_rms/static/src/js/search.js'></script>
+				<script src='/ac_rms/static/src/js/fi_search.js'></script>
+				<script src='/ac_rms/static/src/js/resource_search.js'></script>
+				<script src='/ac_rms/static/src/js/bay-search-sect.js'></script>
+				<link href="/ac_rms/static/src/css/jquery.tagit.css" rel="stylesheet" type="text/css" />
+				<link href="/ac_rms/static/src/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
+				<script src='/ac_rms/static/src/js/tag-it.js'></script>
+				<script src='/ac_rms/static/src/js/tag-it.min.js'></script>
+				<script src='/ac_rms/static/src/js/jquery-confirm.js'></script>
+				<link href="/ac_rms/static/src/css/jquery-confirm.css" rel="stylesheet" type="text/css" />
+				<script type="text/javascript" src="/ac_rms/static/src/js/zepto.min.js"></script>
+				<script type="text/javascript" src="/ac_rms/static/src/js/Intimidatetime.js"></script>
+				<link rel="stylesheet" media="all" type="text/css" href="/ac_rms/static/src/css/Intimidatetime.min.css" />
+				<script src="/ac_rms/static/src/js/Intimidatetime.min.js"></script>
+				<link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet"/>
+				<!--<link rel="stylesheet" type="text/less" href="/ac_rms/static/src/less/sprites.less"/>
+			<link rel="stylesheet" type="text/less" href="/ac_rms/static/src/less/dropdowns.less"/>
+			<link rel="stylesheet" type="text/less" href="/ac_rms/static/src/less/build_standalone.less"/>-->
+		</xpath>
+	</template>
+
+	<!--<template id="assets_backend" inherit_id="web.assets_backend" name="ARS Assets">
+		<xpath expr="." position="inside">
+			<link rel='stylesheet' href='/ac_rms/static/src/css/back_style.css' />
+		</xpath>
+	    </template>-->
+	<template id="assets_backend" inherit_id="web.assets_backend" name="ARS Assets back">
+		<xpath expr="." position="inside">
+			<script type="text/javascript" src="/ac_rms/static/src/js/cre_dashboard.js"></script>
+			<script type="text/javascript" src="/ac_rms/static/src/js/example_dashboard.js"></script>
+			<script type="text/javascript" src="/ac_rms/static/src/js/sa_dashboard_design.js"></script>
+			<script type="text/javascript" src="/ac_rms/static/src/js/fi_dashboard.js"></script>
+			<script type="text/javascript" src="/ac_rms/static/src/js/process_stage.js"></script>
+			<link rel='stylesheet' href='/ac_rms/static/src/css/cre_design.css' />
+			<link rel='stylesheet' href='/ac_rms/static/src/css/exm_cre.css' />
+			<link rel='stylesheet' href='/ac_rms/static/src/css/sa_design.css' />
+			<!-- <script type="text/javascript" src="/ac_rms/static/src/js/rms_activity.js"></script> -->
+			<link rel='stylesheet' href='/ac_rms/static/src/css/back_style.css' />
+			<link rel='stylesheet' href='/ac_rms/static/src/css/style.css' />
+			<!--<script src='/ac_rms/static/src/js/cre_search.js'></script>-->
+			<link href="/ac_rms/static/src/css/jquery.tagit.css" rel="stylesheet" type="text/css" />
+			<link href="/ac_rms/static/src/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css" />
+			<script src='/ac_rms/static/src/js/tag-it.js'></script>
+			<script src='/ac_rms/static/src/js/tag-it.min.js'></script>
+		</xpath>
+	</template>
+ </odoo>

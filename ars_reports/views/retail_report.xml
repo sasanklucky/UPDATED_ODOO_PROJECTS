@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Tree view for "retail.report" -->
+        <record id="view_retail_report_tree" model="ir.ui.view">
+            <field name="name">view.retail_report.tree</field>
+            <field name="model">retail.report</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <tree string="retail_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
+                    <field name="id" string="Sl. No." />
+                    <field name="dealer_code" />
+                    <field name="outlet" string="Dealer Name" />
+                    <field name="dealer_state" />
+                    <field name="dealer_city" />
+                    <field name="date_of_booking" />
+                    <field name="date_of_invoice" />
+                    <field name="invoice_number" />
+                    <field name="master_group" string="Model Group"/>
+                    <field name="product_template_id" string="Product"/>
+
+                    <field name="product_id" invisible="0" string="Product Varient"/>
+                    <field name="color" string="Attributes"/>
+                    <field name="vin_no" />
+                    <field name="customer_name" string="Bill To Customer"/>
+                    <field name="bill_to_customer_gstn" />
+                    <field name="pincode"/>
+                    <field name="contact_person" string="Contact Person Name" />
+                    <field name="contact_no" string="Mobile"/>
+                    <field name="email" />
+                    <field name="source" />
+                    <field name="city" />
+                    <field name="state" />
+                    <field name="billing_address" />
+                    <field name="salesperson" />
+                    <field name="finance_bank" />
+                    <field name="basic_price" />
+<!--                    <field name="gst" />-->
+                    <field name="cgst_per" />
+                    <field name="cgst_amt" />
+                    <field name="sgst_per" />
+                    <field name="sgst_amt" />
+                    <field name="igst_per" />
+                    <field name="igst_amt" />
+                    <field name="total" />
+
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search view for "retail.report" -->
+        <record id="view_retail_report_search" model="ir.ui.view">
+            <field name="name">view.retail_report.search</field>
+            <field name="model">retail.report</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <search string="retail_report_search">
+                    <field name="customer_name" />
+                </search>
+            </field>
+        </record>
+        
+        <!-- Main window action for "retail.report" -->
+        <record id="action_retail_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Retail Report</field>
+            <field name="res_model">retail.report</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">\{}</field>
+            <field name="search_view_id" ref="view_retail_report_search" />
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Retail Report
+                </p>
+            </field>
+        </record>
+
+        <record id="view_retail_report_report_wizard" model="ir.ui.view">
+            <field name="name">Retail Report</field>
+            <field name="model">retail.report.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Choose your Ro Closed From Date to date">
+                    <group>
+                        <span><h3>Please select the dealers</h3></span>
+                            <field name="company_id" widget="many2many_tags"/>
+                        <group>
+                            <span><b>From</b></span>
+                            <field name="start_date"/>
+                        </group>
+                        <group>
+                            <span><b>To</b></span>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button name="retail_report_qty" string="Retail Report" type="object"
+                                class="btn-primary"/>
+                        <!--                        <button string="Cancel" class="btn-default" special="cancel"/>-->
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_repair_report_wizard" model="ir.actions.act_window">
+            <field name="name">Repair Report Wizard</field>
+            <field name="res_model">retail.report.wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="ars_reports.view_retail_report_report_wizard"/>
+            <field name="target">new</field>
+        </record>
+
+        
+        <!-- Main menu for "retail.report" -->
+        <record id="menu_retail_report" model="ir.ui.menu" >
+            <field name="name">Retail Report</field>
+            <!-- <field name="sequence" eval="10" /> -->
+            <field name="action" ref="action_repair_report_wizard" />
+            <field name="parent_id" ref="account.account_reports_management_menu" />
+        </record>
+        
+
+    </data>
+</odoo>

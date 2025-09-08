@@ -1,0 +1,48 @@
+<odoo>
+    <data>
+        <record id="some-report-client-action" model="ir.actions.client">
+          <field name="name">Report Page</field>
+          <field name="tag">dashboard</field>
+        </record>
+
+
+        <!--<menuitem id="menu_aftersales_dashboard"
+                  name="Dashboard"
+                  parent="ars_after_sales.menu_aftersales"
+                  action="some-report-client-action"
+                    sequence="1"/>-->
+
+        <record id="some-report-client-action_exm" model="ir.actions.client">
+          <field name="name">Report Page</field>
+          <field name="tag">dashboard1</field>
+        </record>
+
+        <menuitem id="menu_aftersales_dashboard1"
+                  name="Dashboard"
+                  parent="ars_after_sales.menu_aftersales"
+                  action="some-report-client-action_exm"
+                    sequence="1" groups="ac_rms.group_cre"/>
+
+        <record id="some-report-client-action_sa" model="ir.actions.client">
+          <field name="name">Report Page</field>
+          <field name="tag">sa_dashboard</field>
+        </record>
+
+        <menuitem id="menu_aftersales_sadashboard"
+                  name="Dashboard"
+                  parent="ars_after_sales.menu_aftersales"
+                  action="some-report-client-action_sa"
+                    sequence="1" groups="ac_rms.group_sa"/>
+
+        <record id="some-report-client-action_fi" model="ir.actions.client">
+          <field name="name">Report Page</field>
+          <field name="tag">fi_dashboard</field>
+        </record>
+
+        <!--<menuitem id="menu_aftersales_fidashboard"
+                  name="FI Dashboard"
+                  parent="ars_after_sales.menu_aftersales"
+                  action="some-report-client-action_fi"
+                    sequence="1" groups="ac_rms.group_fi"/>-->
+    </data>
+</odoo>

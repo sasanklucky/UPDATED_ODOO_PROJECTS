@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+        <record id="split-line-items-client-action" model="ir.actions.client">
+          <field name="name">action_split_line_item</field>
+          <field name="tag">split_line_item_page</field>
+        </record>
+    </data>
+
+
+</odoo>

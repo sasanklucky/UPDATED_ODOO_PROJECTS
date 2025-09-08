@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+        <record id="sale_order_sync_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.sync.inherit.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/sheet/group/group/field[@name='validity_date']"
+                       position="before">
+                       <field name="child_po_ref" readonly='1'  invisible="1"/>
+                       <!-- <field name="test_css" invisible='1'/> -->
+                </xpath>
+                 <xpath expr="//form/sheet/group/group/field[@name='validity_date']"
+                       position="after">
+                       <field name="sync_so" readonly='1'  invisible="1"/>
+                       <field name="ready_for_sync" readonly='1'  invisible="1"/>
+                       <field name="child_po_id_ref" readonly='1' invisible="1"/>
+                       <field name="child_db" readonly='1' invisible="1"/>
+                </xpath>
+                <!-- <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='price_subtotal']"
+                       position="after">
+                        <button class="oe_highlight" name="update_tax_and_price" 
+                        string="Update" type="object"
+                        />
+                </xpath> -->
+                <xpath expr="//form/header"
+                       position="inside">
+                       <field name="check_picking_status" invisible='1'/>
+                       <button class="oe_highlight" name="call_so_sync" 
+                        string="Send to Dealers" type="object" attrs="{'invisible': [('check_picking_status','=',False)]}"
+                        />
+                        <!-- '|','|',('child_po_id_ref', '=', False),('ready_for_sync', '=', False), -->
+                </xpath>
+            </field>
+        </record>
+
+
+
+        <record id="sale_picking_sync_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.sync.inherit.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header/button[@name='button_validate']"
+                       position="replace">
+                     <button name="button_validate" context="{'current_picking_id':id}" attrs="{'invisible': [('show_validate', '=', False)]}" string="Validate" groups="stock.group_stock_user" type="object" class="oe_highlight"/>
+
+                </xpath>
+            </field>
+        </record>
+
+        <!-- <record id="sale_order_sync_tree_inherit" model="ir.ui.view">
+            <field name="name">sale.order.sync.inherit.tree</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']"
+                       position="after">
+                       <field name="child_po_ref" readonly='1'/>
+                </xpath>
+                <xpath expr="//field[@name='state']"
+                       position="after">
+                       <field name="child_po_ref" readonly='1'/>
+                       <field name="sync_so" readonly='1'/>
+                       <field name="ready_for_sync" readonly='1'/>
+                       <field name="child_po_id_ref" readonly='1'/>
+                       <field name="child_db" readonly='1'/>
+                </xpath>
+                <xpath expr="//tree" position="attributes">
+                     <attribute name="decoration-danger">"sync_so=='False'"</attribute>
+                </xpath>
+            </field>
+        </record> -->
+
+         <record id="dealer_sale_order" model="ir.ui.view">
+            <field name="name">sale.order.sync.inherit.tree</field>
+            <field name="model">sale.order</field>
+            <field name="arch" type="xml">
+              <tree string="Quotation" class="o_sale_order" decoration-danger="sync_so==False">
+                     <field name="message_needaction" invisible="1"/>
+                     <field name="name" string="Quotation Number"/>
+                     <field name="date_order" string="Quotation Date"/>
+                     <field name="partner_id"/>
+                     <field name="user_id"/>
+                     <field name="amount_total" sum="Total Tax Included" widget="monetary"/>
+                     <field name="currency_id" invisible="1"/>
+                     <field name="state"/>
+                     <field name="child_po_ref" readonly='1'/>
+                     <field name="sync_so" readonly='1'/>
+                     <field name="ready_for_sync" readonly='1'/>
+                     <field name="child_po_id_ref" readonly='1' invisible="1"/>
+                     <field name="child_db" readonly='1' invisible="1"/>
+              </tree>
+            </field>
+        </record>
+
+
+       <record id="sale.action_quotations" model="ir.actions.act_window">
+            <field name="domain">[('sale_aftersales','=','sales'),
+                                  ('sale_type','=','others'),
+                                  ('child_po_ref','=', False)]</field>
+            <field name="context">{'default_sale_type':'others'}</field>
+       </record>
+
+       <record id="dealer_order_action_menu" model="ir.actions.act_window">
+            <field name="name">Dealer Orders</field>
+            <field name="res_model">sale.order</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,kanban,calendar,pivot,graph</field>
+            <field name="domain">[('child_po_ref','!=', False)]</field>
+             <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('purchase_order_sync_apis.dealer_sale_order')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('sale.view_order_form')})]"/>
+       </record>
+
+       <menuitem id="dealer_order_menu"
+            name="Dealers Order"
+            parent="sale.sale_order_menu"
+            action='purchase_order_sync_apis.dealer_order_action_menu'
+            sequence="3"/>
+
+       <menuitem name="Sync log" id="menu_sync_log" action="fleet.fleet_vehicle_action"
+              parent="sale.product_menu_catalog" sequence="1"/>
+</odoo>

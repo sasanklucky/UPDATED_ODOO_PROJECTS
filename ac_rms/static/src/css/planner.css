@@ -1,0 +1,113 @@
+.hover-end{padding:0;margin:0;font-size:75%;text-align:center;position:absolute;bottom:0;width:100%;opacity:.8}
+ #external-events{
+    float: left;
+    width: 140%;
+    /*padding: 0 10px;*/
+    border: 1px solid #ccc;
+    /*background: #eee;*/
+    text-align: left;
+    margin: 63px 6px;
+  }
+  #tech-events {
+    float: left;
+    width: 149%;
+    /*padding: 0 10px;*/
+    border: 1px solid #ccc;
+    /*background: #eee;*/
+    text-align: left;
+    margin: 61px 6px;
+  }
+    
+  #external-events h4 {
+    margin-top: 0;
+    padding-top: 1em;
+    font-size: 8px;
+    font-weight: bold;
+  }
+    
+  #external-events .fc-event {
+    margin: 5px 0;
+    cursor: pointer;
+  }
+    
+  #external-events p {
+    margin: 1.5em 0;
+    font-size: 11px;
+    color: #333333;
+  }
+    
+  #external-events p input {
+    margin: 0;
+    vertical-align: middle;
+  }
+  #calendar {
+    max-width: 1350px;
+    margin: 15px 3px 0 30px;
+  }
+  
+  #tech-events h4 {
+    font-size: 8px;
+    margin-top: 0;
+    padding-top: 1em;
+    font-weight: bold;
+  }
+  
+   #tech-events .fc-event {
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  #tech-events p {
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  
+  #tech-events p input {
+    margin: 0;
+    vertical-align: middle;
+  }
+.fc-license-message{
+	display:none;
+}
+
+.fc-event{
+    background-color: white;
+    color: black !important;
+    border:black;
+}
+
+.fc-head .fc-resource-area{
+    background-color: #c6bdbd;
+    color: black;
+}
+
+.fc-head .fc-time-area{
+    background-color: #c6bdbd;
+    color: black;
+}
+
+.fc-title{
+    color: white;
+    font-weight: bold;
+}
+.fc-cell-text{
+    font-size: 15px;
+}
+
+/*
+.fc-resource-area .fc-rows > table > tbody > tr > td{
+  background-color: #c6bdbd;}*/
+
+
+.fc-header-toolbar{
+    font-size:15px;
+    font-weight:bold;
+}
+.fc-gutter-bottom{
+    font-weight: bold;
+}
+
+.fc-header-toolbar .fc-center h2{
+    font-size:19px;
+    font-weight:bold;
+}

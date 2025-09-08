@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<!--<record id="menu_contact_us" model="website.menu">-->
+		<!--<field name="name">Contact Us</field>-->
+		<!--<field name="url">https://autochip.odoo.com/</field>-->
+		<!--<field name="parent_id" ref="website.main_menu"/>-->
+		<!--<field name="sequence" type="int">100</field>-->
+	<!--</record>-->
+	<!--<record id="menu_resource_calendar" model="website.menu">-->
+		<!--<field name="name">Resource Calender</field>-->
+		<!--<field name="url">/resource_planner</field>-->
+		<!--<field name="parent_id" ref="website.main_menu"/>-->
+		<!--<field name="sequence" type="int">100</field>-->
+	<!--</record>-->
+	<!--<record id="menu_security" model="website.menu">-->
+		<!--<field name="name">Security</field>-->
+		<!--<field name="url">/security_login</field>-->
+		<!--<field name="parent_id" ref="website.main_menu"/>-->
+		<!--<field name="sequence" type="int">100</field>-->
+	<!--</record>-->
+	<!--<record id="menu_dashboards" model="website.menu">-->
+		<!--<field name="name">Reports</field>-->
+		<!--<field name="url">/dashboards</field>-->
+		<!--<field name="parent_id" ref="website.main_menu"/>-->
+		<!--<field name="sequence" type="int">100</field>-->
+	<!--</record>-->
+
+
+	<template id="show_sign_in_right" inherit_id="portal.frontend_layout">
+		<xpath expr="//ul[@id='top_menu']/li[1]" position="after">
+			<!-- Contactus page Menu Remove bcaz Duplicate -->
+			<!-- <li>
+			   <a href="https://autochip.odoo.com/">
+				   <span>Contact Us</span>
+			   </a>
+			</li> -->
+			<li groups="ac_rms.group_job_controller,ac_rms.group_fi,ac_rms.group_technician">
+			   <a href="/resource_planner">
+				   <span>Resource Calender</span>
+			   </a>
+			</li>
+			<li groups="ac_rms.group_security">
+			   <a href="/security_login">
+				   <span>Security</span>
+			   </a>
+			</li>
+			<li groups="ac_rms.group_job_controller">
+			   <a href="/dashboards">
+				   <span>Reports</span>
+			   </a>
+			</li>
+	    </xpath>
+    </template>
+
+
+
+
+</odoo>

@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_ars_settings" model="ir.ui.view">
+        <field name="name">ars_config</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="ARS" string="ARS" data-key="ars_after_sales">
+                    <h2>ARS Settings</h2>
+                    <div class="row mt16 o_settings_container" id="ars_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Leads And Appointment"/>
+                                <div class="text-muted">
+                                    Change Stages of the Pipeline
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt16 o_settings_container" id="ars_settings">
+                        <div class="o_setting_right_pane">
+                            <label class="col-md-3 o_light_label" string="Team Type"/>
+                            <field name="team_types"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label class="col-md-3 o_light_label" string="Stages"/>
+                            <field name="stages_id" string="Stages"/>
+                        </div>
+                    </div>
+                    <div class="row mt16 o_settings_container" id="ars_settings_2">
+                        <div class="o_setting_right_pane">
+                            <label class="col-md-3 o_light_label" string="Booking Stage"/>
+                            <field name="booking_stage_id" options="{'no_create': True}"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label class="col-md-3 o_light_label" string="Pipeline Stage"/>
+                            <field name="pipeline_stages_ids" widget="many2many_tags" options="{'no_create': True}"/>
+                        </div>
+                    </div>
+
+
+                    <h2>ARS Invoice Setup</h2>
+                    <div class="row mt16 o_settings_container" id="invoice_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="restrict_bd_inv"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Restrict Back Dated Invoice" for="restrict_bd_inv"/>
+                                <div class="text-muted">
+                                    Couldn't able to create any back dated invoice
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h2>ARS Gate Pass Setup</h2>
+                    <div class="row mt16 o_settings_container" id="gate_pass_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="restrict_gp_date"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Restrict Back Dated Gate Pass" for="restrict_gp_date"/>
+                                <div class="text-muted">
+                                    Couldn't able to create any back dated Gate Pass
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <h2>Unit Price Setup</h2>
+                    <div class="row mt16 o_settings_container" id="unit_price_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="inv_line_unit_price"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Edit Invoice Line Unit Price based on Groups" for="inv_line_unit_price"/>
+                                <div class="text-muted">
+                                    able to edit unit price for selected Groups.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     <h2>Ro Invoice Restriction Setup</h2>
+                    <div class="row mt16 o_settings_container" id="unit_price_ars_setup">
+                        <div class="col-xs-12 col-md-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="service_ro_invoice_cre_restrict"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Restrict editing of service orders by enabling permission." for="service_ro_invoice_cre_restrict"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Report Setup</h2>
+                    <div class="row mt16 o_settings_container" id="ars_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Format Changes"/>
+                                <div class="text-muted">
+                                    Pro-Forma &amp; Sale Order Format
+                                </div>
+                                <field name="sale_report_format"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2>Service Settings</h2>
+                    <div class="row mt16 o_settings_container" id="ars_settings2">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Next Service Due"/>
+                                <div class="text-muted">
+                                    Desired Date of next service Due
+                                </div>
+                                <field name="next_service_due"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="Next Service Reminder"/>
+                                <div class="text-muted">
+                                    Reminder Trigger
+                                </div>
+                                <field name="next_service_remainder"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Lead Next Service Due Date"/>
+                                <div class="text-muted">
+                                    Next Service Date Lead
+                                </div>
+                                <field name="ext_service_due"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="	Lead by KM Next Due"/>
+                                <div class="text-muted">
+                                    Lead Based on K M
+                                </div>
+                                <field name="next_km_service_due_date"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label string="	Max Fleet Size PSF"/>
+                                <div class="text-muted">
+                                    Maximum fleet size allowed to avoid PSF
+                                </div>
+                                <field name="max_fleet_size"/>
+                            </div>
+                        </div>
+                        <h2>Labor Rate</h2>
+                        <div class="row mt16 o_settings_container" id="ars_settings">
+                            <div class="col-xs-12 col-md-6 o_setting_box" id="arsaftersales_setting">
+                                <div class="o_setting_right_pane">
+                                    <label string="Labor Rate"/>
+                                    <div class="text-muted">
+                                        Labor Rate
+                                    </div>
+                                    <field name="labor_rate"/>
+                                </div>
+                                <div class="o_setting_right_pane">
+                                    <label string="Labor Warranty Rate"/>
+                                    <div class="text-muted">
+                                        Labor Warranty Rate
+                                    </div>
+                                    <field name="labor_warranty_rate"/>
+                                </div>
+                                <field name="max_fleet_size"/>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="ars1_sale_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Sale Text Message"/>
+                                <div class="text-muted">
+                                    Sale Text
+                                </div>
+                                <field name="sale_text"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_ars_config_settings" model="ir.actions.act_window">
+        <field name="name">ARS Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_ars_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'ars_after_sales'}</field>
+    </record>
+    <menuitem id="ars_settings_menu" name="Settings"
+              parent="menu_aftersales_config" action="action_ars_config_settings"
+              web_icon=""/>
+
+    <record id="view_landing_form" model="ir.ui.view">
+        <field name="name">landing.setting.form</field>
+        <field name="model">landing.setting</field>
+        <field name="arch" type="xml">
+            <form string="Process">
+                <sheet>
+                    <group col="4">
+                        <field name="landing_user"/>
+                        <field name="landing_link"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_landing_tree" model="ir.ui.view">
+        <field name="name">landing.setting.tree</field>
+        <field name="model">landing.setting</field>
+        <field name="arch" type="xml">
+            <tree string="Process">
+                <field name="landing_user"/>
+                <field name="landing_link"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_category_config_tree" model="ir.ui.view">
+        <field name="name">view_labour_group_tree</field>
+        <field name="model">order.line.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" required="1"/>
+                <field name="type" required="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_landing_page" model="ir.actions.act_window">
+        <field name="name">Landing Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">landing.setting</field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_landing_tree"/>
+    </record>
+
+    <record id="action_category_config" model="ir.actions.act_window">
+        <field name="name">Category Config</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">order.line.category</field>
+        <field name="view_type">form</field>
+
+    </record>
+
+    <menuitem id="category_config"
+              action="ars_after_sales.action_category_config"
+              parent="menu_aftersales_config"
+              name="Category Order Line" sequence="4"/>
+    <menuitem id="landing_page"
+              action="ars_after_sales.action_landing_page"
+              parent="menu_aftersales_config"
+              name="Landing Page" sequence="4"/>
+
+    <!-- Employee - configuration - Labour Group-->
+    <record id="view_labour_group_tree" model="ir.ui.view">
+        <field name="name">view_labour_group_tree</field>
+        <field name="model">labour.group</field>
+        <field name="arch" type="xml">
+            <tree string="Labour Group" editable="top">
+                <field name="code" required="1"/>
+                <field name="name" required="1"/>
+                <field name="parent_id" domain="[('parent_id','=',False)]"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_labour_group_action" model="ir.actions.act_window">
+        <field name="name">Labour Group</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">labour.group</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_labour_group_tree"/>
+    </record>
+    <menuitem
+            id="menu_labour_group"
+            action="view_labour_group_action"
+            parent="hr.menu_human_resources_configuration"
+            sequence="3"/>
+
+
+    <record id="ars_hr_employee_view_form_inherit" model="ir.ui.view">
+        <field name="name">ars.hr.employee.view.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="resource_calendar_id" position="after">
+                <field name="labour_group_ids" widget="many2many_tags"/>
+            </field>
+            <field name="name" position="after">
+                <h3>
+                    <field name="emp_code" placeholder="Employee's Code" required="0"/>
+                </h3>
+            </field>
+            <field name="passport_id" position="after">
+                <field name="aadhar_id"/>
+                <field name="voter_id"/>
+            </field>
+            <field name="coach_id" position="after">
+                <field name="employement_type"/>
+                <field name="date_of_joining"/>
+                <field name="date_of_exit"/>
+            </field>
+            <field name="bank_account_id" position="after">
+                <field name="blood_group"/>
+                <field name="education_details"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_warranty_form" model="ir.ui.view">
+        <field name="name">view_warranty_form</field>
+        <field name="model">ars.sale.warranty</field>
+        <field name="arch" type="xml">
+            <form string="Warranty Claims">
+                <header>
+                    <button name="open_alignment_wizard" type="object" string="Set Warranty Alignment" states="processed"
+                            class="btn-primary" />
+
+<!--                    <button name="set_process" string="Set Warranty Alignment" states="draft,draft_process,inprocess,processed"-->
+<!--                            type="object" class="btn-primary" groups="ars_after_sales.group_warranty_manager"/>-->
+                    <button name="action_approval_send" string="Send for Email Approval" states="draft,draft_process,re_submit,inprocess,processed"
+                            type="object" groups="ars_after_sales.group_warranty_manager"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,draft_process,re_submit,inprocess,processed,done"/>
+
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group string="Customer Details">
+                        <group>
+                            <field name="partner_id" readonly="1" domain="[('customer','=',True)]"
+                                   context="{'search_default_customer':1, 'show_address': 1}"
+                                   options='{"always_reload": True}'/>
+                            <field name="regn_no" readonly="1"/>
+                            <field name="model_id" readonly="1"/>
+                            <field name="vin_no" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Warranty Lines" attrs="{'invisible': [('state', '=', 'inprocess')]}">
+                            <field name="order_lines" nolabel="1" options="{'no_create': True}">
+<!--                                   attrs="{'readonly':[('state','=','done')]}">-->
+                                <tree string="Warranty Lines" editable="top" create="false" delete="false"
+                                      decoration-success="apr_action == 'approved'"
+                                      decoration-danger="apr_action == 'reject'">
+                                    <!--<field name="product_updatable" invisible="1"/>-->
+                                    <field name="product_id" readonly="1" options="{'no_create': True, 'no_open': True}"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="product_uom_qty" string="Ordered Qty" readonly="1"/>
+                                    <field name="product_uom" options='{"no_open": True, "no_create":True}' readonly="1"/>
+                                    <field name="ars_std_price" readonly="1"/>
+                                    <field name="ars_warranty_price" required="1" readonly="1"/>
+                                    <field name="tax_id" widget="many2many_tags" readonly="1"/>
+                                    <field name="discount" groups="sale.group_discount_per_so_line" readonly="1"/>
+                                    <field name="wrn_price_subtotal" widget="monetary"/>
+                                    <field name="apr_action" required="1" readonly="1"
+                                           groups="ars_after_sales.group_warranty_approval"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right" colspan="2" name="warranty_total">
+                                <field name="amount_untaxed" widget='monetary'
+                                       options="{'currency_field': 'currency_id'}"/>
+                                <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                                    <label for="amount_total"/>
+                                </div>
+                                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator"
+                                       widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                            </group>
+                            <div class="oe_clear"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_warranty_tree" model="ir.ui.view">
+        <field name="name">view_warranty_tree</field>
+        <field name="model">ars.sale.warranty</field>
+        <field name="arch" type="xml">
+            <tree string="Warranty Claims" default_order='id desc'>
+                <field name="child_warrenty_ref_tree" readonly="1" invisible="0"/>
+<!--                <field name="child_warrenty_ref_form" readonly="1" invisible="1"/>-->
+<!--                <field name="order_id"/>-->
+<!--&lt;!&ndash;                <field name="order_date"/>&ndash;&gt;-->
+<!--                <field name="partner_id"/>-->
+<!--                <field name="user_id"/>-->
+<!--                <field name="state"/>-->
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_warranty_page" model="ir.actions.act_window">
+        <field name="name">Warranty Claims</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">ars.sale.warranty</field>
+        <field name="context">{'active_model':'ars.sale.warranty'}
+            </field>
+        <field name="view_type">form</field>
+        <field name="view_id" ref="view_warranty_tree"/>
+        <field name="domain">[('state', '=', ['draft', 'draft_process', 're_submit'])]</field>
+    </record>
+
+    <record id="view_ars_sale_warranty_alignment_wizard_form" model="ir.ui.view">
+        <field name="name">ars.sale.warranty.alignment.wizard.form</field>
+        <field name="model">ars.sale.warranty.alignment.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Warranty Alignment Wizard">
+                <group>
+                    <field name="warranty_id" invisible="1"/>
+                    <field name="message" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="set_alignment" string="Process Alignment" type="object" class="btn-primary"/>
+                    <button name="cancel_alignment" string="Cancel" type="object" class="btn-secondary"/>
+
+<!--                    <button string="Cancel" class="btn-secondary" special="cancel"/>-->
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ars_sale_warranty_alignment_wizard" model="ir.actions.act_window">
+        <field name="name">Warranty Alignment Wizard</field>
+        <field name="res_model">ars.sale.warranty.alignment.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_warranty_page"
+              action="action_warranty_page"
+              parent="crm_aftersales"
+              name="Warranty Claims" sequence="3"/>
+
+</odoo>

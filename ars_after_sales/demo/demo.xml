@@ -1,0 +1,28 @@
+<odoo>
+    <data>
+        <record id="action_create_seller_data" model="ir.actions.server">
+            <field name="name">Add Sellers</field>
+            <field name="model_id" ref="model_product_template"/>
+            <field name="binding_model_id" ref="account.model_product_template"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.create_supplier_info()
+            </field>
+        </record>
+
+        <record id="action_update_ownership" model="ir.actions.server">
+            <field name="name">Update Owner</field>
+            <field name="model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_model_id" ref="fleet.model_fleet_vehicle"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                        records.update_vehicle_owner_ship()
+<!--                    records.update_customer_ownership()-->
+            </field>
+        </record>
+    </data>
+</odoo>

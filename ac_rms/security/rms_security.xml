@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.module.category" id="module_category_rms">
+        <field name="name">RMS</field>
+        <field name="sequence">100</field>
+    </record>
+
+	<!-- Security user -->
+	<record id="group_security" model="res.groups">
+		<field name="name">Security User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show security Access menu to security user</field>
+	</record>
+
+	<!-- CRE user -->
+	<record id="group_cre" model="res.groups">
+		<field name="name">CRE User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show CRE Access menu to CRE user</field>
+	</record>
+
+	<!-- SA user -->
+	<record id="group_sa" model="res.groups">
+		<field name="name">SA User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show SA Access menu to SA user</field>
+	</record>
+
+	<!-- JC user -->
+	<record id="group_job_controller" model="res.groups">
+		<field name="name">Job Controller User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<!--<field name="implied_ids" eval="[(4, ref('ars_after_sales.group_aftersale_estimation')),(4, ref('ars_after_sales.group_crm')),(4, ref('ars_after_sales.group_crm_aftersale')),(4, ref('ars_after_sales.group_aftersale')),(4, ref('ars_after_sales.group_aftersale_catalog')),(4, ref('ars_after_sales.group_aftersale_parts_user')),(4, ref('ars_after_sales.group_accessories')),(4, ref('ars_after_sales.group_part')),(4, ref('ars_after_sales.group_Labors')),(4, ref('ars_after_sales.group_product')),(4, ref('ars_after_sales.group_vehicle')),(4, ref('ars_after_sales.group_sale_invoice')),(4, ref('ars_after_sales.group_aftersale_invoice'))]"/>-->
+	</record>
+
+	<!--<record id="group_job_controller" model="res.groups">
+		<field name="name">Job Controller User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show JC Access menu to job controller user</field>
+	</record>-->
+
+    <!-- Technician user -->
+	<record id="group_technician" model="res.groups">
+		<field name="name">Technician User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show Technician Access menu to technician user</field>
+	</record>
+
+	<!-- FI user -->
+	<record id="group_fi" model="res.groups">
+		<field name="name">Final Inspector User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<!--<field name="implied_ids" eval="[(4, ref('ars_after_sales.group_aftersale_estimation')),(4, ref('ars_after_sales.group_crm')),(4, ref('ars_after_sales.group_crm_aftersale')),(4, ref('ars_after_sales.group_aftersale')),(4, ref('ars_after_sales.group_aftersale_catalog')),(4, ref('ars_after_sales.group_aftersale_parts_user')),(4, ref('ars_after_sales.group_accessories')),(4, ref('ars_after_sales.group_part')),(4, ref('ars_after_sales.group_Labors')),(4, ref('ars_after_sales.group_product')),(4, ref('ars_after_sales.group_vehicle')),(4, ref('ars_after_sales.group_sale_invoice')),(4, ref('ars_after_sales.group_aftersale_invoice'))]"/>-->
+	</record>
+
+	<!--<record id="group_fi" model="res.groups">
+		<field name="name">Final Inspector User</field>
+		<field name="category_id" ref="module_category_rms"/>
+		<field name="users" eval="[(4, ref('base.user_root'))]"/>
+		<field name="comment">Show FI Access menu to FI user</field>
+	</record>-->
+</odoo>

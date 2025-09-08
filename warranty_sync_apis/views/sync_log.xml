@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+         <record id="warrenty_sync_log_tree" model="ir.ui.view">
+            <field name="name">warrenty_sync_log.tree</field>
+            <field name="model">warrenty_sync_log</field>
+            <field name="arch" type="xml">
+              <tree string="warrenty_sync_log" class="o_sale_order">
+                     <field name="warrenty_record" invisible='1'/>
+                     <field name="create_date"/>
+                     <field name="warrenty_sequence"/>
+                     <field name="payload"/>
+                     <field name="status"/>
+                     <field name="sync_message"/>
+              </tree>
+            </field>
+        </record>
+
+        <record id="warrenty_sync_log_form" model="ir.ui.view">
+            <field name="name">warrenty_sync_log.form</field>
+            <field name="model">warrenty_sync_log</field>
+            <field name="arch" type="xml">
+              <form string="warrenty_sync_log">
+                     <sheet>
+                            <group name="warrenty_sync_log" string="Payload Details">
+                                  <field name="warrenty_record" invisible='1'/>
+                                   <field name="create_date"/>
+                                   <field name="warrenty_sequence"/>
+                                   <field name="payload"/>
+                                   <field name="status"/>
+                                   <field name="sync_message"/>
+                            </group>
+                     </sheet>
+              </form>
+            </field>
+        </record>
+
+
+       <record id="warrenty_sync_log_action" model="ir.actions.act_window">
+            <field name="name">Sync Log</field>
+            <field name="res_model">warrenty_sync_log</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('warrenty_sync_log_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('warrenty_sync_log_form')})]"/>
+       </record>
+
+       <menuitem name="Sync log" id="menu_sync_warranty_log" action="warrenty_sync_log_action"
+              parent="ars_after_sales.menu_aftersales_reporting" sequence="99"/>
+       
+
+</odoo>

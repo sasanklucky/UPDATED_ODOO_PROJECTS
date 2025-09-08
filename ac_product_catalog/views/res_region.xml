@@ -1,0 +1,97 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="ac_region_list">
+            <field name="name">ac_region_list</field>
+            <field name="model">res.region</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ac_region_form">
+            <field name="name">ac_region_form</field>
+            <field name="model">res.region</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="code" required="1"/>
+                            <field name="name" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_region" model="ir.actions.act_window">
+            <field name="name">Region</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.region</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ac_region_list"/>
+            <field name="help">Region wise data
+            </field>
+        </record>
+
+        <record id="view_partner_region_form" model="ir.ui.view">
+            <field name="name">Partner View Region Form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group/group/field[@name='vat']" position="before">
+                    <field name="region" string="Region" options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <menuitem id="menu_region"
+                  action="ac_product_catalog.action_region"
+                  parent="contacts.menu_localisation"
+                  sequence="2"/>
+
+        <record model="ir.ui.view" id="ac_zone_list">
+            <field name="name">ac_zone_list</field>
+            <field name="model">zone.zone</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="zone_name"/>
+                    <field name="responsible_person"/>
+                </tree>
+            </field>
+        </record>
+
+         <record model="ir.ui.view" id="ac_zone_form">
+            <field name="name">ac_zone_form</field>
+            <field name="model">zone.zone</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="zone_name" required="1"/>
+                            <field name="responsible_person" required="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_zone" model="ir.actions.act_window">
+            <field name="name">Zone</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">zone.zone</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="ac_zone_list"/>
+            <field name="help">Zone wise data
+            </field>
+        </record>
+
+        <menuitem id="menu_zone"
+                  action="ac_product_catalog.action_zone"
+                  parent="contacts.menu_localisation"
+                  sequence="2"/>
+    </data>
+</odoo>

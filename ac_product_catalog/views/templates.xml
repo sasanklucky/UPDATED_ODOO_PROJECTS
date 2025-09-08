@@ -1,0 +1,47 @@
+<odoo>
+    <data>
+        <!-- <template id="listing"> -->
+        <!--   <ul> -->
+        <!--     <li t-foreach="objects" t-as="object"> -->
+        <!--       <a t-attf-href="#{ root }/objects/#{ object.id }"> -->
+        <!--         <t t-esc="object.display_name"/> -->
+        <!--       </a> -->
+        <!--     </li> -->
+        <!--   </ul> -->
+        <!-- </template> -->
+        <!-- <template id="object"> -->
+        <!--   <h1><t t-esc="object.display_name"/></h1> -->
+        <!--   <dl> -->
+        <!--     <t t-foreach="object._fields" t-as="field"> -->
+        <!--       <dt><t t-esc="field"/></dt> -->
+        <!--       <dd><t t-esc="object[field]"/></dd> -->
+        <!--     </t> -->
+        <!--   </dl> -->
+        <!-- </template> -->
+
+        <template id="portal.portal_show_sign_in" inherit_id="portal.frontend_layout" name="Show Sign In">
+            <xpath expr="//ul[@id='top_menu']" position="inside">
+                <li class="divider" groups="base.group_public"/>
+                <li groups="base.group_public">
+                    <a t-attf-href="/web/login">
+                        <b>Sign in</b>
+                    </a>
+                </li>
+            </xpath>
+        </template>
+    </data>
+
+    <record id="view_product_template_shell_form" model="ir.ui.view">
+        <field name="name">product.template.shell.location.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <group name="stock_property" position="after">
+                <group string="Locations" name="shell_location">
+                    <field name="shell_location" string="Shelf Location" widget="many2many_tags"
+                           options="{'no_create': True}"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

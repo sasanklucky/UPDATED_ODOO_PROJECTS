@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="fleet_vehicle_view_form_campaign_inherits" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form.campaign.inherits</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="ars_vehicle_sales.ars_vehicle_view_form_inherit"/>
+        <field name="arch" type="xml">
+            <!-- Insert a new tab/page after the wholesale_ids page -->
+            <xpath expr="//form/sheet/group[1]/group/group" position="inside">
+                <field name="sim_number"/>
+                <field name="sim_installation_date"/>
+            </xpath>
+            <xpath expr="//page[field[@name='emission_ids']]" position="after">
+                <page string="Campaigns" name="campaigns">
+                    <field name="campaign_history_ids">
+                        <tree editable="bottom">
+                            <field name="campaign_name" invisible="1"/>
+                            <field name="campaign_name_ref"/>
+                            <field name="campaign_ref" invisible="1"/>
+                            <field name="campaign_status"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="state"/>
+<!--                            <field name="campaign_done_date"/>-->
+<!--                            <field name="campaign_service_id"/>-->
+                            <field name="campaign_vehicle_status"/>
+                            <field name="dealer_code"/>
+                            <field name="dealer_db_name"/>
+                            <field name="campaign_service_name"/>
+                            <field name="camp_cancel_reasons"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
+
+

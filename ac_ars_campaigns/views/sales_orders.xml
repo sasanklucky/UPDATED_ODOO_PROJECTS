@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_order_form_inherit1" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_quotation_send'][1]" position="after">
+                    <button name="ro_closed_action"
+                            string="RO Closed"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('stages', 'in', ['estimation', 'repair_order','waiting_for_parts','ro_closed'])]}"/>
+                    />
+                </xpath>
+                <xpath expr="//button[@name='293']" position="attributes">
+                    <attribute name="attrs">{'invisible': ['|',('invoice_status', '!=', 'no'),('state', '!=', 'sale'),('stages', '!=', 'ro_closed')]}</attribute>
+<!--                    <attribute name="attrs">{'invisible': ['|',('stages', '!=', 'ro_closed'),('invoice_status', '!=', 'no')]}</attribute>-->
+                </xpath>
+                <xpath expr="//sheet/group" position="before">
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="estimation"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'estimation')]}"/>
+
+                    <!-- Repair Order -->
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="repair_order"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'repair_order')]}"/>
+
+                    <!-- Waiting For Parts -->
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="waiting_for_parts"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'waiting_for_parts')]}"/>
+
+                    <!-- Work in Progress -->
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="wip"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'wip')]}"/>
+
+                    <!-- RO Closed -->
+                    <field name="stages" widget="statusbar"
+                           statusbar_visible="ro_closed"
+                           style="float: right;"
+                           attrs="{'invisible': [('stages', '!=', 'ro_closed')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_unlock']" position="attributes">
+                    <button name="action_unlock" type="object" string="Unlock"
+                            states="done"
+                            groups="sales_team.group_sale_manager"
+                            attrs="{'invisible': [('state', '=', 'done')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_unlock']" position="replace"/>
+
+                <xpath expr="//header" position="inside">
+                    <button name="action_reopen"
+                            type="object"
+                            string="Reopen"
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'done')]}"
+                            groups="ac_ars_campaigns.group_reopen_sale_order"/>
+
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_order_tree_inherit_add_stage" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.stage</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ars_after_sales.view_order_tree_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='mileage_in']" position="after">
+                    <field name="stages" string="Stage"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

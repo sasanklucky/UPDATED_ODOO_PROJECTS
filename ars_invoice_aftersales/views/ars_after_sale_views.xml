@@ -1,0 +1,256 @@
+<odoo>
+    <data>
+        <record id="view_order_form_inherit1" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+             <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_quotation_send'][1]" position="replace">
+                    <button name="action_quotation_send" string="Send by Email" type="object" states="draft,so" class="btn-primary"/>
+                </xpath>
+                <xpath expr="//button[@name='print_quotation'][1]" position="replace">
+                    <button name="print_quotation" string="Print" type="object" states="draft,so" class="btn-primary o_sale_print"/>
+                </xpath>
+                <xpath expr="//button[@name='print_quotation']" position="after">
+                    <button name="action_convert"
+                        string="Convert SO" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['draft'])]}"/>
+                    <button name="action_split" type="object" string="Split" attrs="{'invisible': [('state', 'not in', ['sale'])], 'invisible':[('invoice_status', '!=', 'to invoice')]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_confirm'][2]" position="replace">
+                    <button name="action_confirm"
+                        string="Confirm SO" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['so'])]}"/>
+                </xpath>
+                <xpath expr="//button[@name='action_cancel']" position="replace">
+                    <button name="action_cancel" states="draft,so,sent,sale" type="object" string="Cancel"/>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="replace">
+                    <field name="state" widget="statusbar" statusbar_visible="draft,so,sent,sale"/>
+                </xpath>
+
+                <xpath expr="//tree/field[@name='currency_id']" position="after">
+                    <field name="customer_split" domain="[('id','in',cust_filter_ids)]" required="1" options='{"no_open": True, "no_create":True}'/>
+                    <field name="cust_filter_ids" invisible="1"/>
+                    <field name="split_type"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                    <field name="ars_warranty_price" invisible="1"/>
+                    <field name="ars_std_price" invisible="1"/>
+                    <field name="apr_action" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='tax_id']" position="after">
+                    <field name="price_tax" string="Tax Price"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_subtotal']" position="after">
+                    <field name="price_total" string="Price Total"/>
+                </xpath>
+
+                <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                    <attribute name="decoration-info"></attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree" position="attributes">
+                    <attribute name="decoration-info">invoice_status =='to invoice' and apr_action == ''</attribute>
+                    <attribute name="decoration-success">apr_action == 'approved' or apr_action == 'approved' and invoice_status == 'to invoice' </attribute>
+                    <attribute name="decoration-danger">apr_action == 'reject' or apr_action  == 'reject' and invoice_status == 'to invoice'</attribute>
+                    <attribute name="decoration-warning">apr_action == 're_submit' or apr_action == 're_submit' and invoice_status == 'to invoice'</attribute>
+                    <attribute name="decoration-warning">apr_action == 're_submission' or apr_action == 're_submission' and invoice_status == 'to invoice'</attribute>
+                </xpath>
+
+                <header position="inside">
+                    <button name="set_aligment" states='so,sent,to_approve' string="Set Warranty Alignment" type="object"/>
+                </header>
+                <div class="oe_button_box" name="button_box" position="inside">
+                    <field name="warranty_ids" invisible="1"/>
+                    <button name="action_view_warranty"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-pencil-square-o"
+                            attrs="{'invisible': [('warranty_cnt', '=', 0)]}">
+                            <field name="warranty_cnt" widget="statinfo" string="Warranty Claim"/>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+       
+        <record id="view_split_line_tree" model="ir.ui.view">
+            <field name="name">sale.order.line.tree</field>
+            <field name="model">sale.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="Split Line" >
+                    <field name="product_catalog_id" />
+                    <field name="product_id" domain="[('categ_id.name','in', ('Labor','Accessories','Parts'))]"
+                                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"
+                                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                                        options="{'no_create': True, 'no_open': True}"
+                                       />
+                    <field name="layout_category_id" groups="sale.group_sale_layout"/>
+                    <field name="product_template_id"/>
+                    <field name="product_varient_ids" widget="many2many_tags" invisible="1" required="0" options="{'no_create': True, 'no_open': True}"/>
+                    <field name="name"/>
+                    <field name="product_uom_qty"
+                        string="Ordered Qty"
+                        context="{'partner_id':parent.partner_id, 'quantity':product_uom_qty, 'pricelist':parent.pricelist_id, 'uom':product_uom, 'company_id': parent.company_id}"
+                    />
+                    <field name="qty_delivered"
+                        attrs="{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])], 'readonly': [('qty_delivered_updateable', '=', False)]}"/>
+                    <field name="qty_invoiced"
+                        attrs="{'column_invisible': [('parent.state', 'not in', ['sale', 'done'])]}"/>
+                    <field name="qty_to_invoice" invisible="1"/>
+                    <field name="product_uom"
+                        attrs="{'readonly': [('state', 'in', ('sale','done', 'cancel'))]}"
+                        context="{'company_id': parent.company_id}"
+                        groups="product.group_uom" options='{"no_open": True, "no_create":True}'/>
+                    <field name="analytic_tag_ids" groups="analytic.group_analytic_accounting" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="price_unit"
+                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    <field name="tax_id" widget="many2many_tags" options="{'no_create': True}" domain="[('type_tax_use','=','sale'),('company_id','=',parent.company_id)]"
+                        attrs="{'readonly': [('qty_invoiced', '&gt;', 0)]}"/>
+                    <field name="discount" groups="sale.group_discount_per_so_line"/>
+                    <field name="price_subtotal" widget="monetary" groups="sale.group_show_price_subtotal"/>
+                    <field name="price_total" widget="monetary" groups="sale.group_show_price_total"/>
+                    <field name="qty_delivered_updateable" invisible="1"/>
+                    <field name="state" invisible="1"/>
+                    <field name="invoice_status" invisible="1"/>
+                    <field name="customer_lead" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="customer_split" options='{"no_open": True, "no_create":True}'/>
+                    <field name="split_type" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_split_line" model="ir.actions.act_window">
+             <field name="name">sale.order.line.tree</field>
+             <field name="res_model">sale.order.line</field>
+             <field name="type">ir.actions.act_window</field>
+             <field name="view_mode">tree</field>
+             <field name="view_type">form</field>
+             <field name="view_id" ref="view_split_line_tree"/>
+             <field name="domain">[]</field>
+             <field name='limit'>20</field>
+        </record>
+
+        <record id="view_split_invoice" model="ir.ui.view">
+            <field name="name"></field>
+            <field name="model">split.invoice</field>
+            <field name="arch" type="xml">
+                <form string="Convert to Opportunity">
+                    <sheet>
+                        <script>
+                            odoo.define('web.mail_thread', function (require) {
+                                $('.plus').click(function(){
+                                    var ele = $(this).closest('.split_line_invoice').clone(true);
+                                    console.log(ele);
+                                    $(this).closest('.split_line_invoice').after(ele);
+                                });
+                                $('.total_amount').on('change',function(e){
+                                    <!--alert('ffff');-->
+                                    $('.total_amount').val($(this).val());
+                                    <!--alert($(this).val());-->
+
+                                });
+                                $('.plus').click(function(){
+                                    var ele = $(this).closest('.split_line_invoice').clone(true);
+                                    console.log(ele);
+                                    $(this).closest('.split_line_invoice').after(ele);
+                                });
+                                $('.tax_amount').on('change',function(e){
+                                    <!--alert('ffff');-->
+                                    $('.tax_amount').val($(this).val());
+                                    <!--alert($(this).val());-->
+
+                                });
+
+                            });
+                        </script>
+                    <div class="split_line_invoice">
+                        <group>
+                            <group>
+                              <field name="customer" widget="selection"/>
+                            </group>
+                            <group>
+                                <field name="percentage" />
+                            </group>
+                            <group>
+                                <field name="amount" class="total_amount"/>
+                            </group>
+                            <group>
+                                <field name="tax" />
+                            </group>
+                            <group>
+                                <field name="tax_amount" class="tax_amount"/>
+                            </group>
+                            <group>
+                                <img class="plus" src="ars_invoice_aftersales/static/src/img/blue-plus-sign-hi.png" style="width: 27px;"/>
+                            </group>
+                        </group>
+                    </div>
+                    <footer>
+                        <button name="action_draft_invoice" string="Confirm" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                    </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_split_invoice" model="ir.actions.act_window">
+            <field name="name">Split Invoice</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">split.invoice</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_split_invoice"/>
+
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_order_form_inherit_product_attribute" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.attribute</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='order_line']/tree/field[@name='product_id']" position="attributes">
+                    <attribute name="options">{'no_open': True,'no_create':True,'no_edit':True}</attribute>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="after">
+                    <field name="product_varient_ids" widget="many2many_tags" invisible="1" required='0' options="{'no_create': True, 'no_open': True}"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field[@name='order_line']/tree/field[@name='product_id']" position="before">
+                    <field name="product_template_id"  options="{'no_create': True, 'no_open': True}" required='1'/>
+                </xpath>
+
+            </field>
+        </record>
+
+         <record id="view_order_line_tree_inherit2" model="ir.ui.view">
+            <field name="name">sale.order.line.tree.inherit2</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="ars_after_sales.view_order_form_inherit"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree/field[@name='price_subtotal']" position="after">
+                    <field name="order_amount_total" groups="base.group_no_one"/>
+<!--                    <field name="is_visible"/>-->
+<!--                    <field name="is_edited" invisible="1"/>-->
+                </xpath>
+
+            </field>
+        </record>
+
+
+       <!--  <act_window
+            id="action_split"
+            multi="True"
+            key2="client_action_multi" name="Split Line"
+            res_model="split.invoice" src_model="sale.order.line"
+            view_mode="form" target="new" view_type="form"
+
+
+        /> -->
+
+    </data>
+</odoo>

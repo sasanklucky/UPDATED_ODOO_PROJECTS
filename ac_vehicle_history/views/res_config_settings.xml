@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+
+        <record id="ac_vehicle_config_settings" model="ir.ui.view">
+        <field name="name">ac_vehicle_history_config_settings</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="Vehicle History" string="Vehicle History Setup" data-key="cons_vehicle_history">
+                    <h2>Vehicle and Service History Setup</h2>
+                    <div class="row mt16 o_settings_container" id="cons_vehicle_db_settings">
+                        <div class="col-xs-12 o_setting_box" id="cons_vehicle_db_settings">
+                            <div class="o_setting_right_pane">
+                                <div class="row mt16">
+                                    <label class="col-md-3" string="Consolidation Setup"/>
+                                    <field name="is_consolidation" id='is_consolidation'  options="{'horizontal': true}"/>
+                                </div>
+                                <div class="row mt16">
+                                    <label class="col-md-3" string="Consolidate Database Name"/>
+                                    <field name="consolidate_db_name" id='consolidate_db_name' options="{'horizontal': true}" attrs="{'invisible': [('is_consolidation','=',False)], 'required':[('is_consolidation','=',True)]}"/>
+<!--                                    <field name="consolidate_db_name" id='consolidate_db_name' required="1" options="{'horizontal': true}"/>-->
+                                </div>
+<!--                                <div class="row mt16">-->
+<!--                                    <label class="col-md-3" string="IMS Database Name"/>-->
+<!--                                    <field name="ims_db_name" id='ims_db_name' required="1" options="{'horizontal': true}"/>-->
+<!--                                </div>-->
+                                <div class="row mt16">
+                                    <label class="col-md-3" string="Create Button"/>
+                                    <field name="is_vehicle_create" id='is_vehicle_create'
+                                           options="{'horizontal': true}"/>
+                                </div>
+                            </div>
+                            <br></br>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+
+</odoo>

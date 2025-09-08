@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="response_json_view_tree" model="ir.ui.view">
+        <field name="name">response_json.view.tree</field>
+        <field name="model">response.json</field>
+        <field name="arch" type="xml">
+            <tree string="Response Json">
+                <field name="name"/>
+                <field name="json"/>
+                <field name="response"/>
+            </tree>
+        </field>
+    </record>
+    <record id="response_json_view_form" model="ir.ui.view">
+        <field name="name">response_json.view.form</field>
+        <field name="model">response.json</field>
+        <field name="arch" type="xml">
+            <form string="Response Json">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                    </group>
+                    <group>
+                        <field name="json"/>
+                    </group>
+                    <group>
+                        <field name="response"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="response_json_action" model="ir.actions.act_window">
+        <field name="name">Response Json</field>
+        <field name="res_model">response.json</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+            id="response_json_menu"
+            name="Response Json"
+            action="response_json_action"
+            parent="gts_eway_bill.gst_configuration"
+            groups="gts_eway_bill.group_ebill_response"
+    />
+
+
+</odoo>

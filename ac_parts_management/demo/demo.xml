@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="sequence_parts_purchase_route" model="ir.sequence">
+            <field name="name">Parts Purchase</field>
+            <field name="code">parts.purchase.order</field>
+            <field name="prefix">PPO/</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_parts_inventory_sequence" model="ir.sequence">
+            <field name="name">Parts Inventory</field>
+            <field name="code">parts.inventory.transfer</field>
+            <field name="prefix">PAR/IN/%(year)s</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <record id="sequence_parts_invoice_sequence" model="ir.sequence">
+            <field name="name">Parts Purchase Invoice</field>
+            <field name="code">parts.account.invoice</field>
+            <field name="prefix">PAR/INV/%(year)s</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+    </data>
+</odoo>

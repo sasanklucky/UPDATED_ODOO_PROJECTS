@@ -1,0 +1,27 @@
+<odoo>
+    <data noupdate="0">
+        <record id="account.menu_finance_receivables" model="ir.ui.menu">
+            <field name="name">General Sales</field>
+        </record>
+		<record id="account.menu_finance_payables" model="ir.ui.menu">
+            <field name="sequence">6</field>
+        </record>
+		<record id="account.menu_finance_entries" model="ir.ui.menu">
+            <field name="sequence">7</field>
+        </record>
+		<record id="account.menu_finance_reports" model="ir.ui.menu">
+            <field name="sequence">8</field>
+        </record>
+
+        <menuitem id="menu_accounting_parts_sales" name="Parts-Sales" parent="account.menu_finance" sequence="5"/>
+		<menuitem id="menu_accounting_parts_sales_documents" name="Documents" parent="menu_accounting_parts_sales" sequence="1"/>
+		<menuitem id="menu_accounting_parts_sales_master" name="Master Data" parent="menu_accounting_parts_sales" action="account.action_invoice_tree1" sequence="3"/>
+
+		<menuitem id="menu_acc_parts_sales_documents_invoices" name="Customer Invoices" parent="menu_accounting_parts_sales_documents" action="action_invoice_parts_tree1" sequence="1"/>
+		<menuitem id="menu_acc_parts_sales_documents_creditnotes" name="Credit Notes" parent="menu_accounting_parts_sales_documents" action="action_invoice_out_refund_parts" sequence="2"/>
+		<menuitem id="menu_acc_parts_sales_documents_payments" name="Payments" parent="menu_accounting_parts_sales_documents" action="account.action_account_payments" sequence="3"/>
+
+		<menuitem id="menu_acc_parts_sales_master_customers" name="Customers" parent="menu_accounting_parts_sales_master" action="base.action_partner_customer_form" sequence="1"/>
+		<menuitem id="menu_acc_parts_sales_master_sellableproducts" name="Sellable Products" parent="menu_accounting_parts_sales_master" action="product_product_action_sellable_parts" sequence="2"/>
+    </data>
+</odoo>

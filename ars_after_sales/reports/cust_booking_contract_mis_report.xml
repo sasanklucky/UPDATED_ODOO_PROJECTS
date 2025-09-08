@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree view for "cust_booking_contract_mis_report" -->
+        <record id="view_cust_booking_contract_mis_report_tree" model="ir.ui.view">
+            <field name="name">view.cust_booking_contract_mis_report.tree</field>
+            <field name="model">cust_booking_contract_mis_report</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <tree string="cust_booking_contract_mis_report_tree" create="false" delete="false" edit="false">
+                    <field name="dealer_zone" />
+
+                    <field name="dealer_code" />
+                    <field name="company_id" />
+                    <field name="contract_id" />
+                    <field name="order_date" />
+                    <field name="salutation_id" />
+                    <field name="partner_id" />
+                    <field name="phone" />
+                    <field name="mobile"/>
+                    <field name="address" />
+                    <field name="expected_delivery_date" />
+                    <field name="enquiry_creation_date" />
+                    <field name="expected_purchase_date" />
+                    <field name="sales_executive_id" />
+                    <field name="commitments_offers_to_customer" />
+                    <field name="booking_amount" />
+                    <field name="cancel_date" />
+                    <field name="no_of_cars_purchased" />
+                    <field name="referred_by" />
+                    <field name="source_id" />
+                    <field name="model_group" />
+                    <field name="vehicle_make" />
+                    <field name="vehicle_colour" />
+
+                    <field name="product_name" />
+                    <field name="vehicle_colour" />
+                    <field name="medium_id" />
+                    <field name="created_by" />
+                </tree>
+            </field>
+        </record>
+        
+        
+        <!-- Search view for "cust_booking_contract_mis_report" -->
+        <record id="view_cust_booking_contract_mis_report_search" model="ir.ui.view">
+            <field name="name">view.cust_booking_contract_mis_report.search</field>
+            <field name="model">cust_booking_contract_mis_report</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <search string="cust_booking_contract_mis_report_search">
+                    <field name="dealer_code" />
+                    
+                </search>
+            </field>
+        </record>
+        
+        <!-- Main window action for "cust_booking_contract_mis_report" -->
+        <record id="action_cust_booking_contract_mis_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Cust Booking Contract MIS Report</field>
+            <field name="res_model">cust_booking_contract_mis_report</field>
+            <field name="view_mode">tree</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">\{}</field>
+            <field name="search_view_id" ref="view_cust_booking_contract_mis_report_search" />
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Data Not Found.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

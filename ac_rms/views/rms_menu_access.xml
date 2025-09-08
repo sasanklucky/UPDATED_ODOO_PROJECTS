@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_operation">
+        <field name="groups_id" eval="[(6, 0, [ref('group_fi'),ref('group_technician'),ref('group_job_controller')])]"/>
+    </record>
+    <record model="ir.ui.menu" id="ars_after_sales.menu_aftersales_catalog">
+        <field name="groups_id" eval="[(6, 0, [ref('group_fi'),ref('group_technician'),ref('group_job_controller')])]"/>
+    </record>
+    <record model="ir.ui.menu" id="ars_after_sales.menu_parts_pricelist_after">
+        <field name="groups_id" eval="[(6, 0, [ref('group_fi'),ref('group_technician'),ref('group_job_controller')])]"/>
+    </record>
+    <record model="ir.ui.menu" id="ars_after_sales.menu_labor_pricelist">
+        <field name="groups_id" eval="[(6, 0, [ref('group_fi'),ref('group_technician'),ref('group_job_controller')])]"/>
+    </record>
+</odoo>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!--        repair order report menu-->
+        <record id="menu_repair_order_so_report_after_sales" model="ir.ui.menu">
+            <field name="name">Repair Order Report</field>
+            <field name="sequence" eval="1"/>
+            <field name="action" ref="action_repair_order_report_wizard"/>
+            <field name="parent_id" ref="ars_after_sales.menu_aftersales_reporting"/>
+        </record>
+
+        <record id="menu_after_sales_retail_report" model="ir.ui.menu">
+            <field name="name">After-Sales Retail Report</field>
+            <field name="sequence" eval="2"/>
+            <field name="action" ref="action_after_sales_retail_report_wizard"/>
+            <field name="parent_id" ref="ars_after_sales.menu_aftersales_reporting"/>
+        </record>
+
+        <record id="menu_after_sales_credit_note_report" model="ir.ui.menu">
+            <field name="name">After-Sales Credit Note Report</field>
+            <field name="sequence" eval="3"/>
+            <field name="action" ref="action_after_sales_credit_note_report_wizard"/>
+            <field name="parent_id" ref="ars_after_sales.menu_aftersales_reporting"/>
+        </record>
+
+
+        <record id="menu_after_sales_psf_report" model="ir.ui.menu">
+            <field name="name">After-Sales PSF Report</field>
+            <field name="sequence" eval="2"/>
+            <field name="action" ref="action_after_sales_psf_report_wizard"/>
+            <field name="parent_id" ref="ars_after_sales.menu_aftersales_reporting"/>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--Tree view of model access.right-->
+    <record id="user_ip_log_view_tree" model="ir.ui.view">
+        <field name="name">user.ip.log.view.tree</field>
+        <field name="model">user.ip.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="user_id"/>
+                <field name="ip_address"/>
+                <field name="login_time"/>
+                <field name="city"/>
+                <field name="region"/>
+                <field name="country"/>
+            </tree>
+        </field>
+    </record>
+    <!--Form view of model access.right-->
+    <record id="user_ip_log_view_form" model="ir.ui.view">
+        <field name="name">user.ip.log.view.form</field>
+        <field name="model">user.ip.log</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="user_id"/>
+                            <field name="ip_address"/>
+                        </group>
+                        <group>
+                            <field name="latitude"/>
+                            <field name="longitude"/>
+                            <field name="city"/>
+                            <field name="region"/>
+                            <field name="country"/>
+                            <field name="login_time"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <!--Action of menu item Model Access Config-->
+    <record id="user_ip_log_action" model="ir.actions.act_window">
+        <field name="name">Unauthorized Access logs</field>
+        <field name="res_model">user.ip.log</field>
+        <field name='view_mode'>tree,form</field>
+    </record>
+    <!--Menu item is created in access.right-->
+    <menuitem id="access_right_menu_action"
+              name="Unauthorized Access Logs"
+              parent="base.menu_custom"
+              action="user_ip_log_action"
+              sequence="6"
+              groups="odoo_web_login.group_model_access_user_ip_log"/>
+
+</odoo>

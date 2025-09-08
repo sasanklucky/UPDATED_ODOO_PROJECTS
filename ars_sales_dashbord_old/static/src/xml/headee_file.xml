@@ -1,0 +1,259 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<templates>-->
+    <!--<t t-name="java_test.client_new_dashboard">-->
+        <!--&lt;!&ndash;<div id="wrap" class="oe_structure oe_empty">&ndash;&gt;-->
+        <!--&lt;!&ndash;<section class="s_title">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="container">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="row">&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="col-md-12">&ndash;&gt;-->
+        <!--&lt;!&ndash;<h1 class="text-center o_default_snippet_text"><strong>ITS My Dash board</strong></h1>&ndash;&gt;-->
+        <!--&lt;!&ndash;<h3 class="text-center text-muted o_default_snippet_text">And a great subtitle too</h3>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--&lt;!&ndash;</section>&ndash;&gt;-->
+        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--<div class="o_ars_sales_dashboard">-->
+            <!--<div>-->
+                <!--<table class="table table-condensed">-->
+                    <!--<tr>-->
+                        <!--<td class="o_text_dash">-->
+                            <!--<div class="o_highlight">To do</div>-->
+                            <!--Today-->
+                        <!--</td>-->
+                        <!--<td class="o_main_dashboard" title="To Calendar">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="calendar.action_calendar_event">-->
+                                <!--<span class="o_highlight">-->
+                                    <!--<t>-->
+                                        <!--<t/>-->
+                                    <!--</t>-->
+                                    <!--<t t-esc="values['meeting']['today']">-->
+
+                                    <!--</t>-->
+                                <!--</span>-->
+                                <!--<br/>-->
+                                <!--Meetings-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td class="o_main_dashboard" title="To Activities">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_lead_action_activities"-->
+                               <!--data-extra="today">-->
+                                <!--<span class="o_highlight">-->
+                                    <!--<t>-->
+
+                                    <!--</t>-->
+                                    <!--<t t-esc="values['activity']['next_7_days']">-->
+
+                                    <!--</t>-->
+                                <!--</span>-->
+                                <!--<br/>-->
+                                <!--Next Actions-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td class="o_main_dashboard" title="My Pipeline" rowspan="2">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.action_your_pipeline">-->
+                                <!--<span class="fa fa-th-large fa-3x"/>-->
+                                <!--<br/>-->
+                                <!--My Pipeline-->
+                            <!--</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td class="o_text_dash">Next 7 days</td>-->
+                        <!--<td class="o_main_dashboard" title="To Calendar">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="calendar.action_calendar_event">-->
+                                <!--<t>-->
+
+                                <!--</t>-->
+                                <!--<t t-esc="values['meeting']['next_7_days']">-->
+
+                                <!--</t>-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td class="o_main_dashboard" title="To Activities">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_lead_action_activities"-->
+                               <!--data-extra="this_week">-->
+                                <!--<t>-->
+                                    <!--<t t-esc="values['activity']['next_7_days']"/>-->
+                                <!--</t>-->
+                                <!--<t>-->
+
+                                <!--</t>-->
+                            <!--</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td></td>-->
+                        <!--<td></td>-->
+                        <!--&lt;!&ndash; Hide overdue when there is none &ndash;&gt;-->
+                        <!--<td class="o_warning_dashbord"-->
+                            <!--title="To Activities">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_lead_action_activities"-->
+                               <!--data-extra="overdue">-->
+                                <!--<t>-->
+                                    <!--<t t-esc="values['activity']['overdue']"/>-->
+                                    <!--overdue-->
+                                <!--</t>-->
+                                <!--<t>-->
+
+                                <!--</t>-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td class="o_warning_dashbord"-->
+                            <!--title="To Opportunities">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.action_your_pipeline"-->
+                               <!--data-extra="overdue_opp">-->
+                                <!--<t>-->
+                                    <!--&lt;!&ndash;<t t-esc="values['closing']['overdue']"/>&ndash;&gt;-->
+                                    <!--exp. closing-->
+                                <!--</t>-->
+                                <!--<t>-->
+                                    <!--3 exp. closing-->
+                                <!--</t>-->
+                            <!--</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            <!--</div>-->
+            <!--<div>-->
+                <!--<table class="hidden-xs table table-condensed">-->
+                    <!--<tr>-->
+                        <!--<td class="o_text_dash">-->
+                            <!--<div class="o_highlight">Performance</div>-->
+                            <!--This Month-->
+                        <!--</td>-->
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_activity_report_action">-->
+                                <!--<span class="o_highlight">-->
+                                    <!--<t>-->
+                                        <!--&lt;!&ndash;<t t-esc="values['done']['this_month']"/>&ndash;&gt;-->
+                                        <!--hai zero-->
+                                    <!--</t>-->
+                                    <!--<t>-->
+                                        <!--94-->
+                                    <!--</t>-->
+                                <!--</span>-->
+                                <!--<br/>-->
+                                <!--Activities Done-->
+                            <!--</a>-->
+                        <!--</td>-->
+
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_opportunity_report_action_graph">-->
+                                <!--<span class="o_highlight">-->
+                                    <!--<t>-->
+                                        <!--<t>-->
+
+                                        <!--</t>-->
+                                    <!--</t>-->
+                                    <!--<t>-->
+                                        <!--78,140.03€-->
+                                    <!--</t>-->
+                                <!--</span>-->
+                                <!--<br/>-->
+                                <!--Won in Opportunities-->
+                            <!--</a>-->
+                        <!--</td>-->
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="account.action_account_invoice_report_all">-->
+                                <!--<span class="o_highlight">-->
+                                    <!--<t>-->
+                                        <!--<t>-->
+
+                                        <!--</t>-->
+                                    <!--</t>-->
+                                    <!--<t>-->
+                                        <!--35,029.39€-->
+                                    <!--</t>-->
+                                <!--</span>-->
+                                <!--<br/>-->
+                                <!--Invoiced-->
+                            <!--</a>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td class="o_text_dash">Target</td>-->
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<span>-->
+                                <!--<t>-->
+                                    <!--<t>-->
+
+                                    <!--</t>-->
+                                <!--</t>-->
+                                <!--<t>-->
+                                    <!--Click to set-->
+                                <!--</t>-->
+                            <!--</span>-->
+                            <!--<span>-->
+
+                            <!--</span>-->
+                        <!--</td>-->
+
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<span>-->
+                                <!--<t>-->
+                                    <!--<t>-->
+
+                                    <!--</t>-->
+                                <!--</t>-->
+                                <!--<t>-->
+                                    <!--Click to set-->
+                                <!--</t>-->
+                            <!--</span>-->
+                            <!--<span>-->
+
+                            <!--</span>-->
+                        <!--</td>-->
+
+                        <!--<td class="o_secondary_dashboard">-->
+                            <!--<span class="o_target_to_set" name='invoiced'-->
+                                  <!--title="Click to set">-->
+                                <!--<t>-->
+                                    <!--<t>-->
+
+                                    <!--</t>-->
+                                <!--</t>-->
+                                <!--<t>-->
+                                    <!--Click to set-->
+                                <!--</t>-->
+                            <!--</span>-->
+                            <!--<span>-->
+
+                            <!--</span>-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <!--<tr>-->
+                        <!--<td class="o_text_dash">Last Month</td>-->
+                        <!--<td class="o_secondary_dashboard" title="To Activity Report">-->
+
+                        <!--</td>-->
+
+
+                        <!--<td class="o_secondary_dashboard" title="To Opportunity Report">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="crm.crm_opportunity_report_action_graph">-->
+                            <!--</a>-->
+
+                        <!--</td>-->
+                        <!--<td class="o_secondary_dashboard" title="To Invoice Report">-->
+                            <!--<a href="#" class="o_ars_dashboard_action" name="account.action_account_invoice_report_all">-->
+                            <!--</a>-->
+
+                        <!--</td>-->
+                    <!--</tr>-->
+                <!--</table>-->
+            <!--</div>-->
+
+            <!--&lt;!&ndash;<div  class="o_welcome_message">&ndash;&gt;-->
+            <!--&lt;!&ndash;<div class="o_welcome_image">&ndash;&gt;-->
+            <!--&lt;!&ndash;<i class="fa fa-smile-o fa-5x"></i>&ndash;&gt;-->
+            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;<div class="o_welcome_content">&ndash;&gt;-->
+            <!--&lt;!&ndash;<h2>Hi there!</h2>&ndash;&gt;-->
+            <!--&lt;!&ndash;<h4>Great sales journeys start with a clean pipeline.</h4>&ndash;&gt;-->
+            <!--&lt;!&ndash;<h4>Create a few opportunities in it.</h4>&ndash;&gt;-->
+            <!--&lt;!&ndash;<a class="btn btn-primary o_ars_dashboard_action" name="crm.action_your_pipeline">My Pipeline</a>&ndash;&gt;-->
+            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+        <!--</div>-->
+    <!--</t>-->
+<!--</templates>-->

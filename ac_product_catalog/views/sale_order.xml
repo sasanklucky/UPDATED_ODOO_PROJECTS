@@ -1,0 +1,143 @@
+<odoo>
+    <data>
+
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="name">General Sales</field>
+        </record>
+
+        <record id="sale.action_quotations" model="ir.actions.act_window">
+            <field name="domain">[('sale_aftersales','=','sales'),('sale_type','=','others')]</field>
+            <field name="context">{'default_sale_type':'others'}</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="sale.action_orders">
+            <field name="domain">[('sale_aftersales','=', 'sales'),('sale_type','=','others')]</field>
+            <field name="context">{ 'default_sale_type': 'others'}</field>
+        </record>
+
+
+
+
+
+<!--        Res Partner address filed has been readonly  while the getting on smart button value-->
+        <record model="ir.ui.view" id="res_partner_readonly_field_company">
+            <field name="name">res_partner_readonly_field_company</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='image']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='parent_id']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='street']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='street2']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='city']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state_id']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='zip']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+                <xpath expr="//field[@name='country_id']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True), ('can_edit_address_restrict', '=',
+            False)]}</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='mobile']" position="attributes">-->
+<!--                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='phone']" position="attributes">-->
+<!--                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//field[@name='email']" position="attributes">-->
+<!--                    <attribute name="attrs">{'readonly': [('can_edit_address', '=', True)]}</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='opt_out']" position="after">
+                    <field name="can_edit_address" invisible="1"/>
+                    <field name="can_edit_address_restrict" groups="base.group_no_one"/>
+                    <field name="can_edit_address_child" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+<!--        <record model="ir.ui.view" id="res_partner_state">-->
+<!--            <field name="name">res_partner_state</field>-->
+<!--            <field name="model">res.partner</field>-->
+<!--            <field name="inherit_id" ref="base.view_partner_form"/>-->
+<!--            <field name="arch" type="xml">-->
+
+<!--                <xpath expr="//field[@name='state_id']" position="attributes">-->
+<!--                    <attribute name="options">{'no_create': True, 'no_edit':True, 'no_open': True}</attribute>-->
+
+<!--&lt;!&ndash;                    <field name="state_id" options="{'no_edit': True, 'no_open': True, 'no_create': True,'no_open': True}"/>&ndash;&gt;-->
+<!--                </xpath>-->
+
+<!--            </field>-->
+<!--        </record>-->
+
+
+        <record model="ir.ui.view" id="res_partner_readonly_child_fields">
+            <field name="name">res_partner_readonly_child_fields</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//field[@name='child_ids']/form/sheet/group/group/div/div/field[@name='country_id']"
+                       position="after">
+                    <field name="can_edit_address_child" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='street']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='street2']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='city']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='state_id']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='zip']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+                <xpath expr="//field[@name='child_ids']/form//field[@name='country_id']" position="attributes">
+                    <attribute name="attrs">{'readonly': [('can_edit_address_child', '=', True), ('id', '!=', False)]}
+                    </attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<!-- Top menu item -->
+    <!--
+    <menuitem name="ac-ars" id="ac-ars.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="ac-ars.menu_1" parent="ac-ars.menu_root"/>
+    <menuitem name="Menu 2" id="ac-ars.menu_2" parent="ac-ars.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="ac-ars.menu_1_list" parent="ac-ars.menu_1"
+              action="ac-ars.action_window"/>
+    <menuitem name="Server to list" id="ac-ars" parent="ac-ars.menu_2"
+              action="ac-ars.action_server"/>
+    -->
+
+
+
+
+</odoo>

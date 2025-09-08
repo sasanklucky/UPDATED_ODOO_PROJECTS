@@ -1,0 +1,27 @@
+<odoo>
+    <data>
+        <record id="hr_employee_view_form_inherit_ars" model="ir.ui.view">
+            <field name="name">hr.employee.form.inherit</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//notebook//page[3]" position="after">
+                    <page string="Sales Approval">
+                        <field name="sale_approval" context="{'default_approval_id':active_id}">
+                            <tree string="Sales Approval" editable="bottom">
+                                <field name="approval_id" readonly="1" invisible="1"/>
+                                <field name="employee_id" required="1" domain="[('parent_id','=',approval_id)]"/>
+                                <field name="company_id" required="1"/>
+                                <field name="type" required="1"/>
+                                <field name="amount" required="1"/>
+                                <field name="discount" required="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<!--<template id="assets_frontend" inherit_id="web.assets_frontend" name="ARS Assets">-->
+	        <!--<xpath expr="." position="inside">-->
+	            <!--<link rel='stylesheet' href='/ars_after_sales/static/src/lib/fullcalendar.min.css' />-->
+	            <!--<link rel='stylesheet' href='/ars_after_sales/static/src/css/scheduler.min.css' />-->
+	            <!---->
+	            <!---->
+	            <!--<script type="text/javascript" src="/ars_after_sales/static/src/lib/moment.min.js"></script>-->
+	            <!--<script type="text/javascript" src="/ars_after_sales/static/src/lib/fullcalendar.min.js"></script>-->
+	            <!--<script type="text/javascript" src="/ars_after_sales/static/src/js/scheduler.min.js"></script>-->
+	            <!---->
+	            <!--<script type="text/javascript" src="/ars_after_sales/static/src/js/ars_planner_calender.js"></script>-->
+	        <!--</xpath>-->
+	    <!--</template>-->
+	<template id="assets_backend" inherit_id="web.assets_backend" name="ARS Assets back">
+		<xpath expr="." position="inside">
+			<script type="text/javascript" src="/ars_after_sales/static/src/js/warranty_stage.js"></script>
+			<link rel='stylesheet' href='/ars_after_sales/static/src/css/warranty-stage.css' />
+		</xpath>
+	</template>
+ </odoo>

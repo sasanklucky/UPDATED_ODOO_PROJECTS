@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<menuitem id="api_settings_menu_root" name="Consolidated API" web_icon="consolidated_apis,static/description/api.png" groups="group_api_manager"/>
+	
+	
+	<!-- <menuitem id="db_configuration_menu" name="DB Configuration" parent="api_settings_menu_root" groups="group_api_manager" action="parent_child_configuration_process"/>
+	 -->
+	<!-- <menuitem id="company_configuration_menu" name="Company Configuration" parent="api_settings_menu_root" groups="group_api_manager" action="company_configuration_process"/> -->
+	<menuitem id="company_configuration_menu" name="Company Configuration" parent="api_settings_menu_root" groups="group_api_manager" action="parent_child_configuration_process"/>
+
+
+</odoo>

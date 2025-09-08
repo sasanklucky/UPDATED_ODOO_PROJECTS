@@ -1,0 +1,111 @@
+<odoo>
+    <data>
+        <!--&lt;!&ndash; explicit list view definition &ndash;&gt;-->
+
+        <!--<record model="ir.ui.view" id="java_test.list">-->
+            <!--<field name="name">java_test_list</field>-->
+            <!--<field name="model">java_test.java_test</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<tree>-->
+                    <!--<field name="name"/>-->
+                    <!--<field name="value"/>-->
+                    <!--<field name="value2"/>-->
+                <!--</tree>-->
+            <!--</field>-->
+        <!--</record>-->
+        <!--<record model="ir.ui.view" id="java_test.kanban">-->
+            <!--<field name="name">java_test list_one</field>-->
+            <!--<field name="model">java_test.java_test</field>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<kanban class="o_kanban_mobile" js_class="java_test_check">-->
+                    <!--<field name="name"/>-->
+                    <!--<field name="value"/>-->
+                    <!--<field name="value2"/>-->
+                    <!--<templates id="dashbords">-->
+                        <!--<t t-name="kanban-box">-->
+                            <!--<div class="oe_kanban_global_click o_res_partner_kanban">-->
+                                <!--<div class="o_kanban_image">-->
+                                    <!--&lt;!&ndash;<t t-if="record.image_small.raw_value">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<img t-att-src="kanban_image('res.partner', 'image_small', record.id.raw_value)"/>&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-if="!record.image_small.raw_value">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-if="record.type.raw_value === 'delivery'">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<img t-att-src="_s + &quot;/base/static/src/img/truck.png&quot;" class="o_kanban_image oe_kanban_avatar_smallbox"/>&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-if="record.type.raw_value === 'invoice'">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<img t-att-src="_s + &quot;/base/static/src/img/money.png&quot;" class="o_kanban_image oe_kanban_avatar_smallbox"/>&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-if="record.type.raw_value != 'invoice' &amp;&amp; record.type.raw_value != 'delivery'">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<t t-if="record.is_company.raw_value === true">&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<img t-att-src="_s + &quot;/base/static/src/img/company_image.png&quot;"/>&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<t t-if="record.is_company.raw_value === false">&ndash;&gt;-->
+                                    <!--&lt;!&ndash;&lt;!&ndash;<img t-att-src="_s + &quot;/base/static/src/img/avatar.png&quot;"/>&ndash;&gt;&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</t>&ndash;&gt;-->
+                                <!--</div>-->
+                                <!--<div class="oe_kanban_details">-->
+                                    <!--<strong class="o_kanban_record_title oe_partner_heading">JAVA Test</strong>-->
+                                    <!--<div class="o_kanban_tags_section oe_kanban_partner_categories"/>-->
+                                    <!--<ul>-->
+                                        <!--<li>-->
+                                            <!--<field name="name"/>-->
+                                        <!--</li>-->
+                                        <!--<li>-->
+                                            <!--<field name="value"/>-->
+                                        <!--</li>-->
+                                        <!--<li>-->
+                                            <!--<field name="value2"/>-->
+                                        <!--</li>-->
+                                        <!--&lt;!&ndash;<li ><field name="city"/></li>&ndash;&gt;-->
+                                    <!--</ul>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</t>-->
+                    <!--</templates>-->
+                <!--</kanban>-->
+            <!--</field>-->
+        <!--</record>-->
+
+
+        <!--&lt;!&ndash; actions opening views on models &ndash;&gt;-->
+
+        <!--<record model="ir.actions.act_window" id="java_test.action_window">-->
+            <!--<field name="name">java_test window</field>-->
+            <!--<field name="res_model">java_test.java_test</field>-->
+            <!--<field name="view_mode">tree,form,kanban</field>-->
+        <!--</record>-->
+
+
+        <!--&lt;!&ndash; server action to the one above &ndash;&gt;-->
+
+        <!--<record model="ir.actions.server" id="java_test.action_server">-->
+            <!--<field name="name">java_test server</field>-->
+            <!--<field name="model_id" ref="model_java_test_java_test"/>-->
+            <!--<field name="state">code</field>-->
+            <!--<field name="code">-->
+                <!--action = {-->
+                <!--"type": "ir.actions.act_window",-->
+                <!--"view_mode": "tree,form",-->
+                <!--"res_model": self._name,-->
+                <!--}-->
+            <!--</field>-->
+        <!--</record>-->
+
+
+        <!--&lt;!&ndash; Top menu item &ndash;&gt;-->
+
+        <menuitem name="java_test" id="java_test.menu_root"/>
+
+        <!-- menu categories -->
+        <menuitem name="Menu 1" id="java_test.menu_1" parent="java_test.menu_root"/>
+        <menuitem name="Menu 2" id="java_test.menu_2" parent="java_test.menu_root"/>
+
+        <!-- actions -->
+        <menuitem name="List" id="java_test.menu_1_list" parent="java_test.menu_1"
+                  action="java_test.action_window"/>
+        <menuitem name="Server to list" id="java_test" parent="java_test.menu_2"
+                  action="java_test.action_server"/>
+    </data>
+</odoo>

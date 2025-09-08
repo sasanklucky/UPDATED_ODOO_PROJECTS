@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="invoice_sync_check_wizard_view" model="ir.ui.view">
+            <field name="name">Invoice Sync Check Wizard</field>
+            <field name="model">invoice_sync_check_wizard</field>
+            <field name="arch" type="xml">
+               <form>
+                   <sheet>
+                       <group>
+                           <group>
+                               <field name="sync_status_ids" style="pointer-events:none;">
+                                    <tree create='false' edit='false' delete='false'>
+                                        <field name="name" string="Reference" readonly="1"/>
+                                        <field name="partner_id" readonly="1"/>
+                                        <field name="company_id" options="{'no_create': True}" readonly="1"/>
+                                        <field name="state" readonly="1"/>
+                                        <field name="sync_invoice" readonly="1"/>
+                                    </tree>
+                                </field>
+                            </group>
+                       </group>
+                    </sheet>
+                   <footer>
+                        <button string="Sync Now" name="invoice_sync_now" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel"/>
+                   </footer>
+               </form>
+            </field>
+        </record>
+
+        <record id="action_invoice_sync_check_wizard" model="ir.actions.act_window">
+            <field name="name">Invoice Sync Check</field>
+            <field name="res_model">invoice_sync_check_wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="invoice_sync_check_wizard_view"/>
+            <field name="target">new</field>
+        </record>
+
+    </data>
+</odoo>

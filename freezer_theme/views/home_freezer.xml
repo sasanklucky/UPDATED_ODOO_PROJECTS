@@ -1,0 +1,130 @@
+<odoo>
+    <data>
+        <template id="listing">
+            <t t-call="website.layout">
+                <t t-set="pageName" t-value="'homepage'"/>
+                <div id="wrap" class="oe_structure oe_empty" style="background-color: white;">
+
+                    <div class="row">
+                        <img src="/freezer_theme/static/src/img/home_logo.jpg" alt="home_logo"
+                             style="width: auto;"></img>
+                    </div>
+
+                    <!-- <section class="s_text_block_image_fw oe_img_bg oe_custom_bg o_bg_img_opt_contain"
+                             style="background-image: url(&quot;ars_vehicle_sales/static/src/img/home_logo.jpg&quot;);">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12 mt128 mb128">
+                                    <h2 style="font-size:62px">
+                                        <br/>
+                                    </h2>
+                                    <h2 style="font-size:62px">
+                                        <br/>
+                                    </h2>
+                                    <h4>&amp;nbsp;</h4>
+                                    <p>&amp;nbsp;</p>
+                                </div>
+                            </div>
+                        </div> -->
+
+                    <div class="container" style="margin-top: 25px;">
+                        <div class="col-lg-12">
+                            <div class="heading">
+                                <h4 class="h1 heading-title">Blue Star</h4>
+                                <div class="heading-line">
+                                    <span class="short-line"></span>
+                                    <span class="long-line"></span>
+                                </div>
+                                <p class="heading-text">Blue Star's Deep Freezers are the most effective and
+                                    economical solutions for safe storage of Persiable foods. The Range of
+                                    Hard-top Deep Freezers from Blue Star incorporate cutting-edge technology
+                                    and innovative features, guranteeing long-lasting freshness. Built to last,
+                                    and to meet the demands of the high sub-continental temperatures, these
+                                    machine cut power bills through energy-saving innovations, helping your
+                                    business grow. Just what you would expert from experts.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Contacts -->
+                    <div class="container-fluid" style="margin-top:30px;">
+                        <div class="row medium-padding80 bg-border-color contacts-shadow">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="contacts col-md-12">
+
+                                        <div class="col-lg-6">
+                                            <div class="contacts-item">
+                                                <div class="content">
+                                                    <img src="freezer_theme/static/src/img/features.png"
+                                                         alt="features"></img>
+                                                    <!-- <div class="contacts-item">
+                                                        <img src="ars_vehicle_sales/static/src/img/robust.png" alt="robust"></img>
+                                                        <div class="content">
+                                                            <p class="sub-title">Robost construction for heavy-duty use</p>
+                                                        </div>
+                                                    </div> -->
+                                                    <p class="sub-title">1. Robost construction for heavy-duty
+                                                        use
+                                                    </p>
+                                                    <p class="sub-title">2. Corrosion-resistant body</p>
+                                                    <p class="sub-title">3. Tropicalised for high ambient
+                                                        temperatures
+                                                    </p>
+                                                    <p class="sub-title">4. Twin-door larger capacity models to
+                                                        avoid cooling loss
+                                                    </p>
+                                                    <p class="sub-title">5. Locks in all Models</p>
+                                                    <p class="sub-title">6. High density PUF insulation for
+                                                        better holding time
+                                                    </p>
+                                                    <p class="sub-title">7. Highly energy-efficient compressor
+                                                    </p>
+                                                    <p class="sub-title">8. Eco-Friendly cyclopentane foaming
+                                                        PUF insulation
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6" style="margin-left: -49px;">
+                                            <div class="contacts-item">
+                                                <img src="freezer_theme/static/src/img/tech_spec.png"
+                                                     alt="tech_spec"></img>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="contacts col-md-12">
+                                        <div class="contacts-item">
+                                            <img src="freezer_theme/static/src/img/desc1.png"
+                                                 alt="desc1"></img>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </t>
+        </template>
+    </data>
+    <record id="services_page" model="website.page">
+        <field name="name">Services page</field>
+        <field name="website_published">True</field>
+        <field name="url">/listing</field>
+        <field name="view_id" ref="listing"/>
+    </record>
+    <record id="frond_end" model="website.menu">
+        <field name="name">Freezer</field>
+        <field name="page_id" ref="services_page"/>
+        <field name="parent_id" ref="website.main_menu"/>
+        <field name="sequence" type="int">99</field>
+    </record>
+</odoo>

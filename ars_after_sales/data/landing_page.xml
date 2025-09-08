@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+       <!--Sales Landing Page-->
+       <record id="url1" model="landing.url">
+           <field name="name">Finance Manager</field>
+           <field name="url">web#action=account.action_invoice_tree1</field>
+       </record>
+       <record id="url2" model="landing.url">
+            <field name="name">Cashier</field>
+            <field name="url">web#action=account.action_invoice_tree1</field>
+        </record>
+        <record id="url3" model="landing.url">
+            <field name="name">Sales Accountant</field>
+            <field name="url">web#action=account.action_invoice_tree1</field>
+        </record>
+        <record id="url4" model="landing.url">
+            <field name="name">CRM Sales</field>
+            <field name="url">web#action=ars_after_sales.action_crm_lead_opportunities_inherit</field>
+        </record>
+        <record id="url5" model="landing.url">
+            <field name="name">CRE Sales</field>
+            <field name="url">web#action=ars_after_sales.action_crm_lead_opportunities_inherit</field>
+        </record>
+        <record id="url6" model="landing.url">
+            <field name="name">Sales Consultant</field>
+            <field name="url">web#action=ars_after_sales.action_crm_lead_opportunities_inherit</field>
+        </record>
+        <record id="url7" model="landing.url">
+            <field name="name">Sales Manager</field>
+            <field name="url">web#action=ars_after_sales.action_crm_lead_opportunities_inherit</field>
+        </record>
+
+       <!--AfterSales Landing Page-->
+       <record id="after_sales_url1" model="landing.url">
+           <field name="name">CRM After Sales</field>
+           <field name="url">web#action=ars_after_sales.crm_lead_all_leads_inherit</field>
+       </record>
+       <record id="after_sales_url2" model="landing.url">
+           <field name="name">CRE After Sales</field>
+           <field name="url">web#action=ars_after_sales.crm_lead_all_leads_inherit</field>
+       </record>
+       <record id="after_sales_url3" model="landing.url">
+            <field name="name">Sales Advisor</field>
+            <field name="url">web#action=ars_after_sales.crm_lead_all_leads_inherit</field>
+       </record>
+       <record id="after_sales_url4" model="landing.url">
+           <field name="name">Service Manager</field>
+           <field name="url">web#action=ars_after_sales.crm_lead_all_leads_inherit</field>
+       </record>
+       <record id="after_sales_url5" model="landing.url">
+           <field name="name">Parts Manager</field>
+           <field name="url">web#action=purchase.purchase_rfq</field>
+       </record>
+       <record id="after_sales_url6" model="landing.url">
+            <field name="name">Parts Assistance</field>
+            <field name="url">web#action=purchase.purchase_rfq</field>
+       </record>
+       <record id="after_sales_url7" model="landing.url">
+           <field name="name">Cashier</field>
+           <field name="url">web#action=account.action_invoice_tree1</field>
+       </record>
+       <record id="after_sales_url8" model="landing.url">
+            <field name="name">Finance Manager</field>
+            <field name="url">web#action=account.action_invoice_tree1</field>
+       </record>
+    </data>
+</odoo>

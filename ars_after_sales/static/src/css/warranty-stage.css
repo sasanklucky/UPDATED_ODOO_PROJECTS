@@ -1,0 +1,8 @@
+.warranty .bullet:before {
+    content:"• ";
+}
+#h-w{
+    width: 0.5%;
+    height: 12px;
+}
+

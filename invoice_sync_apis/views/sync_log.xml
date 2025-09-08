@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+         <record id="invoice_sync_log_tree" model="ir.ui.view">
+            <field name="name">invoice_sync_log.tree</field>
+            <field name="model">invoice_sync_log</field>
+            <field name="arch" type="xml">
+              <tree string="invoice_sync_log" class="o_invoice_sync_log">
+                     <field name="invoice_record" invisible='1'/>
+                     <field name="id" string='S.No'/>
+                     <field name="create_date"/>
+                     <field name="invoice_sequence"/>
+                     <field name="payload"/>
+                     <field name="status"/>
+                     <field name="sync_message"/>
+              </tree>
+            </field>
+        </record>
+
+        <record id="invoice_sync_log_form" model="ir.ui.view">
+            <field name="name">invoice_sync_log.form</field>
+            <field name="model">invoice_sync_log</field>
+            <field name="arch" type="xml">
+              <form string="invoice_sync_log">
+                     <sheet>
+                            <group name="invoice_sync_log" string="Payload Details">
+                                  <field name="invoice_record" invisible='1'/>
+                                   <field name="id" string='S.No'/>
+                                   <field name="create_date"/>
+                                   <field name="invoice_sequence"/>
+                                   <field name="payload"/>
+                                   <field name="status"/>
+                                   <field name="sync_message"/>
+                            </group>
+                     </sheet>
+              </form>
+            </field>
+        </record>
+
+
+       <record id="invoice_sync_log_action" model="ir.actions.act_window">
+            <field name="name">Sync Log</field>
+            <field name="res_model">invoice_sync_log</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+             <field name="view_ids"
+                   eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('invoice_sync_log_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('invoice_sync_log_form')})]"/>
+       </record>
+
+       <menuitem name="Sync log" id="menu_sync_log" action="invoice_sync_log_action"
+              parent="purchase.purchase_report" sequence="3"/>
+</odoo>

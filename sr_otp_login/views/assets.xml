@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="assets_frontend1" inherit_id="web.assets_frontend" name="OTP Resend Timer Assets">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/sr_otp_login/static/src/js/otp_timer.js"/>
+            <script type="text/javascript" src="/sr_otp_login/static/src/js/login_toast.js"/>
+        </xpath>
+    </template>
+
+<!--    <template id="assets_common2" inherit_id="web.assets_frontend" name="OTP Resend Timer Tostify">-->
+<!--        <xpath expr="//script[last()]" position="after">-->
+<!--            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"/>-->
+<!--		</xpath>-->
+<!--        <xpath expr="//link[last()]" position="after">-->
+<!--			<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />-->
+<!--		</xpath>-->
+<!--    </template>-->
+
+        <template id="home_assets_frontend_otpview" name="Home Frontend Assets"
+              inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/less"
+                  href="/sr_otp_login/static/src/css/otp.css"/>
+        </xpath>
+    </template>
+
+    <template id="home_assets_frontend_toast_notify" name="Home Frontend Toast Notify Assets"
+              inherit_id="website.assets_frontend">
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/less"
+                  href="/sr_otp_login/static/src/css/toast_notify.css"/>
+        </xpath>
+    </template>
+</odoo>

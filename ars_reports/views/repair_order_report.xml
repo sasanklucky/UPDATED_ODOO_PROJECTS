@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Tree view for "repair.order.report" -->
+        <record id="view_repair_order_report_tree" model="ir.ui.view">
+            <field name="name">view.repair_order_report.tree</field>
+            <field name="model">repair.order.report</field>
+            <field name="type">tree</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <tree string="repair_order_report_tree" create="false" delete="false" edit="false" default_order='id asc'>
+                    <field name="id" string="Sl. No." />
+                    <field name="dealer_code" />
+                    <field name="dealer_id" />
+                    <field name="dealer_state_id" />
+                    <field name="dealer_city_id" />
+                    <field name="ro_number"/>
+                    <field name="invoice_number"/>
+                    <field name="customer_id" />
+                    <field name="customer_contact" />
+                    <field name="customer_state_id" />
+                    <field name="customer_city_id" />
+                    <!-- <field name="order_id" /> -->
+                    <!-- <field name="line_item_id" /> -->
+                    <field name="vin" />
+                    <field name="registration_no" />
+<!--                    <field name="master_id" />-->
+                    <field name="master_name" />
+                    <field name="product_varient_id" />
+                    <field name="model" string="Product Varient"/>
+                    <field name="vehiclesale_dt" />
+                    <field name="last_service_dealer" />
+                    <field name="last_service_date" />
+                    <field name="last_service_km" />
+                    <field name="stages" />
+                    <field name="last_ro_close_date" />
+                    <field name="ro_open_date"/>
+                    <field name="ro_close_date"/>
+                    <field name="ro_ageing"/>
+                    <field name="service_type"/>
+                    <field name="odoometer"/>
+<!--                    <field name="part_id" />-->
+                    <field name="product_catalog" />
+                    <field name="part_ref" />
+                    <field name="part_description" />
+                    <field name="product_uom_qty" />
+                    <field name="part_price" />
+                    <field name="cgst_per" />
+                    <field name="sgst_per" />
+                    <field name="igst_per" />
+                    <field name="total_part_price" />
+                    <field name="customer_voc" />
+                </tree>
+            </field>
+        </record>
+        
+        <!-- Search view for "repair.order.report" -->
+        <record id="view_repair_order_report_search" model="ir.ui.view">
+            <field name="name">view.repair_order_report.search</field>
+            <field name="model">repair.order.report</field>
+            <field name="type">search</field>
+            <field name="mode">primary</field>
+            <field name="priority" eval="16" />
+            <field name="active" eval="True" />
+            <field name="arch" type="xml">
+                <search string="repair_order_report_search">
+                    <field name="dealer_code" />
+                    <field name="part_description" />
+                    <filter string="Part/ Labour Description" name="groupby_part_description" domain="[]"
+                                context="{'group_by':'part_description'}"/>
+                </search>
+            </field>
+        </record>
+        
+        <!-- Main window action for "repair.order.report" -->
+        <record id="action_repair_order_report_act_window" model="ir.actions.act_window">
+            <field name="type">ir.actions.act_window</field>
+            <field name="name">Repair Order Report</field>
+            <field name="res_model">repair.order.report</field>
+            <field name="view_mode">tree</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+            <field name="domain">[]</field>
+            <field name="context">\{}</field>
+            <field name="search_view_id" ref="view_repair_order_report_search" />
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Repair Order Report
+                </p>
+            </field>
+        </record>
+        2
+        <!-- Main menu for "repair.order.report" -->
+<!--        <record id="menu_repair_order_so_report" model="ir.ui.menu" >-->
+<!--            <field name="name">Repair Order Report</field>-->
+<!--            &lt;!&ndash; <field name="sequence" eval="10" /> &ndash;&gt;-->
+<!--            <field name="action" ref="action_repair_order_report_wizard" />-->
+<!--            <field name="parent_id" ref="account.account_reports_management_menu" />-->
+<!--        </record>-->
+    </data>
+</odoo>

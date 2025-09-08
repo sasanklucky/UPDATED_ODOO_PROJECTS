@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_rms_settings" model="ir.ui.view">
+        <field name="name">ars_config_inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="RMS" string="RMS" data-key="ac_rms">
+                    <h3>ARS Main Process Settings</h3>
+                    <div>
+                        <group>
+                            <group>
+                                <field name="main_process_id" />
+                            </group>
+                        </group>
+                    </div>
+                    <h2>RMS Settings</h2>
+                    <div class="row mt16 o_settings_container" id="rms_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="rms_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Leads And Appointment"/>
+                                <div class="text-muted">
+                                    Change Stages of the Pipeline
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label class="col-md-3 o_light_label" string="Team Type"/>
+                                        <field name="rms_team_types"/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3 o_light_label" string="Type"/>
+                                        <field name="rms_appointment_type" string="Type"/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3 o_light_label" string="Stages"/>
+                                        <field name="rms_stages_id" string="Stages"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            <!--<xpath expr="//div[hasclass('settings')]/div[hasclass('app_settings_block')]/div[@id='ars_settings']" position="after">
+                &lt;!&ndash;<div class="app_settings_block" data-string="RMS" string="RMS" data-key="ac_rms">&ndash;&gt;
+                    <h2>RMS Settings</h2>
+                    <div class="row mt16 o_settings_container" id="rms_settings">
+                        <div class="col-xs-12 col-md-6 o_setting_box" id="rms_setting">
+                            <div class="o_setting_right_pane">
+                                <label string="Leads And Appointment"/>
+                                <div class="text-muted">
+                                    Change Stages of the Pipeline
+                                </div>
+                                <div class="content-group">
+                                    <div class="row mt16">
+                                        <label class="col-md-3 o_light_label" string="Team Type"/>
+                                        <field name="team_types"/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3 o_light_label" string="Type"/>
+                                        <field name="app_type" string="Type"/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3 o_light_label" string="Stages"/>
+                                        <field name="stages_id" string="Stages"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                &lt;!&ndash;</div>&ndash;&gt;
+            </xpath>-->
+        </field>
+    </record>
+    <record id="action_rms_config_settings" model="ir.actions.act_window">
+        <field name="name">RMS Settings</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="res_config_rms_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'ac_rms'}</field>
+    </record>
+    <!--<menuitem id="rms_settings_menu" name="Settings"-->
+              <!--parent="ars_after_sales.menu_aftersales_config" action="action_rms_config_settings"-->
+              <!--web_icon="ac_rms/static/description/images.png"/>-->
+
+</odoo>

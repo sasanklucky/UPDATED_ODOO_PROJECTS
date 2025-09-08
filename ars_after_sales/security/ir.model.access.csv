@@ -1,0 +1,106 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_right_salesman,access_salesman,model_crm_lead_line,sales_team.group_sale_salesman,1,1,1,0
+access_right_manager,access_manager,model_crm_lead_line,sales_team.group_sale_manager,1,1,1,0
+access_right_manager1,access_manager,model_crm_lead_stage,sales_team.group_sale_manager,1,1,1,0
+,,,,,,,
+access_right_sales2,crm sale2,model_sale_order,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales3,crm sale4,model_crm_lead,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_saless3,crm sale45,ars_vehicle_sales.model_stock_production_lot,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales4,crm sale5,model_crm_team,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales5,crm sale6,model_crm_stage,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales56,crm sale67,ars_vehicle_sales.model_product_catalog,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales6,crm sale7,model_crm_lead_line,ars_after_sales.group_crm_sale,1,1,1,1
+access_right_sales7,crm sale8,model_account_invoice,ars_after_sales.group_crm_sale,1,1,1,0
+access_right_sales8,crm sale9,model_crm_lead_stage,ars_after_sales.group_crm_sale,1,1,1,0
+,,,,,,,
+access_right_sales1,crm sale1,model_sale_order,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_sales8,crm sale9,analytic.model_account_analytic_line,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_sales9,crm sale10,model_account_invoice,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_sales10,crm sale11,model_sale_order_line,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_sales11,crm sale12,model_sale_order,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_sales12,crm sale13,model_crm_lead_stage,ars_after_sales.group_show_sale_menu,1,1,1,0
+,,,,,,,
+access_right1,a1,model_res_partner,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales8,crm after sale1,model_crm_lead,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales9,crm after sale2,model_customer_voice,ars_after_sales.group_aftersale,1,1,1,1
+access_right_after_sales9a,crm after sale2a,model_instructions,ars_after_sales.group_aftersale,1,0,0,0
+access_right_after_sales10,crm after sale3,model_resource_category,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales11,crm after sale4,model_sale_order,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales12,crm after sale5,ars_vehicle_sales.model_stock_production_lot,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales14,crm after sale7,mail.model_mail_tracking_value,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales15,crm after sale8,model_sale_order_line,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales16,crm after sale9,model_order_line_category,ars_after_sales.group_aftersale,1,1,1,0
+access_right_after_sales17,crm after sale10,model_crm_lead_stage,ars_after_sales.group_aftersale,1,1,1,0
+,,,,,,,
+access_right_after_sales_spare,crm_spare1,ars_vehicle_sales.model_product_catalog,ars_after_sales.group_show_purchase_menu,1,1,1,0
+access_right_after_sales_spare,crm_spare2,model_sale_order,ars_after_sales.group_show_purchase_menu,1,1,1,0
+access_right_after_sales_spare,crm_spare3,model_customer_voice,ars_after_sales.group_show_purchase_menu,1,1,1,0
+access_right_after_sales_customer,crm_voice,model_customer_voice,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_sales_purchase,purchase_vendor,model_res_partner,ars_after_sales.group_show_purchase_menu,1,1,1,0
+,,,,,,,
+access_right_landing,land_page,model_landing_setting,base.user_root,1,1,1,0
+access_right_project,ars_project,project.model_project_project,ars_after_sales.group_aftersale,1,1,1,0
+access_right_invoice,ars_invoice,account.model_account_invoice,ars_after_sales.group_aftersale,1,1,1,0
+access_right_invoice_sales,ars_invoice_sales,account.model_account_invoice,sales_team.group_sale_salesman_all_leads,1,1,1,0
+,,,,,,,
+,,,,,,,
+access_right_fleet,ars_fleet_aftersales,fleet.model_fleet_vehicle,ars_after_sales.group_parts_aftersales,1,1,1,0
+access_right_power,ars_power_sales,ars_vehicle_sales.model_power_window,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_stock,ars_inventory_right,stock.model_stock_inventory,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_stock_line,ars_inventory_line_right,stock.model_stock_inventory_line,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_iap,ars_iap_account_right,iap.model_iap_account,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_price,ars_price_history_right,product.model_product_price_history,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_forecast,ars_stock_forecast_right,stock.model_report_stock_forecast,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_users,ars_res_users,base.model_res_users,ars_after_sales.group_aftersale,1,1,1,0
+access_right_users1,ars_res_users1,base.model_res_users,sales_team.group_sale_salesman_all_leads,1,1,1,0
+,,,,,,,
+access_right_ownership,ars_ownership_history_right,ars_vehicle_sales.model_ownership_history,ars_after_sales.group_aftersale,1,1,1,0
+access_right_insurance,ars_insurance_history_right,ars_vehicle_sales.model_insurance_history,ars_after_sales.group_aftersale,1,1,1,0
+access_right_emission,ars_emission_history_right,ars_vehicle_sales.model_emission_history,ars_after_sales.group_aftersale,1,1,1,0
+access_right_history,ars_service_history,ars_vehicle_sales.model_service_history,ars_after_sales.group_aftersale,1,1,1,0
+,,,,,,,
+access_right_ownership_sale,ars_ownership_history_right_sale,ars_vehicle_sales.model_ownership_history,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_insurance_sale,ars_insurance_history_right_sale,ars_vehicle_sales.model_insurance_history,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_emission_sale,ars_emission_history_right_sale,ars_vehicle_sales.model_emission_history,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_right_history_sale,ars_service_history_sale,ars_vehicle_sales.model_service_history,ars_after_sales.group_show_sale_menu,1,1,1,0
+,,,,,,,
+access_right_account_inline,ars_account_analytic_line,analytic.model_account_analytic_line,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_account_analytic,ars_account_analytic,analytic.model_account_analytic_account,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_product_product,ars_product_product,product.model_product_product,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_product_template,ars_product_template,product.model_product_template,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_product_uom,ars_product_uom,product.model_product_uom,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_project_project,ars_project_project,project.model_project_project,sales_team.group_sale_salesman_all_leads,1,1,1,0
+access_right_project_task,ars_project_task,project.model_project_task,sales_team.group_sale_salesman_all_leads,1,1,1,0
+,,,,,,,
+access_right_ir,ars_ir_sequence,base.model_ir_sequence,ars_after_sales.group_sales_invoice,1,1,1,0
+access_right_ir_range,ars_ir_sequence_range,base.model_ir_sequence_date_range,ars_after_sales.group_sales_invoice,1,1,1,0
+access_right_res,ars_res_company,base.model_res_company,ars_after_sales.group_sales_invoice,1,1,1,0
+,,,,,,,
+access_right_war,ars_warranty,ars_after_sales.model_ars_sale_warranty,ars_after_sales.group_warranty_manager,1,1,1,0
+access_right_war_app,ars_warranty_app,ars_after_sales.model_ars_sale_warranty,ars_after_sales.group_warranty_approval,1,1,1,0
+access_war_mng_sale_order_line,sale_order_line,sale.model_sale_order_line,ars_after_sales.group_warranty_manager,1,1,0,0
+access_war_app_sale_order_line,sale_order_line,sale.model_sale_order_line,ars_after_sales.group_warranty_approval,1,1,0,0
+access_war_mng_sale_order,sale_order,sale.model_sale_order,ars_after_sales.group_warranty_manager,1,1,0,0
+access_war_app_sale_order,sale_order,sale.model_sale_order,ars_after_sales.group_warranty_approval,1,1,0,0
+,,,,,,,
+access_ars_sale_warranty,ars_sale_warranty,model_ars_sale_warranty,ars_after_sales.ars_sale_warranty_manager,1,1,1,0
+,,,,,,,
+access_ars_order_line,ars_line_category,ars_after_sales.model_order_line_category,ars_after_sales.group_show_sale_menu,1,1,1,0
+access_war_mng_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_sales.group_warranty_manager,1,0,0,0
+access_war_app_fleet_vehicle,fleet_vehicle,fleet.model_fleet_vehicle,ars_after_sales.group_warranty_approval,1,0,0,0
+,,,,,,,
+access_cust_booking_contract_mis_report,cust_booking_contract_mis_report user,model_cust_booking_contract_mis_report,base.group_user,1,0,0,0
+access_customer_dump_mis_report,customer_dump_mis_report,model_customer_dump_mis_report,base.group_user,1,1,1,1
+access_sales_report_format,sales_report_format,model_sales_report_format,,1,1,1,1
+access_sales_report_format,sales_report_format,model_sales_report_format,,1,1,1,1
+
+,,,,,,,
+access_employee_mis_report_report,employee_mis_report,model_employee_mis_report,base.group_user,1,1,1,0
+,,,,,,,
+access_service_type,service.type,model_service_type,base.group_user,1,1,1,0
+access_service_options,service.options,model_service_options,base.group_user,1,1,1,0
+access_crm_summary_report,access_crm_summary_report,model_crm_summary_report,base.group_user,1,1,1,0
+access_crm_summary_source_report,access_crm_summary_source_report,model_crm_summary_source_report,base.group_user,1,1,1,0
+
+access_activity_log_report,activity_log_report,model_activity_log_report,base.group_user,1,1,1,1
+access_service_setup_manual,access_service_setup_manual,model_service_setup_manual,base.group_user,1,1,1,0

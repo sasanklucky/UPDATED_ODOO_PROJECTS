@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+
+        <record id="purchase_order_form_ac_parts_purchase" model="ir.ui.view">
+            <field name="name">purchase.order.form</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+<!--                <xpath expr="//form/header" position="inside">-->
+<!--                    <button name="stock_reveal_wizard" string="Inquire OEM Stock" type="object" class="btn-primary"/>-->
+<!--                </xpath>-->
+<!--                <xpath expr="//form/sheet/notebook/page/field[@name='order_line']/tree/field[@name='name']"-->
+<!--                       position="before">-->
+<!--                    <field name="ims_reveal_qty" readonly="True"/>-->
+<!--                </xpath>-->
+                <field name="company_id" position="after">
+                    <field name="purchase_type" readonly="0" groups="base.group_no_one"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="ac_parts_purchase_requisition_form">
+            <field name="name">purchase.requisition.form</field>
+            <field name="model">purchase.requisition</field>
+            <field name="inherit_id" ref="purchase_requisition.view_purchase_requisition_form"/>
+            <field name="arch" type="xml">
+                <field name="picking_type_id" position="before">
+                    <field name="purchase_type" groups="base.group_no_one"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="purchase.menu_purchase_root" model="ir.ui.menu">
+            <field name="name">General Purchase</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="purchase.purchase_rfq">
+            <field name="context">{ 'search_default_todo':1,
+                'show_purchase': False,
+                'default_purchase_type':'general' }
+            </field>
+            <field name="domain">[('state','in',('draft','sent','cancel', 'confirmed')),
+                ('purchase_type','in', ['general',False])]
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="purchase.purchase_form_action">
+            <field name="context">{ 'search_default_todo':1,'show_purchase': False,
+                'default_purchase_type':'general' }
+            </field>
+            <field name="domain">[('state','not in',('draft','sent','bid', 'confirmed')),
+                ('purchase_type','in', ['general',False])]
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_sale_message" model="ir.ui.view">
+        <field name="name">sale.message.view.form</field>
+        <field name="model">sale.message</field>
+        <field name="arch" type="xml">
+            <form string="Sale Message">
+                <group>
+                    <field name='sale_text' string="Message"/>
+                </group>
+                <footer>
+                    <button name="sale_message_define" string="Done" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-default" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sale_order_create_message_wizard" model="ir.actions.act_window">
+        <field name="name">Create Sale Order Message</field>
+        <field name="res_model">sale.message</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="ars_after_sales.view_sale_message"/>
+        <field name="view_type">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

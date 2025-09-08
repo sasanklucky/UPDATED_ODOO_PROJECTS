@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+        <record id="ars_crm_lost_reason_view_form" model="ir.ui.view">
+            <field name="name">ars.crm.lost.reason.form</field>
+            <field name="model">crm.lost.reason</field>
+            <field name="inherit_id" ref="crm.crm_lost_reason_view_form"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="type"/>
+                    <field name="sale_type"/>
+                </field>
+            </field>
+        </record>
+
+<!--        <record id="ars_crm_lead_lost_view_form" model="ir.ui.view">-->
+<!--            <field name="name">crm.lead.lost.form</field>-->
+<!--            <field name="model">crm.lead.lost</field>-->
+<!--            <field name="inherit_id" ref="crm.crm_lead_lost_view_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <field name="lost_reason_id" position="replace">-->
+<!--                    <field name="lead_id"/>-->
+<!--                    <field name="lost_reason_domain" invisible="0"/>-->
+<!--                    <field name="lost_reason_id" domain="lost_reason_domain"/>-->
+<!--                </field>-->
+<!--            </field>-->
+<!--        </record>-->
+
+<!--        <record id="crm.crm_lead_lost_action" model="ir.actions.act_window">-->
+<!--            <field name="context">{'default_lead_id':'active_ids'}</field>-->
+<!--        </record>-->
+
+    </data>
+</odoo>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+
+
+	<template id="show_sign_in_right" inherit_id="portal.frontend_layout">
+		<xpath expr="//ul[@id='top_menu']/li[1]" position="after">
+			<li>
+			   <a href="/customer">
+				   <span>Customer</span>
+			   </a>
+			</li>
+
+	    </xpath>
+    </template>
+
+
+
+
+</odoo>

@@ -1,0 +1,73 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<odoo>-->
+<!--<data>-->
+
+
+    <!--<record id="view_repair_order_form_inherit" model="ir.ui.view">-->
+        <!--<field name="name">mrp.repair.form</field>-->
+        <!--<field name="model">mrp.repair</field>-->
+        <!--<field name="inherit_id" ref="mrp_repair.view_repair_order_form" />-->
+        <!--<field name="arch" type="xml">-->
+            <!--<xpath expr="//button[@name='action_created_invoice']" position="after">-->
+               <!--&lt;!&ndash;<field name="picking_ids" invisible="1"/>&ndash;&gt;-->
+               <!--<button type="object" name="action_view_delivery" class="oe_stat_button" icon="fa-truck" string="Delivery">-->
+                   <!--&lt;!&ndash;<field name="delivery_count" widget="statinfo" string="Delivery"/>&ndash;&gt;-->
+               <!--</button>-->
+            <!--</xpath>-->
+            <!--<xpath expr="//group/group[1]" position="replace">-->
+            	<!--<group>-->
+                    <!--<field name="regn_no" string="Regn No."/>-->
+	            	<!--<field name="tracking" invisible="1"/>-->
+	            	<!--<field name="product_id" domain="['|',('categ_id.name', '=', 'Vehicle'),('categ_id.parent_id.name','=', 'Vehicle')]"/>-->
+                    <!--<label for="product_qty" style="display:none;"/>-->
+                    <!--<div class="o_row" style="display:none;">-->
+                        <!--<field name="product_qty" invisible="1" />-->
+                        <!--<field name="product_uom" groups="product.group_uom" invisible="1"/>-->
+                    <!--</div>-->
+	            	<!--<field name="lot_id" domain="[('product_id', '=', product_id)]" context="{'default_product_id': product_id}" groups="stock.group_production_lot" attrs="{'required': [('tracking', '!=', 'none')], 'readonly': [('state', '=', 'done')]}"/>-->
+	                <!--<field name="partner_id" attrs="{'required':[('invoice_method','!=','none')]}"/>-->
+	                <!--<field name="address_id" groups="sale.group_delivery_invoice_address"/>-->
+	                <!--&lt;!&ndash; <field name="model"/> &ndash;&gt;-->
+	                <!--<field name="type"/>-->
+	                <!--<field name="service_advisor_id" string="Service Advisor"/>-->
+	                <!--<field name="delivery_service_advisor_id" string="Delivery Service Advisor"/>-->
+	                <!---->
+	              <!--</group>-->
+            <!--</xpath>-->
+            <!--<xpath expr="//group/group/field[@name='partner_id']" position="after">-->
+             	<!--<field name="mobile"/>-->
+             <!--</xpath>-->
+             <!--<xpath expr="//group/group[2]/field[@name='pricelist_id']" position="after">-->
+             	<!--<field name="appointment"/>-->
+	            <!--<field name="delivery"/>-->
+	            <!--<field name="kilometer_till"/>-->
+                 <!--<field name="payment_term"/>-->
+             <!--</xpath>-->
+            <!--<xpath expr="//form/sheet/notebook/page[1]/field[@name='operations']/tree/field[@name='product_id']" position="replace">-->
+             	<!--<field name="product_id" domain="['|',('categ_id.name', '=', 'Parts'),('categ_id.parent_id.name','=', 'Parts')]"/>-->
+             <!--</xpath>-->
+            <!--<xpath expr="//form/sheet/notebook/page[1]/field[@name='operations']/form/notebook/page[1]/group/group[2]/field[@name='location_dest_id']" position="after">-->
+             	<!--<field name="onhand_qty"/>-->
+	            <!--<field name="delivery_qty"/>-->
+	            <!--<field name="invoice_qty"/>-->
+             <!--</xpath>-->
+            <!--<xpath expr="//form/sheet/notebook/page[1]/field[@name='operations']/tree/field[@name='product_uom_qty']" position="after">-->
+             	<!--<field name="onhand_qty"/>-->
+	            <!--<field name="delivery_qty"/>-->
+	            <!--<field name="invoice_qty"/>-->
+             <!--</xpath>-->
+             <!--<xpath expr="//form/sheet/notebook/page[2]" position="attributes">-->
+           		<!--<attribute name="string">Labors</attribute>-->
+             <!--</xpath>-->
+            <!--<xpath expr="//form/sheet/notebook/page[2]/field[@name='fees_lines']/tree/field[@name='product_id']" position="replace">-->
+             	<!--<field name="product_id" domain="['|',('categ_id.name', '=', 'Labor'),('categ_id.parent_id.name','=', 'Labor'),('type','=','service')]"/>-->
+             <!--</xpath>-->
+        <!--</field>-->
+    <!--</record>-->
+
+    <!--<record model="ir.ui.menu" id="mrp_repair.menu_repair_order">-->
+        <!--<field name="name">AfterSales</field>-->
+    <!--</record>-->
+    <!---->
+<!--</data>-->
+<!--</odoo>-->

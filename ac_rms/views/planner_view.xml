@@ -1,0 +1,1949 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="resource_planner" name="planner">
+	    <t t-call="website.layout">
+		    <form class="form-inline" action="/resource_planner" method="POST"
+                  style="margin-left:15px;font-size:15px;">
+              <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+              <div class="form-group">
+                <label for="view">Resource Planner: </label>
+                <select class="form-control" name="view" id="view" onchange="this.form.submit()"> 
+	                  <t t-foreach="res_planner" t-as="res_plan">
+	                  		<t t-if="view[res_plan_index] == 'selected'">
+	                  			<option t-att-value="res_plan.id" selected='selected'><t t-esc="res_plan.name" /></option>
+	                  		</t>
+	                  		<t t-if="view[res_plan_index] != 'selected'">
+	                  			<option t-att-value="res_plan.id"><t t-esc="res_plan.name" /></option>
+	                  		</t>
+			          </t>
+                </select>
+              </div>
+                <t t-if="shift_end">
+                    <div style="padding:3px;margin-top: 8px;float: right;margin-right: 229px;border: 2px solid #1ea3b3;border-radius: 8px;font-size: 12px;font-weight: bold;">
+                        <span>
+                            <a id = "break_dialog_id" data-toggle="modal" >Shift End / Break</a>
+                            <!--data-target="#break_task_modal_dialog"-->
+                        </span>
+                    </div>
+                </t>
+            </form>
+            <span class="showall" style="display:none;">False</span>
+            <div  style="z-index:9999;" id="confirm-box"></div>
+            <div  style="z-index:9999;" id="drop-box"><div id="droppable"></div></div>
+            <div class="row">
+                <t t-if="event">
+                    <div class="col-sm-1" style="z-index:999;height: 449px;">
+
+                        <div id='external-events' style="height: 374px;">
+                            <div style="border-bottom:1px solid #cbbfbf;font-size:13px;font-weight:bold;text-align:center;background-color: #c6bdbd;">
+                              <span>ALLOCATION DATA</span>
+                            </div>
+                            <!--<style>ul.tagit input[type="text"] {
+                                    color: black !important;
+                                    background: none;
+                                }</style>-->
+                            <div style="height:334px;overflow-x: hidden;">
+                               <div class="bay-search-sect">
+                                    <input type="hidden" name="type" value="ta"/>
+                                    <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+                                    <ul id="baymyTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow: hidden;height: 27px;width: 86%;float: right;font-size: 0.8em;margin-right: 12px;margin-top: -18px;border-radius: 7px;" >
+
+                                    </ul>
+                                    <div style="display:none;" id="bay-search-value">Bay Time Stamp</div>
+
+                                </div>
+                                <div>
+
+                                    <table class="bay-search-sect" id="bay-search" width="100%">
+                                        <thead>
+                                            <tr>
+                                               <td>
+
+											    </td>
+											 </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr t-foreach="ros" t-as="ro" class="bay_modal_rows">
+                                                <td>
+
+                                                    <input type='checkbox' class='bay_select' style="display:none;"/>
+                                                    <div class='fc-event res_div bay_events' t-att-rid='ro.id'>
+                                                    <!--<div><img class="car_img" src="ac_rms/static/src/img/car.jpg" /></div>-->
+                                                    	<div style="font-weight: bold;font-size: 15px;text-align: center;line-height: 2.3;">
+                                                    		<t t-if="ro_index == 0">
+		                                                		<a data-action="edit1" href="#" style="text-decoration: none;color:black;"><span t-esc="ro.regn_no.license_plate" /></a>
+		                                                	</t>
+                                                    		<t t-if="ro_index > 0">
+                                                    			<span t-esc="ro.regn_no.license_plate" />
+		                                                	</t>
+
+                                                    	</div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--<div style="padding-top: 3px;background-color: #c6bdbd;border-top: 1px solid #cbbfbf;font-size: 10px;text-align: center;font-weight:normal;">
+                                &lt;!&ndash;<input type='checkbox' id='drop-remove' />&ndash;&gt;
+                                <label for='drop-remove' style="font-weight:normal;">Remove after drop</label>
+                            </div>-->
+                        </div>
+                    </div>
+                </t>
+            	<div t-att-class="col_sm" style="z-index:999;margin-left: 19px;">
+            		<div id='calendar'></div>
+            	</div>
+                <t t-if="resource_pl">
+                    <div class="col-sm-1" style="z-index:999;height: 449px;margin-left: -19px;">
+                        <!--<div style="margin-top: 8px;">
+                            <span style="font-size: 9px;font-weight: bold;">
+                                <a id = "break_dialog_id" data-toggle="modal" >Shift End / Break</a>
+                                &lt;!&ndash;data-target="#break_task_modal_dialog"&ndash;&gt;
+                            </span>
+                        </div>-->
+                        <div id='tech-events' style="font-size:13px;font-weight:bold;height: 374px;">
+                                  <div style="border-bottom:1px solid #cbbfbf;font-size:13px;font-weight:bold;text-align:center;background-color: #c6bdbd;">
+                                      <span>RESOURCE POOL</span>
+                                  </div>
+                                  <!--<select id="skill_grp">
+                                    <option>All</option>
+                                    <option>Skill Set</option>
+                                    <option>Type</option>
+                                  </select>-->
+                                  <!--<style>ul.tagit input[type="text"] {
+                                    color: black !important;
+                                    background: none;
+                                }</style>-->
+                                  <div id="group_filter" style="height:353px;overflow-x: hidden;">
+                                      <div class="resource-search-sect">
+                                        <input type="hidden" name="type" value="ta"/>
+                                        <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+                                        <ul id="techmyTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow: hidden;height: 27px;width: 86%;float: right;font-size: 1.3em;margin-right: 12px;margin-top: -17px;border-radius: 7px;" >
+
+                                        </ul>
+                                        <div style="display:none;" id="tech-search-value">Tech Time Stamp</div>
+                                       <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+                                      </div>
+                                      <div>
+                                          <table class="resource-search-sect" id="resource-search" width="100%">
+                                            <thead>
+                                                <tr><td></td></tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr t-foreach="pull_reses" t-as="pull_res" class="tech_modal_rows">
+                                                    <td>
+                                                    	<input type='checkbox' class='tech_select' style="display:none;"/>
+                                                    	<div class='fc-event res_div' t-att-id='pull_res.id'>
+                                                    		<div class="col-xs-12" style="font-size: 13px;background-color: white;margin: -6px 0px 4px 0px;padding:0px;font-weight: bold;text-align: center;line-height: 4.3;">
+                                                    			<div class="col-xs-3" style="margin-left:6px;">
+                                                    				<span style="border-radius: 40px;" t-if="pull_res.user_id.image" t-field="pull_res.user_id.image" t-options='{"widget": "image", "class": "tech_img", "alt-field": "name", "zoom": "image" }'/>
+                                                    			</div>
+                                                    			<div class="col-xs-9" style="padding:0px;margin-left: -12px;text-align: left;margin-top: -9px;">
+                                                    	 			<span style="font-weight: bold;" t-esc="pull_res.name" />
+                                                    	 		</div>
+                                                    	 	</div>
+                                                    	 </div>
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                          </table>
+                                      </div>
+
+                                     <!-- <t t-foreach="pull_reses" t-as="pull_res">-->
+
+                                          <!--<div class='fc-event res_div' t-att-id='pull_res.id'>
+                                          		<div class="col-xs-12" style="padding: 5px;margin: 10px;width: 168px;border-radius: 6px;font-weight: bold;text-align: center;line-height: 4.3;background-color: #b9cbc7;">
+                                          			<div class="col-xs-2" style="padding: 0px;">
+                                          				<span style="border-radius: 40px;max-width: 20px;" t-if="pull_res.user_id.image" t-field="pull_res.user_id.image" t-options='{"widget": "image", "class": "tech_img", "alt-field": "name", "zoom": "image" }'/>
+                                          			</div>
+                                          			<div class="col-xs-10" style="padding:0px;font-size: 9px;color: darkblue;text-align: left;line-height: 2;">
+                                          				<span style="font-weight: bold;" t-esc="pull_res.name" />
+                                          			</div>
+                                          		</div>
+                                          </div>-->
+                                      <!--</t>-->
+                                  </div>
+                                  <!--<div style="padding-top: 3px;background-color: #c6bdbd;border-top: 1px solid #cbbfbf;font-size: 10px;text-align: center;font-weight:normal;">
+                                    &lt;!&ndash;<input type='checkbox' id='drop-remove' />&ndash;&gt;
+                                    <label for='drop-remove' style="font-weight:normal;">Remove after drop</label>
+                                  </div>-->
+                                  <!--<div style="padding-top: 3px;background-color: #c6bdbd;border-top: 1px solid #cbbfbf;font-size: 10px;text-align: center;font-weight:normal;">
+                                        &lt;!&ndash;<input type='checkbox' id='drop-remove' />&ndash;&gt;
+                                        <label for='drop-remove' style="font-weight:normal;">Remove after drop</label>
+                                  </div>-->
+                        </div>
+                    </div>
+                </t>
+                <div class="col-sm-1" style="height: 449px;">
+                <!--Planer Buckets-->
+                <div id="container" groups="ac_rms.group_job_controller,ac_rms.group_technician">
+                <div id="drawer">
+                    <div id="drawer-handle"></div>
+                    <div id="drawer-content">
+                        <p>
+                        <div class="plannner_btn pln-bucket bg-pink" data-toggle="modal" t-att-data-target="'#techallocation'" id="techallocation_allocation"><a href="#">Bay &amp; Technician<br/> <span t-esc="bay_allocation or 0"></span></a><!-- <span t-esc="(bay_allocation + technician_allocation) or 0"/>--></div>
+                       <!--  <div class="plannner_btn pln-bucket" data-toggle="modal" t-att-data-target="'#testallocation' if user.has_group('wms.group_wms_mjc') or user.has_group('wms.group_wms_wc') or user.has_group('wms.group_wms_wm') or user.has_group('wms.group_wms_fi') or user.has_group('wms.group_wms_sa') else ''">Test Drive<br/> <span t-esc="test_drive or 0"/> -->
+                        <div class="plannner_btn pln-bucket bg-red" data-toggle="modal" id="test_drive_allocation"><a href="#">Test Drive<br/> <span>0</span></a>
+                        </div>
+
+                        <div class="plannner_btn pln-bucket bg-green" data-toggle="modal"  id="jobstoppage_allocation">
+                            <a href="#">
+                              Job Stoppage
+                            <br/> <span t-esc="hold_approval_count or 0"></span><span style="display:none;" class="job_stappage_id" t-esc="job_stoppage_ids"></span></a>
+                        </div>
+                        <div class="plannner_btn pln-bucket bg-blue" data-toggle="modal">
+                            <a href="#">
+                              Final Inspection
+                            <br/> <span t-esc="fi_waiting_count or 0"></span></a>
+                        </div>
+                        <!--<div class="plannner_btn pln-bucket" data-toggle="modal">
+                            <a href="#">
+                              Washing
+                            <br/><span>0</span></a>
+                        </div>
+                        <div class="plannner_btn pln-bucket" data-toggle="modal">
+                            <a href="#">
+                              VAS
+                            <br/><span>0</span></a>
+                        </div>
+                          <div class="plannner_btn pln-bucket" data-toggle="modal">
+                            <a href="#">
+                              Order Shipment
+                            <br/><span>0</span></a>
+                        </div>-->
+                        <div class="plannner_btn pln-bucket bg-yellow" data-toggle="modal">
+                            <a href="#">
+                                <div class="plannner_btn pln-bucket" data-toggle="modal" data-target="#deliveryallocation"><a href="#">Ready for Delivery<br/> <span t-esc="ready_for_delivery_count or 0"></span></a></div>
+                            </a>
+                        </div>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!--FI Details-->
+            <div id="fi-planner-dashboard">
+                <div id="fi_detail_containers" style="height:300px;">
+                    <div id="fi_detail_container" style="display:none;height: inherit;position: relative;"><div id="fi-details-table"></div></div>
+                </div>
+                <div id="fi_container" groups="ac_rms.group_fi">
+
+                    <div id="fi">
+                        <div id="fi-handle"></div>
+                        <div id="fi-content">
+                            <p>
+                                <div class="fi-search-sect">
+                                    <input type="hidden" name="type" value="ta"/>
+                                    <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+                                    <ul id="fimyTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow: hidden;height: 27px;width: 15%;float: right;font-size: 9px;margin-right: 12px;border-radius: 7px;" >
+
+                                    </ul>
+                                    <div style="display:none;" id="search-value">Time Stamp</div>
+                                   <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+                                  </div>
+                            </p>
+                            <!--<div class="fi-search-sect">
+                                <input type="hidden" name="type" value="ta" placeholder="Search Here..."/>
+                                &lt;!&ndash;<img class="icon-clk-search" src="/ac_rms/static/src/img/search_icon.png" />&ndash;&gt;
+                                <ul id="fimyTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow: hidden;height: 27px;width: 15%;float: right;font-size: 0.8em;border-radius: 20px;border: 3px solid #999090;">
+
+                                </ul>
+                                <div style="display:none;" id="search-value">Time Stamp</div>
+
+                            </div>-->
+                            <p>
+
+
+                                <div class="col-xs-12" style="padding: 8px 2px 5px 0px;">
+                                        <!--<span class="hidden" id="fi_waiting_id"/>-->
+
+                                        <div class="col-xs-2 fi_plannner_btn pln-bucket bg-pink">
+                                            <div data-toggle="modal"><a href="#~">My Tasks<br/><span id="fi_tasks"/><span class="hidden" id="fi_task_id"/></a></div>
+                                        </div>
+                                        <div class="col-xs-2 fi_plannner_btn pln-bucket bg-red" data-toggle="modal">
+                                            <div data-toggle="modal"><a href="#~">FI Waiting<br/><span id="fi_waiting_counts"/><span class="hidden" id="fi_waiting_id"/></a></div>
+                                        </div>
+
+                                        <div class="col-xs-2 fi_plannner_btn pln-bucket pull-right bg-green" data-toggle="modal">
+                                            <div data-toggle="modal"><a href="#~">FI Rejected<br/><span id="fi_rejected_counts"/><span class="hidden" id="fi_rejected_id"/></a></div>
+                                        </div>
+
+
+                                        <div class="col-xs-2 fi_plannner_btn pln-bucket pull-right bg-blue" data-toggle="modal">
+                                            <div data-toggle="modal"><a href="#~">FI Progress<br/><span id="fi_in_progress_counts"/><span class="hidden" id="fi_in_progress_id"/></a></div>
+                                        </div>
+
+                                        <div class="col-xs-2 fi_plannner_btn pln-bucket bg-yellow" data-toggle="modal">
+                                            <div data-toggle="modal"><a href="#~">FI Completed<br/><span id="fi_completed_counts"/><span class="hidden" id="fi_completed_id"/></a></div>
+                                        </div>
+
+
+                                </div>
+                                <div id="fi_detail">
+
+
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+            	</div>
+
+            </div>
+
+          <div class="clearfix"></div>
+          <!-- Technician Allocation Modal -->
+          <div class="modal fade" id="techallocation" role="dialog" data-backdrop="static" data-keyboard="false">
+            <!--<div class="modal-dialog modal-lg" style="width: 1100px;">-->
+            <div class="modal-dialog modal-lg bay-tech-popup" style="width:93%;">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header padding-header" style="border: none;">
+
+                    <img src="/ac_rms/static/src/img/car.jpg" style="width:100%;"/>
+
+                    <button type="button" class="close color-close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <input type="text" name="inward" class="hidden inward" t-att-value="inward_ids"/>
+                    <input class="hidden security" type="text" t-att-value="sec_ids"/>
+                    <input type="text" class="hidden reception" t-att-value="reception_ids"/>
+                    <!--<style>ul.tagit input[type="text"] {
+                        color: white;
+                        background: none;
+                    }</style>-->
+                    <div class="bay-tech-search-sect">
+                        <input type="hidden" name="type" value="ta"/>
+                        <img class="icon-clk-search" src="/ac_rms/static/src/img/search_icon.png" />
+                        <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all other-search" style="overflow: hidden;height: 27px;width: 15%;float: right;font-size: 0.8em;border-radius: 20px;border: 3px solid #e9e1e1;">
+
+                        </ul>
+                        <div style="display:none;" id="search-value">Time Stamp</div>
+                       <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+                    </div>
+                    <div>
+                        <button class="initial_allo all_btn"><span>Initital Allocation</span><span class="hidden all_ids" t-esc="initial_ids"/></button><span class="initial_allo in-count"><t t-esc="initial_count"/></span><br/>
+                        <button class="partial_allo all_btn"><span>Partial Allocation</span><span class="hidden all_ids" t-esc="partial_ids"/></button><span class="initial_allo pa-count" ><t t-esc="partial_count"/></span><br/>
+                        <button class="additional_allo all_btn"><span>Additional Job Allocation</span><span class="hidden all_ids" t-esc="additional_job_ids"/></button><span class="initial_allo add-count" ><t t-esc="additional_job_count"/></span><br/>
+                        <button class="hold_reallo all_btn"><span>Hold-Reallocation</span><span class="hidden all_ids" t-esc="hold_approve_ids"/></button><span class="initial_allo hold-count" ><t t-esc="hold_approve_count"/></span><br/>
+                        <button class="carry_over_allo all_btn"><span>Carry Over Allocation</span><span class="hidden all_ids" t-esc="carry_over_ids"/></button><span class="initial_allo carry-count" ><t t-esc="carry_over_count"/></span><br/>
+                        <button class="reschedule_allo all_btn"><span>Reschedule</span><span class="hidden all_ids" t-esc="reschedule_ids"/></button><span class="initial_allo reschedule-count" ><t t-esc="reschedule_count"/></span><br/>
+                        <button class="fi_rejection all_btn"><span>FI Rejection</span><span class="hidden all_ids" t-esc="fi_reject_ids"/></button><span class="initial_allo fi-count" ><t t-esc="fi_reject_count"/></span>
+                    </div>
+
+                    <!--<h4 class="modal-title">Bay &amp; Technician Allocation</h4>-->
+                    <!--<input type="hidden" name="type" value="ta"/>
+                      <div>
+                          <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:17%;float:right;font-size: 0.8em;margin-right:53px;" >
+
+                          </ul>
+                          <span class="sb-icon-search" style="float:right;margin-top: 41px;"></span>
+                      </div>
+                    <table class="table" id="techallocation_table1" style="font-size:12px;margin-top: 30px;">
+                      <thead>
+                        <tr>
+                           <th width="5%" id="0"></th>
+                           <th width="12%" id="1" style="padding-left:16px;">Vehicle Reg #</th>
+                           <th width="1%" id="2"></th>
+                           <th colspan="2" id="3" style="text-align:left;">Total Time Unit</th>
+                           <th colspan="2" id="4" style="text-align: center;width:123px;padding-left: 15px;">Repair Order(RO)</th>
+                           <th style="text-align: right;" id="5" class="sortTable"  colspan="4">Promised Delivery Date &amp; Time</th>
+                           <th colspan="2" id="6" style="text-align: center;padding-left: 30px;" width="12%">Job Controller</th>
+                           <th colspan="2" id="7" style="text-align: center;padding-left: 34px;" width="12%">Service Advisor</th>
+                           <th colspan="2" id="8" style="padding-left: 46px;" width="15%">Reason</th>
+                        </tr>
+                      </thead>
+                    </table>-->
+                </div>
+                <div class="modal-body" style="padding:0px;">
+                  <form action="/service_planner/action" id="tac">
+                        <div id="baytech-allocation-table">
+                            <span style="padding: 2px;"><blockquote style="opacity: 0.6;text-align:center;">For Allocating Bay &amp; Technician in a Repair Order Please Choose One of the Above Tabs.</blockquote></span>
+                        </div>
+                  </form>
+                </div>
+                <div class="modal-footer" style="margin-top: 73px;">
+                  <button type="button" class="btn btn-default" data-dismiss="modal" style="z-index:999;">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="technician_task" role="dialog" style='z-index: 99999;'>
+
+          </div>
+
+          <div class="modal fade" id="jobstoppage_task" role="dialog" style='z-index: 99999;'>
+
+          </div>
+
+          <div class="modal fade" id="break_task_modal_dialog" role="dialog" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog" style="width: 400px;">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title">Shift End / Bay End</h4>
+                        </div>
+                        <div class="modal-body" style="height:160px">
+                                <div class="row">
+                                    <div id="break_task_modal_div">
+                                        <div class="row">
+
+                                            <div class="col-xs-12" style="margin-top:15px;">
+                                                <div id="rad">
+                                                    <div class="col-xs-6">
+                                                        <input type="radio" class="opt" name="b" value="tea"/> Tea Break
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="radio" class="opt" name="b" value="lunch" /> Lunch Break
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="radio" class="opt shiftend" name="b" value="shiftend"/> Shift End
+                                                    </div>
+                                                    <div class="col-xs-6" style="margin-left:-17px;">
+                                                        <input type="radio" name="b" value="others" id="others"/> Others
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12" style="margin-top:10px">
+                                                <textarea class="break-class hidden" placeholder="Remarks" name="breakreason" id="breakreason"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success break_reason_btn" >Confirm</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Double Click Modal content-->
+            <div class="modal fade" id="Dblclick" role="dialog" style="z-index:9999;" data-backdrop="static" data-keyboard="false">
+           <div class="modal-dialog modal-chip_infolg" style="width:86%;">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header" style="padding:0px;border-bottom: none;margin-bottom: -78px;">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" style="padding:10px;">×</button>
+                    <h4 class="modal-title"  style="padding:10px;">Bay &amp; Technician Allocation</h4>
+                    <table class="table" id="chip_table1" style="font-size:12px;margin-top: 20px;padding:0px;">
+                      <thead>
+                        <tr>
+                          <th width="5%"></th>
+                          <th width="12%">Vehicle Reg #</th>
+                           <th width="1%"></th>
+                           <th colspan="2" style="text-align:left;">Total Time Unit</th>
+                           <th colspan="2" style="text-align: center;">Repair Order(RO)</th>
+                           <th style="text-align: right;" colspan="4">Promised Delivery Date &amp; Time</th>
+                           <th colspan="2" style="text-align: center;" width="12%">Job Controller</th>
+                           <th colspan="2" style="text-align: center;" width="12%">Service Advisor</th>
+                           <th colspan="2" style="text-align: center;" width="15%">Reason</th>
+                        </tr>
+                      </thead>
+                    </table>
+                </div>
+                <div class="modal-body"  style="padding:0px;">
+                  <form action="/service_planner/action" id="tac_dbl">
+                    <input type="hidden" name="type" value="ta"/>
+                      <div class="dynamic">
+                            <!--<t t-call="website_service_planner.service_planner_chip"/>-->
+                          <table class="table" id="chip_table"  style="margin-top: -31px;">
+                              <thead style="visibility:hidden;">
+                                <tr>
+
+                                  <th width="5%"></th>
+                                  <th width="12%">Vehicle Reg #</th>
+                                   <th width="1%"></th>
+                                   <th colspan="2" style="text-align:left;">Total Time Unit</th>
+                                   <th colspan="2" style="text-align: center;">Repair Order(RO)</th>
+                                   <th style="text-align: right;" colspan="4">Promised Delivery Date &amp; Time</th>
+                                   <th colspan="2" style="text-align: center;" width="12%">Job Controller</th>
+                                   <th colspan="2" style="text-align: center;" width="12%">Service Advisor</th>
+                                   <th colspan="2" style="text-align: center;" width="15%">Reason</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  <tr class="modal_rows">
+                                   <td width="5%" class=""><input name="inner-chckbox" type="checkbox"/></td>
+                                   <td width="12%"><a class="reg_no" href="#"></a><span style="display:none;" id="regn"></span></td>
+                                   <td width="1%" class=""></td>
+                                   <td colspan="2" class="time_unit" style="text-align:left;"></td>
+                                   <td colspan="2" class="repair_order" style="text-align: center;"></td>
+                                   <td style="text-align: right;" class="delivery_datetime" colspan="4"></td>
+                                   <td colspan="2" class="job_controller" style="text-align: center;" width="12%"></td>
+                                   <td colspan="2" class="service_advisor" style="text-align: center;" width="12%"></td>
+                                   <td colspan="2" class="reason" style="text-align: center;" width="15%"></td>
+                                  </tr>
+                                  <tr class="modal_rows" style="border:none;" id="task_dobule_clk"><td></td></tr>
+                              </tbody>
+                          </table>
+                      </div>
+
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary tawindow_dbl">Confirm</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+	    </t>
+	</template>
+
+    <template id="job_stoppage" name="jobstop">
+        <div class="modal-dialog jobstoppage-popup" style="width: 67%;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Jobstoppage</h4>
+                </div>
+                <div class="modal-body">
+                    <div  class="col-xs-12" style="font-size: 29px;color: #005dff;">
+                        <div  class="col-xs-4">
+                            <a  style="margin-left: 7px;font-size: 14px;" data-toggle="modal" id="custvoice">
+                                Customer Voices
+                            </a>
+                        </div>
+                        <div  class="col-xs-4">
+                            <button type="button" id="approve_task" class="btn btn-success start_task"  disabled=" disabled">Approve</button>
+                            <button type="button" id="reject_task" class="btn btn-danger pause_task" data-target="#pause_task_modal"  disabled=" disabled">Reject</button>
+                        </div>
+                        <div  class="col-xs-4"></div>
+                    </div>
+
+                    <div class="table-responsive mobile-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><span><a href="#" id='select_tech_chkbx'>Select All</a></span></th>
+                                    <th>Task Title</th>
+                                    <th>Resources</th>
+                                    <th>Hold Reason</th>
+                                    <th>Stage</th>
+                                    <th>RO Name</th>
+                                    <th>Reg No</th>
+                                    <th>Start Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="project_task" t-as="o">
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" id="stage_chkbx" t-att-name="'%s' % (o.id)" t-att-value="'%s' % (o.id)" />
+                                        </td>
+                                        <td><t t-esc="o.name"/></td>
+                                        <td>
+                                            <t t-foreach="o.timesheet_ids" t-as="sheet">
+                                                <t t-if="sheet.resource_type == tech_categ">
+                                                    <t t-if="sheet.entry_type == 'plan'">
+                                                        <t t-esc="sheet.resource_name.name"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                        </td>
+                                        <td><t t-esc="o.stage_id.name"/></td>
+                                        <td><t t-esc="o.stage_id.name"/></td>
+                                        <td><t t-esc="o.sale_line_id.order_id.name"/></td>
+                                        <td><t t-esc="o.sale_line_id.order_id.regn_no.license_plate"/></td>
+                                        <td><t t-esc="o.task_start_time(o.id)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+
+    <template id="modal" name="technician">
+        <div class="modal-dialog technician-popup">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title">Technician Task</h4>
+                </div>
+                <div class="modal-body">
+                    <!--<t t-if="show_task">-->
+                        <div class="row">
+                            <div class="col-xs-12">
+
+                                       <!-- <select id="tsk_bay" class="form-control" style="width:10% !important;">
+                                       <t t-set="task" t-value="[]"/>
+	                                    	<t t-foreach="tasks" t-as="o">
+	                                    	<t t-if="o.task_bay.name not in task">
+	                                    		<option t-att-value="o.id"><t t-esc="o.task_bay.name" /></option>
+	                                    		<t t-set="task" t-value="task+[o.task_bay.name]"/>
+	                                    	</t>
+	                                    	</t>
+                                    	</select>
+                                    <a id="loadbay" style="position: relative;top: -32px;left: -170px;">Load on Bay</a> -->
+                                    <div  class="col-xs-4">
+                                        <span id="bhmi_bays"></span>
+
+                                    </div>
+
+                                    <div  class="col-xs-8 tech_popup_header_section" style="font-size: 29px;color: #005dff;">
+                                        <div class="vehicle_details" style="padding: 0px 0px;">
+                                            <span id="so_name"><t t-esc='so_name' /></span>  -  <span><t t-esc='regn_no' /></span>
+                                            <span class="tech_event" style="display:none;"><t t-esc="event"/></span>
+                                        </div>
+
+
+
+                                        <span id="disabled_finish" style="display:none;"><t t-esc="finish_btn" /></span>
+                                        <button type="button" id="start_task" class="btn btn-success start_task" disabled="disabled">Start</button>
+                                        <button type="button" id="pause_task" class="btn btn-danger pause_task" disabled="disabled" data-target="#pause_task_modal">Hold</button>
+                                        <!--&lt;!&ndash;<button type="button" id="break_task" class="btn btn-info break_task">Break</button>&ndash;&gt;-->
+                                        <button type="button" id="finish_task" class="btn btn-warning finish_task" disabled="disabled">Finish</button>
+                                    </div>
+                                    <!-- <span id="bhmi_bays"></span> -->
+                                    <!--<span id="disabled_finish" style="display:none;"><t t-esc="finish_btn" /></span>-->
+                                	<!--<button type="button" id="start_task" class="btn btn-success start_task">Start</button>-->
+	                                <!--<button type="button" id="pause_task" class="btn btn-danger pause_task" data-target="#pause_task_modal">Hold</button>-->
+	                                <!--<button type="button" id="break_task" class="btn btn-info break_task">Break</button>-->
+	                                <!--<button type="button" id="finish_task" class="btn btn-warning finish_task">Finish</button>-->
+                                    <!--<input type="hidden" name="voic" id="voices" t-att-value="appointment and appointment.id or False"/>
+                                    <a  style="margin-left: 7px;" data-toggle="modal" id="custvoice" t-att-data-sale_id="appointment and appointment.id or False">
+                                        Customer Voices
+                                    </a>-->
+                                <span id="reject" style="display:none;"><t t-esc='reject' /></span>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div id="pause_task_modal" style="display:none;">
+                                <div class="row">
+                                      <div class="col-xs-5" style="margin-top:17px;"></div>
+                                    <div class="col-xs-2" style="margin-top:15px;width:255px;">
+                                        <textarea class="form-control" placeholer="Message" id="brk_msg" style="display:none;"></textarea>
+                                        <input data-option="Waiting for Customer Approval" id="WaitingforCustomerApproval" name="onhold" value="otherreason" type="radio"/>Waiting for Customer Approval<br/>
+                                        <input data-option="Waiting for Parts" id="WaitingforParts" name="onhold" value="otherreason" type="radio"/>Waiting for Parts<br/>
+                                        <input data-option="Waiting for Diagnosis" id="WaitingforDiagnosis" name="onhold" value="otherreason" type="radio"/>Waiting for Diagnosis<br/>
+                                        <input data-option="Waiting for Decision" id="WaitingforDecision" name="onhold" value="otherreason" type="radio"/>Waiting for Decision<br/>
+                                        <input data-option="Others" id="Others" name="onhold" value="otherreason" type="radio"/>Others<br/>
+                                        <!--<span id="ckbx" type="radio" class="checkbox">-->
+                                            <!---->
+                                        <!--</span>-->
+                                        <select class="selectpicker" style="float:right;display:none;" id="brk_opt">
+                                        </select>
+
+                                    </div>
+
+                                    <!--
+                                    <div class="col-xs-2" style="margin-top:15px;">
+                                        <div id="rad" style="display:none;">
+                                            <input type="radio" name="b" value="lunch" /> Lunch Break<br/>
+                                            <input type="radio" name="b" value="regular"/> regular<br/>
+                                            <input type="radio" name="b" value="shiftend"/> regular
+                                        </div>
+                                    </div>-->
+
+
+                                </div>
+                                <div class="col-xs-12" style="margin-left:122px;">
+                                    <!--<div class="col-xs-3">-->
+                                        <!--<label class="other-class hidden">Select Remarks</label><select class="form-control hidden other-class" string="Remark" name="other_break" id="other_break">-->
+                                            <!--<option></option>-->
+                                        <!--</select>-->
+                                    <!--</div>-->
+                                    <!--<label class="other-class hidden" string="Remarks" style="margin-left:-485px;" >Remarks: </label>-->
+                                    <div class="col-xs-6" style="margin-top:-137px;margin-left:451px;">
+                                        <input type="text" class="on_hold cust_approve-class hidden" placeholder="Waiting for Customer Approval" name="custapprove" id="custapprove"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-107px;margin-left:451px;">
+                                        <input type="text" class="on_hold wait-parts-class hidden" placeholder="Waiting for Parts" name="waitparts" id="waitparts"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-82px;margin-left:451px;">
+                                        <input type="text" class="on_hold wait-diagonis-class hidden" placeholder="Waiting for Diagnosis" name="waitdiagonis" id="waitdiagonis"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:-49px;margin-left:451px;">
+                                        <input type="text" class="on_hold decision-class hidden" placeholder="Waiting for Decision" name="decisionreason" id="decisionreason"/>
+                                    </div>
+
+                                    <div class="col-xs-6" style="margin-top:0px;margin-left:237px;">
+                                        <textarea class="on_hold other-class hidden" placeholder="Remarks" name="" id="otherreason"/>
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 confirm_button" style="padding: 0;">
+                                    <button type="button" class="btn btn-success pause_reason" disabled="True">Confirm</button>
+                                </div>
+                            </div>
+                            <div id="break_task_modal" style="display:none;">
+                                <div class="row">
+                                      <div class="col-xs-5" style="margin-top:17px;"></div>
+
+                                    <div class="col-xs-2" style="margin-top:15px;">
+                                        <div id="rad">
+                                            <input type="radio" name="b" value="lunch" /> Lunch Break<br/>
+                                            <input type="radio" name="b" value="regular"/> Regular<br/>
+                                            <input type="radio" name="b" value="shiftend"/> Shift End <br/>
+                                            <input type="radio" name="b" value="others" id="others"/> Others
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12" style="margin-left:122px;">
+                                        <div class="col-xs-6" style="margin-top:0px;margin-left:268px;">
+                                            <textarea class="break-class hidden" placeholder="Remarks" name="breakreason" id="breakreason"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2" style="padding: 0;margin-left:413px;">
+                                        <button type="button" class="btn btn-success break_reason_btn">Confirm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <!--</t>-->
+                    <div class="table-responsive mobile-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><span><a href="#" id='select_tech_chkbx'>Select All</a></span></th>
+                                    <th>Task Title</th>
+                                    <th>Resources</th>
+                                    <!--<th>Stage</th>-->
+                                    <th>Stage</th>
+                                    <th>Break Reason</th>
+                                    <!--<th>Break Type</th>-->
+                                    <th>Start time</th>
+                                   <!-- <th>Working Time Progress (%)</th> -->
+                                    <th>End time</th>
+                                    <th style="display:none;">Bay</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="tasks" t-as="o">
+                                    <tr>
+
+                                        <td>
+                                            <!--<t t-foreach="show_task" t-as="st">-->
+
+
+                                            <!--<t t-if="st.id == o.id">-->
+
+                                                    <input type="checkbox" id="stage_chkbx" t-att-name="'%s' % (o.id)" t-att-value="'%s' % (o.id)" />
+                                                <!--</t>-->
+                                            <!--</t>-->
+                                        </td>
+                                        <td><t t-esc="o.name"/></td>
+                                        <td>
+                                           <!--<t t-set="p" t-value="0"/>
+                                            <t t-set="q" t-value="''"/>-->
+                                            <t t-set="sheet_name" t-value="''"/>
+                                            <t t-foreach="o.timesheet_ids" t-as="sheet">
+                                                <t t-if="sheet.resource_type == tech_categ">
+                                                    <t t-if="sheet.entry_type == 'plan'">
+                                                        <t t-set="sheet_name" t-value="sheet.resource_name.name"/>
+                                                    </t>
+                                                </t>
+                                            </t>
+                                            <t t-esc="sheet_name"/>
+                                                <!--<t t-if="p > 0">
+
+                                                    <t t-set="q" t-value="(q+','+resources.name)"/>
+                                                </t>
+                                                <t t-set="p" t-value="p+1"/>-->
+                                            <!--</t>-->
+                                            <!--<t t-esc="q" />-->
+                                        </td>
+                                        <!--<td>
+                                            <t t-esc="o.stage_id.sequence"/>
+                                        </td>-->
+                                        <td>
+                                            <t t-esc="o.stage_id.stage_display_name"/>
+                                        </td>
+
+                                        <td><t t-esc="o.break_reason_fn"/></td>
+                                        <!--<td>
+                                            &lt;!&ndash;<t t-esc="'Tea Break' if o.break_type == 'tea' else 'Lunch Break' if o.break_type == 'lunch' else 'Other Break' if o.break_type == 'others' else o.break_type"/>&ndash;&gt;
+                                        </td>-->
+                                        <td><t t-esc="o.start_datetime_fn"/></td>
+
+                                        <td><t t-esc="o.end_datetime_fn"/></td>
+                                        <td style="display:none;"><!--<t t-esc="o.task_bay.name"/>--></td>
+                                        <td style="display:none;"><!--<t t-esc="o.task_start_multech()"/>--></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
+	 <template id="testdrive_tree_view" name="security tree testdrive" >
+        <t t-if="ids">
+        <style>ul.tagit input[type="text"] {
+            color: black;
+            background: none;
+        }</style>
+        <div class="table-search-sect">
+            <input type="hidden" name="type" value="ta"/>
+            <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+            <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:17%;float:right;font-size: 0.8em;margin-right:50px;margin-top:6px;" >
+
+            </ul>
+            <div style="display:none;" id="search-value">Time Stamp</div>
+           <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+        </div>
+        <div style="padding:1px 27px 0px 14px;">
+
+            <table class="tree_app_security cls-table-search" style="font-size: 25px; font-family: Roboto; color: #666666;width:100%;">
+
+                <t width="100%" style="border:1px solid grey;font-size:18px;text-align: center;color: #666666;">
+                    <thead>
+                        <tr t-att-style="'background-color:'+(color and color or '')">
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="10%">SL No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="15%">Reg No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Gate-Out Time</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Kilometer Out</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Gate-In Time</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Kilometer In</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="i" t-value="0"/>
+                        <t t-if="ids">
+                            <tr style="border:1px solid black;" t-foreach="ids" t-as="p" class="modal_rows">
+                                <t t-set="i" t-value="i+1"/>
+                                <td width="10%" style="border:1px solid grey;"><span t-esc='i'/></td>
+                                <td width="15%" style="border:1px solid grey;"><span t-esc='p.regn_no.license_plate'/></td>
+                                <td width="20%" style="border:1px solid grey;">
+                                        <t t-if="p.start_time">
+                                            <t t-set="start_time" t-value="datetime.datetime.strptime(p.start_time, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                            <span t-esc="start_time.strftime('%d-%m-%Y %I:%M %p')"/>
+                                        </t>
+                                        <t t-if=" not p.start_time">
+                                            <span t-esc="p.start_time"/>
+                                        </t>
+
+                                </td>
+                                <td width="20%" style="border:1px solid grey;"><span t-esc='p.mileage_out'/></td>
+                                <td width="20%" style="border:1px solid grey;">
+                                    <t t-if="p.end_time">
+                                        <t t-set="end_time" t-value="datetime.datetime.strptime(p.end_time, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                        <span t-esc="end_time.strftime('%d-%m-%Y %I:%M %p')"/>
+                                    </t>
+                                    <t t-if=" not p.end_time">
+                                        <span t-esc="p.end_time"/>
+                                    </t>
+                                </td>
+                                <td width="20%" style="border:1px solid grey;"><span t-field='p.mileage_in'/></td>
+                            </tr>
+                         </t>
+                    </tbody>
+                 </t>
+
+                </table>
+
+        </div>
+         </t>
+    </template>
+
+    <template id="tree_view" name="security tree" >
+        <t t-if="ids">
+            <t t-esc="ids"/>
+            <style>ul.tagit input[type="text"] {
+                color: black;
+                background: none;
+            }</style>
+        <div class="table-search-sect">
+            <input type="hidden" name="type" value="ta"/>
+            <img class="icon-clk-search" src="wms_login/static/src/img/search-images.png" />
+            <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:17%;float:right;font-size: 0.8em;margin-right:50px;margin-top:6px;" >
+
+            </ul>
+            <div style="display:none;" id="search-value">Time Stamp</div>
+           <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+        </div>
+        <div style="padding: 1px 32px 0px 17px;">
+
+            <table class="tree_app_security cls-table-search" style="font-size: 25px; font-family: Roboto; color: #666666;width:100%;">
+
+                <t width="100%" style="border:1px solid grey;font-size:18px;text-align: center;color: #666666;">
+                    <thead>
+                        <tr t-att-style="'background-color:'+(color and color or '')">
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="8%">SL No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="17%">Reg No.</th>
+                            <t t-if="gate_in_out_type == 'in'">
+                                <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Gate-In Time</th>
+                            </t>
+                            <t t-if="gate_in_out_type == 'out'">
+                                <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Gate-Out Time</th>
+                            </t>
+                            <t t-if="clk_type == 'app'">
+                                <th style="border:1px solid grey;text-align: center;color:white;display:none;" width="20%">Kilometer</th>
+                            </t>
+                            <t t-if="clk_type != 'app'">
+                                <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Kilometer</th>
+                            </t>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Customer Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="i" t-value="0"/>
+                        <t t-if="ids">
+                            <tr style="border:1px solid black;" t-foreach="ids" t-as="p" class="modal_rows">
+                                <t t-set="i" t-value="i+1"/>
+                                <td width="8%" style="border:1px solid grey;"><span t-esc='i'/></td>
+                                <td width="17%" style="border:1px solid grey;"><span t-esc='p.regn_no'/></td>
+                                <td width="20%" style="border:1px solid grey;">
+                                    <t t-if="gate_in_out_type == 'in'">
+                                        <!--<t t-if="p.time_at_gate">
+                                            <t t-set="time_at_gate" t-value="datetime.datetime.strptime(p.time_at_gate, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                            <span t-esc="time_at_gate.strftime('%d-%m-%Y %I:%M %p')"/>
+                                        </t>
+                                        <t t-if=" not p.time_at_gate">
+                                            <span t-esc="p.time_at_gate"/>
+                                        </t>-->
+                                        <t t-set="chcek_in_time_line" t-value="p.time_at_gate_in_frm_timeline(p)"/>
+                                        <t t-if="chcek_in_time_line[0]">
+                                            <span t-esc="chcek_in_time_line[0]['check_out']"/>
+                                        </t>
+                                    </t>
+                                    <t t-if="gate_in_out_type == 'out'">
+                                        <t t-set="chcek_in" t-value="p.time_at_gate_out_frm_timeline(p)"/>
+                                        <t t-if="chcek_in[0]">
+                                            <span t-esc="chcek_in[0]['check_in']"/>
+                                        </t>
+                                    </t>
+
+                                </td>
+                                <t t-if="clk_type == 'app'">
+                                    <t t-if="clk_type == 'delivered'">
+                                        <td width="15%" style="border:1px solid grey;display:none;"><span t-esc='p.km_out'/></td>
+                                    </t>
+                                    <t t-if="clk_type != 'delivered'">
+                                        <td width="15%" style="border:1px solid grey;display:none;"><span t-esc='p.mileage_in'/></td>
+                                    </t>
+                                </t>
+                                <t t-if="clk_type != 'app'">
+                                    <t t-if="clk_type == 'delivered'">
+                                        <td width="20%" style="border:1px solid grey;"><span t-esc='p.mileage_till'/></td>
+                                    </t>
+                                    <t t-if="clk_type != 'delivered'">
+                                        <td width="20%" style="border:1px solid grey;"><span t-esc='p.mileage_in'/></td>
+                                    </t>
+                                </t>
+
+                                <td width="30%" style="border:1px solid grey;text-align:left;"><span t-field='p.partner_id.name'/></td>
+                            </tr>
+                         </t>
+
+                        <t t-if="walkin_ids">
+                            <tr style="border:1px solid black;" t-foreach="walkin_ids" t-as="p" class="modal_rows">
+                                <t t-set="i" t-value="i+1"/>
+                                <td width="20%" style="border:1px solid grey;"><span t-esc='i'/></td>
+                                <td width="20%" style="border:1px solid grey;"><span t-esc='p.reg_no'/></td>
+                                <td width="15%" style="border:1px solid grey;">
+                                    <t t-if="p.time_at_gate">
+                                        <t t-set="time_at_gate" t-value="datetime.datetime.strptime(p.time_at_gate, '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                        <span t-esc="time_at_gate.strftime('%d-%m-%Y %I:%M %p')"/>
+                                    </t>
+                                    <t t-if=" not p.time_at_gate">
+                                        <span t-esc="p.time_at_gate"/>
+                                    </t>
+                                </td>
+                                <td width="15%" style="border:1px solid grey;"><span t-esc='p.mileage_in'/></td>
+                                <td width="30%" style="border:1px solid grey;"><span t-esc='p.name'/></td>
+                            </tr>
+                        </t>
+                    </tbody>
+                 </t>
+
+                </table>
+
+        </div>
+        </t>
+    </template>
+
+    <template id="tree_view_click" name="security tree" >
+        <t t-if="ids"/>
+            <!--<t t-esc="ids"/>-->
+        <style>ul.tagit input[type="text"] {
+                color: black;
+                background: none;
+            }</style>
+        <div class="table-search-security">
+            <input type="hidden" name="type" value="ta"/>
+            <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+            <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:17%;float:right;font-size: 0.8em;margin-right:50px;margin-top:6px;" >
+
+            </ul>
+            <div style="display:none;" id="search-value">Time Stamp</div>
+           <!-- <span class="sb-icon-search" style="margin-top: 421px;margin-right:92px;"></span>-->
+
+        </div>
+        <div style="padding: 1px 32px 0px 17px;">
+
+            <table class="tree_app_security cls-table-search" style="font-size: 18px; color: #666666;width:100%;border-collapse: inherit;border-spacing: 2px;">
+                <t width="100%" style="border:1px solid grey;font-size:18px;text-align: center;color: #666666;">
+                    <thead>
+                        <tr t-att-style="'background-color:'+(color and color or '')">
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="8%">SL No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="17%">Reg No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Kilometer In</th>
+                            <t t-if="clk_type == 'delivered'">
+                                <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Kilometer Out</th>
+                            </t>
+                            <th style="border:1px solid grey;text-align: center;color:white;" width="20%">Customer Name</th>
+                        </tr>
+                    </thead>
+                    <tbody style="text-align: center;">
+                        <t t-set="i" t-value="0"/>
+                        <t t-if="clk_type in ('app','turnup')">
+                            <t t-raw="app_data"/>
+                        </t>
+                        <t t-if="clk_type not in  ('app','turnup')">
+                            <tr style="border:1px solid black;" t-foreach="ids" t-as="p" class="modal_rows">
+                                <t t-set="i" t-value="i+1"/>
+                                <td width="8%" style="border:1px solid grey;"><span t-esc='i'/></td>
+                                <td width="17%" style="border:1px solid grey;"><span t-esc='p.name'/></td>
+                                <t t-if="model == 'sale_order'">
+                                    <td width="20%" style="border:1px solid grey;"><span t-esc='p.mileage_in'/></td>
+                                    <t t-if="clk_type == 'delivered'">
+                                        <td width="20%" style="border:1px solid grey;"><span t-esc='p.mileage_out'/></td>
+                                    </t>
+                                </t>
+                                <t t-if="model == 'crm_lead'">
+                                    <td width="20%" style="border:1px solid grey;"><span t-esc='p.kilometer_in'/></td>
+                                </t>
+                                <td width="20%" style="border:1px solid grey;"><span t-esc='p.partner_id.name'/></td>
+                            </tr>
+                         </t>
+                    </tbody>
+                 </t>
+            </table>
+        </div>
+        <!--</t>-->
+    </template>
+
+
+<!--#Security Front End Process-->
+    <template id="security_login" t-name="website.security_login" >
+        <style>
+            body{
+                overflow-y:scroll;
+            }
+        </style>
+        <t t-call="website.layout">
+            <form action="/security_action" id="security" method="post">
+            <t t-if="warning_msg">
+                <div style="color:red;text-align:center;font-size:20px; font-family: Roboto;">
+                    <t t-esc="warning_msg"/>
+                </div>
+            </t>
+            <t t-if="confirmation_msg">
+                <div id="confirmation" style="color:blue;text-align:center;font-size:20px;">
+                    <img src="/ac_rms/static/src/img/thumb.png" class="wms_thumb_icon" style="width:93px; height:102px"/>
+                    <!--<t t-esc="confirmation_msg"/>-->
+                </div>
+            </t>
+                <div class="col-xs-12">
+                    <div class=" col-xs-10 sec tab-view-reg" style="padding: 0px;font-family: Roboto; color: #666666;">
+                        <!--<label for="view">Reg No: </label>-->
+                        <div>
+                            <table width="100%">
+                                <tr>
+                                    <td class="reg_no_td">Reg No:</td>
+                                    <td><input style="width: 56%;" type="text" name="regno" id="regno_vehicle"/></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xs-2"></div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="col-xs-10 tab-view">
+                        <table align="center">
+                            <tr>
+                            <td><button style="margin-left: 32%;" type="button" class="btn btn-success reg-ok">OK</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-xs-2"/>
+                </div>
+            </form>
+            <div style="height:30px;"/>
+            <div class="col-xs-12">
+                <div class="col-xs-2 widget-sect first bg-pink">
+                    <form method="post" class="sec_clk_count_app" name="app_form" id="app_form" action="/security_action_clk">
+                        <div></div>
+                        <!--<div class="ico-sect"><img src="/wms_login/static/src/img/appointment1.png"  /></div>-->
+                        <div class="apps_count cnt-txt" ><t t-esc="app_len"/></div>
+                        <input type="text"  style="display:none;" name="app_ids_nm" t-att-value="app_security_click"/>
+                        <div class="cnt-txt padb-10">Appointment</div>
+                    </form>
+                </div>
+                <div class="col-xs-2 widget-sect bg-red">
+                    <form method="post" class="sec_clk_count_turnup" action="/security_action_clk">
+                        <div></div>
+                        <div class="apps_count cnt-txt"><t t-esc="turnup_len"/></div>
+                        <input type="text" style="display:none;" name="turnup_ids_nm" t-att-value="turnup_security_click"/>
+                        <div class="cnt-txt padb-10">Turn-up</div>
+                    </form>
+                </div>
+                <div class="col-xs-2 widget-sect bg-green">
+                    <form method="post" class="sec_clk_count_walkin" action="/security_action_clk">
+                        <div></div>
+                        <div class="apps_count cnt-txt"><t t-esc="walk_in_count"/></div>
+                        <input type="text" style="display:none;" name="walk_in_nm" t-att-value="walk_in_ids"/>
+                        <!--<input type="text" style="display:none;"  name="walk_app_in_nm" t-att-value="walk_app_ids"/>-->
+                        <div class="cnt-txt padb-10">Walk-in</div>
+                    </form>
+                </div>
+                <div class="col-xs-2 widget-sect bg-blue">
+                    <form method="post" class="sec_clk_count_testdrive" action="/security_action_clk">
+                        <div></div>
+                        <div class="apps_count cnt-txt"><t t-esc="testdrive_count"/>0</div>
+                        <input type="text" style="display:none;" name="testdrive_ids_nm" t-att-value="testdrive_ids"/>
+                        <div class="cnt-txt padb-10">Test-drive</div>
+                    </form>
+                </div>
+                <div class="col-xs-2 widget-sect last bg-yellow">
+                    <form method="post" class="sec_clk_count_delivered" action="/security_action_clk">
+                        <div></div>
+                        <div class="apps_count cnt-txt"><t t-esc="delivery_process_count"/></div>
+                        <input type="text" style="display:none;" name="delivered_ids_nm" t-att-value="delivery_process_ids"/>
+                        <div class="cnt-txt padb-10">Delivered</div>
+                    </form>
+                </div>
+
+            </div>
+            <div style="height:40px;"></div>
+            <t t-if="app_data or ids">
+                <div>
+                    <t t-call="ac_rms.tree_view_click"/>
+                </div>
+            </t>
+            <!--<t t-if="type == 'testdrive'">
+                <div>
+                    <t t-call="ac_rms.testdrive_tree_view"/>
+                </div>
+            </t>-->
+            <div style="height: 189px;visibility: hidden;"></div>
+        </t>
+    </template>
+
+	<template id="appointment_form" name="Appointment Form Template" >
+        <t t-call="website.layout">
+        <form action="/appointment_form" id="form_app" method="post">
+            <input type="hidden" name="appointment" t-att-value="appointment" id="appointment_id"/>
+            <input type="hidden" name="app_model" t-att-value="model" id="appointment_model"/>
+            <span id='security' style="display:none;">Security</span>
+            <div class="form_app" style="margin-left: 25px;font-size: 25px; font-family: Roboto; color: #666666;">
+                <table>
+                    <t t-if="rfid_msg">
+                        <div style="color:red;text-align:center;font-size:20px;">
+                        <t t-esc="rfid_msg"/>
+                        </div>
+                    </t>
+                    <!--<tr>
+                        <td style="line-height: 50px;">Status</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;">
+                            <input type="hidden" name="status" t-att-value="status"/>
+                            <t t-esc="status"/>
+                        </td>
+                    </tr>-->
+                    <t t-if="reason_for_vehicle_out">
+                        <tr style="line-height: 45px;">
+                            <td>Reason For Vehicle Out</td>
+                            <td style="line-height: 65px; padding-left: 5px;">: </td>
+                            <td style="padding-left: 36px;"><t t-esc="reason_for_vehicle_out.title()"/></td>
+                        </tr>
+                    </t>
+                    <tr style="line-height: 58px;">
+                        <td>Process</td>
+                        <td>: </td>
+                        <td style="padding-left: 36px;"><t t-esc="process"/></td>
+                    </tr>
+                    <tr style="line-height: 58px;">
+                        <td>Type</td>
+                        <td>: </td>
+                        <td style="padding-left: 36px;">Appointment</td>
+                    </tr>
+                    <tr>
+                        <td style="line-height: 50px;">Reg No.</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;">
+                            <input type="hidden" name="regno" t-att-value="regno"/>
+                            <t t-esc="regno"/></td>
+                    </tr>
+                    <tr>
+                        <td style="line-height: 50px;">Customer Name</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;">
+                            <t t-esc="customer_name"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="line-height: 50px;">Mobile</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;"><t t-esc="mobile" name="mobile" t-att-value="mobile"/></td>
+                    </tr>
+                    <tr>
+                        <td style="line-height: 50px;">Kilometer</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;"><input style="width: 85%;" type="text" name="mileage_in" t-att-value="mileage_in" id="kilo"/></td>
+                    </tr>
+                    <t t-if="user">
+                    <tr style="display: none;">
+                        <td style="line-height: 50px;">Customer RFID</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;"><input style="width: 85%;" type="text" name="customer_rfid" t-att-value="customer_rfid"/></td>
+                    </tr>
+                    <tr>
+                        <td style="line-height: 50px;">Vehicle RFID</td><td style="padding-left: 5px;"> : </td>
+                        <td style="padding-left: 36px;"><input style="width: 85%;" type="text" name="vehicle_rfid" t-att-value="vehicle_rfid"/></td>
+                    </tr>
+                    </t>
+                </table>
+            </div>
+            <div style="margin-left: 340px; margin-top: 10px;">
+                <button style="height: 59px;width: 148px; font-size: xx-large; background-color: #337ab7; border-color: #2e6da4;" type="submit" class="btn btn-success confirm-security" id="appointment_submit">Confirm</button>
+            </div>
+        </form>
+        </t>
+    </template>
+
+    <template id="security_walkin_form" name="security walkin">
+        <t t-call="website.layout">
+        <form action="/security_walkin_action" id="security_walkin">
+            <input type="hidden" name="reason_for_vehicle_out" t-att-value="reason_for_vehicle_out"/>
+            <input type="hidden" name="walkin_id" t-att-value="walkin_id"/>
+            <span id='security' style="display:none;">Security</span>
+        <div class="walkin" style="margin-left: 38px;font-size: 25px;  color: #666666;">
+            <table>
+                <t t-if="rfid_msg">
+                <div style="color:red;text-align:center;font-size:20px;">
+                    <t t-esc="rfid_msg"/>
+                </div>
+                </t>
+                <tr style="line-height: 58px;">
+                    <td>Type</td>
+                    <td>: </td>
+                    <td style="padding-left: 36px;">Walk In</td>
+                </tr>
+                <!--<t t-if="reason_for_vehicle_out">-->
+                    <!--<tr style="line-height: 45px;">-->
+                        <!--<td>Reason For Vehicle Out</td>-->
+                        <!--<td style="line-height: 65px;">: </td>-->
+                        <!--<td style="padding-left: 36px;"><t t-esc="reason_for_vehicle_out.title()"/></td>-->
+                    <!--</tr>-->
+                <!--</t>-->
+                <tr style="line-height: 45px;">
+                    <td>Reg No</td>
+                    <td style="line-height: 65px;">: </td>
+                    <td style="padding-left: 36px;">
+                        <input style="width: 88%;" type="text" name="regno" t-att-value="regno"/>
+                    </td>
+                </tr>
+                <tr style="line-height: 45px;">
+                    <td>Kilometer</td>
+                    <td style="line-height: 65px;">: </td>
+                    <td style="padding-left: 36px;">
+                        <input style="width: 88%;" type="text" name="mileage" t-att-value="mileage_in" id="walkin_kilo"/>
+                    </td>
+                </tr>
+                <t t-if="user">
+                <tr style="display: none;">
+                    <td style="line-height: 50px;">Customer RFID</td><td style="padding-left: 5px;"> : </td>
+                    <td style="padding-left: 36px;"><input style="width: 88%;" type="text" name="custo_rfid" t-att-value="customer_rfid"/></td>
+                </tr>
+                <tr>
+                    <td style="line-height: 50px;">Vehicle RFID</td><td style="padding-left: 5px;"> : </td>
+                    <td style="padding-left: 36px;"><input style="width: 88%;" type="text" name="vehic_rfid" t-att-value="vehicel_rfid"/></td>
+                </tr>
+                </t>
+            </table>
+            <div style="margin-left: 400px; margin-top: 10px;">
+                <button  style="height: 59px;width: 148px; font-size: xx-large; background-color: #337ab7; border-color: #2e6da4;" type="button" class="btn btn-success" id="walkin_submit">Confirm</button>
+            </div>
+        </div>
+        </form>
+        </t>
+    </template>
+
+     <template id="security_testdrive_form" name="security testdrive" >
+        <t t-call="website.layout">
+        <form action="/security_testdrive_action" id="security_testdrive">
+        <input type="hidden" name="appointment" t-att-value="appointment" id="appointment_id"/>
+        <input type="hidden" name="regno"  t-att-value="regno"/>
+        <input type="hidden" name="premileage"  t-att-value="mileage_till" id="testdrive_prekilo"/>
+        <span id='security' style="display:none;">Security</span>
+        <div class="testdrive" style="margin-left: 25px;font-size: 25px; font-family: Roboto; color: #666666;">
+            <table>
+                <tr>
+                    <td style="line-height: 50px;">Status</td>
+                    <td style="padding-left: 5px;"> : </td>
+                    <td style="padding-left: 20px;"><t t-esc="status" name="status" t-att-value="status"/></td>
+                    </tr>
+                <tr>
+                    <td style="line-height: 50px;">Reg No</td>
+                    <td style="padding-left: 5px;">: </td>
+                    <td style="padding-left: 20px;"><t t-esc="regno" name="regno" t-att-value="regno"/></td>
+                </tr>
+                <tr>
+                    <td style="line-height: 50px;">Kilometer</td>
+                    <td style="padding-left: 5px;">: </td><td style="padding-left: 20px;">
+                        <input type="text" name="mileage" t-att-value="mileage_till"  id="testdrive_kilo"/>
+                    </td>
+                </tr>
+            </table>
+            <div style="margin-left: 300px; margin-top: 10px;">
+                <button style="height: 59px;width: 148px; font-size: xx-large; background-color: #337ab7; border-color: #2e6da4;" type="submit" class="btn btn-success" id="testdrive_submit">Confirm</button>
+            </div>
+        </div>
+        </form>
+        </t>
+    </template>
+
+    <template id="security_appointment_tree" name="Appointment Tree Template" >
+            <div class="tree_app" style="font-size: 25px; font-family: Roboto; color: #666666; height: 500px; overflow-y: scroll;">
+                <table width="100%" style="border:1px solid grey;font-size:13px;text-align: center;color: #666666;">
+                    <tr style="border:1px solid grey;color: #666666;background-color: #e2e2e0;height: 42px;">
+                        <th style="border:1px solid grey;text-align: center;" width="20%">Reg No.</th>
+                        <th style="border:1px solid grey;text-align: center;" width="20%">Customer Name</th>
+                        <th style="border:1px solid grey;text-align: center;" width="20%">Doc. No</th>
+                        <th style="border:1px solid grey;text-align: center;" width="20%">Appointment Date &amp; Time</th>
+                        <th style="border:1px solid grey;text-align: center;">Action</th>
+                    </tr>
+                    <tr t-foreach="appointment" t-as="app" style="border:1px solid black;">
+                        <form action="/security_action" method="post" t-att-id="'app_'+str(app_index)">
+                            <td width="20%" style="border:1px solid grey;"><t t-esc='app["regn_no"]'/></td>
+                            <td width="30%" style="border:1px solid grey;"><t t-esc='app["partner"]'/></td>
+                            <td width="15%" style="border:1px solid grey;"><t t-esc='app["doc_name"]'/></td>
+                            <td width="15%" style="border:1px solid grey;">
+                                <t t-if="app['app_date']">
+                                    <t t-set="appointment_date" t-value="datetime.datetime.strptime(app['app_date'], '%Y-%m-%d %H:%M:%S')+datetime.timedelta(hours = 5, minutes = 30)"/>
+                                    <span t-esc="appointment_date.strftime('%d-%m-%Y %H:%M')"/>
+                                </t>
+                            </td>
+                            <input type="text" class="hidden" style="display: none;" t-att-value="app['regn_no']" name="regno"/>
+                            <input type="text" class="hidden" style="display: none;" t-att-value="app['order_id']" name="sale_id"/>
+                            <input type="text" class="hidden" style="display: none;" t-att-value="app['model']" name="model"/>
+                            <td style="border:1px solid grey;text-align: center;"><button style="font-size: 12px; background-color: #006384; border-color: #006384;margin: 2px 3px 2px 0;height: 37px;width: 69px;cursor: pointer;font-weight: bold;color: white;" type="submit" class="btn btn-success">Start</button></td>
+                        </form>
+                    </tr>
+                    <form action="/security_walkin" method="post">
+                        <input type="text" class="hidden" style="display: none;" t-att-value="reg_num" name="reg_num"/>
+                        <button style="font-size: 12px; padding-left: 2px; margin: 7px 28px 16px 76px; float: right; background-color: #006384; border-color: #006384;height: 37px;width: 85px;cursor: pointer;font-weight: bold;color: white;" type="submit" class="btn btn-success" id="walkin_tree">Create Walk-In</button>
+                    </form>
+                </table>
+            </div>
+    </template>
+
+
+    <template id="tree_view" name="security tree" >
+        <style>ul.tagit input[type="text"] {
+                color: black;
+                background: none;
+            }</style>
+        <div class="table-search-sect">
+            <input type="hidden" name="type" value="ta"/>
+            <img class="icon-clk-search" src="ac_rms/static/src/img/search-images.png" />
+            <ul id="myTags" class="tagit ui-widget ui-widget-content ui-corner-all" style="overflow:hidden;height: 29px;width:15%;float:right;font-size: 0.8em;margin-right:48px;margin-top:21px;" >
+
+            </ul>
+            <div style="display:none;" id="search-value">Time Stamp</div>
+        </div>
+        <div>
+
+            <table class="tree_app_security cls-table-search" style="font-size: 13px; font-family: Roboto; color: #666666;width:94%;margin-left: 2%;">
+                <t width="100%" style="border:1px solid grey;font-size:18px;text-align: center;color: #666666;">
+                    <thead>
+                        <tr t-att-style="'background-color:'+(color and color or '')">
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 3%;" >SL No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 7%;" >Reg No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Doc No.</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Customer Name</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Mobile</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;">Prior Customer</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 12%;" >Appointment Date &amp; Time</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Service Advisor</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Type</th>
+                            <th style="border:1px solid grey;text-align: center;color:white;width: 10%;" >Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="i" t-value="0"/>
+                            <tr style="border:1px solid black;" t-foreach="ids" t-as="p" class="modal_rows">
+                                <form action="/action_form" method="post" t-att-id="'ids_'+str(ids_index)">
+                                    <t t-set="i" t-value="i+1"/>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='i'/></td>
+                                    <td style="border:1px solid grey;text-align: center;"><span t-esc='p.regn_no.name'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.name'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-field='p.partner_id.name'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.partner_id.mobile'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.partner_id.name'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.appointment_date'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.resource_id_sale.name'/></td>
+                                    <td  style="border:1px solid grey;text-align: center;"><span t-esc='p.type'/></td>
+                                    <input type="text" class="hidden" t-att-value="p.regn_no" name="regno"/>
+                                    <input type="text" class="hidden" t-att-value="p.id" name="sale_id" id="tree_id"/>
+                                    <td style="border:1px solid grey;text-align: center;"><button t-att-id="p.id" style="font-size: 12px; background-color: #006384; border-color: #006384;margin: 2px 3px 2px 0;height: 37px;width: 69px;" type="button" class="btn btn-success open_form">Open</button></td>
+                                </form>
+                            </tr>
+                    </tbody>
+                 </t>
+            </table>
+        </div>
+    </template>
+
+    <template id="form_view" name="Form View Template" >
+        <form action="/start" id="form_app" method="post">
+            <!--<input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>-->
+            <!--<input type="hidden" name="customer" t-att-value="customer_name.id" id="customer"/>-->
+            <!--<input type="hiddsen" name="appointment" t-att-value="appointment" id="appointment_id"/>-->
+            <div>
+            <div id="display_form" style="margin-left: 33px;border: 1px solid black; width: 945px; margin-top: 42px;box-shadow: 5px 10px #888888;display: none;">
+            <span id='security' style="display:none;">Security</span>
+            <div class="form_app" style="font-size: 13px; font-family: Roboto; color: #666666;">
+                <div style="background-color: whitesmoke;height: 48px;padding-top: 1%;">
+                    <div style="margin-left: 300px; margin-top: -4px;">
+                        <button style="height: 39px;width: 76px;  background-color: teal; border-color: teal;font-weight: bold;margin-left: 26%;font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_start">Checklist Items</button>
+                        <button style="height: 39px;width: 78px;  background-color: teal; border-color: teal;font-weight: bold;font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_start">Vehicle History</button>
+                        <button style="height: 39px;width: 94px;  background-color: teal; border-color: teal;font-weight: bold;font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_start">Reschedule History</button>
+                        <button style="height: 39px;width: 105px;  background-color: teal; border-color: teal;font-weight: bold;font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_start"><div class="fa fa-fw fa-automobile o_button_icon" style="width: 22%;font-size: larger;padding-right: 7%;"></div>Test Drive</button>
+                        <!--<t t-if="sale_ids.main_process_id.name in ('Waiting at reception','Waiting for SA')">-->
+                            <!--<button style="height: 39px;width: 57px; font-size: medium; background-color: teal;font-weight: bold; border-color: teal; font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_start">Start</button>-->
+                        <!--</t>-->
+
+                        <!--<t t-if="sale_ids.main_process_id.name in ('Front desk process','SO preparation')">-->
+                            <!--<button style="height: 59px;width: 148px; font-size: xx-large; background-color: teal;font-weight: bold; border-color: teal;" type="submit" class="btn btn-success confirm-security" id="submit_finish">Finish</button>-->
+                        <!--</t>-->
+                        <button style="height: 39px;width: 84px; font-size: medium; background-color: teal;font-weight: bold; border-color: teal;font-size: small;white-space: unset;padding: 0px;" type="submit" class="btn btn-success confirm-security" id="submit_finish"><div class="fa fa-fw fa-tasks o_button_icon" style="width: 30%;font-size: larger;padding-right: 12%;"></div>Tasks</button>
+                    </div>
+                </div>
+                <div style="margin-left: 2%;margin-top: 1%;">
+                <div class="col-xs-12" style="margin-left: -3%;">
+                 <div class="col-xs-6">
+                    <table>
+                        <tr><a  id="id1" name="idna"></a>
+                            <td style="line-height: 20px;">Doc No.</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="doc_no" t-att-value="sale_ids.name" id="doc"/>
+                                <t t-if="ids">
+
+                                </t>-->
+                                <span id="name" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Reg No.</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <input type="hidden" name="regno"  id="regn"/>
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="reg" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">VIN</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="vin_no" t-att-value="sale_ids.vin_no" id="vinn"/>-->
+                                <span id="vin_no" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Model</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="vehicle" t-att-value="sale_ids.model" id="mod"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="model_no" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Customer Name</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="cust_name" t-att-value="sale_ids.partner_id.name" id="cust"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                     <span id="customer" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                    </table>
+                 </div>
+                 <div class="col-xs-6" style="margin-left: -8%;">
+                     <table>
+                        <tr>
+                            <td style="line-height: 28px;">Mobile</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="phone" t-att-value="sale_ids.partner_id.mobile" id="mob"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="mobile" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Appointment Date &amp; Time</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="appointment" t-att-value="sale_ids.appointment_date" id="date"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="appo" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                         <tr>
+                            <td style="line-height: 28px;">Delivery Date &amp; Time</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="deliv" t-att-value="sale_ids.delivery_date" id="delivery"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="del" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Service Advisor</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="sa" t-att-value="sale_ids.resource_id_sale.name" id="resource"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="res" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="line-height: 28px;">Type</td><td style="padding-left: 5px;"> : </td>
+                            <td style="padding-left: 36px;">
+                                <!--<input type="hidden" name="ty" t-att-value="sale_ids.type" id="type_id"/>-->
+                                <!--<t t-if="sale_ids">-->
+                                    <span id="type" />
+                                <!--</t>-->
+                            </td>
+                        </tr>
+                    </table>
+                 </div>
+                </div>
+                </div>
+                <div style="margin-left: 2%;">
+                    <table>
+                        <tr style="line-height: 350%;">
+                            <td>Customer Voice</td>
+                            <td style="width: 26%;">Instruction</td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="margin-left: 2%;">
+                    <table>
+                        <tr style="line-height: 350%;">
+                            <td style="width: 10%;">Type</td>
+                            <td style="width: 19%;">Description</td>
+                            <td style="width: 20%;">Ordered Qty</td>
+                            <td style="width: 21%;">Shipped Qty</td>
+                            <td style="width: 19%;">Unit Price</td>
+                            <td>Subtotal</td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+
+                </div>
+            </div>
+            </div>
+            </div>
+        </form>
+    </template>
+
+    <!--<template id="login_form" name="cre login form" >-->
+        <!--<t t-call="website.layout">-->
+            <!--<t t-call="ac_rms.form_view"/>-->
+        <!--</t>-->
+    <!--</template>-->
+
+
+    <!--#CRE Front End Process-->
+    <template id="cre_login" name="cre login" >
+        <t t-call="website.layout">
+            <form method="post" class="cre_clk_count" name="app_form" id="app_form">
+            <div class="col-xs-12" style="font-size: 13px;">
+                <div class="col-xs-3" style="padding:0px;margin:0px;border:1px solid black;height: 225px;text-align:left;margin:35px 9px 16px 35px;box-shadow: 5px 10px #888888;">
+                    <div style="background-color: teal;color: white;font-weight: bold;">
+                        <span style="font-size:16px;padding: 29%;">My Pending Task</span>
+                    </div>
+                    <div style="border:0px solid black;"/>
+                    <div class="col-xs-2" style="padding: 6%;">
+                        <table width="100%">
+                            <tr>
+                                <td>Appointment</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="w3-circle w3-center" ><div class="w3-circle1">Task</div>
+                            <input type="text"  style="display:none;" name="at_reception_ids_nm" t-att-value="waiting_at_reception_ids"/>
+                            <a><div style="margin-top: -257%;cursor: pointer;"><t t-esc="waiting_at_reception_count"/></div></a>
+                        </div>
+                    </div>
+                    <div class="col-xs-2" style="margin-left: 18%;padding: 6%;">
+                        <table width="100%">
+                            <tr>
+                                <td>Walkin</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="margin: 27% 0% 0% 13%;padding: 22%;">
+                        <table width="100%">
+                            <tr>
+                                <td>Waiting For SA</td>
+                            </tr>
+                            <tr>
+                                <td style="padding-left: 33%;">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-6" style="padding:0px;margin:0px;border:1px solid black;height: 225px;margin:35px 9px 16px 41px;box-shadow: 5px 10px #888888;width: 47%;">
+                    <div class="col-xs-6" style="padding:0px;margin:0px;border-right:1px solid black;height: 100%;">
+                        <div style="background-color: teal;color: white;font-weight: bold;">
+                            <span style="font-size:16px;padding: 32%;">Status Today</span>
+                        </div>
+                        <div style="border:0px solid black;"/>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 42%;">Appointment Today</td>
+                                    <td style="width: 18%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">Turnup Till</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 43%;">Walk In</td>
+                                    <td style="width: 17%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">Delivered Today</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">Returned Vehicle</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 2%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">No Show</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xs-6" style="padding:0px;margin:0px;">
+                        <div style="background-color: teal;color: white;font-weight: bold;">
+                            <span style="font-size:16px;padding: 37%;">Status Till</span>
+                        </div>
+                        <div style="border:0px solid black;"/>
+                        <div style="padding: 3%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">Total Appointment</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 3%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 43%;">Waiting For Delivery</td>
+                                    <td style="width: 17%;text-align: right;">-</td>
+                                    <td style="width: 37%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="padding: 3%;">
+                            <table width="100%">
+                                <tr>
+                                    <td style="width: 40%;">WIP</td>
+                                    <td style="width: 20%;text-align: right;">-</td>
+                                    <td style="width: 40%;text-align: right;padding-right: 4%;">0</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-1" style="padding:0px;margin:0px;border:1px solid black;height: 225px;margin: 35px 9px 16px 40px;box-shadow: 5px 10px #888888;width: 14%;">
+                   <div style="background-color: teal;color: white;font-weight: bold;">
+                        <span style="font-size:16px;padding-left: 26%;">Quick Link</span>
+                    </div>
+                    <div style="border:0px solid black;"/>
+                    <div style="text-align: center;margin-top: 5%;cursor: pointer;">
+                        <a>List View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <div class="col-xs-10">
+                    <t t-call="ac_rms.tree_view"/>
+                </div>
+                <div class="col-xs-1" style="padding:0px;margin:0px;border:1px solid black;height: 163px;margin: 21px 1px 0px -8px;box-shadow: 5px 10px #888888;width: 14%;">
+                    <div style="background-color: teal;color: white;font-weight: bold;">
+                        <span style="font-size:16px;padding: 14%;">My Performance</span>
+                    </div>
+                    <div style="border:0px solid black;"/>
+                </div>
+            </div>
+            <div class="col-xs-12">
+                <t t-call="ac_rms.form_view"/>
+            </div>
+            <div class="col-xs-12" style="padding: 3%;visibility: hidden;">
+                <span>Space</span>
+            </div>
+                <!--<div class="col-xs-6 widget-sect first bg-pink">-->
+                    <!--<form method="post" class="cre_frontdesk_clk_count" name="app_form" id="app_form" action="/cre_action_clk">-->
+                        <!--<div></div>-->
+                        <!--<div class="apps_count cnt-txt" ><t t-esc="front_desk_count"/></div>-->
+                        <!--<input type="text"  style="display:none;" name="front_desk_ids_nm" t-att-value="front_desk_ids"/>-->
+                        <!--<div class="cnt-txt padb-10">Front Desk Process</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+               <!---->
+            <!--</div>-->
+            <div style="height:365px;"></div>
+            <!--<t t-if="type == 'tree'">-->
+                <!--<div>-->
+                    <!--<t t-call="ac_rms.tree_view"/>-->
+                <!--</div>-->
+            <!--</t>-->
+            <t t-if="type == 'form'">
+                <div>
+                    <t t-call="ac_rms.form_view"/>
+                </div>
+            </t>
+        </form>
+        </t>
+    </template>
+
+
+    <!--#SA Front End Process-->
+    <template id="sa_login" name="sa login" >
+        <t t-call="website.layout">
+            <div class="col-xs-12" style="overflow-y: scroll;height: 500px;">
+                <div class="col-xs-2" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 165px;text-align:left;margin:15px 9px 16px 15px;">
+                    <div>
+                        <div>
+                            <span style="font-size:22px;">My Pending Task</span>
+                        </div>
+                        <div style="border:1px solid black;"/>
+                        <table width="100%">
+                            <tr>
+                                <td class="margin-td">Appointment</td>
+                                <td style="width:33%;">-</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td class="margin-td">Walkin</td>
+                                <td style="width:33%;">-</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-xs-2" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 165px;text-align:left;margin:15px 9px 16px 15px;">
+                <div>
+                    <table width="100%">
+                        <tr>
+                            <td class="margin-td">Waiting For Allocation</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">Waiting For Start</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xs-2" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 165px;text-align:left;margin:15px 9px 16px 15px;">
+                <div>
+                    <div>
+                        <span style="font-size:22px;">Hold</span>
+                    </div>
+                    <div style="border:1px solid black;"/>
+                    <table width="100%">
+                        <tr>
+                            <td class="margin-td">Parts</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">Decission</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">Customer Approval</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">Diagnosis</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xs-2" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 165px;text-align:left;margin:15px 9px 16px 15px;">
+                <div>
+                    <table width="100%">
+                        <tr>
+                            <td class="margin-td">Work In Progress</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">My Vehicles &amp; Status</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xs-2" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 165px;text-align:left;margin:15px 9px 16px 15px;">
+                <div>
+                    <div>
+                        <span style="font-size:22px;">Delivery</span>
+                    </div>
+                    <div style="border:1px solid black;"/>
+                    <table width="100%">
+                        <tr>
+                            <td class="margin-td">Ready For Delivery</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td class="margin-td">Waiting For customer</td>
+                            <td style="width:33%;">-</td>
+                            <td>0</td>
+                        </tr>
+                    </table>
+                </div>
+                </div>
+                <div class="col-xs-5" style="padding:0px;margin:0px;float:left;border:1px solid black;height: 200px;text-align:left;margin:15px 9px 16px 15px;">
+                    <div>
+                        <div>
+                            <span style="font-size:22px;"></span>
+                        </div>
+                        <div style="border:1px solid black;"/>
+                            <table width="100%">
+                                <tr>
+                                    <td class="margin-td" style="width:59%;">Appointment Today</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td class="margin-td" style="width:59%;">Turnup Till</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td class="margin-td">Walk In</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td class="margin-td">Delivered Today</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td class="margin-td">Returned Vehicle</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td class="margin-td">No Show</td>
+                                    <td style="width:33%;">-</td>
+                                    <td>0</td>
+                                </tr>
+                            </table>
+                    </div>
+                </div>
+            </div>
+            <!--<div class="col-xs-12">-->
+                <!--<div class="col-xs-2 widget-sect first bg-pink">-->
+                    <!--<form method="post" class="sa_clk_count" name="app_form" id="app_form" action="/sa_action_clk">-->
+                        <!--<div></div>-->
+                        <!--<div class="apps_count cnt-txt" ><t t-esc="waiting_for_sa_count"/></div>-->
+                        <!--<input type="text"  style="display:none;" name="waiting_for_sa_ids_nm" t-att-value="waiting_for_sa_ids"/>-->
+                        <!--<div class="cnt-txt padb-10">Waiting for SA</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--<div class="col-xs-2 widget-sect first bg-pink">-->
+                    <!--<form method="post" class="sa_preparation_clk_count" name="app_form" id="app_form" action="/sa_action_clk">-->
+                        <!--<div></div>-->
+                        <!--<div class="apps_count cnt-txt" ><t t-esc="so_preparation_process_count"/></div>-->
+                        <!--<input type="text"  style="display:none;" name="waiting_for_sa_preparation_ids_nm" t-att-value="so_preparation_process_ids"/>-->
+                        <!--<div class="cnt-txt padb-10">SO Preparation Process</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--<div class="col-xs-2"/>-->
+                <!--<div class="col-xs-2"/>-->
+                <!--<div class="col-xs-2"/>-->
+                <!--<div class="col-xs-2"/>-->
+            <!--</div>-->
+            <!--<div style="height:40px;"></div>-->
+            <t t-if="type == 'tree'">
+                <div>
+                    <t t-call="ac_rms.tree_view"/>
+                </div>
+            </t>
+            <t t-if="type == 'form'">
+                <div>
+                    <t t-call="ac_rms.form_view"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

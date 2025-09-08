@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="ars_purchaseorder_document_inherit" inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//div/table/thead/tr/th[1]" position="before">
+            <t t-if="o.purchase_type == 'after_sales'">
+                <th width="50px;">
+                    <strong>Sl No</strong>
+                    <t t-set="i" t-value="0"/>
+                </th>
+                <th width="160px;">
+                    <strong>Parts Number</strong>
+                </th>
+            </t>
+        </xpath>
+        <xpath expr="//tr[@t-foreach='o.order_line']/td[1]" position="replace">
+            <t t-if="o.purchase_type == 'after_sales'">
+                <td>
+                    <t t-set="i" t-value="i+1"/>
+                    <span t-esc='i'/>
+                </td>
+                <td>
+                    <span t-field="line.product_id.default_code"/>
+                </td>
+            </t>
+            <td>
+                <span t-field="line.name"/>
+                <t t-if="line.product_id.l10n_in_hsn_code and o.company_id.country_id.code == 'IN'">
+                    <h6>
+                        <strong class="ml16">HSN/SAC Code:</strong>
+                        <span t-field="line.product_id.l10n_in_hsn_code"/>
+                    </h6>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="ars_report_purchasequotation_document_inherit"
+              inherit_id="purchase.report_purchasequotation_document">
+        <xpath expr="//div/table/thead/tr/th[1]" position="before">
+            <t t-if="o.purchase_type == 'after_sales'">
+                <th>
+                    <strong>Parts Number</strong>
+                </th>
+            </t>
+        </xpath>
+        <xpath expr="//tr[@t-foreach='o.order_line']/td[1]" position="replace">
+            <t t-if="o.purchase_type == 'after_sales'">
+                <td>
+                    <span t-field="order_line.product_id.default_code"/>
+                </td>
+            </t>
+            <td>
+                <span t-field="order_line.name"/>
+                <t t-if="o.purchase_type == 'after_sales'">
+                    <h6>
+                        <strong class="ml16">HSN/SAC Code:</strong>
+                        <span t-field="order_line.product_id.l10n_in_hsn_code"/>
+                    </h6>
+                </t>
+            </td>
+        </xpath>
+    </template>
+</odoo>

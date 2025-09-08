@@ -1,0 +1,60 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="freezer_theme.list">
+      <field name="name">freezer_theme list</field>
+      <field name="model">freezer_theme.freezer_theme</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="freezer_theme.action_window">
+      <field name="name">freezer_theme window</field>
+      <field name="res_model">freezer_theme.freezer_theme</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="freezer_theme.action_server">
+      <field name="name">freezer_theme server</field>
+      <field name="model_id" ref="model_freezer_theme_freezer_theme"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="freezer_theme" id="freezer_theme.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="freezer_theme.menu_1" parent="freezer_theme.menu_root"/>
+    <menuitem name="Menu 2" id="freezer_theme.menu_2" parent="freezer_theme.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="freezer_theme.menu_1_list" parent="freezer_theme.menu_1"
+              action="freezer_theme.action_window"/>
+    <menuitem name="Server to list" id="freezer_theme" parent="freezer_theme.menu_2"
+              action="freezer_theme.action_server"/>
+    -->
+  </data>
+</odoo>

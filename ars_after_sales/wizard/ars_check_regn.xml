@@ -1,0 +1,43 @@
+<odoo>
+  <data>
+    <record id="regn_popup_tree" model="ir.ui.view">
+            <field name="name">Start</field>
+            <field name="model">check.regn</field>
+            <field name="arch" type="xml">
+                <!--<form string="Vehicle Regn">-->
+                    <!--<group>-->
+                        <!--<field name="regi_no" string="Reg No"/>-->
+                        <!--<field name="vin" string="VIN"/>-->
+                        <!--<field name="model" string="Model"/>-->
+                    <!--</group>-->
+
+                <tree string="Vehicle Regn">
+                    <!--<header>-->
+
+                    <!--</header>-->
+                    <field name="regi_no" string="Reg No"/>
+                    <field name="vin" string="VIN"/>
+                    <field name="model" string="Model"/>
+                    <!--<button string="Select" type="object" name="select_regn" class="oe_link" />-->
+                </tree>
+                <!--<footer>-->
+                         <!--<button string="Confirm" class="oe_link" />-->
+                        <!--or-->
+
+                    <!--</footer>-->
+                <!--</form>-->
+            </field>
+        </record>
+    <record id="action_change_regn" model="ir.actions.act_window">
+         <field name="name">Start</field>
+         <field name="res_model">check.regn</field>
+         <field name="type">ir.actions.act_window</field>
+         <field name="view_type">form</field>
+         <field name='limit'>20</field>
+         <field name="view_mode">tree</field>
+         <field name="view_id" ref="regn_popup_tree"/>
+         <field name="target">new</field>
+    </record>
+
+  </data>
+</odoo>

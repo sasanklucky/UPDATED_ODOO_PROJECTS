@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend" name="ARS Assets back">
+		<xpath expr="." position="inside">
+			<link rel="stylesheet" href="/ars_sales_dashbord_old/static/src/css/sales_team.css"/>
+			<link rel="stylesheet" href="/ars_sales_dashbord_old/static/src/css/dashbord_less.css"/>
+			<link rel="stylesheet/less" type="text/less" href="/ars_sales_dashbord_old/static/src/less/ars_dashbord.less"/>
+			<script type="text/javascript" src="/ars_sales_dashbord_old/static/src/js/dashbord_ars.js"></script>
+
+		</xpath>
+	</template>
+ </odoo>

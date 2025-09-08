@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+       
+        <record id="product_category_parts" model="product.category">
+            <field name="name">Parts</field>
+        </record>
+        <record id="product_category_labour" model="product.category">
+            <field name="name">Labor</field>
+        </record>
+         <record id="product_category_Accessories" model="product.category">
+            <field name="name">Accessories</field>
+        </record>
+
+
+        <record id="resource_category_service_advisor" model="resource.category">
+            <field name="name">Service Advisor</field>
+            <field name="code">SA</field>
+        </record>
+
+        <!--Sales channels for Aftersales-->
+        <record id="crm_aftersales_type" model="crm.team">
+            <field name="name">After Sales</field>
+            <field name="team_type">after_sales</field>
+        </record>
+
+        <!--Warranty Claims Sequence-->
+        <record id="sequence_warranty_seq" model="ir.sequence">
+            <field name="name">Warranty Claims</field>
+            <field name="code">warranty_claims</field>
+            <field name="prefix">WRN/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+<!--        PDI Services Sequence-->
+        <record id="sequence_pdi_services_seq" model="ir.sequence">
+            <field name="name">PDI Services</field>
+            <field name="code">pdi_service</field>
+            <field name="prefix">PDI/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <!--Email template -->
+        <record id="email_template_edi_warranty_sale" model="mail.template">
+            <field name="name">Warranty - Send Approval Request</field>
+            <field name="email_from"></field>
+            <field name="subject"></field>
+            <field name="partner_to"></field>
+            <field name="model_id" ref="ars_after_sales.model_ars_sale_warranty"/>
+            <field name="auto_delete" eval="True"/>
+            <field name="report_name"></field>
+            <field name="lang"></field>
+            <field name="body_html"><![CDATA[<p> Dear ${object.partner_id.name}</p>
+<p>We regret to inform that approval process for (Warranty Claim ID: ${object.name}).
+   The details of your warranty claim are as below.</p>
+
+<table style="border-spacing: 0px; border-collapse: collapse; background-color: transparent; border: 1px solid rgb(213, 213, 213); font-family: Calibri; font-size: 11pt;" width="912" height="41" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="background-color:#367387; text-align:center; vertical-align:middle; height:40px; color:#fff; width:100%;">
+<th style="width:18%;text-align:center;">PRODUCT</th>
+<th style="width:14%;text-align:center;">ORDERED QTY.</th>
+<th style="width:14%;text-align:center;">BASE PRICE</th>
+<th style="width:20%;text-align:center;">WARRANTY PRICE</th>
+<th style="width:20%;text-align:center;">SUBTOTAL</th>
+<th style="width:10%;text-align:center;">ACTION</th>
+</tr>
+</tbody>
+</table>
+% for order in object.order_lines:
+<table style="width:100%;border:1px solid #d5d5d5;font-family:Calibri; font-size: 11pt;" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="text-align:center; vertical-align:middle; height:40px; color:#000; width:100%;">
+<td style="width:18%;text-align:center;">${order.name or ''}</td>
+<td style="width:14%;text-align:center;">${order.product_uom_qty or ''} &nbsp; ${order.product_uom.name or ''}</td>
+<td style="width:14%;text-align:center;">${order.ars_std_price or ''}</td>
+<td style="width:20%;text-align:center;">${order.ars_warranty_price or ''}</td>
+<td style="width:20%;text-align:center;">${order.wrn_price_subtotal or ''}</td>
+<td style="width:10%;text-align:center;">${order.apr_action=='approved' and 'Approved' or order.apr_action=='reject' and 'Reject' or order.apr_action=='re_submit' and 'Re-Submit' or order.apr_action=='re_submission' and 'Re-Submission' or ''}</td>
+</tr>
+</tbody></table>
+% endfor
+<a href="${object.base_url}/WarrantyClaim/${object.id}">Please Click here to continue with the approval process</a>]]></field>
+        </record>
+    </data>
+</odoo>

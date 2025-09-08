@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_invoice_db_settings" model="ir.ui.view">
+        <field name="name">ars_config_po_db_inherit</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority" eval="10"/>
+        <field name="inherit_id" ref="base.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data-string="invoice_sync_apis" string="Invoice Sync API Configuration" data-key="invoice_sync_apis">                   
+                    <h2>Invoice Sync API's Configuration</h2>
+                    <div class="row mt16 o_settings_container" id="invoice_sync_apis_settings">
+                        <div class="col-xs-12 o_setting_box" id="invoice_sync_apis_settings">
+                            <br></br>
+                            <div class="o_setting_right_pane">
+                            <!-- <div class="o_setting_right_pane" attrs="{'invisible': [('is_child_company', '=',True)]}"> -->
+                                <label string="invoice sync API Configurations" attrs="{'invisible': [('invoice_company_type', '=','is_child_company')]}"/>
+                                <div class="text-muted">
+                                    Invoice Sync API Configurations (Here Invoice will Sync to parent)
+                                </div>
+                                <div class="content-group">
+                                    <div class="row">
+                                        <label class="col-md-3" string="Company Type"/>
+                                        <field name="invoice_company_type" string="Connection Type" id='invoice_company_type'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Parent's DB name"/>
+                                        <field name="invoice_parent_db" string="Parent's DB name" id='invoice_parent_db'/>
+                                    </div>
+                                    <div class="row">
+                                        <label class="col-md-3" string="Enable invoice sync"/>
+                                        <field name="enable_invoice_sync" string="Enable invoice sync" id='enable_invoice_sync'/>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button name="invoice_sync_check" string="Invoice Sync Check" type="object" class="btn-primary"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <record id="action_invoice_config_settings" model="ir.actions.act_window">
+        <field name="name">Invoice API Configuration</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_id" ref="invoice_sync_apis.res_config_invoice_db_settings"/>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module' : 'invoice_sync_apis'}</field>
+    </record>
+
+</odoo> 

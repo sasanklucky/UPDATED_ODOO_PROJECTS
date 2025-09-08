@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- Main Process -->
+        <record id="main_process1" model="main.process">
+            <field name="name">Waiting For Vehicle Inward</field>
+            <field name="sequence">1</field>
+        </record>
+        <record id="main_process2" model="main.process">
+            <field name="name">Security Process</field>
+            <field name="sequence">2</field>
+        </record>
+        <record id="main_process3" model="main.process">
+            <field name="name">Waiting at Reception</field>
+            <field name="sequence">3</field>
+        </record>
+        <record id="main_process4" model="main.process">
+            <field name="name">Front Desk Process</field>
+            <field name="sequence">4</field>
+        </record>
+        <record id="main_process5" model="main.process">
+            <field name="name">Waiting for SA</field>
+            <field name="sequence">5</field>
+        </record>
+        <record id="main_process6" model="main.process">
+            <field name="name">SO Preparation Process</field>
+            <field name="sequence">6</field>
+        </record>
+        <record id="main_process7" model="main.process">
+            <field name="name">Bay &amp; Technician Allocation Waiting</field>
+            <field name="sequence">7</field>
+        </record>
+        <record id="main_process8" model="main.process">
+            <field name="name">Bay &amp; Technician Allocation Process</field>
+            <field name="sequence">8</field>
+        </record>
+        <record id="main_process9" model="main.process">
+            <field name="name">Waiting to Start</field>
+            <field name="sequence">9</field>
+        </record>
+        <record id="main_process10" model="main.process">
+            <field name="name">Technician WIP</field>
+            <field name="sequence">10</field>
+        </record>
+        <record id="main_process11" model="main.process">
+            <field name="name">Hold Approval/rejection (waiting)</field>
+            <field name="sequence">11</field>
+        </record>
+        <record id="main_process12" model="main.process">
+            <field name="name">Hold Approval/ Rejection Process</field>
+            <field name="sequence">12</field>
+        </record>
+        <record id="main_process13" model="main.process">
+            <field name="name">Break</field>
+            <field name="sequence">13</field>
+        </record>
+        <record id="main_process14" model="main.process">
+            <field name="name">Carry over</field>
+            <field name="sequence">14</field>
+        </record>
+        <record id="main_process15" model="main.process">
+            <field name="name">FI Process Waiting</field>
+            <field name="sequence">15</field>
+        </record>
+        <record id="main_process16" model="main.process">
+            <field name="name">FI In Progress</field>
+            <field name="sequence">16</field>
+        </record>
+        <record id="main_process17" model="main.process">
+            <field name="name">Ready For Delivery</field>
+            <field name="sequence">17</field>
+        </record>
+        <record id="main_process18" model="main.process">
+            <field name="name">Waiting For Customer</field>
+            <field name="sequence">18</field>
+        </record>
+        <record id="main_process19" model="main.process">
+            <field name="name">SA Delivery Process</field>
+            <field name="sequence">19</field>
+        </record>
+        <record id="main_process20" model="main.process">
+            <field name="name">Waiting For Vehicle Out</field>
+            <field name="sequence">20</field>
+        </record>
+        <record id="main_process21" model="main.process">
+            <field name="name">Security Delivery Process</field>
+            <field name="sequence">21</field>
+        </record>
+        <record id="main_process22" model="main.process">
+            <field name="name">Vehicle Delivered</field>
+            <field name="sequence">22</field>
+        </record>
+        <record id="main_process23" model="main.process">
+            <field name="name">Test Drive In Progress</field>
+            <field name="sequence">23</field>
+        </record>
+        <record id="main_process24" model="main.process">
+            <field name="name">Security Test Drive Process</field>
+            <field name="sequence">24</field>
+        </record>
+
+
+        <!-- Sub Process -->
+        <record id="sub_process1" model="sub.process">
+            <field name="name">Preplan Allocation Waiting</field>
+            <field name="sequence">1</field>
+            <field name="main_process_id" ref="main_process1"/>
+        </record>
+        <record id="sub_process2" model="sub.process">
+            <field name="name">Preplan Additional Job Allocation</field>
+            <field name="sequence">2</field>
+            <field name="main_process_id" ref="main_process1"/>
+        </record>
+        <record id="sub_process3" model="sub.process">
+            <field name="name">CRE-Allocation Inward Waiting</field>
+            <field name="sequence">2</field>
+            <field name="main_process_id" ref="main_process3"/>
+        </record>
+        <record id="status1" model="task.status">
+            <field name="name">Start</field>
+        </record>
+        <record id="status2" model="task.status">
+            <field name="name">Pause</field>
+        </record>
+        <record id="status3" model="task.status">
+            <field name="name">Approve</field>
+        </record>
+        <record id="status4" model="task.status">
+            <field name="name">Rejected</field>
+        </record>
+        <record id="status5" model="task.status">
+            <field name="name">Restart</field>
+        </record>
+        <record id="status6" model="task.status">
+            <field name="name">Shiftend</field>
+        </record>
+        <record id="status7" model="task.status">
+            <field name="name">Break</field>
+        </record>
+
+        <!--<record id="stage1" model="sub.process">
+            <field name="name">New</field>
+            <field name="sequence">2</field>
+            <field name="main_process_id" ref="main_process3"/>
+        </record>-->
+
+    </data>
+</odoo>
