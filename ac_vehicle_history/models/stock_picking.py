@@ -21,7 +21,6 @@ class StockPicking(models.Model):
         param = self.env['ir.config_parameter'].sudo()
         cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
         db = sql_db.db_connect(f"{cons_db_name}")
-        print(db)
         with contextlib.closing(db.cursor()) as cr:
             cr.autocommit(True)
             env = api.Environment(cr, SUPERUSER_ID, {})
