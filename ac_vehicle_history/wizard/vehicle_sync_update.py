@@ -69,7 +69,7 @@ class SyncServiceUpdate(models.TransientModel):
     mode = fields.Selection([
         ('ims', 'IMS'),
         ('dms', 'DMS')
-    ], string="Mode", default='ims')
+    ], string="Mode", default='dms')
 
     @api.onchange('mode')
     def _onchange_mode(self):
@@ -148,9 +148,9 @@ class SyncServiceUpdate(models.TransientModel):
             print(vehicle_synced, 'vehicle_synced===>')
 
             if self.mode == 'ims':
-                print('hii')
                 if self.wholesales_hist:
-                    print('need to start')
+                    _logger.info(
+                        f"Wholesale is not started yet")
             else:
                 selected_records = self.sync_line_ids.filtered(lambda var: var.select_dealers)
                 no_unmatched_dealers = []
@@ -169,18 +169,19 @@ class SyncServiceUpdate(models.TransientModel):
                                     f"Vehicle with VIN {vehicle_synced.vin_sn} not found in dealer database {dealer.db_name}")
                             if dealer_vehicle_card and vehicle_synced:
                                 print('Start to Fetch')
+                                update_vehicle_status_service = vehicle_synced.vehicle_status in ('customer', 'new', 'demo', 'own') and dealer_vehicle_card.vehicle_status in ('customer', 'new', 'demo', 'own')
                                 both_vehicle_status = vehicle_synced.vehicle_status == 'customer' and dealer_vehicle_card.vehicle_status == 'customer'
-                                if self.service_hist and not both_vehicle_status:
-                                    print('not woking')
-                                    raise ValidationError(
-                                        f"Vehicle synchronization is not allowed for Vehicle status {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
+                                # if self.service_hist and not update_vehicle_status_service:
+                                #     print('not woking')
+                                #     raise ValidationError(
+                                #         f"Vehicle synchronization is not allowed for Vehicle status {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
                                 if self.ownership_hist and not both_vehicle_status:
                                     print('problem')
                                     raise ValidationError(
                                         f"Vehicle synchronization is not allowed for Vehicle status {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
 
                                 unmatched_found = False
-                                if self.service_hist and both_vehicle_status:
+                                if self.service_hist and update_vehicle_status_service:
                                     cons_history = self.env['service.history'].sudo().search([
                                         ('vehicle_id', '=', self.vehicle_sync_id.id)
                                     ])
@@ -280,10 +281,10 @@ class SyncServiceUpdate(models.TransientModel):
                                             'vin_sn': dealer_vehicle_card.vin_sn
                                         })
 
-                                both_vehicles_status = vehicle_synced.vehicle_status in ['new','customer'] and dealer_vehicle_card.vehicle_status in ['new', 'customer']
-                                if self.wholesales_hist and not both_vehicles_status:
-                                    print('need to enter')
-                                    raise ValidationError(f"Vehicle synchronization is not allowed for Vehicle status {vehicle_synced.vehicle_status} !. Only customer and new vehicles can be synchronized")
+                                both_vehicles_status = vehicle_synced.vehicle_status in ['new','customer','demo','own'] and dealer_vehicle_card.vehicle_status in ['new', 'customer','demo','own']
+                                # if self.wholesales_hist and not both_vehicles_status:
+                                #     print('need to enter')
+                                #     raise ValidationError(f"Vehicle synchronization is not allowed for Vehicle status {vehicle_synced.vehicle_status} !. Only customer and new vehicles can be synchronized")
                                 if self.wholesales_hist and both_vehicles_status:
                                     print('wholesale is going to be start')
                                     print('started')
@@ -292,7 +293,7 @@ class SyncServiceUpdate(models.TransientModel):
 
                                     cons_wholesale = {rec.so_number for rec in cons_wholesale_hist}
                                     dealer_wholesale = {rec.so_number for rec in dealer_wholesale_hist}
-                                    missing_in_dealer =  cons_wholesale - dealer_wholesale
+                                    missing_in_dealer = cons_wholesale - dealer_wholesale
                                     print(missing_in_dealer)
                                     missing_in_cons = dealer_wholesale - cons_wholesale
                                     print(missing_in_cons)
@@ -373,16 +374,17 @@ class SyncServiceUpdate(models.TransientModel):
                         }
                     )
                 current_db_record = self.env['fleet.vehicle'].sudo().search([('id', '=', self.vehicle_sync_id.id)])
+                update_vehicle_status_service = vehicle_synced.vehicle_status in ('customer', 'new', 'demo', 'own') and current_db_record.vehicle_status in ('customer', 'new', 'demo', 'own')
                 both_vehicle_status = vehicle_synced.vehicle_status == 'customer' and current_db_record.vehicle_status == 'customer'
-                both_vehicles_status = vehicle_synced.vehicle_status in ['customer','new'] and current_db_record.vehicle_status in ['customer','new']
-                if self.wholesales_hist and not both_vehicles_status:
-                    print('whole')
-                    raise ValidationError(
-                        f"Vehicle synchronization is not allowed for Vehicle status  {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
-                if self.service_hist and not both_vehicle_status:
-                    print('service')
-                    raise ValidationError(
-                        f"Vehicle synchronization is not allowed for Vehicle status  {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
+                both_vehicles_status = vehicle_synced.vehicle_status in ['customer','new','demo','own'] and current_db_record.vehicle_status in ['customer','new','demo','own']
+                # if self.wholesales_hist and not both_vehicles_status:
+                #     print('whole')
+                #     raise ValidationError(
+                #         f"Vehicle synchronization is not allowed for Vehicle status  {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
+                # if self.service_hist and not update_vehicle_status_service:
+                #     print('service')
+                #     raise ValidationError(
+                #         f"Vehicle synchronization is not allowed for Vehicle status  {vehicle_synced.vehicle_status} only customer vehicles can be synchronized")
                 if self.ownership_hist and not both_vehicle_status:
                     print('owner')
                     raise ValidationError(
@@ -390,7 +392,7 @@ class SyncServiceUpdate(models.TransientModel):
 
                 if vehicle_synced.vin_sn == current_db_record.vin_sn:
                     # if vehicle_synced.vehicle_status == 'customer' and current_db_record.vehicle_status == 'customer':
-                    if self.service_hist and  both_vehicle_status:
+                    if self.service_hist and update_vehicle_status_service:
                         cons_history = cr_env['service.history'].sudo().search([
                             ('vehicle_id', '=', vehicle_synced.id)
                         ])
@@ -1114,6 +1116,8 @@ class UnmatchedVehicleDetails(models.TransientModel):
                         # print(matched_customer.name,'1111')
 
                         matched_sold_by = False
+                        dealer_master_id = self.env['ars.consolidation.setup'].sudo().search(
+                            [('dealer_code', '=', dealer_ownership.sold_by.dealer_code)], limit=1)
                         # print(dealer_ownership.sold_by.dealer_code, 'dealer_ownership.sold_by.dealer_code')
                         if not dealer_ownership.sold_by.dealer_code:
                             raise ValidationError(
@@ -1149,6 +1153,7 @@ class UnmatchedVehicleDetails(models.TransientModel):
                             'delivery_date': dealer_ownership.delivery_date,
                             'address': dealer_ownership.custmer_name.city if dealer_ownership.custmer_name else '',
                             'mobile': dealer_ownership.mobile,
+                            'dealer_id': dealer_master_id.id,
                             'sold_by': matched_sold_by.id if matched_sold_by else False,
                         }
                         self.env['ownership.history'].sudo().create(vals)
@@ -1176,7 +1181,7 @@ class UnmatchedVehicleDetails(models.TransientModel):
 
                     for rec in dealer_wholesale:
                         print(rec.dealer_name, rec.so_number, 'DEALER WHOLESALE DATA')
-
+                        dealer_master_id = self.env['ars.consolidation.setup'].sudo().search([('dealer_code', '=', rec.dealer_code)])
                         # Check if already exists in consolidation
                         existing = self.env['wholesale.history'].sudo().search([
                             ('vehicle_id', '=', cons_vehicle.id),
@@ -1196,6 +1201,7 @@ class UnmatchedVehicleDetails(models.TransientModel):
                             'po_number': rec.po_number,
                             'transfer_type': rec.transfer_type,
                             'dealer_code': rec.dealer_code,
+                            'dealer_master_id': dealer_master_id.id,
                         }
 
                         if existing:

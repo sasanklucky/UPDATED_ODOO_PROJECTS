@@ -37,6 +37,9 @@ class AccountInvoice(models.Model):
                                                         'delivery_date': self.date_invoice})
                             cons_vehicle_card = env['fleet.vehicle'].sudo().browse(
                                 vehicle_card.consolidate_vehicle_card_id)
+                            print('working consolidation', cons_vehicle_card)
+                            if not cons_vehicle_card:
+                                raise ValidationError(f" Please retrieve the consolidate vehicle card ID from the consolidation and update it. ")
                             for wholesale_id in cons_vehicle_card.wholesale_ids[-1]:
                                 if self.origin or (self.sale_order_number == wholesale_id.so_number):
                                     wholesale_id.write({'invoice_number': self.number, 'invoice_id': self.id,
