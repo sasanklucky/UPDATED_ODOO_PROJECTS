@@ -22,6 +22,7 @@ class StockPicking(models.Model):
         cons_db_name = param.get_param('ac_vehicle_history.consolidate_db_name')
         db = sql_db.db_connect(f"{cons_db_name}")
         print(db)
+        print('CONNECTION GOING TO START')
         with contextlib.closing(db.cursor()) as cr:
             cr.autocommit(True)
             env = api.Environment(cr, SUPERUSER_ID, {})
